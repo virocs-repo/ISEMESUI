@@ -1,4 +1,4 @@
-# PlayK16
+# Inventory
 
 Playground for Kendo and Angular 16
 
