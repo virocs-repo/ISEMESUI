@@ -1,0 +1,55 @@
+<div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header">
+    <h2>Reports</h2>
+    <div class="k-d-flex k-flex-col k-gap-2 k-ml-auto">
+        <div class="k-d-flex k-gap-3">
+            <kendo-label text="Customer / Vendor" class="k-w-full k-font-size-sm">
+                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
+            </kendo-label>
+            <kendo-label text="Customer" class="k-w-full k-font-size-sm">
+                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
+            </kendo-label>
+            <kendo-label text="Device" class="k-w-full k-font-size-sm">
+                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
+            </kendo-label>
+            <kendo-label text="#Lot" class="k-w-full k-font-size-sm">
+                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
+            </kendo-label>
+        </div>
+        <div class="k-d-flex k-gap-3">
+            <kendo-label text="Status" class="k-w-full k-font-size-sm">
+                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
+            </kendo-label>
+            <kendo-label text="Date Code" class="k-w-full k-font-size-sm">
+                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
+            </kendo-label>
+            <kendo-label text="From Date" class="k-w-full k-font-size-sm">
+                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
+            </kendo-label>
+            <kendo-label text="To Date" class="k-w-full k-font-size-sm">
+                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
+            </kendo-label>
+        </div>
+    </div>
+</div>
+<div class="k-m-10" *ngIf="!false">
+    <kendo-grid [kendoGridBinding]="gridData" [selectable]="selectableSettings" [columnMenu]="columnMenuSettings"
+        [filterable]="true" [sortable]="true" [resizable]="true">
+        <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+        <kendo-grid-column field="ProductID" title="ID"> </kendo-grid-column>
+        <kendo-grid-column field="ProductName" title="Name"> </kendo-grid-column>
+        <kendo-grid-column field="Category.CategoryName" title="Category">
+        </kendo-grid-column>
+        <kendo-grid-column field="UnitPrice" title="Price">
+        </kendo-grid-column>
+        <kendo-grid-column [width]="60">
+            <ng-template kendoGridCellTemplate let-dataItem>
+                <button kendoButton icon="more-vertical" #rowActionMenu></button>
+                <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
+            </ng-template>
+        </kendo-grid-column>
+    </kendo-grid>
+</div>
+<div class="k-d-flex k-gap-3 k-mt-3 k-mx-10">
+    <button kendoButton type="button" themeColor="error" class="k-ml-auto k-w-24">Clear</button>
+    <button kendoButton type="button" themeColor="info" class="k-w-24">Export</button>
+</div>

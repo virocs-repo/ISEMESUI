@@ -1,0 +1,210 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+    margin: 0;
+    padding: 0;
+    // robot family
+    font-family: 'Roboto', sans-serif;
+}
+
+:root {
+    --page-header-bg: #EEF2F5;
+    --card-bg-green: #E8F9F1;
+    --card-bg-blue: #E4F0FD;
+}
+
+.page-header {
+    background-color: var(--page-header-bg);
+}
+
+.required-label::after {
+    content: "*";
+    color: red;
+    margin-left: 0.25rem;
+}
+
+.search-box {
+    position: relative;
+
+    .search-icon {
+        position: absolute;
+        margin: 0.825rem;
+        z-index: 1;
+        // background-color: goldenrod;
+    }
+
+    .search-input {
+        padding-left: 2.2rem;
+        padding-right: 4rem;
+        line-height: 2;
+        font-size: 1rem;
+        border-radius: 2rem;
+        width: 35vw;
+    }
+
+    .search-btn {
+        position: absolute;
+        right: 0.5rem;
+        z-index: 1;
+        top: 14%;
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+    }
+}
+
+.bold-column-header .k-column-title {
+    font-weight: bold;
+}
+
+.cell-border-none td {
+    border: none !important;
+}
+
+.dialog-round .k-dialog {
+    border-radius: 1rem;
+}
+
+.card-green {
+    background-color: #cbffee;
+    background-color: var(--card-bg-green);
+}
+
+.card-blue {
+    background-color: #c5f6ff;
+    background-color: var(--card-bg-blue);
+}
+
+.card-full {
+    width: 100% !important;
+}
+
+.cartons {
+    tr {
+        background-color: var(--card-bg-green);
+    }
+
+    tr.k-table-alt-row {
+        background-color: var(--card-bg-blue) !important;
+    }
+
+    .center {
+        text-align: center;
+    }
+}
+
+.grid-header-sm {
+    .k-column-title {
+        font-size: 0.75rem;
+    }
+}
+
+.grid-header-bold {
+    .k-column-title {
+        font-weight: bold;
+    }
+}
+
+.wrap-header-grid .k-column-title {
+    white-space: normal !important;
+    /* Allow text to wrap */
+    height: auto !important;
+    /* Ensure the header cell's height adjusts to the content */
+    text-overflow: clip;
+    /* Adjust text overflow behavior */
+}
+
+.k-drawer-item .k-item-text {
+    font-size: 0.875rem;
+}
+
+// other than mobile
+@media (min-width: 769px) {
+    .add-btn {
+        width: 7rem
+    }
+
+    .page-header-mobile,
+    .header-mobile {
+        display: none;
+    }
+
+}
+
+// mobile view
+@media (max-width: 768px) {
+    .add-btn {
+        padding: 0.25rem 2rem;
+    }
+
+    .login-container {
+        height: 90vh !important;
+
+        .k-card {
+            width: 90% !important;
+        }
+    }
+
+    .header-desktop,
+    .page-header-desktop {
+        display: none;
+    }
+
+    // .header-mobile {
+    //     display: none;
+    // }
+    .page-header-mobile {
+        .search-box .search-input {
+            width: 100% !important;
+        }
+    }
+
+    .page-body,
+    .grid-container {
+        margin: 0.5rem;
+        overflow-x: auto;
+
+        .k-grid {
+            width: 300vw;
+        }
+    }
+
+    .receiving-dialog,
+    .receipt-dialog {
+        .dialog-body {
+            height: 92%;
+        }
+
+        .k-dialog {
+            height: 94%;
+            width: 90% !important;
+
+        }
+    }
+
+    .shipping-record {
+
+        .search-box-container {
+            align-items: end;
+            flex-direction: column;
+        }
+
+        .search-box,
+        .search-box .search-input {
+            width: 100% !important;
+        }
+
+        .add-btn {
+            padding: 0.25rem 2rem;
+            width: auto !important;
+        }
+
+        .nested-cards {
+            flex-direction: column;
+        }
+
+        .flex-col-sm {
+            flex-direction: column;
+        }
+
+    }
+
+}

@@ -1,0 +1,36 @@
+<div class="k-m-5" *ngIf="!false">
+    <kendo-card class="card-green card-full k-mb-6">
+        <kendo-card-body>
+            <div class="k-d-flex k-flex-col k-gap-3">
+                <div class="k-d-flex">
+                    <kendo-label text="Lot/Mail/FGI Pull#:" class="k-flex-1"><b> ASAB3156165</b></kendo-label>
+                    <kendo-label text="Customer:" class="k-flex-1"><b> Marvell Semiconductor Inc.</b></kendo-label>
+                    <kendo-label text="Device:" class="k-flex-1"><b> FOg1234</b></kendo-label>
+                </div>
+                <div class="k-d-flex k-justify-content-between">
+                    <kendo-label text="No. of Holds:" class="k-flex-1"><b> ASAB3156165</b></kendo-label>
+                    <kendo-label text="Cumulative Hold Time:" class="k-flex-1"><b> 1h 30m</b></kendo-label>
+                    <kendo-label text="" class="k-flex-1"></kendo-label>
+                </div>
+            </div>
+        </kendo-card-body>
+    </kendo-card>
+
+    <kendo-grid [kendoGridBinding]="gridData" class="bold-column-header">
+        <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title"></kendo-grid-column>
+        <kendo-grid-column [width]="80" title="Action">
+            <ng-template kendoGridCellTemplate let-dataItem>
+                <button kendoButton (click)="onButtonClick()" [svgIcon]="pencilIcon" fillMode="flat" title="Browse"
+                    themeColor="tertiary">Edit</button>
+            </ng-template>
+        </kendo-grid-column>
+    </kendo-grid>
+</div>
+<kendo-dialog *ngIf="isDialogOpen2" (close)="closeDialog()" [minWidth]="250" [width]="'68%'" class="dialog-round">
+    <div class="k-d-flex k-align-items-center k-mb-3">
+        <h2 class="k-m-0">Hold Details</h2>
+        <button kendoButton type="button" rounded="full" class="k-ml-auto" icon="close" size="small"
+            (click)="isDialogOpen2 = !isDialogOpen2"></button>
+    </div>
+    <app-hold-details></app-hold-details>
+</kendo-dialog>

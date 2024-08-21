@@ -1,0 +1,47 @@
+<div class="login-container">
+    <kendo-card style="min-width: 30%;">
+        <kendo-card-header>
+            <img src="assets/logo.svg" alt="App Logo" width="100%">
+        </kendo-card-header>
+        <kendo-card-body>
+            <div class="login-form">
+                <div class="input-with-icon">
+                    <kendo-icon name="email" size="medium" class="k-icon"></kendo-icon>
+                    <kendo-textbox [(ngModel)]="email" type="text" placeholder="Email" size="large" rounded="large"
+                        fillMode="solid" class="login-input"></kendo-textbox>
+                </div>
+                <div class="input-with-icon">
+                    <kendo-icon name="lock" size="medium" class="k-icon"></kendo-icon>
+                    <kendo-textbox [(ngModel)]="password" [type]="isPasswordVisible ? 'text' : 'password'"
+                        placeholder="Password" size="large" rounded="large" fillMode="solid"
+                        class="login-input"></kendo-textbox>
+                    <kendo-button [icon]="isPasswordVisible?'eye-slash':'eye'" (click)="togglePasswordVisibility()"
+                        class="toggle-btn"></kendo-button>
+                </div>
+                <div class="flex-box">
+                    <label for="rememberMe" class="remember-me">
+                        <input type="checkbox" name="rememberMe" id="rememberMe" [(ngModel)]="isRememberMeChecked"
+                            kendoCheckBox>
+                        Remember me</label>
+                    <button kendoButton size="small" fillMode="link" themeColor="info">
+                        Forgot Password?
+                    </button>
+                </div>
+                <!-- <kendo-checkbox #rememberMe ></kendo-checkbox> -->
+                <!-- <kendo-checkbox #rememberMe [checkedState]="isRememberMeChecked"></kendo-checkbox> -->
+                <!-- <kendo-checkbox #checkedState [checkedState]="true"></kendo-checkbox> -->
+                <!-- <kendo-checkbox [(ngModel)]="isRememberMeChecked" name="RememberMe"  ></kendo-checkbox> -->
+                <!-- <kendo-label class="k-checkbox-label" for="rememberMe" text="Remember me"></kendo-label> -->
+                <div class="k-w-full k-text-center">
+                    <button kendoButton size="large" fillMode="solid" rounded="medium" themeColor="info"
+                        (click)="login()" style="width: 80%;">Login</button>
+                </div>
+                <div class="k-text-center">OR</div>
+                <div class="k-w-full k-text-center">
+                    <button kendoButton size="large" rounded="medium" imageUrl="assets/ms-symbollockup_signin_light.svg"
+                        (click)="loginWithMicrosoft()" class="login-with-microsoft-btn"></button>
+                </div>
+            </div>
+        </kendo-card-body>
+    </kendo-card>
+</div>

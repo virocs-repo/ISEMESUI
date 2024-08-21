@@ -1,0 +1,54 @@
+<div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header page-header-desktop">
+  <h2>Receiving</h2>
+  <div class="search-box k-ml-auto">
+    <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
+    <input kendoTextBox type="search" placeholder="Search" class="search-input" rounded="full" />
+    <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
+  </div>
+  <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()"
+    [disabled]="!isAddButtonEnabled">Add</button>
+</div>
+<div
+  class="k-d-flex k-align-items-center k-gap-2 k-py-2 k-px-2 k-flex-wrap k-justify-content-between page-header page-header-mobile">
+  <h2 class="k-m-0">Receiving</h2>
+  <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
+  <div class="search-box k-w-full k-ml-auto">
+    <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
+    <input kendoTextBox type="search" placeholder="Search" class="search-input k-w-full" rounded="full" />
+    <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
+  </div>
+</div>
+
+<div class="page-body k-m-10" *ngIf="!false">
+  <kendo-grid [kendoGridBinding]="gridData" [selectable]="selectableSettings" [columnMenu]="columnMenuSettings"
+    [filterable]="true" [sortable]="true" [resizable]="true" class="grid-header-sm grid-header-bold">
+    <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+    <kendo-grid-column field="RecordID" title="Record ID"></kendo-grid-column>
+    <kendo-grid-column field="ReceiveFrom" title="Receive From"></kendo-grid-column>
+    <kendo-grid-column field="Customer" title="Customer / Vendor"></kendo-grid-column>
+    <kendo-grid-column field="ReceivedOnBehalf" title="Received on Behalf"></kendo-grid-column>
+    <kendo-grid-column field="ReceivingLocation" title="Receiving Location"></kendo-grid-column>
+    <kendo-grid-column field="DeliveryMethod" title="Delivery Method"></kendo-grid-column>
+    <kendo-grid-column field="GoodsType" title="Goods Type">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="k-d-flex">
+          <span>{{dataItem.GoodsType}}</span>
+          <button kendoButton icon="more-vertical" class="k-ml-auto" #rowActionMenu></button>
+          <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+  </kendo-grid>
+</div>
+
+<kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'75%'"
+  class="dialog-round receipt-dialog">
+  <div class="k-d-flex k-align-items-center k-mb-3">
+    <h2 class="k-m-0">Receipt</h2>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" icon="close" size="small"
+      (click)="isDialogOpen = !isDialogOpen"></button>
+  </div>
+  <div class="dialog-body k-overflow-y-auto">
+    <app-receipt></app-receipt>
+  </div>
+</kendo-dialog>

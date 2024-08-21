@@ -1,0 +1,61 @@
+<div class="k-m-3 k-overflow-y-auto" *ngIf="!false" style="height: 80vh;">
+    <div class="k-d-flex k-align-items-end k-gap-3">
+        <kendo-label text="Customer">
+            <b class="required-label"></b>
+            <kendo-combobox placeholder="Customer" rounded="large"></kendo-combobox>
+        </kendo-label>
+        <kendo-label text="Device">
+            <b class="required-label"></b>
+            <kendo-textbox placeholder="Device" rounded="large"></kendo-textbox>
+        </kendo-label>
+        <kendo-label text="Lot Number">
+            <b class="required-label"></b>
+            <kendo-textbox placeholder="#Lot Number" rounded="large"></kendo-textbox>
+        </kendo-label>
+        <kendo-button themeColor="success" rounded="large" style="width: 7rem">Search</kendo-button>
+    </div>
+
+    <kendo-grid [kendoGridBinding]="gridData" class="k-my-3">
+        <kendo-grid-column field="Steps" title="Steps"></kendo-grid-column>
+        <kendo-grid-column field="Process" title="Process"></kendo-grid-column>
+        <kendo-grid-column field="Qty" title="Qty"></kendo-grid-column>
+        <kendo-grid-column field="Unprocessed" title="Unprocessed"></kendo-grid-column>
+        <kendo-grid-column field="Good" title="Good"></kendo-grid-column>
+        <kendo-grid-column field="Reject" title="Reject"></kendo-grid-column>
+    </kendo-grid>
+    <div class="k-d-flex k-gap-4 k-mb-4">
+        <input type="checkbox" kendoCheckBox>
+        <kendo-label text="OQA"></kendo-label>
+        <input type="checkbox" kendoCheckBox>
+        <kendo-label text="Bake"></kendo-label>
+        <input type="checkbox" kendoCheckBox>
+        <kendo-label text="P&L"></kendo-label>
+    </div>
+    <kendo-card class="card-full">
+        <kendo-card-body>
+            <h2 class="k-mt-2">Address:</h2>
+            <div class="k-d-flex k-flex-col k-gap-2 k-w-full">
+                <div class="k-d-flex k-gap-4">
+                    <input type="text" placeholder="Contact Name" class="k-w-full" kendoTextBox>
+                    <input type="text" placeholder="Company Name" class="k-w-full" kendoTextBox>
+                    <input type="text" placeholder="Phone Number" class="k-w-full" kendoTextBox>
+                </div>
+                <div class="k-d-flex k-gap-4">
+                    <input type="text" placeholder="Address Line1" class="k-w-full" kendoTextBox>
+                    <input type="text" placeholder="Address Line2" class="k-w-full" kendoTextBox>
+                    <input type="text" placeholder="Address Line3" class="k-w-full" kendoTextBox>
+                </div>
+                <div class="k-d-flex k-gap-4">
+                    <kendo-combobox placeholder="City" class="k-w-full" rounded="large"></kendo-combobox>
+                    <kendo-combobox placeholder="State" class="k-w-full" rounded="large"></kendo-combobox>
+                    <kendo-combobox placeholder="Country" class="k-w-full" rounded="large"></kendo-combobox>
+                </div>
+            </div>
+        </kendo-card-body>
+    </kendo-card>
+    <div class="k-d-flex k-gap-3 k-mt-3">
+        <button kendoButton type="button" rounded="large" themeColor="error" class="k-ml-auto"
+            style="width:6rem">Cancel</button>
+        <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem">Submit</button>
+    </div>
+</div>

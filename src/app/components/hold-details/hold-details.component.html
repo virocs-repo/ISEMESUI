@@ -1,0 +1,73 @@
+<div class="k-m-3 k-overflow-y-auto" *ngIf="!false" style="height: 80vh;">
+    <kendo-card class="card-green card-full k-mb-6">
+        <kendo-card-body>
+            <div class="k-d-flex k-flex-col k-gap-2">
+                <div class="k-d-flex">
+                    <kendo-label text="Lot/Mail/FGI Pull#:" class="k-flex-1"><b> ASAB3156165</b></kendo-label>
+                    <kendo-label text="Customer:" class="k-flex-1"><b> Marvell Semiconductor Inc.</b></kendo-label>
+                    <kendo-label text="Device:" class="k-flex-1"><b> FOg1234</b></kendo-label>
+                </div>
+                <div class="k-d-flex k-justify-content-between">
+                    <kendo-label text="FGI Pull#:" class="k-flex-1"><b> 2.2</b></kendo-label>
+                    <kendo-label text="" class="k-flex-1"></kendo-label>
+                    <kendo-label text="" class="k-flex-1"></kendo-label>
+                </div>
+            </div>
+        </kendo-card-body>
+    </kendo-card>
+
+    <div class="k-d-flex k-align-items-center k-gap-3">
+        <kendo-label text="Hold"></kendo-label>
+        <input type="checkbox" kendoCheckBox>
+        <kendo-label text="Hold Code" class="k-spacer-sized">
+            <b class="required-label"></b>
+        </kendo-label>
+        <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
+    </div>
+    <div class="k-d-flex k-flex-col k-gap-3">
+        <kendo-label text="Reason">
+            <b class="required-label"></b>
+            <kendo-textarea [rows]="3" placeholder="Enginerring Hold" rounded="large"></kendo-textarea>
+        </kendo-label>
+        <kendo-label text="Hold Comments">
+            <b class="required-label"></b>
+            <kendo-textarea [rows]="3" placeholder="Device is TBR, Please contact ICR."
+                rounded="large"></kendo-textarea>
+        </kendo-label>
+        <kendo-label text="Off Hold Comments">
+            <b class="required-label"></b>
+            <kendo-textarea [rows]="3" placeholder="Device is TBR, Please contact ICR."
+                rounded="large"></kendo-textarea>
+        </kendo-label>
+    </div>
+    <kendo-card class="card-green card-full k-my-2">
+        <kendo-card-body>
+            <div class="k-d-flex k-flex-col k-gap-2">
+                <div class="k-d-flex">
+                    <kendo-label text="Hold by:" class="k-flex-1"><b> Adminstration Admin</b></kendo-label>
+                    <kendo-label text="Off Hold By:" class="k-flex-1"><b> Adminstration Admin</b></kendo-label>
+                </div>
+                <div class="k-d-flex k-justify-content-between">
+                    <kendo-label text="Hold Time:" class="k-flex-1"><b> 07/03/2024 1:38PM</b></kendo-label>
+                    <kendo-label text="Off Hold Time:" class="k-flex-1"></kendo-label>
+                </div>
+            </div>
+        </kendo-card-body>
+    </kendo-card>
+    <h2>Attachements</h2>
+    <kendo-upload [multiple]="false" [saveUrl]="uploadSaveUrl" [removeUrl]="uploadRemoveUrl"></kendo-upload>
+    <div class="k-d-flex k-align-items-center k-gap-3 k-mt-2">
+        <input type="text" placeholder="Attached File" kendoTextBox>
+        <input type="text" placeholder="Attached by" kendoTextBox>
+        <input type="text" placeholder="Attached on" kendoTextBox>
+
+        <button kendoButton type="button" rounded="full" themeColor="error" icon="close" size="small"></button>
+        <button kendoButton type="button" rounded="full" themeColor="info" icon="eye" size="small"></button>
+    </div>
+
+    <div class="k-d-flex k-gap-3 k-mt-3">
+        <button kendoButton type="button" rounded="large" themeColor="error" class="k-ml-auto"
+            style="width:6rem">Cancel</button>
+        <button kendoButton type="button" rounded="large" themeColor="info" style="width:6rem">Save</button>
+    </div>
+</div>

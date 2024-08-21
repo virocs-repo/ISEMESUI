@@ -1,0 +1,11 @@
+<ng-container *ngIf="authService.isLoggedIn">
+    <app-header></app-header>
+</ng-container>
+
+<kendo-drawer-container>
+    <kendo-drawer #drawer [items]="items" mode="overlay" [(expanded)]="appService.isDrawerExpanded"
+        (select)="onSelect($event)"></kendo-drawer>
+    <kendo-drawer-content>
+        <router-outlet></router-outlet>
+    </kendo-drawer-content>
+</kendo-drawer-container>

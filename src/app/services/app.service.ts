@@ -1,0 +1,57 @@
+import { Injectable } from '@angular/core';
+
+
+interface FeatureField {
+  featureFieldName: string
+  active: boolean,
+}
+interface Feature {
+  featureName: string;
+  active: boolean,
+  featureField: FeatureField[]
+}
+interface MainMenuItem {
+  navigationUrl: string
+  feature: Array<Feature>
+}
+interface UserPreferences {
+  mainMenuItem: Array<MainMenuItem>
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AppService {
+  isDrawerExpanded: boolean = false;
+  userPreferences: UserPreferences | null = null;
+  activeNavigationUrls: string[] = []
+  feature: Array<Feature> = []
+
+  constructor() {
+    const up = localStorage.getItem('UserPreferences');
+    if (up) {
+      this.userPreferences = JSON.parse(up);
+      this.initPreferences()
+    }
+  }
+
+  openDrawer() {
+    this.isDrawerExpanded = true;
+  }
+  closeDrawer() {
+    this.isDrawerExpanded = false;
+  }
+  savePreferences(up: UserPreferences) {
+    localStorage.setItem('UserPreferences', JSON.stringify(up))
+    this.userPreferences = up;
+    this.initPreferences()
+  }
+  private initPreferences() {
+    const item = this.userPreferences?.mainMenuItem[0];
+    console.warn(item);
+    if (item) {
+      this.activeNavigationUrls.push(item.navigationUrl)
+      this.feature = item.feature;
+    }
+  }
+}

@@ -1,0 +1,20 @@
+<div class="k-m-5" *ngIf="!false">
+    <kendo-card class="card-green card-full k-mb-6">
+        <kendo-card-body>
+            <div class="k-d-flex k-justify-content-between">
+                <kendo-label text="ISE LOT Number:"><b> ASAB3156165</b></kendo-label>
+                <kendo-label text="Qty:"><b> ASAB3156165</b></kendo-label>
+                <kendo-label text="Unprocessed:"><b> ASAB3156165</b></kendo-label>
+            </div>
+        </kendo-card-body>
+    </kendo-card>
+
+    <kendo-grid [kendoGridBinding]="gridData">
+        <kendo-grid-column field="Steps" title="Steps"></kendo-grid-column>
+        <kendo-grid-column field="Process" title="Process"></kendo-grid-column>
+        <kendo-grid-column field="Qty" title="Qty"></kendo-grid-column>
+        <kendo-grid-column field="Unprocessed" title="Unprocessed"></kendo-grid-column>
+        <kendo-grid-column field="Good" title="Good"></kendo-grid-column>
+        <kendo-grid-column field="Reject" title="Reject"></kendo-grid-column>
+    </kendo-grid>
+</div>

@@ -1,0 +1,97 @@
+<div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header">
+    <h2>Inventory</h2>
+    <div class="k-d-flex k-gap-3 k-ml-auto">
+        <kendo-label text="Customer / Vendor" class="k-w-full k-font-size-sm">
+            <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
+        </kendo-label>
+        <kendo-label text="Customer" class="k-w-full k-font-size-sm">
+            <b class="required-label"></b>
+            <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
+        </kendo-label>
+        <kendo-label text="Behalf of Customer" class="k-w-full k-font-size-sm">
+            <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
+        </kendo-label>
+        <kendo-label text="Receiving Location" class="k-w-full k-font-size-sm">
+            <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
+        </kendo-label>
+    </div>
+</div>
+<div class="k-m-10" *ngIf="!false">
+    <kendo-grid [kendoGridBinding]="gridData" [selectable]="selectableSettings" [columnMenu]="columnMenuSettings"
+        [filterable]="true" [sortable]="true" [resizable]="true" (cellClick)="onCellClick($event)"
+        class="inventory-grid">
+        <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+        <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title">
+            <ng-template kendoGridCellTemplate let-dataItem>
+                <span [class.link]="c.isLink">{{ dataItem[c.field] }}</span>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column [width]="120">
+            <ng-template kendoGridCellTemplate let-dataItem>
+                <button kendoButton (click)="onButtonClick()" [svgIcon]="eyeIcon" fillMode="flat" title="Browse"
+                    themeColor="tertiary"></button>
+                <button kendoButton (click)="onButtonClick()" [svgIcon]="pencilIcon" fillMode="flat" title="Browse"
+                    themeColor="tertiary"></button>
+                <button kendoButton icon="more-vertical" #rowActionMenu></button>
+                <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
+            </ng-template>
+        </kendo-grid-column>
+    </kendo-grid>
+</div>
+<!-- <div class="k-d-flex k-gap-3 k-mt-3 k-mx-10">
+    <button kendoButton type="button" (click)="openDialog()" class="k-w-24">Details</button>
+    <button kendoButton type="button" (click)="isDialogOpen1 = !isDialogOpen1" class="k-w-24">On/Off Hold</button>
+    <button kendoButton type="button" (click)="isDialogOpen2 = !isDialogOpen2" class="k-w-24">Hold Details</button>
+    <button kendoButton type="button" (click)="isDialogOpen3 = !isDialogOpen3" class="k-w-24">Receipt</button>
+    <button kendoButton type="button" themeColor="error" class="k-ml-auto k-w-24">Clear</button>
+    <button kendoButton type="button" themeColor="info" class="k-w-24">Export</button>
+</div> -->
+
+<kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'68%'" class="dialog-round">
+    <div class="k-d-flex k-align-items-center k-mb-3">
+        <h2 class="k-m-0">Details</h2>
+        <button kendoButton type="button" rounded="full" class="k-ml-auto" icon="close" size="small"
+            (click)="closeDialog()"></button>
+    </div>
+    <app-inventory-details></app-inventory-details>
+</kendo-dialog>
+
+<kendo-dialog *ngIf="isDialogOpen1" (close)="closeDialog()" [minWidth]="250" [width]="'68%'" class="dialog-round">
+    <div class="k-d-flex k-align-items-center k-mb-3">
+        <h2 class="k-m-0">On/Off Hold</h2>
+        <button kendoButton type="button" rounded="full" class="k-ml-auto" icon="close" size="small"
+            (click)="isDialogOpen1 = !isDialogOpen1"></button>
+    </div>
+    <app-onoff-hold></app-onoff-hold>
+</kendo-dialog>
+
+<kendo-dialog *ngIf="isDialogOpen2" (close)="closeDialog()" [minWidth]="250" [width]="'68%'" class="dialog-round">
+    <div class="k-d-flex k-align-items-center k-mb-3">
+        <h2 class="k-m-0">Hold Details</h2>
+        <button kendoButton type="button" rounded="full" class="k-ml-auto" icon="close" size="small"
+            (click)="isDialogOpen2 = !isDialogOpen2"></button>
+    </div>
+    <app-hold-details></app-hold-details>
+</kendo-dialog>
+<kendo-dialog *ngIf="isDialogOpen3" (close)="closeDialog()" [minWidth]="250" [width]="'75%'"
+    class="dialog-round receipt-dialog">
+    <div class="k-d-flex k-align-items-center k-mb-3">
+        <h2 class="k-m-0">Receipt</h2>
+        <button kendoButton type="button" rounded="full" class="k-ml-auto" icon="close" size="small"
+            (click)="isDialogOpen3 = !isDialogOpen3"></button>
+    </div>
+    <div class="dialog-body k-overflow-y-auto">
+        <app-receipt></app-receipt>
+    </div>
+</kendo-dialog>
+<!-- <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'68%'"
+    class="dialog-round receiving-dialog">
+    <div class="k-d-flex k-align-items-center k-mb-3">
+        <h2 class="k-m-0">Shipping Record</h2>
+        <button kendoButton type="button" rounded="full" class="k-ml-auto" icon="close" size="small"
+            (click)="closeDialog()"></button>
+    </div>
+    <div class="dialog-body k-overflow-y-auto">
+        <app-shipping-record></app-shipping-record>
+    </div>
+</kendo-dialog> -->

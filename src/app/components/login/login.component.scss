@@ -1,0 +1,57 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* This makes the container take the full viewport height */
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    // align-items: center;
+    gap: 1rem;
+}
+
+.login-input {
+    padding: 0.25rem 1.25rem;
+    width: 100%;
+    padding-left: 2rem;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .toggle-btn {
+        position: absolute;
+        right: 0.875rem;
+        z-index: 10;
+    }
+}
+
+.input-with-icon .k-icon {
+    position: absolute;
+    left: 0.875rem;
+    /* Adjust based on your design */
+    z-index: 10;
+    // color: #666; /* Icon color */
+}
+
+.remember-me {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.flex-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.login-with-microsoft-btn {
+    padding: 0;
+}
