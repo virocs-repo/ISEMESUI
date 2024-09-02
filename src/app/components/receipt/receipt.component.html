@@ -31,13 +31,13 @@
       <kendo-card-body class="card-flex">
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Customer / Vendor" class="k-w-full">
-            <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
-              rounded="large"></kendo-combobox>
+            <kendo-combobox [data]="customerTypes" [(ngModel)]="customerTypeSelected" [textField]="'customerTypeName'"
+              [valueField]="'customerTypeID'" placeholder="Select" rounded="large"></kendo-combobox>
           </kendo-label>
           <kendo-label text="Customer" class="k-w-full">
             <b class="required-label"></b>
-            <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
-              rounded="large"></kendo-combobox>
+            <kendo-combobox [data]="customer" [(ngModel)]="customerSelected" [textField]="'customerName'"
+              [valueField]="'customerID'" placeholder="Select" rounded="large"></kendo-combobox>
           </kendo-label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
@@ -46,13 +46,14 @@
               rounded="large"></kendo-combobox>
           </kendo-label>
           <kendo-label text="Receiving Location" class="k-w-full">
-            <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
+            <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
+              [textField]="'receiptLocationName'" [valueField]="'receiptLocationID'" placeholder="Select"
               rounded="large"></kendo-combobox>
           </kendo-label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Comments" class="k-w-full">
-            <kendo-textarea [(ngModel)]="comment" [rows]="5" placeholder="Enter text" rounded="large"></kendo-textarea>
+            <kendo-textarea [(ngModel)]="comments" [rows]="5" placeholder="Enter text" rounded="large"></kendo-textarea>
           </kendo-label>
         </div>
       </kendo-card-body>
@@ -62,12 +63,12 @@
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Delivery Method" class="k-w-full">
             <b class="required-label"></b>
-            <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
-              rounded="large"></kendo-combobox>
+            <kendo-combobox [data]="deliveryMode" [(ngModel)]="deliveryModeSelected" [textField]="'deliveryModeName'"
+              [valueField]="'deliveryModeID'" placeholder="Select" rounded="large"></kendo-combobox>
           </kendo-label>
           <kendo-label text="Phone" class="k-w-full">
             <b class="required-label"></b>
-            <kendo-textbox [(ngModel)]="phone" placeholder="Enter phone" rounded="large"></kendo-textbox>
+            <kendo-textbox [(ngModel)]="contactPhone" placeholder="Enter phone" rounded="large"></kendo-textbox>
           </kendo-label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
@@ -79,20 +80,19 @@
           </kendo-label>
           <kendo-label text="Contact Person" class="k-w-full">
             <b class="required-label"></b>
-            <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
-              rounded="large"></kendo-combobox>
+            <kendo-textbox [(ngModel)]="contactPerson" placeholder="Enter contact person"
+              rounded="large"></kendo-textbox>
           </kendo-label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Email" class="k-w-full">
-            <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
-              rounded="large"></kendo-combobox>
+            <kendo-textbox [(ngModel)]="email" placeholder="Enter your email" rounded="large"></kendo-textbox>
           </kendo-label>
           <kendo-label text="Address" class="k-relative k-w-full">
             <b class="required-label"></b>
             <!-- <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Enter details"
                        rounded="large"></kendo-combobox> -->
-            <kendo-autocomplete [data]="areaList" placeholder="Enter details"
+            <kendo-autocomplete [data]="areaList" [(ngModel)]="address" placeholder="Enter details"
               style="padding-right: 1.5rem;"></kendo-autocomplete>
             <img src="/assets/location-outline.svg" class="input-icon" width="18" />
           </kendo-label>
@@ -100,7 +100,7 @@
         <!-- show kedo icon using src image -->
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Comments" class="k-w-full">
-            <kendo-textarea [(ngModel)]="comment" [rows]="3" placeholder="Enter text" rounded="large"></kendo-textarea>
+            <kendo-textarea [(ngModel)]="comments" [rows]="3" placeholder="Enter text" rounded="large"></kendo-textarea>
           </kendo-label>
         </div>
       </kendo-card-body>
@@ -110,9 +110,9 @@
   <kendo-card class="card-green card-full k-mt-4">
     <kendo-card-body class="card-flex">
       <kendo-grid [kendoGridBinding]="gridData" class="bold-column-header cartons">
-        <kendo-grid-column field="NoOfCartons" title="No of Cartons" [width]="200">
+        <kendo-grid-column field="noOfCartons" title="No of Cartons" [width]="200">
           <ng-template kendoGridCellTemplate let-dataItem>
-            <kendo-numerictextbox [(ngModel)]="dataItem.NoOfCartons" [format]="'n0'"
+            <kendo-numerictextbox [(ngModel)]="dataItem.noOfCartons" [format]="'n0'"
               placeholder="Enter cartons"></kendo-numerictextbox>
           </ng-template>
         </kendo-grid-column>
@@ -122,9 +122,9 @@
               kendoCheckBox>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="comments" title="Hold Comments">
+        <kendo-grid-column field="holdComments" title="Hold Comments">
           <ng-template kendoGridCellTemplate let-dataItem>
-            <kendo-textbox [(ngModel)]="dataItem.comments" placeholder="Enter comments"
+            <kendo-textbox [(ngModel)]="dataItem.holdComments" placeholder="Enter comments"
               [disabled]="dataItem.isHoldCommentEnabled"></kendo-textbox>
           </ng-template>
         </kendo-grid-column>
@@ -134,12 +134,13 @@
 
   <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
     <kendo-label text="Goods Type">
-      <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select type"
-        rounded="large"></kendo-combobox>
+      <kendo-combobox [data]="goodsType" [(ngModel)]="goodsTypeSelected" [textField]="'goodsTypeName'"
+        [valueField]="'goodsTypeID'" placeholder="Select type" rounded="large"></kendo-combobox>
     </kendo-label>
     <span style="margin-left: auto;"></span>
     <button kendoButton type="button" rounded="large" themeColor="primary" style="width:6rem">Clear</button>
-    <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem">Add</button>
+    <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem"
+      (click)="addReceipt()">Add</button>
   </div>
 
   <h2>Device</h2>
@@ -167,7 +168,7 @@
     <kendo-grid-column field="HoldComments" title="Hold Comments"></kendo-grid-column>
     <kendo-grid-column [width]="60">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <button kendoButton icon="more-vertical" #rowActionMenu></button>
+        <button kendoButton [svgIcon]="ICON.moreVerticalIcon" #rowActionMenu></button>
         <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
       </ng-template>
     </kendo-grid-column>

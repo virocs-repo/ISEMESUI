@@ -23,17 +23,17 @@
   <kendo-grid [kendoGridBinding]="gridData" [selectable]="selectableSettings" [columnMenu]="columnMenuSettings"
     [filterable]="true" [sortable]="true" [resizable]="true" class="grid-header-sm grid-header-bold">
     <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-    <kendo-grid-column field="RecordID" title="Record ID"></kendo-grid-column>
+    <kendo-grid-column field="receiptID" title="Receipt ID"></kendo-grid-column>
     <kendo-grid-column field="ReceiveFrom" title="Receive From"></kendo-grid-column>
-    <kendo-grid-column field="Customer" title="Customer / Vendor"></kendo-grid-column>
-    <kendo-grid-column field="ReceivedOnBehalf" title="Received on Behalf"></kendo-grid-column>
-    <kendo-grid-column field="ReceivingLocation" title="Receiving Location"></kendo-grid-column>
-    <kendo-grid-column field="DeliveryMethod" title="Delivery Method"></kendo-grid-column>
+    <kendo-grid-column field="customerVendor" title="Customer / Vendor"></kendo-grid-column>
+    <kendo-grid-column field="receivedOnBehalf" title="Received on Behalf"></kendo-grid-column>
+    <kendo-grid-column field="receiptLocation" title="Receiving Location"></kendo-grid-column>
+    <kendo-grid-column field="deliveryMode" title="Delivery Method"></kendo-grid-column>
     <kendo-grid-column field="GoodsType" title="Goods Type">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="k-d-flex">
           <span>{{dataItem.GoodsType}}</span>
-          <button kendoButton icon="more-vertical" class="k-ml-auto" #rowActionMenu></button>
+          <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenu></button>
           <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
         </div>
       </ng-template>
@@ -45,7 +45,7 @@
   class="dialog-round receipt-dialog">
   <div class="k-d-flex k-align-items-center k-mb-3">
     <h2 class="k-m-0">Receipt</h2>
-    <button kendoButton type="button" rounded="full" class="k-ml-auto" icon="close" size="small"
+    <button kendoButton type="button" rounded="full" class="k-ml-auto"  [svgIcon]="ICON.xIcon"  size="small"
       (click)="isDialogOpen = !isDialogOpen"></button>
   </div>
   <div class="dialog-body k-overflow-y-auto">

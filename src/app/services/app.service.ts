@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MasterData } from './app.interface';
 
 
 interface FeatureField {
@@ -26,6 +27,14 @@ export class AppService {
   userPreferences: UserPreferences | null = null;
   activeNavigationUrls: string[] = []
   feature: Array<Feature> = []
+  token = 'Bearer token';
+  masterData: MasterData = {
+    customerType: [],
+    receiptLocation: [],
+    goodsType: [],
+    deliveryMode: [],
+    customer: [],
+  }
 
   constructor() {
     const up = localStorage.getItem('UserPreferences');

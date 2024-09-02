@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ApiService } from 'src/app/services/api.service';
+import { Customer, CustomerType, DeliveryMode, GoodsType, ICON, JSON_Object, ReceiptLocation } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -6,25 +8,133 @@ import { AppService } from 'src/app/services/app.service';
   templateUrl: './receipt.component.html',
   styleUrls: ['./receipt.component.scss']
 })
-export class ReceiptComponent {
+export class ReceiptComponent implements OnInit {
+  readonly ICON = ICON;
+  customerTypes: CustomerType[] = []
+  customerTypeSelected: CustomerType | undefined;
+  receiptLocation: ReceiptLocation[] = []
+  receiptLocationSelected: ReceiptLocation | undefined;
+  goodsType: GoodsType[] = []
+  goodsTypeSelected: GoodsType | undefined;
+  deliveryMode: DeliveryMode[] = []
+  deliveryModeSelected: DeliveryMode | undefined;
+  customer: Customer[] = []
+  customerSelected: Customer | undefined;
+
+
+  contactPhone = '';
+  contactPerson =''
+  expectedDateTime: Date = new Date();
+  format = "MM/dd/yyyy HH:mm";
+
+  name: string = '';
+  email: string = '';
+  comments: string = '';
+  address: any;
+
+  description: string = '';
+
   isHoldCheckboxEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
     featureField?.find(o => o.featureFieldName == 'HoldCheckbox')?.active ?? false;
   isHoldCommentEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
     featureField?.find(o => o.featureFieldName == "HoldComments")?.active ?? false;
 
-
+  gridData = [
+    {
+      noOfCartons: 18,
+      isHold: false,
+      holdComments: "Chai",
+      isHoldCheckboxEnabled: !this.isHoldCheckboxEnabled,
+      isHoldCommentEnabled: !this.isHoldCommentEnabled
+    }
+  ];
 
   expectedOrNot = 'Expected'
   FTZ: boolean = false;
   IsInterim: boolean = false;
-  public name: string = '';
-  public email: string = '';
-  public description: string = '';
-  public comment: string = '';
 
-  constructor(private appService: AppService) { }
+  constructor(private appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
+    this.customerTypes = this.appService.masterData.customerType;
+    this.receiptLocation = this.appService.masterData.receiptLocation;
+    this.goodsType = this.appService.masterData.goodsType;
+    this.deliveryMode = this.appService.masterData.deliveryMode;
+    this.customer = this.appService.masterData.customer;
+    this.init();
+  }
+  private init() {
+    this.apiService.getDeviceData().subscribe({
+      next: (v) => {
+        console.log(v);
+      }
+    });
+    this.apiService.getHardwaredata().subscribe({
+      next: (v) => {
+        console.log(v);
+      }
+    });
+  }
+  addReceipt() {
+    const data = {
+      customerTypeID: this.customerTypeSelected?.customerTypeID,
+      customerID: this.customerSelected?.customerID,
+      receiptLocationID: this.receiptLocationSelected?.receiptLocationID,
+      deliveryModeID: this.deliveryModeSelected?.deliveryModeID,
+      expectedDateTime: this.expectedDateTime.toISOString(),
+      comments: this.comments.trim(),
+
+      contactPhone: this.contactPhone,
+      contactPerson: this.contactPerson,
+      email: this.email,
+      // addressID: this.address, not provided yet
+
+      noOfCartons: this.gridData[0].noOfCartons,
+      isHold: this.gridData[0].isHold,
+      holdComments: this.gridData[0].holdComments,
+    }
+    console.log(data);
+
+    this.doPostProcessReceipt(data);
+  }
+  private doPostProcessReceipt(data: JSON_Object) {
+    const body = {
+      "receiptDetails": [
+        {
+          "receiptID": 0,
+          "customerTypeID": 0,
+          "customerID": 0,
+          "behalfID": 0,
+          "receiptLocationID": 0,
+          "deliveryModeID": 0,
+          "contactPerson": "string",
+          "contactPhone": "string",
+          "email": "string",
+          "expectedDateTime": "2024-09-02T01:31:09.985Z",
+          "addressID": 0,
+          "comments": "string",
+          "noOfCartons": 0,
+          "isHold": true,
+          "holdComments": "string",
+          "isExpected": true,
+          "mailStatus": "string",
+          "receivingStatus": "string",
+          "recordStatus": "string",
+          "active": true,
+          "loginId": 0,
+          ...data
+        }
+      ]
+    }
+
+    this.apiService.postProcessReceipt(body).subscribe({
+      next: (v: any) => {
+        console.log({ v });
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
   }
   public selectedValues: string = "";
   public listItems: Array<string> = [
@@ -37,34 +147,9 @@ export class ReceiptComponent {
     "Tennis",
     "Volleyball",
   ];
-  phone = ''
-  public gridData: any[] = [
-    {
-      ProductID: 1,
-      comments: "Chai",
-      NoOfCartons: 18,
-      isHold: false,
-      isHoldCheckboxEnabled: !this.isHoldCheckboxEnabled,
-      isHoldCommentEnabled: !this.isHoldCommentEnabled
-    },
-    // {
-    //   ProductID: 2,
-    //   comments: "Chang",
-    //   NoOfCartons: 19,
-    //   isHold: false,
-    // },
-    // {
-    //   ProductID: 3,
-    //   comments: "Aniseed Syrup",
-    //   NoOfCartons: 10,
-    //   isHold: true,
-    // },
-  ];
   public gridStyle = {
     backgroundColor: 'green'
   };
-  public expectedDateTime: Date = new Date();
-  public format = "MM/dd/yyyy HH:mm";
   public areaList: Array<string> = [
     "Amsterdam",
     "Athens",

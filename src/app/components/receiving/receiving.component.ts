@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { MenuItem } from '@progress/kendo-angular-menu';
+import { ApiService } from 'src/app/services/api.service';
+import { Receipt, ICON } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -8,60 +10,11 @@ import { AppService } from 'src/app/services/app.service';
   styleUrls: ['./receiving.component.scss']
 })
 export class ReceivingComponent {
+  readonly ICON = ICON;
+  public gridData: Receipt[] = [];
+
   isAddButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == 'Receiving Add')?.active ?? false;
   isEditButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Edit")?.active ?? false;
-  // ""
-  public gridData = [
-    {
-      RecordID: 'REQ-00001',
-      ReceiveFrom: 'Vendor',
-      Customer: 'Amazon',
-      ReceivedOnBehalf: 'Qualcomm',
-      ReceivingLocation: 'CA',
-      DeliveryMethod: 'Courier',
-      GoodsType: 'Hardware'
-    }, {
-      RecordID: 'REQ-00002',
-      ReceiveFrom: 'Customer',
-      Customer: 'Qualcomm',
-      ReceivedOnBehalf: 'ASE',
-      ReceivingLocation: 'CA',
-      DeliveryMethod: 'Pick Up',
-      GoodsType: 'Device'
-    }, {
-      RecordID: 'REQ-00003',
-      ReceiveFrom: 'Customer',
-      Customer: 'Cisco',
-      ReceivedOnBehalf: 'Cisco',
-      ReceivingLocation: 'CA',
-      DeliveryMethod: 'Drop Off',
-      GoodsType: 'Hardware'
-    }, {
-      RecordID: 'REQ-00004',
-      ReceiveFrom: 'Vendor',
-      Customer: 'Amazon',
-      ReceivedOnBehalf: 'Qualcomm',
-      ReceivingLocation: 'CA',
-      DeliveryMethod: 'Courier',
-      GoodsType: 'Hardware'
-    }, {
-      RecordID: 'REQ-00005',
-      ReceiveFrom: 'Vendor',
-      Customer: 'Amazon',
-      ReceivedOnBehalf: 'Qualcomm',
-      ReceivingLocation: 'CA',
-      DeliveryMethod: 'Courier',
-      GoodsType: 'Hardware'
-    }, {
-      RecordID: 'REQ-00005',
-      ReceiveFrom: 'Vendor',
-      Customer: 'Amazon',
-      ReceivedOnBehalf: 'Qualcomm',
-      ReceivingLocation: 'CA',
-      DeliveryMethod: 'Courier',
-      GoodsType: 'Hardware'
-    }
-  ];
   selectableSettings: any = {
     checkboxOnly: true,
     mode: 'single',
@@ -89,9 +42,16 @@ export class ReceivingComponent {
     this.isDialogOpen = false;
   }
 
-  constructor(private appService: AppService) { }
+  constructor(private appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
+    this.apiService.getReceiptdata().subscribe({
+      next: (v: any) => {
+        this.gridData = v;
+        console.log(v);
+      },
+      error: (v: any) => { }
+    });
   }
 
 }
