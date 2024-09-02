@@ -143,7 +143,13 @@
       (click)="addReceipt()">Add</button>
   </div>
 
-  <h2>Device</h2>
+  <div class="k-d-flex k-align-items-center">
+    <h2>Device</h2>
+    <div class="k-ml-auto">
+      <button kendoButton type="button" rounded="large" themeColor="info" (click)="addDevice()">Add
+        Device</button>
+    </div>
+  </div>
 
   <kendo-grid [kendoGridBinding]="gridData2" [selectable]="selectableSettings" [filterable]="true" [sortable]="true"
     [resizable]="true" class="bold-column-header wrap-header-grid" *ngIf="!false">
@@ -174,15 +180,59 @@
     </kendo-grid-column>
   </kendo-grid>
 
-  <h2>Hardware</h2>
+  <div class="k-d-flex k-align-items-center">
+    <h2>Hardware</h2>
+    <div class="k-ml-auto">
+      <button kendoButton type="button" rounded="large" themeColor="info" (click)="addHardware()">Add
+        Hardware</button>
+    </div>
+  </div>
 
-  <kendo-grid [kendoGridBinding]="gridData3" [selectable]="selectableSettings" [filterable]="true" [sortable]="true"
-    [resizable]="true" class="bold-column-header wrap-header-grid" *ngIf="!false">
+  <kendo-grid [kendoGridBinding]="gridDataHardware" [selectable]="selectableSettings" [filterable]="true"
+    [sortable]="true" [resizable]="true" class="bold-column-header wrap-header-grid" *ngIf="!false">
     <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-    <kendo-grid-column field="serial" title="Serial#"> </kendo-grid-column>
-    <kendo-grid-column field="CustomerId" title="Customer ID"> </kendo-grid-column>
-    <kendo-grid-column field="ExpectedQty" title="Expected Qty"></kendo-grid-column>
-    <kendo-grid-column field="HardwareType" title="Hardware Type"></kendo-grid-column>
+    <kendo-grid-column field="serialNumber" title="Serial#">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == 0">
+          <kendo-textbox [(ngModel)]="dataItem.serialNumber" placeholder="Serial Number"></kendo-textbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != 0">
+          <span>{{dataItem.serialNumber}}</span>
+        </ng-container>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="customer" title="Customer ID">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == 0">
+          <kendo-textbox [(ngModel)]="dataItem.customer" placeholder="Customer ID"></kendo-textbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != 0">
+          <span>{{dataItem.customer}}</span>
+        </ng-container>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="expectedQty" title="Expected Qty" [width]="200">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == 0">
+          <kendo-numerictextbox [(ngModel)]="dataItem.expectedQty" [format]="'n0'"
+            placeholder="Expected Qty"></kendo-numerictextbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != 0">
+          <span>{{dataItem.expectedQty}}</span>
+        </ng-container>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column field="hardwareType" title="Hardware Type">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == 0">
+          <kendo-textbox [(ngModel)]="dataItem.hardwareType" placeholder="Hardware Type"></kendo-textbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != 0">
+          <span>{{dataItem.hardwareType}}</span>
+        </ng-container>
+      </ng-template>
+    </kendo-grid-column>
   </kendo-grid>
 
   <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">

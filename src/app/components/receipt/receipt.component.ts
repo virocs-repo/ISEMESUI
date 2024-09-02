@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
 import { Customer, CustomerType, DeliveryMode, GoodsType, ICON, JSON_Object, ReceiptLocation } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
@@ -8,7 +8,7 @@ import { AppService } from 'src/app/services/app.service';
   templateUrl: './receipt.component.html',
   styleUrls: ['./receipt.component.scss']
 })
-export class ReceiptComponent implements OnInit {
+export class ReceiptComponent implements OnInit, OnDestroy {
   readonly ICON = ICON;
   customerTypes: CustomerType[] = []
   customerTypeSelected: CustomerType | undefined;
@@ -23,7 +23,7 @@ export class ReceiptComponent implements OnInit {
 
 
   contactPhone = '';
-  contactPerson =''
+  contactPerson = ''
   expectedDateTime: Date = new Date();
   format = "MM/dd/yyyy HH:mm";
 
@@ -56,14 +56,42 @@ export class ReceiptComponent implements OnInit {
   constructor(private appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
-    this.customerTypes = this.appService.masterData.customerType;
-    this.receiptLocation = this.appService.masterData.receiptLocation;
-    this.goodsType = this.appService.masterData.goodsType;
-    this.deliveryMode = this.appService.masterData.deliveryMode;
-    this.customer = this.appService.masterData.customer;
     this.init();
+    this.fetchData();
+  }
+  ngOnDestroy(): void {
+    this.appService.sharedData.receiving.isEditMode = false
+    this.appService.sharedData.receiving.isViewMode = false;
   }
   private init() {
+    this.customerTypes = this.appService.masterData.customerType;
+    this.customer = this.appService.masterData.customer;
+    this.receiptLocation = this.appService.masterData.receiptLocation;
+    this.deliveryMode = this.appService.masterData.deliveryMode;
+    this.goodsType = this.appService.masterData.goodsType;
+    console.log(this);
+    console.log(this.appService);
+
+    if (this.appService.sharedData.receiving.isViewMode) {
+      const dataItem = this.appService.sharedData.receiving.dataItem;
+      this.customerSelected = this.customer.find(c => c.customerID == dataItem.customerID);
+      this.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.customerTypeID);
+
+      this.receiptLocationSelected = this.receiptLocation.find(c => c.receiptLocationID == dataItem.receiptLocationID);
+      this.deliveryModeSelected = this.deliveryMode.find(c => c.deliveryModeID == dataItem.deliveryModeID);
+      this.goodsTypeSelected = this.goodsType.find(c => c.goodsTypeID == dataItem.goodsTypeID);
+      this.address = dataItem.address
+      this.comments = dataItem.comments
+      this.email = dataItem.email
+      this.contactPhone = dataItem.contactPhone
+      this.contactPerson = dataItem.contactPerson
+      this.gridData[0].noOfCartons = dataItem.noOfCartons
+      this.gridData[0].isHold = dataItem.isHold
+      this.gridData[0].holdComments = dataItem.holdComments
+      this.expectedDateTime = new Date(dataItem.expectedDateTime);
+    }
+  }
+  private fetchData() {
     this.apiService.getDeviceData().subscribe({
       next: (v) => {
         console.log(v);
@@ -128,6 +156,106 @@ export class ReceiptComponent implements OnInit {
     }
 
     this.apiService.postProcessReceipt(body).subscribe({
+      next: (v: any) => {
+        console.log({ v });
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
+  }
+
+  gridDataHardware = [
+    {
+      serialNumber: 'REQ-00001',
+      customer: 'ASAS156',
+      customerID: 0,
+      expectedQty: 1510,
+      hardwareType: 'Testboard'
+    },
+    {
+      serialNumber: 'REQ-00002',
+      customer: 'ASAS156',
+      customerID: 0,
+      expectedQty: 142,
+      hardwareType: 'Probe Card'
+    }
+  ]
+  addHardware() {
+    const data = {
+      serialNumber: this.gridDataHardware[0].serialNumber,
+      customerID: this.gridDataHardware[0].customerID,
+      expectedQty: this.gridDataHardware[0].expectedQty,
+      hardwareType: this.gridDataHardware[0].hardwareType,
+    }
+    console.log(data);
+
+    this.doPostProcessHardware(data);
+  }
+  private doPostProcessHardware(data: JSON_Object) {
+    const body = {
+      "hardwareDetails": [
+        {
+          "hardwareID": 0,
+          "receiptID": 0,
+          "inventoryID": 0,
+          "hardwareType": "string",
+          "customerID": 0,
+          "customer": "string",
+          "serialNumber": "string",
+          "expectedQty": 0,
+          "createdOn": "2024-09-02T03:38:12.178Z",
+          "modifiedOn": "2024-09-02T03:38:12.178Z",
+          "active": true,
+          ...data
+        }
+      ]
+    }
+    this.apiService.postProcessHardware(body).subscribe({
+      next: (v: any) => {
+        console.log({ v });
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
+  }
+  // addDevice
+  addDevice() {
+    const data = {
+      serialNumber: this.gridDataHardware[0].serialNumber,
+      customerID: this.gridDataHardware[0].customerID,
+      expectedQty: this.gridDataHardware[0].expectedQty,
+      hardwareType: this.gridDataHardware[0].hardwareType,
+    }
+    console.log(data);
+
+    this.doPostProcessDevice(data);
+  }
+  private doPostProcessDevice(data: JSON_Object) {
+    const body = {
+      "deviceDetails": [
+        {
+          "deviceID": 0,
+          "inventoryID": 0,
+          "receiptID": 0,
+          "iseLotNum": "string",
+          "customerLotNum": "string",
+          "expectedQty": 0,
+          "expedite": true,
+          "partNum": "string",
+          "labelCount": 0,
+          "coo": "string",
+          "dateCode": 0,
+          "isHold": true,
+          "holdComments": "string",
+          "createdOn": "2024-09-02T03:38:12.175Z",
+          "modifiedOn": "2024-09-02T03:38:12.175Z",
+          "active": true
+        }
+      ]
+    }
+    this.apiService.postProcessDevice(body).subscribe({
       next: (v: any) => {
         console.log({ v });
       },
@@ -248,20 +376,6 @@ export class ReceiptComponent implements OnInit {
     { text: 'Item2', icon: 'delete' },
     { text: 'Item3', icon: 'copy' }
   ];
-  gridData3 = [
-    {
-      serial: 'REQ-00001',
-      CustomerId: 'ASAS156',
-      ExpectedQty: 1510,
-      HardwareType: 'Testboard'
-    },
-    {
-      serial: 'REQ-00002',
-      CustomerId: 'ASAS156',
-      ExpectedQty: 142,
-      HardwareType: 'Probe Card'
-    }
-  ]
 
   isDialogOpen = false;
   openDialog() {

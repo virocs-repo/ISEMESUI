@@ -34,7 +34,8 @@
         <div class="k-d-flex">
           <span>{{dataItem.GoodsType}}</span>
           <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenu></button>
-          <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
+          <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"
+            (select)="selectItem($event, dataItem)"></kendo-contextmenu>
         </div>
       </ng-template>
     </kendo-grid-column>
@@ -45,7 +46,7 @@
   class="dialog-round receipt-dialog">
   <div class="k-d-flex k-align-items-center k-mb-3">
     <h2 class="k-m-0">Receipt</h2>
-    <button kendoButton type="button" rounded="full" class="k-ml-auto"  [svgIcon]="ICON.xIcon"  size="small"
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
       (click)="isDialogOpen = !isDialogOpen"></button>
   </div>
   <div class="dialog-body k-overflow-y-auto">

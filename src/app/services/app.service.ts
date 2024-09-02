@@ -18,6 +18,12 @@ interface MainMenuItem {
 interface UserPreferences {
   mainMenuItem: Array<MainMenuItem>
 }
+interface SharedInfo {
+  isEditMode: boolean,
+  isViewMode: boolean,
+  dataItem: any
+
+}
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +40,15 @@ export class AppService {
     goodsType: [],
     deliveryMode: [],
     customer: [],
+  }
+  sharedData: {
+    receiving: SharedInfo
+  } = {
+    receiving: {
+      isEditMode: false,
+      isViewMode: false,
+      dataItem: {}
+    }
   }
 
   constructor() {

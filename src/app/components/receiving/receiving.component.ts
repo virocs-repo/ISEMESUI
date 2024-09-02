@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MenuItem } from '@progress/kendo-angular-menu';
+import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
 import { Receipt, ICON } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
@@ -54,4 +54,21 @@ export class ReceivingComponent {
     });
   }
 
+  selectItem(e: ContextMenuSelectEvent, dataItem: Receipt) {
+    console.log(e);
+    switch (e.item.text) {
+      case 'View Data':
+        this.appService.sharedData.receiving.dataItem = dataItem
+        this.appService.sharedData.receiving.isEditMode = false;
+        this.appService.sharedData.receiving.isViewMode = true;
+        // access the same in receipt component
+        console.log(dataItem);
+        this.openDialog()
+        break;
+
+      default:
+        break;
+    }
+
+  }
 }
