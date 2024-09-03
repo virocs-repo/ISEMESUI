@@ -8,7 +8,7 @@
   <kendo-appbar-spacer width="32px"></kendo-appbar-spacer>
 
   <kendo-appbar-section width="100%">
-    <div class="nav-bar k-d-flex k-align-items-center k-justify-content-center k-gap-8">
+    <div class="nav-bar k-d-flex k-align-items-center k-justify-content-center k-gap-6">
       <button kendoButton fillMode="flat" routerLink="/receiving" routerLinkActive="active"
         [disabled]="!(appService.userPreferences || (appService.userPreferences && appService.activeNavigationUrls.includes('Receiving')))">Receiving</button>
       <button kendoButton fillMode="flat" routerLinkActive="active"
@@ -31,7 +31,7 @@
   <kendo-appbar-section style="margin-left: auto;">
     <div class="k-d-flex k-gap-4 k-align-items-center k-justify-content-center">
       <div>
-        <b>Eswar</b> <br>
+        <b>{{appService.userData.firstName}}</b> <br>
         <small>Admin</small>
       </div>
       <kendo-avatar [imageSrc]="img1" class="avatar-size" (click)="authService.logout()" title="Logout"></kendo-avatar>

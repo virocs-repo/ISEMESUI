@@ -37,13 +37,14 @@ export class LoginComponent {
         // this.onLoginSuccess();
         console.log({ authenticationResult });
         const idToken = authenticationResult.idToken;
-        const name = authenticationResult.account.name;
+        const name = authenticationResult.account.name || '';
         const email = authenticationResult.account.username;
         this.getUserPreference(email, idToken);
         alert(`Welcome ${name} (${email})`);
         console.log({ name });
         console.log({ email });
-
+        const firstName = this.appService.extractFirstName(name);
+        this.appService.saveUserInfo({ name, email, firstName })
       },
       error: (error) => console.log(error)
     })
@@ -73,5 +74,6 @@ export class LoginComponent {
     // this.loginDisplay = this.authService.instance.getAllAccounts().length > 0;
     this.authService.loginSuccess();
   }
+
 
 }

@@ -54,7 +54,6 @@ export interface Receipt {
   isExpected: boolean;
   mailStatus: string;
   receivingStatus: string; // Corrected typo from "receivingStatus"
-  // receivingStatus: string; // Corrected typo from "receivingStatus"
 }
 export interface HardwareItem {
   hardwareID: number;
@@ -133,4 +132,9 @@ export const ICON = {
 export const MESSAGES = {
   DataSaved: "Data Saved!",
   DataSaveError: 'Error while saving data, try again!'
+}
+export interface UserData {
+  name: string;
+  firstName: string;
+  email: string
 }

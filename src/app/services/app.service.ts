@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MasterData } from './app.interface';
+import { MasterData, UserData } from './app.interface';
 import { NotificationService } from '@progress/kendo-angular-notification';
 
 
@@ -51,6 +51,7 @@ export class AppService {
         dataItem: {}
       }
     }
+  userData: UserData = { email: '', name: '', firstName: '' }
 
   constructor(private notificationService: NotificationService) {
     const up = localStorage.getItem('UserPreferences');
@@ -58,8 +59,29 @@ export class AppService {
       this.userPreferences = JSON.parse(up);
       this.initPreferences()
     }
+    this.loadUserInfo();
   }
+  private loadUserInfo() {
+    const ud = localStorage.getItem('user');
+    if (ud) {
+      this.userData = JSON.parse(ud);
+    }
+  }
+  saveUserInfo(userData: UserData) {
+    localStorage.setItem('user', JSON.stringify(userData));
+    this.userData = userData;
+  }
+  extractFirstName(name: string): string {
+    const trimmedName = name.trim();
+    // const nameParts = trimmedName.split(/\s+/);
+    const nameParts = trimmedName.split(/[^a-zA-Z]+/);
 
+    if (nameParts.length > 0) {
+      return nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1).toLowerCase();
+    } else {
+      return "";
+    }
+  }
   openDrawer() {
     this.isDrawerExpanded = true;
   }
