@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
-import { Customer, CustomerType, DeliveryMode, GoodsType, ICON, JSON_Object, ReceiptLocation } from 'src/app/services/app.interface';
+import { Customer, CustomerType, DeliveryMode, DeviceItem, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, JSON_Object, MESSAGES, ReceiptLocation } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -50,14 +50,21 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   ];
 
   expectedOrNot = 'Expected'
-  FTZ: boolean = false;
-  IsInterim: boolean = false;
+  isFTZ: boolean = false;
+  isInterim: boolean = false;
+  isDisabled: any = {
+    clearReceipt: false,
+    addReceipt: false,
+    addDevice: false,
+    addHardware: false,
+    submitBtn: false,
+    cancelBtn: false
+  }
 
   constructor(private appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
     this.init();
-    this.fetchData();
   }
   ngOnDestroy(): void {
     this.appService.sharedData.receiving.isEditMode = false
@@ -69,11 +76,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.receiptLocation = this.appService.masterData.receiptLocation;
     this.deliveryMode = this.appService.masterData.deliveryMode;
     this.goodsType = this.appService.masterData.goodsType;
-    console.log(this);
-    console.log(this.appService);
 
-    if (this.appService.sharedData.receiving.isViewMode) {
+    if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
       const dataItem = this.appService.sharedData.receiving.dataItem;
+
+      this.isFTZ = dataItem.isFTZ;
+      this.isInterim = dataItem.isInterim;
       this.customerSelected = this.customer.find(c => c.customerID == dataItem.customerID);
       this.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.customerTypeID);
 
@@ -89,22 +97,31 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.gridData[0].isHold = dataItem.isHold
       this.gridData[0].holdComments = dataItem.holdComments
       this.expectedDateTime = new Date(dataItem.expectedDateTime);
+      this.fetchData();
+    }
+    if (this.appService.sharedData.receiving.isViewMode) {
+      this.disabledAllBtns()
     }
   }
   private fetchData() {
-    this.apiService.getDeviceData().subscribe({
-      next: (v) => {
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    this.apiService.getDeviceData(dataItem.receiptID).subscribe({
+      next: (v: any) => {
         console.log(v);
+        this.gridDataDevice = v;
+        this.gridDataDevice.splice(0, 0, INIT_DEVICE_ITEM);
       }
     });
-    this.apiService.getHardwaredata().subscribe({
-      next: (v) => {
+    this.apiService.getHardwaredata(dataItem.receiptID).subscribe({
+      next: (v: any) => {
         console.log(v);
+        this.gridDataHardware = v;
+        this.gridDataHardware.splice(0, 0, INIT_HARDWARE_ITEM);
       }
     });
   }
   addReceipt() {
-    const data = {
+    let data = {
       customerTypeID: this.customerTypeSelected?.customerTypeID,
       customerID: this.customerSelected?.customerID,
       receiptLocationID: this.receiptLocationSelected?.receiptLocationID,
@@ -120,7 +137,17 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       noOfCartons: this.gridData[0].noOfCartons,
       isHold: this.gridData[0].isHold,
       holdComments: this.gridData[0].holdComments,
+      recordStatus: "I",
+      loginId: 1
     }
+    if (this.appService.sharedData.receiving.isEditMode) {
+      data.recordStatus = "U"
+      data = {
+        ...this.appService.sharedData.receiving.dataItem,
+        ...data,
+      }
+    }
+    data.loginId = 1
     console.log(data);
 
     this.doPostProcessReceipt(data);
@@ -165,28 +192,24 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     });
   }
 
-  gridDataHardware = [
-    {
-      serialNumber: 'REQ-00001',
-      customer: 'ASAS156',
-      customerID: 0,
-      expectedQty: 1510,
-      hardwareType: 'Testboard'
-    },
-    {
-      serialNumber: 'REQ-00002',
-      customer: 'ASAS156',
-      customerID: 0,
-      expectedQty: 142,
-      hardwareType: 'Probe Card'
-    }
+  gridDataHardware: HardwareItem[] = [
+    // {
+    //   "hardwareID": 1,
+    //   "receiptID": 1,
+    //   "inventoryID": 1,
+    //   "hardwareType": "CPU",
+    //   "customerID": 1,
+    //   "customer": "Amazon",
+    //   "serialNumber": "SN00001",
+    //   "expectedQty": 1,
+    //   "createdOn": "2024-08-28T03:20:22.767",
+    //   "modifiedOn": "2024-08-28T03:20:22.767",
+    //   "active": true
+    // }
   ]
   addHardware() {
     const data = {
-      serialNumber: this.gridDataHardware[0].serialNumber,
-      customerID: this.gridDataHardware[0].customerID,
-      expectedQty: this.gridDataHardware[0].expectedQty,
-      hardwareType: this.gridDataHardware[0].hardwareType,
+      ... this.gridDataHardware[0]
     }
     console.log(data);
 
@@ -213,24 +236,39 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
     this.apiService.postProcessHardware(body).subscribe({
       next: (v: any) => {
+        this.appService.successMessage(MESSAGES.DataSaved);
         console.log({ v });
       },
       error: (err) => {
+        this.appService.errorMessage(MESSAGES.DataSaveError);
         console.log(err);
       }
     });
   }
   // addDevice
+  public gridDataDevice: DeviceItem[] = [
+    // {
+    //   ISELOT: 'REQ-00001',
+    //   CustomerLotNumber: '21561651313',
+    //   ExpectedQty: 100,
+    //   Expedite: false,
+    //   PartNum: 1515,
+    //   LabelCount: 151651,
+    //   COO: 'CA',
+    //   DateCode: 21321,
+    //   Hold: true,
+    //   HoldComments: 'Count Miss'
+    // }
+  ];
   addDevice() {
-    const data = {
-      serialNumber: this.gridDataHardware[0].serialNumber,
-      customerID: this.gridDataHardware[0].customerID,
-      expectedQty: this.gridDataHardware[0].expectedQty,
-      hardwareType: this.gridDataHardware[0].hardwareType,
-    }
-    console.log(data);
+    if (this.gridDataDevice && this.gridDataDevice.length) {
+      const data = {
+        ... this.gridDataDevice[0]
+      }
+      console.log(data);
 
-    this.doPostProcessDevice(data);
+      this.doPostProcessDevice(data);
+    }
   }
   private doPostProcessDevice(data: JSON_Object) {
     const body = {
@@ -251,15 +289,18 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           "holdComments": "string",
           "createdOn": "2024-09-02T03:38:12.175Z",
           "modifiedOn": "2024-09-02T03:38:12.175Z",
-          "active": true
+          "active": true,
+          ...data
         }
       ]
     }
     this.apiService.postProcessDevice(body).subscribe({
       next: (v: any) => {
+        this.appService.successMessage(MESSAGES.DataSaved);
         console.log({ v });
       },
       error: (err) => {
+        this.appService.errorMessage(MESSAGES.DataSaveError);
         console.log(err);
       }
     });
@@ -309,56 +350,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     "Vienna",
     "Warsaw",
   ];
-  public gridData2 = [
-    {
-      ISELOT: 'REQ-00001',
-      CustomerLotNumber: '21561651313',
-      ExpectedQty: 100,
-      Expedite: false,
-      PartNum: 1515,
-      LabelCount: 151651,
-      COO: 'CA',
-      DateCode: 21321,
-      Hold: true,
-      HoldComments: 'Count Miss'
-    },
-    {
-      ISELOT: 'REQ-00002',
-      CustomerLotNumber: '21561651313',
-      ExpectedQty: 100,
-      Expedite: true,
-      PartNum: 1515,
-      LabelCount: 151651,
-      COO: 'CA',
-      DateCode: 21321,
-      Hold: false,
-      HoldComments: 'Count Miss'
-    },
-    {
-      ISELOT: 'REQ-00003',
-      CustomerLotNumber: '21561651313',
-      ExpectedQty: 100,
-      Expedite: false,
-      PartNum: 1515,
-      LabelCount: 151651,
-      COO: 'CA',
-      DateCode: 21321,
-      Hold: true,
-      HoldComments: 'Count Miss'
-    },
-    {
-      ISELOT: 'REQ-00004',
-      CustomerLotNumber: '21561651313',
-      ExpectedQty: 100,
-      Expedite: true,
-      PartNum: 1515,
-      LabelCount: 151651,
-      COO: 'CA',
-      DateCode: 21321,
-      Hold: false,
-      HoldComments: 'Count Miss'
-    }
-  ];
 
   selectableSettings: any = {
     checkboxOnly: true,
@@ -383,5 +374,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   closeDialog() {
     this.isDialogOpen = false;
+  }
+  disabledAllBtns() {
+    Object.keys(this.isDisabled).forEach((k: any) => {
+      this.isDisabled[k] = true;
+    });
   }
 }

@@ -47,6 +47,8 @@ import { AddCustomerRequestComponent } from './components/add-customer-request/a
 import { OnoffHoldComponent } from './components/onoff-hold/onoff-hold.component';
 import { HoldDetailsComponent } from './components/hold-details/hold-details.component';
 import { ApiInterceptor } from './services/api.interceptor';
+import { NotificationModule } from '@progress/kendo-angular-notification';
+
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1;
 const MSAL_VARS = [environment.msalConfig.auth.clientId, environment.msalConfig.auth.authority, environment.msalConfig.auth.redirectUri];
@@ -142,6 +144,7 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     HttpClientModule,
     SVGIconModule,
     DrawerModule,
+    NotificationModule,
   ],
   providers: [
     {

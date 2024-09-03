@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MasterData } from './app.interface';
+import { NotificationService } from '@progress/kendo-angular-notification';
 
 
 interface FeatureField {
@@ -44,14 +45,14 @@ export class AppService {
   sharedData: {
     receiving: SharedInfo
   } = {
-    receiving: {
-      isEditMode: false,
-      isViewMode: false,
-      dataItem: {}
+      receiving: {
+        isEditMode: false,
+        isViewMode: false,
+        dataItem: {}
+      }
     }
-  }
 
-  constructor() {
+  constructor(private notificationService: NotificationService) {
     const up = localStorage.getItem('UserPreferences');
     if (up) {
       this.userPreferences = JSON.parse(up);
@@ -77,5 +78,25 @@ export class AppService {
       this.activeNavigationUrls.push(item.navigationUrl)
       this.feature = item.feature;
     }
+  }
+  successMessage(content: string) {
+    this.notificationService.show({
+      content,
+      cssClass: "button-notification",
+      animation: { type: "slide", duration: 400 },
+      position: { horizontal: "center", vertical: "bottom" },
+      type: { style: "success", icon: true },
+      closable: true,
+    });
+  }
+  errorMessage(content: string) {
+    this.notificationService.show({
+      content,
+      cssClass: "button-notification",
+      animation: { type: "slide", duration: 400 },
+      position: { horizontal: "center", vertical: "bottom" },
+      type: { style: "error", icon: true },
+      closable: true
+    });
   }
 }

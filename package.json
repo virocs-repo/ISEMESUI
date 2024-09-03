@@ -37,6 +37,7 @@
     "@progress/kendo-angular-layout": "16.4.0",
     "@progress/kendo-angular-menu": "^16.4.0",
     "@progress/kendo-angular-navigation": "16.4.0",
+    "@progress/kendo-angular-notification": "^16.4.0",
     "@progress/kendo-angular-pdf-export": "16.4.0",
     "@progress/kendo-angular-popup": "16.4.0",
     "@progress/kendo-angular-progressbar": "16.4.0",

@@ -20,11 +20,11 @@ export class ApiService {
   getReceiptdata() {
     return this.httpClient.get(`${API}v1/ise/inventory/receiptdata`);
   }
-  getDeviceData() {
-    return this.httpClient.get(`${API}v1/ise/inventory/devicedata`);
+  getDeviceData(receiptId: string) {
+    return this.httpClient.get(`${API}v1/ise/inventory/devicedata?receiptId=${receiptId}`);
   }
-  getHardwaredata() {
-    return this.httpClient.get(`${API}v1/ise/inventory/hardwaredata`);
+  getHardwaredata(receiptId: string) {
+    return this.httpClient.get(`${API}v1/ise/inventory/hardwaredata?receiptId=${receiptId}`);
   }
   postProcessReceipt(body: unknown) {
     return this.httpClient.post(`${API}v1/ise/inventory/processReceipt`, body);
