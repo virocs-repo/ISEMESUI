@@ -138,7 +138,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       isHold: this.gridData[0].isHold,
       holdComments: this.gridData[0].holdComments,
       recordStatus: "I",
-      loginId: 1
+      loginId: this.appService.loginId
     }
     if (this.appService.sharedData.receiving.isEditMode) {
       data.recordStatus = "U"
@@ -147,7 +147,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         ...data,
       }
     }
-    data.loginId = 1
+    data.loginId = this.appService.loginId
     console.log(data);
 
     this.doPostProcessReceipt(data);
@@ -176,7 +176,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           "receivingStatus": "string",
           "recordStatus": "string",
           "active": true,
-          "loginId": 0,
+          "loginId": this.appService.loginId,
           ...data
         }
       ]
@@ -209,14 +209,17 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   ]
   addHardware() {
     const data = {
-      ... this.gridDataHardware[0]
+      ... this.gridDataHardware[0],
+      recordStatus: "I",
+      loginId: this.appService.loginId,
+      hardwareID: null
     }
     console.log(data);
 
     this.doPostProcessHardware(data);
   }
   private doPostProcessHardware(data: JSON_Object) {
-    const body = {
+    const body :any= {
       "hardwareDetails": [
         {
           "hardwareID": 0,
@@ -233,6 +236,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           ...data
         }
       ]
+    }
+    // delete body.hardwareDetails[0].createdOn;
+    // delete body.hardwareDetails[0].modifiedOn;
+    if (body.hardwareDetails && body.hardwareDetails[0]) {
+      delete body.hardwareDetails[0].createdOn;
+      delete body.hardwareDetails[0].modifiedOn;
     }
     this.apiService.postProcessHardware(body).subscribe({
       next: (v: any) => {

@@ -65,6 +65,10 @@ export class ReceivingComponent {
             { ...dataItem, recordStatus: "U", loginId: 1 }
           ]
         };
+        // temp fix
+        if (body.receiptDetails[0].receivingStutus) {
+          body.receiptDetails[0].receivingStatus = body.receiptDetails[0].receivingStutus;
+        }
         this.apiService.postProcessReceipt(body).subscribe({
           next: (value) => {
             console.log(value);

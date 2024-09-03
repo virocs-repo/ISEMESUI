@@ -15,6 +15,7 @@ interface Feature {
 interface MainMenuItem {
   navigationUrl: string
   feature: Array<Feature>
+  loginId: number;
 }
 interface UserPreferences {
   mainMenuItem: Array<MainMenuItem>
@@ -34,6 +35,8 @@ export class AppService {
   userPreferences: UserPreferences | null = null;
   activeNavigationUrls: string[] = []
   feature: Array<Feature> = []
+  loginId: number = 0;
+
   token = 'Bearer token';
   masterData: MasterData = {
     customerType: [],
@@ -95,10 +98,11 @@ export class AppService {
   }
   private initPreferences() {
     const item = this.userPreferences?.mainMenuItem[0];
-    console.warn(item);
+    console.log({ item });
     if (item) {
       this.activeNavigationUrls.push(item.navigationUrl)
       this.feature = item.feature;
+      this.loginId = item.loginId
     }
   }
   successMessage(content: string) {
