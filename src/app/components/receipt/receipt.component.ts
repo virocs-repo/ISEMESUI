@@ -130,6 +130,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   addReceipt() {
     let data = {
+      isFTZ: this.isFTZ,
+      isInterim: this.isInterim,
+
       customerTypeID: this.customerTypeSelected?.customerTypeID,
       customerID: this.customerSelected?.customerID,
       receiptLocationID: this.receiptLocationSelected?.receiptLocationID,
@@ -193,8 +196,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.apiService.postProcessReceipt(body).subscribe({
       next: (v: any) => {
         console.log({ v });
+        this.appService.successMessage(MESSAGES.DataSaved);
       },
       error: (err) => {
+        this.appService.errorMessage(MESSAGES.DataSaveError);
         console.log(err);
       }
     });
