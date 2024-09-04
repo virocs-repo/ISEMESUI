@@ -70,30 +70,17 @@ export interface HardwareItem {
   active: boolean;
 }
 export const INIT_HARDWARE_ITEM: HardwareItem = {
-  // hardwareID: 0,
-  // receiptID: 0,
-  // inventoryID: 0,
-  // hardwareType: '',
-  // customerID: 0,
-  // customer: '',
-  // serialNumber: '',
-  // expectedQty: 0,
-  // createdOn: '',
-  // modifiedOn: '',
-  // active: false
-
-    "hardwareID": 2,
-    "receiptID": 1,
-    "inventoryID": 2,
-    "hardwareType": "GPU",
-    "customerID": 1,
-    "customer": "Amazon",
-    "serialNumber": "SN00002",
-    "expectedQty": 1,
-    "createdOn": "2024-08-28T03:20:22.767",
-    "modifiedOn": "2024-08-28T03:20:22.767",
-    "active": true
-
+  hardwareID: 0,
+  receiptID: 0,
+  inventoryID: 0,
+  hardwareType: '',
+  customerID: 0,
+  customer: '',
+  serialNumber: '',
+  expectedQty: 0,
+  createdOn: '',
+  modifiedOn: '',
+  active: false
 }
 export interface DeviceItem {
   deviceID: number;

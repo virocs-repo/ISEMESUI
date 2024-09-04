@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
 import { Customer, CustomerType, DeliveryMode, DeviceItem, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, JSON_Object, MESSAGES, ReceiptLocation } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
@@ -104,6 +105,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
   }
   private fetchData() {
+    this.fetchDataDevice();
+    this.fetchDataHardware();
+  }
+  private fetchDataDevice() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
     this.apiService.getDeviceData(dataItem.receiptID).subscribe({
       next: (v: any) => {
@@ -112,11 +117,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.gridDataDevice.splice(0, 0, INIT_DEVICE_ITEM);
       }
     });
+  }
+  private fetchDataHardware() {
+    const dataItem = this.appService.sharedData.receiving.dataItem;
     this.apiService.getHardwaredata(dataItem.receiptID).subscribe({
       next: (v: any) => {
         console.log(v);
         this.gridDataHardware = v;
-        this.gridDataHardware.splice(0, 0, INIT_HARDWARE_ITEM);
+        this.gridDataHardware.splice(0, 0, { ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID });
       }
     });
   }
@@ -192,83 +200,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     });
   }
 
-  gridDataHardware: HardwareItem[] = [
-    // {
-    //   "hardwareID": 1,
-    //   "receiptID": 1,
-    //   "inventoryID": 1,
-    //   "hardwareType": "CPU",
-    //   "customerID": 1,
-    //   "customer": "Amazon",
-    //   "serialNumber": "SN00001",
-    //   "expectedQty": 1,
-    //   "createdOn": "2024-08-28T03:20:22.767",
-    //   "modifiedOn": "2024-08-28T03:20:22.767",
-    //   "active": true
-    // }
-  ]
-  addHardware() {
-    const data = {
-      ... this.gridDataHardware[0],
-      recordStatus: "I",
-      loginId: this.appService.loginId,
-      hardwareID: null
-    }
-    console.log(data);
-
-    this.doPostProcessHardware(data);
-  }
-  private doPostProcessHardware(data: JSON_Object) {
-    const body :any= {
-      "hardwareDetails": [
-        {
-          "hardwareID": 0,
-          "receiptID": 0,
-          "inventoryID": 0,
-          "hardwareType": "string",
-          "customerID": 0,
-          "customer": "string",
-          "serialNumber": "string",
-          "expectedQty": 0,
-          "createdOn": "2024-09-02T03:38:12.178Z",
-          "modifiedOn": "2024-09-02T03:38:12.178Z",
-          "active": true,
-          ...data
-        }
-      ]
-    }
-    // delete body.hardwareDetails[0].createdOn;
-    // delete body.hardwareDetails[0].modifiedOn;
-    if (body.hardwareDetails && body.hardwareDetails[0]) {
-      delete body.hardwareDetails[0].createdOn;
-      delete body.hardwareDetails[0].modifiedOn;
-    }
-    this.apiService.postProcessHardware(body).subscribe({
-      next: (v: any) => {
-        this.appService.successMessage(MESSAGES.DataSaved);
-        console.log({ v });
-      },
-      error: (err) => {
-        this.appService.errorMessage(MESSAGES.DataSaveError);
-        console.log(err);
-      }
-    });
-  }
   // addDevice
-  public gridDataDevice: DeviceItem[] = [
-    // {
-    //   ISELOT: 'REQ-00001',
-    //   CustomerLotNumber: '21561651313',
-    //   ExpectedQty: 100,
-    //   Expedite: false,
-    //   PartNum: 1515,
-    //   LabelCount: 151651,
-    //   COO: 'CA',
-    //   DateCode: 21321,
-    //   Hold: true,
-    //   HoldComments: 'Count Miss'
-    // }
-  ];
+  public gridDataDevice: DeviceItem[] = [];
   addDevice() {
     if (this.gridDataDevice && this.gridDataDevice.length) {
       const data = {
@@ -307,6 +240,72 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
         console.log({ v });
+      },
+      error: (err) => {
+        this.appService.errorMessage(MESSAGES.DataSaveError);
+        console.log(err);
+      }
+    });
+  }
+  // addHardware
+  gridDataHardware: HardwareItem[] = []
+  addHardware() {
+    const data = {
+      ... this.gridDataHardware[this.hardware.rowIndex],
+      loginId: this.appService.loginId
+    }
+    if (this.hardware.isEditMode) {
+      // @ts-ignore
+      data.recordStatus = "U";
+    }
+    if (this.hardware.isAddMode) {
+      // @ts-ignore
+      data.recordStatus = "I",
+        // @ts-ignore
+        data.hardwareID = null
+    }
+    console.log(data);
+    if (data.serialNumber && data.customer && data.expectedQty && data.hardwareType) {
+      this.doPostProcessHardware(data);
+    } else {
+      this.appService.errorMessage("All fields are required!")
+    }
+  }
+  private doPostProcessHardware(data: JSON_Object) {
+    const body: any = {
+      "hardwareDetails": [
+        {
+          "hardwareID": 0,
+          "receiptID": 0,
+          "inventoryID": 0,
+          "hardwareType": "string",
+          "customerID": 0,
+          "customer": "string",
+          "serialNumber": "string",
+          "expectedQty": 0,
+          "createdOn": "2024-09-02T03:38:12.178Z",
+          "modifiedOn": "2024-09-02T03:38:12.178Z",
+          "active": true,
+          ...data
+        }
+      ]
+    }
+    // delete body.hardwareDetails[0].createdOn;
+    // delete body.hardwareDetails[0].modifiedOn;
+    // if (body.hardwareDetails && body.hardwareDetails[0]) {
+    //   delete body.hardwareDetails[0].createdOn;
+    //   delete body.hardwareDetails[0].modifiedOn;
+    // }
+    this.apiService.postProcessHardware(body).subscribe({
+      next: (v: any) => {
+        this.appService.successMessage(MESSAGES.DataSaved);
+        console.log({ v });
+        this.fetchDataHardware();
+        if (this.hardware.isEditMode) {
+          this.hardware.isAddMode = true;
+          this.hardware.isEditMode = false;
+          this.hardware.rowIndex = 0;
+        }
       },
       error: (err) => {
         this.appService.errorMessage(MESSAGES.DataSaveError);
@@ -371,11 +370,35 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
-  public items: any[] = [
-    { text: 'Item1', icon: 'edit' },
-    { text: 'Item2', icon: 'delete' },
-    { text: 'Item3', icon: 'copy' }
+
+  hardware = {
+    isEditMode: false,
+    isAddMode: true,
+    rowIndex: 0
+  }
+  rowActionMenu: MenuItem[] = [
+    // { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
+    { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
+    // { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
+    // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
   ];
+
+  doTestEditMode() {
+    this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridDataHardware[3]);
+  }
+  onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any) {
+    console.log(e);
+    console.log(dataItem);
+    switch (e.item.text) {
+      case 'Edit Data':
+        this.hardware.isEditMode = true;
+        this.hardware.isAddMode = false;
+        this.hardware.rowIndex = this.gridDataHardware.findIndex(d => d.hardwareID == dataItem.hardwareID);
+        break;
+      default:
+        break;
+    }
+  }
 
   isDialogOpen = false;
   openDialog() {

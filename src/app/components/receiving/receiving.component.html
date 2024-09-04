@@ -18,7 +18,10 @@
     <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
   </div>
 </div>
-
+<!-- <div class="k-d-flex">
+  <i class="k-ml-auto"></i>
+  <button kendoButton (click)="doTestEditMode()">Test Edit Mode</button>
+</div> -->
 <div class="page-body k-m-10" *ngIf="!false">
   <kendo-grid [kendoGridBinding]="gridData" [selectable]="selectableSettings" [columnMenu]="columnMenuSettings"
     [filterable]="true" [sortable]="true" [resizable]="true" class="grid-header-sm grid-header-bold">
@@ -33,9 +36,9 @@
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="k-d-flex">
           <span>{{dataItem.active?'Yes': 'No'}}</span>
-          <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenu></button>
-          <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"
-            (select)="selectItem($event, dataItem)"></kendo-contextmenu>
+          <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
+          <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
+            (select)="onSelectRowActionMenu($event, dataItem)"></kendo-contextmenu>
         </div>
       </ng-template>
     </kendo-grid-column>

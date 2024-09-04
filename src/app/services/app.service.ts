@@ -112,7 +112,7 @@ export class AppService {
       animation: { type: "slide", duration: 400 },
       position: { horizontal: "center", vertical: "bottom" },
       type: { style: "success", icon: true },
-      closable: true,
+      closable: false
     });
   }
   errorMessage(content: string) {
@@ -122,7 +122,7 @@ export class AppService {
       animation: { type: "slide", duration: 400 },
       position: { horizontal: "center", vertical: "bottom" },
       type: { style: "error", icon: true },
-      closable: true
+      closable: false
     });
   }
 }

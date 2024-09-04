@@ -26,13 +26,6 @@ export class ReceivingComponent {
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
-  public items: MenuItem[] = [
-    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
-    { text: 'Edit Data', icon: 'edit', disabled: !this.isEditButtonEnabled, svgIcon: ICON.pencilIcon },
-    { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
-    { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
-  ];
-
 
   isDialogOpen = false;
   openDialog() {
@@ -53,8 +46,16 @@ export class ReceivingComponent {
       error: (v: any) => { }
     });
   }
-
-  selectItem(e: ContextMenuSelectEvent, dataItem: Receipt) {
+  rowActionMenu: MenuItem[] = [
+    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
+    { text: 'Edit Data', icon: 'edit', disabled: !this.isEditButtonEnabled, svgIcon: ICON.pencilIcon },
+    { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
+    { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
+  ];
+  doTestEditMode() {
+    this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridData[0]);
+  }
+  onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: Receipt) {
     console.log(e);
     console.log(dataItem);
     dataItem.holdComments = dataItem.holdComments || '';
@@ -62,7 +63,7 @@ export class ReceivingComponent {
       case 'Void Data':
         const body = {
           receiptDetails: [
-            { ...dataItem, recordStatus: "U", loginId: 1 }
+            { ...dataItem, recordStatus: "U", loginId: this.appService.loginId, active: false }
           ]
         };
         // temp fix
@@ -77,7 +78,6 @@ export class ReceivingComponent {
           error: (err) => {
             console.log(err);
             this.appService.errorMessage(MESSAGES.DataSaveError);
-
           },
         })
         break;
