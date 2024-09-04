@@ -33,11 +33,15 @@ export class ReceivingComponent {
   }
   closeDialog() {
     this.isDialogOpen = false;
+    this.fetchdata(); // because there might be changes from dialog
   }
 
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
+    this.fetchdata();
+  }
+  private fetchdata() {
     this.apiService.getReceiptdata().subscribe({
       next: (v: any) => {
         this.gridData = v;
