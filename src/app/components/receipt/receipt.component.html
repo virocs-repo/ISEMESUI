@@ -148,8 +148,10 @@
     <h2>Device</h2>
     <div class="k-ml-auto">
       <button kendoButton type="button" rounded="large" themeColor="info" (click)="addDevice()"
-        [disabled]="isDisabled.addDevice">Add
-        Device</button>
+        [disabled]="isDisabled.addDevice">
+        <ng-container *ngIf="device.isAddMode">Add Device</ng-container>
+        <ng-container *ngIf="device.isEditMode">Update Device</ng-container>
+      </button>
     </div>
   </div>
 
@@ -158,29 +160,29 @@
     <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
     <kendo-grid-column field="iseLotNum" title="ISELot#">
       <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-        <ng-container *ngIf="rowIndex == 0">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
           <kendo-textbox [(ngModel)]="dataItem.iseLotNum" placeholder="Lot Number"></kendo-textbox>
         </ng-container>
-        <ng-container *ngIf="rowIndex != 0">
+        <ng-container *ngIf="rowIndex != device.rowIndex">
           <span>{{dataItem.iseLotNum}}</span>
         </ng-container>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="customerLotNum" title="Customer Lot Number">
       <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-        <ng-container *ngIf="rowIndex == 0">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
           <kendo-textbox [(ngModel)]="dataItem.customerLotNum" placeholder="Lot Number"></kendo-textbox>
         </ng-container>
-        <ng-container *ngIf="rowIndex != 0">
+        <ng-container *ngIf="rowIndex != device.rowIndex">
           <span>{{dataItem.customerLotNum}}</span>
         </ng-container>
       </ng-template></kendo-grid-column>
     <kendo-grid-column field="expectedQty" title="Expected Qty">
       <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-        <ng-container *ngIf="rowIndex == 0">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
           <kendo-textbox [(ngModel)]="dataItem.expectedQty" placeholder="Expected Qty"></kendo-textbox>
         </ng-container>
-        <ng-container *ngIf="rowIndex != 0">
+        <ng-container *ngIf="rowIndex != device.rowIndex">
           <span>{{dataItem.expectedQty}}</span>
         </ng-container>
       </ng-template></kendo-grid-column>
@@ -191,40 +193,40 @@
     </kendo-grid-column>
     <kendo-grid-column field="partNum" title="Part Num">
       <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-        <ng-container *ngIf="rowIndex == 0">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
           <kendo-textbox [(ngModel)]="dataItem.partNum" placeholder="Part Number"></kendo-textbox>
         </ng-container>
-        <ng-container *ngIf="rowIndex != 0">
+        <ng-container *ngIf="rowIndex != device.rowIndex">
           <span>{{dataItem.partNum}}</span>
         </ng-container>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="labelCount" title="Label Count">
       <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-        <ng-container *ngIf="rowIndex == 0">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
           <kendo-textbox [(ngModel)]="dataItem.labelCount" placeholder="Label Count"></kendo-textbox>
         </ng-container>
-        <ng-container *ngIf="rowIndex != 0">
+        <ng-container *ngIf="rowIndex != device.rowIndex">
           <span>{{dataItem.labelCount}}</span>
         </ng-container>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="coo" title="COO">
       <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-        <ng-container *ngIf="rowIndex == 0">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
           <kendo-textbox [(ngModel)]="dataItem.coo" placeholder="COO"></kendo-textbox>
         </ng-container>
-        <ng-container *ngIf="rowIndex != 0">
+        <ng-container *ngIf="rowIndex != device.rowIndex">
           <span>{{dataItem.coo}}</span>
         </ng-container>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="dateCode" title="DateCode">
       <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-        <ng-container *ngIf="rowIndex == 0">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
           <kendo-textbox [(ngModel)]="dataItem.dateCode" placeholder="Date Code"></kendo-textbox>
         </ng-container>
-        <ng-container *ngIf="rowIndex != 0">
+        <ng-container *ngIf="rowIndex != device.rowIndex">
           <span>{{dataItem.dateCode}}</span>
         </ng-container>
       </ng-template>
@@ -236,18 +238,17 @@
     </kendo-grid-column>
     <kendo-grid-column field="holdComments" title="Hold Comments">
       <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-        <ng-container *ngIf="rowIndex == 0">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
           <kendo-textbox [(ngModel)]="dataItem.holdComments" placeholder="Hold Comments"></kendo-textbox>
         </ng-container>
-        <ng-container *ngIf="rowIndex != 0">
-          <span>{{dataItem.holdComments}}</span>
+        <ng-container *ngIf="rowIndex != device.rowIndex">
+          <div class="k-d-flex">
+            <span>{{dataItem.holdComments}}</span>
+            <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
+            <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
+              (select)="onSelectRowActionMenu($event, dataItem, true)"></kendo-contextmenu>
+          </div>
         </ng-container>
-      </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column [width]="60">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <button kendoButton [svgIcon]="ICON.moreVerticalIcon" #rowActionMenuTarget></button>
-        <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"></kendo-contextmenu>
       </ng-template>
     </kendo-grid-column>
   </kendo-grid>
@@ -311,7 +312,7 @@
             <span>{{dataItem.hardwareType}}</span>
             <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
             <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
-              (select)="onSelectRowActionMenu($event, dataItem)"></kendo-contextmenu>
+              (select)="onSelectRowActionMenu($event, dataItem, false)"></kendo-contextmenu>
           </div>
         </ng-container>
       </ng-template>

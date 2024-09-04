@@ -112,9 +112,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const dataItem = this.appService.sharedData.receiving.dataItem;
     this.apiService.getDeviceData(dataItem.receiptID).subscribe({
       next: (v: any) => {
-        console.log(v);
         this.gridDataDevice = v;
-        this.gridDataDevice.splice(0, 0, INIT_DEVICE_ITEM);
+        this.gridDataDevice.splice(0, 0, { ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID });
+        console.log(v);
       }
     });
   }
@@ -122,9 +122,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const dataItem = this.appService.sharedData.receiving.dataItem;
     this.apiService.getHardwaredata(dataItem.receiptID).subscribe({
       next: (v: any) => {
-        console.log(v);
         this.gridDataHardware = v;
         this.gridDataHardware.splice(0, 0, { ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID });
+        console.log(v);
       }
     });
   }
@@ -205,11 +205,30 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   addDevice() {
     if (this.gridDataDevice && this.gridDataDevice.length) {
       const data = {
-        ... this.gridDataDevice[0]
+        ... this.gridDataDevice[this.device.rowIndex]
+      }
+      if (this.device.isEditMode) {
+        // @ts-ignore
+        data.recordStatus = "U";
+      }
+      if (this.device.isAddMode) {
+        // @ts-ignore
+        data.recordStatus = "I";
+        // @ts-ignore
+        data.deviceID = null
       }
       console.log(data);
-
-      this.doPostProcessDevice(data);
+      const mandatoryFields = [
+        data.iseLotNum, data.customerLotNum, data.expectedQty, data.partNum, data.labelCount,
+        data.coo, data.dateCode, data.holdComments
+      ]
+      const isValid = !mandatoryFields.some(v => !v);
+      console.log({ isValid });
+      if (isValid) {
+        this.doPostProcessDevice(data);
+      } else {
+        this.appService.errorMessage("All fields are required!")
+      }
     }
   }
   private doPostProcessDevice(data: JSON_Object) {
@@ -239,6 +258,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.apiService.postProcessDevice(body).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
+        this.fetchDataDevice();
+        if (this.device.isEditMode) {
+          this.device.isAddMode = true;
+          this.device.isEditMode = false;
+          this.device.rowIndex = 0;
+        }
         console.log({ v });
       },
       error: (err) => {
@@ -260,9 +285,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
     if (this.hardware.isAddMode) {
       // @ts-ignore
-      data.recordStatus = "I",
-        // @ts-ignore
-        data.hardwareID = null
+      data.recordStatus = "I";
+      // @ts-ignore
+      data.hardwareID = null
     }
     console.log(data);
     if (data.serialNumber && data.customer && data.expectedQty && data.hardwareType) {
@@ -290,12 +315,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         }
       ]
     }
-    // delete body.hardwareDetails[0].createdOn;
-    // delete body.hardwareDetails[0].modifiedOn;
-    // if (body.hardwareDetails && body.hardwareDetails[0]) {
-    //   delete body.hardwareDetails[0].createdOn;
-    //   delete body.hardwareDetails[0].modifiedOn;
-    // }
     this.apiService.postProcessHardware(body).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
@@ -370,11 +389,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
-
+  device = {
+    isEditMode: false, isAddMode: true, rowIndex: 0
+  }
   hardware = {
-    isEditMode: false,
-    isAddMode: true,
-    rowIndex: 0
+    isEditMode: false, isAddMode: true, rowIndex: 0
   }
   rowActionMenu: MenuItem[] = [
     // { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
@@ -384,16 +403,22 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   ];
 
   doTestEditMode() {
-    this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridDataHardware[3]);
+    const isDevice = !false
+    this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridDataHardware[3], isDevice);
   }
-  onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any) {
-    console.log(e);
-    console.log(dataItem);
+  onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, isDevice: boolean) {
+    console.log(e); console.log(dataItem);
     switch (e.item.text) {
       case 'Edit Data':
-        this.hardware.isEditMode = true;
-        this.hardware.isAddMode = false;
-        this.hardware.rowIndex = this.gridDataHardware.findIndex(d => d.hardwareID == dataItem.hardwareID);
+        if (isDevice) {
+          this.device.isEditMode = true;
+          this.device.isAddMode = false;
+          this.device.rowIndex = this.gridDataDevice.findIndex(d => d.deviceID == dataItem.deviceID);
+        } else {
+          this.hardware.isEditMode = true;
+          this.hardware.isAddMode = false;
+          this.hardware.rowIndex = this.gridDataHardware.findIndex(d => d.hardwareID == dataItem.hardwareID);
+        }
         break;
       default:
         break;
