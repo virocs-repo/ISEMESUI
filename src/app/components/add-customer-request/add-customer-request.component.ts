@@ -47,22 +47,7 @@ export class AddCustomerRequestComponent implements OnInit {
     
  
   }
- /*  onSelectionChange(event: SelectionEvent): void {
-    // Initialize selectedRecords as a Set for efficient add/remove operations
-    if (!this.selectedRecords) {
-      this.selectedRecords = new Set<any>();
-    }
-  
-    // Add newly selected rows
-    if (event.selectedRows && event.selectedRows.length > 0) {
-      event.selectedRows.forEach(row => this.selectedRecords.add(row.dataItem));
-    }
-  
-    // Remove deselected rows
-    if (event.deselectedRows && event.deselectedRows.length > 0) {
-      event.deselectedRows.forEach(row => this.selectedRecords.delete(row.dataItem));
-    }
-  } */
+
   
     onSelectionChange(event: any): void {
       debugger;
@@ -81,13 +66,6 @@ export class AddCustomerRequestComponent implements OnInit {
       }));
     }
 
-/*   // Function to load customers from the API
-  loadCustomers(): void {
-    this.http.get<any[]>('https://localhost:44303/api/v1/ise/inventory/customer/list')
-      .subscribe(data => {
-        this.customers = data;  // Bind the fetched data to the customers array
-      });
-  } */
   initializeColumns(): void {
     this.columns = [
      /*  { field: 'receiptID', title: 'Receipt ID', width: 100 },
@@ -128,32 +106,11 @@ export class AddCustomerRequestComponent implements OnInit {
 // Assign the Observable directly to the gridData$
 this.gridData$ = this.customerService.getGridData(customerId, goodsType, lotNumber);
 
- /*  const apiUrl = `https://localhost:44303/api/v1/ise/inventory/customer/inventory?customerId=${customerId}&goodsType=${goodsType}&lotNumber=${lotNumber}`;
 
-  this.http.get<any[]>(apiUrl).subscribe(
-    data => {
-      this.ngZone.run(() => {  // Ensure this runs inside Angular's zone
-        this.gridData = data;
-        this.cdr.detectChanges();  // Trigger change detection after data is set
-
-      });
-    },
-    error => {
-      console.error('There was an error loading the data!', error);
-    }
-  ); */
  
 }
 
-  /* // Event handler for saving changes
-  onCellClick(event: any): void {
-    debugger;
-    if (event.isEdited && event.column.field === 'shippedQty') {
-      // Handle the edited cell data
-      console.log('Updated shippedQty:', event.dataItem.shippedQty);
-      // You can also trigger a save to the server or further processing here
-    }
-  } */
+  
 
   editHandler({ sender, rowIndex, columnIndex, dataItem }: CellClickEvent): void {
     // Adjust columnIndex by subtracting 1 to account for the checkbox column
@@ -175,8 +132,7 @@ this.gridData$ = this.customerService.getGridData(customerId, goodsType, lotNumb
 
     //alert(dataItem.shippedQty);
   }
-// Commit changes to the dataItem on Save or Close
-// Commit changes to the dataItem on Save or Close
+
 cellCloseHandler({ sender, dataItem, column }: any): void {
   // Check if the column being edited is 'shippedQty'
   if (column.field === 'shippedQty') {
