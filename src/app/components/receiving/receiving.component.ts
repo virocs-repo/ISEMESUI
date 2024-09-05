@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
 import { Receipt, ICON, MESSAGES } from 'src/app/services/app.interface';
@@ -11,7 +12,11 @@ import { AppService } from 'src/app/services/app.service';
 })
 export class ReceivingComponent {
   readonly ICON = ICON;
-  public gridData: Receipt[] = [];
+  public pageSize = 5;
+  public skip = 2;
+  public receipts: Receipt[] = [];
+  // public gridData: Receipt[] = [];
+  public data: GridDataResult = { data: [], total: 0 };
 
   isAddButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == 'Receiving Add')?.active ?? false;
   isEditButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Edit")?.active ?? false;
@@ -44,11 +49,18 @@ export class ReceivingComponent {
   private fetchdata() {
     this.apiService.getReceiptdata().subscribe({
       next: (v: any) => {
-        this.gridData = v;
+        this.receipts = v;
+        this.data.data = this.receipts;
+        this.data.total = this.receipts.length
         console.log(v);
       },
       error: (v: any) => { }
     });
+  }
+  pageChange(event: PageChangeEvent): void {
+    this.skip = event.skip;
+    console.log(event);
+    this.fetchdata();
   }
   rowActionMenu: MenuItem[] = [
     { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
@@ -57,7 +69,7 @@ export class ReceivingComponent {
     { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
   ];
   doTestEditMode() {
-    this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridData[0]);
+    this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.receipts[0]);
   }
   onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: Receipt) {
     console.log(e);

@@ -23,8 +23,9 @@
   <button kendoButton (click)="doTestEditMode()">Test Edit Mode</button>
 </div> -->
 <div class="page-body k-m-10" *ngIf="!false">
-  <kendo-grid [kendoGridBinding]="gridData" [selectable]="selectableSettings" [columnMenu]="columnMenuSettings"
-    [filterable]="true" [sortable]="true" [resizable]="true" class="grid-header-sm grid-header-bold">
+  <kendo-grid [data]="data" [selectable]="selectableSettings" [columnMenu]="columnMenuSettings" [filterable]="true"
+    [sortable]="true" [resizable]="true" [pageSize]="pageSize" [skip]="skip" [pageable]="true"
+    (pageChange)="pageChange($event)" class="grid-header-sm grid-header-bold">
     <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
     <kendo-grid-column field="receiptID" title="Receipt ID"></kendo-grid-column>
     <kendo-grid-column field="customerType" title="Receive From"></kendo-grid-column>
