@@ -43,7 +43,7 @@
         </kendo-grid-column>
         <kendo-grid-column [width]="60">
             <ng-template kendoGridCellTemplate let-dataItem>
-                <button kendoButton icon="more-vertical" #rowActionMenu></button>
+                <button kendoButton [svgIcon]="ICON.moreVerticalIcon" #rowActionMenu></button>
                 <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
             </ng-template>
         </kendo-grid-column>

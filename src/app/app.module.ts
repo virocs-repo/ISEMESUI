@@ -46,6 +46,9 @@ import { InventoryDetailsComponent } from './components/inventory-details/invent
 import { AddCustomerRequestComponent } from './components/add-customer-request/add-customer-request.component';
 import { OnoffHoldComponent } from './components/onoff-hold/onoff-hold.component';
 import { HoldDetailsComponent } from './components/hold-details/hold-details.component';
+import { ApiInterceptor } from './services/api.interceptor';
+import { NotificationModule } from '@progress/kendo-angular-notification';
+
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1;
 const MSAL_VARS = [environment.msalConfig.auth.clientId, environment.msalConfig.auth.authority, environment.msalConfig.auth.redirectUri];
@@ -141,6 +144,7 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     HttpClientModule,
     SVGIconModule,
     DrawerModule,
+    NotificationModule,
   ],
   providers: [
     {
@@ -168,7 +172,8 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     },
     MsalService,
     MsalGuard,
-    MsalBroadcastService
+    MsalBroadcastService,
+    { provide: HTTP_INTERCEPTORS, useClass: ApiInterceptor, multi: true }
   ],
   bootstrap: [AppComponent, MsalRedirectComponent]
 })

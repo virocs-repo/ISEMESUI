@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { AppService } from './services/app.service';
 import { DrawerItem, DrawerSelectEvent } from '@progress/kendo-angular-layout';
 import { Router } from '@angular/router';
+import { ApiService } from './services/api.service';
 
 interface DrawerItemExtra extends DrawerItem {
   routerLink?: string;
@@ -13,7 +14,7 @@ interface DrawerItemExtra extends DrawerItem {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'play-k16';
 
   public expanded = false;
@@ -27,7 +28,11 @@ export class AppComponent {
   ];
 
 
-  constructor(public authService: AuthService, public appService: AppService, private router: Router) { }
+  constructor(public authService: AuthService, public appService: AppService, private router: Router, private apiService: ApiService) { }
+
+  ngOnInit(): void {
+    this.initMasterData();
+  }
 
   public toggleDrawer(): void {
     this.expanded = !this.expanded;
@@ -39,6 +44,19 @@ export class AppComponent {
       this.router.navigate([ev.item.routerLink]);
     }
     console.log(ev.item.text + ' selected');
-    // Handle menu item selection here  
+    // Handle menu item selection here
+  }
+  private initMasterData() {
+    this.apiService.getMasterData().subscribe({
+      next: (v: any) => {
+        console.log(v)
+        this.appService.masterData = v.root[0]
+        console.log(this.appService.masterData);
+
+      },
+      error: (v) => {
+        console.error(v)
+      }
+    })
   }
 }

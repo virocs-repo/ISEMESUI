@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { eyeIcon, folderIcon, pencilIcon, SVGIcon } from '@progress/kendo-svg-icons';
+import { ICON } from 'src/app/services/app.interface';
 
 @Component({
   selector: 'app-inventory',
@@ -7,6 +8,7 @@ import { eyeIcon, folderIcon, pencilIcon, SVGIcon } from '@progress/kendo-svg-ic
   styleUrls: ['./inventory.component.scss']
 })
 export class InventoryComponent {
+  readonly ICON = ICON
   columnData = [
     { title: "ISE Lot#", field: 'lot', isLink: true },
     { title: "Receipt #", field: 'Location', isLink: true },

@@ -1,5 +1,5 @@
 <div class="k-m-4">
-  <div class="k-d-flex k-align-items-center k-gap-4 k-pb-3">
+  <div *ngIf="!false" class="k-d-flex k-align-items-center k-gap-4 k-pb-3">
     <!-- <h2>Receipt</h2> -->
     <span style="margin-left: auto;"></span>
     <div class="k-ml-auto">
@@ -14,30 +14,30 @@
     </div>
     |
     <div class="k-d-flex k-align-items-center">
-      <input type="checkbox" name="FTZ" id="FTZ" [(ngModel)]="FTZ" kendoCheckBox>
+      <input type="checkbox" name="FTZ" id="FTZ" [(ngModel)]="isFTZ" kendoCheckBox>
       <!-- <kendo-label class="k-radio-label" for="FTZ" text="FTZ"></kendo-label> -->
       <label for="FTZ" kendoLabel> FTZ</label>
     </div>
     <div class="k-d-flex k-align-items-center k-gap-4">
-      <input type="checkbox" name="IsInterim" id="IsInterim" [(ngModel)]="IsInterim"
+      <input type="checkbox" name="IsInterim" id="IsInterim" [(ngModel)]="isInterim"
         (click)="isDialogOpen =!isDialogOpen" kendoCheckBox>
       <label for="IsInterim" kendoLabel> Is Interim</label>
     </div>
-    <!-- <button kendoButton type="button" size="small" rounded="full" themeColor="primary" icon="close"></button> -->
   </div>
 
-  <div class="k-d-flex k-align-items-stretch k-gap-4 k-w-full k" *ngIf="!false">
+  <div *ngIf="!false" class="k-d-flex k-align-items-stretch k-gap-4 k-w-full k">
     <kendo-card class="card-green k-flex-1">
       <kendo-card-body class="card-flex">
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Customer / Vendor" class="k-w-full">
-            <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
-              rounded="large"></kendo-combobox>
+            <kendo-combobox [data]="customerTypes" [(ngModel)]="customerTypeSelected" [textField]="'customerTypeName'"
+              [valueField]="'customerTypeID'" placeholder="Select" rounded="large"></kendo-combobox>
           </kendo-label>
           <kendo-label text="Customer" class="k-w-full">
             <b class="required-label"></b>
-            <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
-              rounded="large"></kendo-combobox>
+            <kendo-combobox id="customer" [data]="customer" [(ngModel)]="customerSelected" [textField]="'customerName'"
+              [valueField]="'customerID'" placeholder="Select" rounded="large"
+              [class.invalid]="!receipt.isValid.customer"></kendo-combobox>
           </kendo-label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
@@ -46,13 +46,14 @@
               rounded="large"></kendo-combobox>
           </kendo-label>
           <kendo-label text="Receiving Location" class="k-w-full">
-            <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
+            <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
+              [textField]="'receiptLocationName'" [valueField]="'receiptLocationID'" placeholder="Select"
               rounded="large"></kendo-combobox>
           </kendo-label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Comments" class="k-w-full">
-            <kendo-textarea [(ngModel)]="comment" [rows]="5" placeholder="Enter text" rounded="large"></kendo-textarea>
+            <kendo-textarea [(ngModel)]="comments" [rows]="5" placeholder="Enter text" rounded="large"></kendo-textarea>
           </kendo-label>
         </div>
       </kendo-card-body>
@@ -62,12 +63,14 @@
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Delivery Method" class="k-w-full">
             <b class="required-label"></b>
-            <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
-              rounded="large"></kendo-combobox>
+            <kendo-combobox [data]="deliveryMode" [(ngModel)]="deliveryModeSelected" [textField]="'deliveryModeName'"
+              [valueField]="'deliveryModeID'" placeholder="Select" rounded="large"
+              [class.invalid]="!receipt.isValid.deliveryMode"></kendo-combobox>
           </kendo-label>
           <kendo-label text="Phone" class="k-w-full">
             <b class="required-label"></b>
-            <kendo-textbox [(ngModel)]="phone" placeholder="Enter phone" rounded="large"></kendo-textbox>
+            <kendo-textbox [(ngModel)]="contactPhone" placeholder="Enter phone" rounded="large"
+              [class.invalid]="!receipt.isValid.contactPhone"></kendo-textbox>
           </kendo-label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
@@ -79,28 +82,27 @@
           </kendo-label>
           <kendo-label text="Contact Person" class="k-w-full">
             <b class="required-label"></b>
-            <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
-              rounded="large"></kendo-combobox>
+            <kendo-textbox [(ngModel)]="contactPerson" placeholder="Enter contact person" rounded="large"
+              [class.invalid]="!receipt.isValid.contactPerson"></kendo-textbox>
           </kendo-label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Email" class="k-w-full">
-            <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
-              rounded="large"></kendo-combobox>
+            <kendo-textbox [(ngModel)]="email" placeholder="Enter your email" rounded="large"></kendo-textbox>
           </kendo-label>
           <kendo-label text="Address" class="k-relative k-w-full">
             <b class="required-label"></b>
             <!-- <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Enter details"
                        rounded="large"></kendo-combobox> -->
-            <kendo-autocomplete [data]="areaList" placeholder="Enter details"
-              style="padding-right: 1.5rem;"></kendo-autocomplete>
+            <kendo-autocomplete [data]="areaList" [(ngModel)]="address" placeholder="Enter details"
+              style="padding-right: 1.5rem;" [class.invalid]="!receipt.isValid.address"></kendo-autocomplete>
             <img src="/assets/location-outline.svg" class="input-icon" width="18" />
           </kendo-label>
         </div>
         <!-- show kedo icon using src image -->
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Comments" class="k-w-full">
-            <kendo-textarea [(ngModel)]="comment" [rows]="3" placeholder="Enter text" rounded="large"></kendo-textarea>
+            <kendo-textarea [(ngModel)]="comments" [rows]="3" placeholder="Enter text" rounded="large"></kendo-textarea>
           </kendo-label>
         </div>
       </kendo-card-body>
@@ -110,9 +112,9 @@
   <kendo-card class="card-green card-full k-mt-4">
     <kendo-card-body class="card-flex">
       <kendo-grid [kendoGridBinding]="gridData" class="bold-column-header cartons">
-        <kendo-grid-column field="NoOfCartons" title="No of Cartons" [width]="200">
+        <kendo-grid-column field="noOfCartons" title="No of Cartons" [width]="200">
           <ng-template kendoGridCellTemplate let-dataItem>
-            <kendo-numerictextbox [(ngModel)]="dataItem.NoOfCartons" [format]="'n0'"
+            <kendo-numerictextbox [(ngModel)]="dataItem.noOfCartons" [format]="'n0'"
               placeholder="Enter cartons"></kendo-numerictextbox>
           </ng-template>
         </kendo-grid-column>
@@ -122,9 +124,9 @@
               kendoCheckBox>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="comments" title="Hold Comments">
+        <kendo-grid-column field="holdComments" title="Hold Comments">
           <ng-template kendoGridCellTemplate let-dataItem>
-            <kendo-textbox [(ngModel)]="dataItem.comments" placeholder="Enter comments"
+            <kendo-textbox [(ngModel)]="dataItem.holdComments" placeholder="Enter comments"
               [disabled]="dataItem.isHoldCommentEnabled"></kendo-textbox>
           </ng-template>
         </kendo-grid-column>
@@ -134,54 +136,191 @@
 
   <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
     <kendo-label text="Goods Type">
-      <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select type"
-        rounded="large"></kendo-combobox>
+      <kendo-combobox [data]="goodsType" [(ngModel)]="goodsTypeSelected" [textField]="'goodsTypeName'"
+        [valueField]="'goodsTypeID'" placeholder="Select type" rounded="large"></kendo-combobox>
     </kendo-label>
     <span style="margin-left: auto;"></span>
-    <button kendoButton type="button" rounded="large" themeColor="primary" style="width:6rem">Clear</button>
-    <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem">Add</button>
+    <!-- <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
+      (click)="testAddReceipt()">Test</button> -->
+    <button kendoButton type="button" rounded="large" themeColor="primary" style="width:6rem"
+      [disabled]="isDisabled.clearReceipt">Clear</button>
+    <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" (click)="addReceipt()"
+      [disabled]="isDisabled.addReceipt">Submit</button>
   </div>
 
-  <h2>Device</h2>
+  <div class="k-d-flex k-align-items-center">
+    <h2>Device</h2>
+    <div class="k-ml-auto">
+      <button kendoButton type="button" rounded="large" themeColor="info" (click)="addDevice()"
+        [disabled]="isDisabled.addDevice">
+        <ng-container *ngIf="device.isAddMode">Add Device</ng-container>
+        <ng-container *ngIf="device.isEditMode">Update Device</ng-container>
+      </button>
+    </div>
+  </div>
 
-  <kendo-grid [kendoGridBinding]="gridData2" [selectable]="selectableSettings" [filterable]="true" [sortable]="true"
-    [resizable]="true" class="bold-column-header wrap-header-grid" *ngIf="!false">
+  <kendo-grid *ngIf="!false" [kendoGridBinding]="gridDataDevice" [selectable]="selectableSettings" [filterable]="true"
+    [sortable]="true" [resizable]="true" class="bold-column-header wrap-header-grid">
     <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-    <kendo-grid-column field="ISELOT" title="ISELot#"> </kendo-grid-column>
-    <kendo-grid-column field="CustomerLotNumber" title="Customer Lot Number"> </kendo-grid-column>
-    <kendo-grid-column field="ExpectedQty" title="Expected Qty"></kendo-grid-column>
-    <kendo-grid-column field="Expedite" title="Expedite">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        {{dataItem.Hold ? 'Yes' : 'No'}}
+    <kendo-grid-column field="iseLotNum" title="ISELot#">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
+          <kendo-textbox [(ngModel)]="dataItem.iseLotNum" placeholder="Lot Number"></kendo-textbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != device.rowIndex">
+          <span>{{dataItem.iseLotNum}}</span>
+        </ng-container>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="PartNum" title="Part Num"></kendo-grid-column>
-    <kendo-grid-column field="LabelCount" title="Label Count"></kendo-grid-column>
-    <kendo-grid-column field="COO" title="COO"></kendo-grid-column>
-    <kendo-grid-column field="DateCode" title="DateCode"></kendo-grid-column>
-    <kendo-grid-column field="Hold" title="Hold">
+    <kendo-grid-column field="customerLotNum" title="Customer Lot Number">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
+          <kendo-textbox [(ngModel)]="dataItem.customerLotNum" placeholder="Lot Number"></kendo-textbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != device.rowIndex">
+          <span>{{dataItem.customerLotNum}}</span>
+        </ng-container>
+      </ng-template></kendo-grid-column>
+    <kendo-grid-column field="expectedQty" title="Expected Qty">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
+          <kendo-textbox [(ngModel)]="dataItem.expectedQty" placeholder="Expected Qty"></kendo-textbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != device.rowIndex">
+          <span>{{dataItem.expectedQty}}</span>
+        </ng-container>
+      </ng-template></kendo-grid-column>
+    <kendo-grid-column field="expedite" title="Expedite">
       <ng-template kendoGridCellTemplate let-dataItem>
-        {{dataItem.Hold ? 'Yes' : 'No'}}
+        {{dataItem.expedite ? 'Yes' : 'No'}}
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="HoldComments" title="Hold Comments"></kendo-grid-column>
-    <kendo-grid-column [width]="60">
+    <kendo-grid-column field="partNum" title="Part Num">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
+          <kendo-textbox [(ngModel)]="dataItem.partNum" placeholder="Part Number"></kendo-textbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != device.rowIndex">
+          <span>{{dataItem.partNum}}</span>
+        </ng-container>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="labelCount" title="Label Count">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
+          <kendo-textbox [(ngModel)]="dataItem.labelCount" placeholder="Label Count"></kendo-textbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != device.rowIndex">
+          <span>{{dataItem.labelCount}}</span>
+        </ng-container>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="coo" title="COO">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
+          <kendo-textbox [(ngModel)]="dataItem.coo" placeholder="COO"></kendo-textbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != device.rowIndex">
+          <span>{{dataItem.coo}}</span>
+        </ng-container>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="dateCode" title="DateCode">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
+          <kendo-textbox [(ngModel)]="dataItem.dateCode" placeholder="Date Code"></kendo-textbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != device.rowIndex">
+          <span>{{dataItem.dateCode}}</span>
+        </ng-container>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="isHold" title="Hold">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <button kendoButton icon="more-vertical" #rowActionMenu></button>
-        <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
+        {{dataItem.isHold ? 'Yes' : 'No'}}
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="holdComments" title="Hold Comments">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == device.rowIndex">
+          <kendo-textbox [(ngModel)]="dataItem.holdComments" placeholder="Hold Comments"></kendo-textbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != device.rowIndex">
+          <div class="k-d-flex">
+            <span>{{dataItem.holdComments}}</span>
+            <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
+            <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
+              (select)="onSelectRowActionMenu($event, dataItem, true)"></kendo-contextmenu>
+          </div>
+        </ng-container>
       </ng-template>
     </kendo-grid-column>
   </kendo-grid>
 
-  <h2>Hardware</h2>
-
-  <kendo-grid [kendoGridBinding]="gridData3" [selectable]="selectableSettings" [filterable]="true" [sortable]="true"
-    [resizable]="true" class="bold-column-header wrap-header-grid" *ngIf="!false">
+  <!-- <div class="k-d-flex">
+    <i class="k-ml-auto"></i>
+    <button kendoButton (click)="doTestEditMode()">Test Edit Mode</button>
+  </div> -->
+  <div class="k-d-flex k-align-items-center">
+    <h2>Hardware</h2>
+    <div class="k-ml-auto">
+      <button kendoButton type="button" rounded="large" themeColor="info" (click)="addHardware()"
+        [disabled]="isDisabled.addHardware">
+        <ng-container *ngIf="hardware.isAddMode">Add Hardware</ng-container>
+        <ng-container *ngIf="hardware.isEditMode">Update Hardware</ng-container>
+      </button>
+    </div>
+  </div>
+  <kendo-grid [kendoGridBinding]="gridDataHardware" [selectable]="selectableSettings" [filterable]="true"
+    [sortable]="true" [resizable]="true" class="bold-column-header wrap-header-grid" *ngIf="!false">
     <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-    <kendo-grid-column field="serial" title="Serial#"> </kendo-grid-column>
-    <kendo-grid-column field="CustomerId" title="Customer ID"> </kendo-grid-column>
-    <kendo-grid-column field="ExpectedQty" title="Expected Qty"></kendo-grid-column>
-    <kendo-grid-column field="HardwareType" title="Hardware Type"></kendo-grid-column>
+    <kendo-grid-column field="serialNumber" title="Serial#">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == hardware.rowIndex">
+          <kendo-textbox [(ngModel)]="dataItem.serialNumber" placeholder="Serial Number"></kendo-textbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != hardware.rowIndex">
+          <span>{{dataItem.serialNumber}}</span>
+        </ng-container>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="customer" title="Customer ID">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == hardware.rowIndex">
+          <kendo-textbox [(ngModel)]="dataItem.customer" placeholder="Customer ID"></kendo-textbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != hardware.rowIndex">
+          <span>{{dataItem.customer}}</span>
+        </ng-container>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="expectedQty" title="Expected Qty" [width]="200">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == hardware.rowIndex">
+          <kendo-numerictextbox [(ngModel)]="dataItem.expectedQty" [format]="'n0'"
+            placeholder="Expected Qty"></kendo-numerictextbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != hardware.rowIndex">
+          <span>{{dataItem.expectedQty}}</span>
+        </ng-container>
+      </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column field="hardwareType" title="Hardware Type">
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <ng-container *ngIf="rowIndex == hardware.rowIndex">
+          <kendo-textbox [(ngModel)]="dataItem.hardwareType" placeholder="Hardware Type"></kendo-textbox>
+        </ng-container>
+        <ng-container *ngIf="rowIndex != hardware.rowIndex">
+          <div class="k-d-flex">
+            <span>{{dataItem.hardwareType}}</span>
+            <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
+            <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
+              (select)="onSelectRowActionMenu($event, dataItem, false)"></kendo-contextmenu>
+          </div>
+        </ng-container>
+      </ng-template>
+    </kendo-grid-column>
   </kendo-grid>
 
   <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
@@ -194,15 +333,16 @@
     <kendo-dateinput format="eee dd MMMM yyyy" [value]="expectedDateTime" class="k-center"
       style="width:8rem;"></kendo-dateinput>
     <span style="margin-left: auto;"></span>
-    <button kendoButton type="button" rounded="large" themeColor="error" style="width:6rem">Cancel</button>
-    <button kendoButton type="button" rounded="large" themeColor="info" style="width:6rem">Submit</button>
-
+    <!-- <button kendoButton type="button" rounded="large" themeColor="error" style="width:6rem"
+      [disabled]="isDisabled.cancelBtn">Cancel</button>
+    <button kendoButton type="button" rounded="large" themeColor="info" style="width:6rem"
+      [disabled]="isDisabled.submitBtn">Submit</button> -->
   </div>
 </div>
 <kendo-dialog *ngIf="isDialogOpen" [minWidth]="250" [width]="'50%'" class="dialog-round">
   <div class="k-d-flex">
-    <button kendoButton type="button" rounded="full" class="k-ml-auto" themeColor="primary" icon="close" size="small"
-      (click)="isDialogOpen = !isDialogOpen"></button>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" themeColor="primary" [svgIcon]="ICON.xIcon"
+      size="small" (click)="isDialogOpen = !isDialogOpen"></button>
   </div>
   <app-add-device></app-add-device>
 </kendo-dialog>

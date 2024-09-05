@@ -1,6 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MSAL_GUARD_CONFIG, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
 import { ApiService } from 'src/app/services/api.service';
+import { ICON } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -10,6 +11,7 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
+  readonly ICON = ICON
   isPasswordVisible: boolean = false;
   isRememberMeChecked: boolean = false;
   email: string = '';
@@ -37,13 +39,14 @@ export class LoginComponent {
         // this.onLoginSuccess();
         console.log({ authenticationResult });
         const idToken = authenticationResult.idToken;
-        const name = authenticationResult.account.name;
+        const name = authenticationResult.account.name || '';
         const email = authenticationResult.account.username;
         this.getUserPreference(email, idToken);
         alert(`Welcome ${name} (${email})`);
         console.log({ name });
         console.log({ email });
-
+        const firstName = this.appService.extractFirstName(name);
+        this.appService.saveUserInfo({ name, email, firstName })
       },
       error: (error) => console.log(error)
     })
@@ -73,5 +76,6 @@ export class LoginComponent {
     // this.loginDisplay = this.authService.instance.getAllAccounts().length > 0;
     this.authService.loginSuccess();
   }
+
 
 }

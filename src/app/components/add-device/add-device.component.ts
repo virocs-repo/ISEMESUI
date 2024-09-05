@@ -1,12 +1,24 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ColumnMenuSettings, SelectableSettings } from '@progress/kendo-angular-grid';
+import { Customer } from 'src/app/services/app.interface';
+import { AppService } from 'src/app/services/app.service';
 
 @Component({
   selector: 'app-add-device',
   templateUrl: './add-device.component.html',
   styleUrls: ['./add-device.component.scss']
 })
-export class AddDeviceComponent {
+export class AddDeviceComponent implements OnInit {
+  customer: Customer[] = []
+  customerSelected: Customer | undefined;
+
+  constructor(private appService: AppService) { }
+  
+  ngOnInit(): void {
+    this.customer = this.appService.masterData.customer;
+  }
+
+  // Dummy data: can be removed later
   public selectedValues: string = "";
   public listItems: Array<string> = [
     "Baseball",

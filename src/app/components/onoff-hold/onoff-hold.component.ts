@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { eyeIcon, pencilIcon, SVGIcon } from '@progress/kendo-svg-icons';
+import { ICON } from 'src/app/services/app.interface';
 
 @Component({
   selector: 'app-onoff-hold',
@@ -7,6 +8,7 @@ import { eyeIcon, pencilIcon, SVGIcon } from '@progress/kendo-svg-icons';
   styleUrls: ['./onoff-hold.component.scss']
 })
 export class OnoffHoldComponent {
+  readonly ICON = ICON
   columnData = [
     { title: "Code", field: 'Code' },
     { title: "Reason", field: 'Reason' },

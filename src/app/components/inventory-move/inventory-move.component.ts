@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ColumnMenuSettings, SelectableSettings } from '@progress/kendo-angular-grid';
+import { ICON } from 'src/app/services/app.interface';
 
 @Component({
   selector: 'app-inventory-move',
@@ -7,6 +8,7 @@ import { ColumnMenuSettings, SelectableSettings } from '@progress/kendo-angular-
   styleUrls: ['./inventory-move.component.scss']
 })
 export class InventoryMoveComponent {
+  readonly ICON = ICON
   gridData4 = [
     {
       lot: 'LT453454',

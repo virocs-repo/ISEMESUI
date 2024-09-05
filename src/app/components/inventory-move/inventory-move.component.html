@@ -19,7 +19,7 @@
         <kendo-grid-column field="Status" title="Status"></kendo-grid-column>
         <kendo-grid-column [width]="60">
             <ng-template kendoGridCellTemplate let-dataItem>
-                <button kendoButton icon="more-vertical" #rowActionMenu></button>
+                <button kendoButton [svgIcon]="ICON.moreVerticalIcon" #rowActionMenu></button>
                 <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
             </ng-template>
         </kendo-grid-column>
@@ -28,7 +28,7 @@
 <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'68%'" class="dialog-round">
     <div class="k-d-flex k-align-items-center k-mb-3">
         <h2 class="k-m-0">Check In / Check Out</h2>
-        <button kendoButton type="button" rounded="full" class="k-ml-auto" icon="close" size="small"
+        <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
             (click)="closeDialog()"></button>
     </div>
     <app-add-check-inout></app-add-check-inout>
