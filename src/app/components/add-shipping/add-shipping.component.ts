@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ColumnMenuSettings, SelectableSettings } from '@progress/kendo-angular-grid';
+import { ICON } from 'src/app/services/app.interface';
 
 @Component({
   selector: 'app-add-shipping',
@@ -7,6 +8,7 @@ import { ColumnMenuSettings, SelectableSettings } from '@progress/kendo-angular-
   styleUrls: ['./add-shipping.component.scss']
 })
 export class AddShippingComponent {
+  readonly ICON = ICON
   public selectedValues: string = "";
   public listItems: Array<string> = [
     "Baseball",

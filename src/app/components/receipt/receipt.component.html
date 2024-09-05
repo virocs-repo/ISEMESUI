@@ -23,7 +23,6 @@
         (click)="isDialogOpen =!isDialogOpen" kendoCheckBox>
       <label for="IsInterim" kendoLabel> Is Interim</label>
     </div>
-    <!-- <button kendoButton type="button" size="small" rounded="full" themeColor="primary" icon="close"></button> -->
   </div>
 
   <div *ngIf="!false" class="k-d-flex k-align-items-stretch k-gap-4 k-w-full k">
@@ -39,7 +38,7 @@
             <kendo-combobox id="customer" [data]="customer" [(ngModel)]="customerSelected" [textField]="'customerName'"
               [valueField]="'customerID'" placeholder="Select" rounded="large"
               [class.invalid]="!receipt.isValid.customer"></kendo-combobox>
-          </kendo-label>|
+          </kendo-label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Behalf of Customer" class="k-w-full">
@@ -342,8 +341,8 @@
 </div>
 <kendo-dialog *ngIf="isDialogOpen" [minWidth]="250" [width]="'50%'" class="dialog-round">
   <div class="k-d-flex">
-    <button kendoButton type="button" rounded="full" class="k-ml-auto" themeColor="primary" icon="close" size="small"
-      (click)="isDialogOpen = !isDialogOpen"></button>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" themeColor="primary" [svgIcon]="ICON.xIcon"
+      size="small" (click)="isDialogOpen = !isDialogOpen"></button>
   </div>
   <app-add-device></app-add-device>
 </kendo-dialog>

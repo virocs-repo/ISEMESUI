@@ -35,7 +35,7 @@
         <small>Admin</small>
       </div>
       <kendo-avatar [imageSrc]="img1" class="avatar-size" (click)="authService.logout()" title="Logout"></kendo-avatar>
-      <!-- <kendo-avatar icon="user" class="avatar-size"></kendo-avatar> -->
+      <!-- <kendo-avatar [svgIcon]="ICON.userIcon" class="avatar-size"></kendo-avatar> -->
     </div>
   </kendo-appbar-section>
 </kendo-appbar>
@@ -43,7 +43,7 @@
 <kendo-appbar class="header-mobile">
   <kendo-appbar-section>
     <button kendoButton fillMode="flat" (click)="appService.openDrawer()">
-      <kendo-svgicon [icon]="menuIcon"></kendo-svgicon>
+      <kendo-svgicon [icon]="ICON.menuIcon"></kendo-svgicon>
     </button>
   </kendo-appbar-section>
   <kendo-appbar-section>

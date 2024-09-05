@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ICON } from 'src/app/services/app.interface';
 
 @Component({
   selector: 'app-customer-order',
@@ -6,6 +7,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./customer-order.component.scss']
 })
 export class CustomerOrderComponent {
+  readonly ICON = ICON
   columnData = [
     { title: "ISE Lot#", field: 'ISELot' },
     { title: "Customer Lot#", field: 'CustomerLot' },

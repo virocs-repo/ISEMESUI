@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { ColumnMenuSettings, SelectableSettings } from '@progress/kendo-angular-grid';
+import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
+import { ICON, Receipt } from 'src/app/services/app.interface';
 
 @Component({
   selector: 'app-shipping',
@@ -7,6 +9,7 @@ import { ColumnMenuSettings, SelectableSettings } from '@progress/kendo-angular-
   styleUrls: ['./shipping.component.scss']
 })
 export class ShippingComponent {
+  readonly ICON = ICON;
 
   gridData4 = [
     {
@@ -72,5 +75,30 @@ export class ShippingComponent {
 
   ngOnInit(): void {
   }
+  rowActionMenu: MenuItem[] = [
+    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
+    { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
+    { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
+    { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
+  ];
+  doTestEditMode() {
+    // this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridData[0]);
+  }
+  onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: Receipt) {
+    console.log(e);
+    console.log(dataItem);
+    dataItem.holdComments = dataItem.holdComments || '';
+    switch (e.item.text) {
+      case 'Void Data':
+        break;
+      case 'View Data':
+        break;
+      case 'Edit Data':
+        break;
 
+      default:
+        break;
+    }
+
+  }
 }
