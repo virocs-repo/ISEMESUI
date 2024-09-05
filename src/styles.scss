@@ -208,6 +208,18 @@ body {
     }
 
 }
+
 .k-notification-group {
-  z-index: 10002;
+    z-index: 10002;
+    right: 1rem !important;
+    top: 1rem !important;
+
+    .custom-notification {
+        font-size: 1.25rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+.k-input-solid.invalid {
+    --kendo-color-border: var(--kendo-color-error);
 }

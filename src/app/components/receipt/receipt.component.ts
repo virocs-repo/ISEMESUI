@@ -128,6 +128,26 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       }
     });
   }
+  receipt = {
+    isValid: {
+      customer: true,
+      deliveryMode: true,
+      contactPhone: true,
+      contactPerson: true,
+      address: true
+    }
+  }
+  testAddReceipt() {
+    this.receiptLocationSelected = this.receiptLocation[0];
+    this.customerTypeSelected = this.customerTypes[0];
+    this.customerSelected = this.customer[0];
+    this.deliveryModeSelected = this.deliveryMode[0];
+    this.comments = 'test comments ' + (Math.floor(Math.random() * 900) + 100);
+    this.contactPerson = "Contact Person Name"
+    this.contactPhone = '90 000 00 ' + (Math.floor(Math.random() * 900) + 100);
+    this.address = 'NY'
+    this.email = 'test@gmail.com'
+  }
   addReceipt() {
     let data = {
       isFTZ: this.isFTZ,
@@ -135,7 +155,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
       customerTypeID: this.customerTypeSelected?.customerTypeID,
       customerID: this.customerSelected?.customerID,
-      receiptLocationID: this.receiptLocationSelected?.receiptLocationID,
+      receiptLocationID: this.receiptLocationSelected?.receiptLocationID || 1,
       deliveryModeID: this.deliveryModeSelected?.deliveryModeID,
       expectedDateTime: this.expectedDateTime.toISOString(),
       comments: this.comments.trim(),
@@ -148,18 +168,56 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       noOfCartons: this.gridData[0].noOfCartons,
       isHold: this.gridData[0].isHold,
       holdComments: this.gridData[0].holdComments,
-      recordStatus: "I",
       loginId: this.appService.loginId
     }
     if (this.appService.sharedData.receiving.isEditMode) {
-      data.recordStatus = "U"
+      // @ts-ignore
+      data.recordStatus = "U";
       data = {
         ...this.appService.sharedData.receiving.dataItem,
         ...data,
       }
+    } else {
+      // @ts-ignore
+      data.recordStatus = "I"; data.receiptID = null;
     }
-    data.loginId = this.appService.loginId
+    data.loginId = this.appService.loginId;
     console.log(data);
+    if (!this.customerSelected) {
+      this.receipt.isValid.customer = false;
+      this.appService.errorMessage('Please select customer');
+      return;
+    } else {
+      this.receipt.isValid.customer = true;
+    }
+    if (!this.deliveryModeSelected) {
+      this.receipt.isValid.deliveryMode = false;
+      this.appService.errorMessage('Please select delivery mode');
+      return;
+    } else {
+      this.receipt.isValid.contactPhone = true;
+    }
+    if (!this.contactPhone) {
+      this.receipt.isValid.contactPhone = false;
+      this.appService.errorMessage('Please enter contact phone');
+      return;
+    } else {
+      this.receipt.isValid.customer = true;
+    }
+    if (!this.contactPerson) {
+      this.receipt.isValid.contactPerson = false;
+      this.appService.errorMessage('Please enter contact person');
+      return;
+    } else {
+      this.receipt.isValid.contactPerson = true;
+    }
+    if (!this.address) {
+      this.receipt.isValid.address = false;
+      this.appService.errorMessage('Please enter address');
+      return;
+    } else {
+      this.receipt.isValid.address = true;
+    }
 
     this.doPostProcessReceipt(data);
   }
@@ -170,14 +228,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           "receiptID": 0,
           "customerTypeID": 0,
           "customerID": 0,
-          "behalfID": 0,
+          "behalfID": 1,
           "receiptLocationID": 0,
           "deliveryModeID": 0,
           "contactPerson": "string",
           "contactPhone": "string",
           "email": "string",
           "expectedDateTime": "2024-09-02T01:31:09.985Z",
-          "addressID": 0,
+          "addressID": 1,
           "comments": "string",
           "noOfCartons": 0,
           "isHold": true,

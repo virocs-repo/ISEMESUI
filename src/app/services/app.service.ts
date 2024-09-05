@@ -108,9 +108,9 @@ export class AppService {
   successMessage(content: string) {
     this.notificationService.show({
       content,
-      cssClass: "button-notification",
+      cssClass: "button-notification custom-notification",
       animation: { type: "slide", duration: 400 },
-      position: { horizontal: "center", vertical: "bottom" },
+      position: { horizontal: "right", vertical: "top" },
       type: { style: "success", icon: true },
       closable: false
     });
@@ -118,9 +118,9 @@ export class AppService {
   errorMessage(content: string) {
     this.notificationService.show({
       content,
-      cssClass: "button-notification",
+      cssClass: "button-notification custom-notification",
       animation: { type: "slide", duration: 400 },
-      position: { horizontal: "center", vertical: "bottom" },
+      position: { horizontal: "right", vertical: "top" },
       type: { style: "error", icon: true },
       closable: false
     });

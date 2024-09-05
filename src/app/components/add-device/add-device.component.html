@@ -1,7 +1,8 @@
 <div class="k-d-flex k-gap-3">
     <kendo-label text="Customer" class="k-w-full">
-        <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
-            rounded="large"></kendo-combobox>
+        <b class="required-label"></b>
+        <kendo-combobox [data]="customer" [(ngModel)]="customerSelected" [textField]="'customerName'"
+            [valueField]="'customerID'" placeholder="Select" rounded="large"></kendo-combobox>
     </kendo-label>
     <kendo-label text="Device Type" class="k-w-full">
         <b class="required-label"></b>
