@@ -129,6 +129,13 @@ body {
 
 }
 
+// medium screens
+@media (max-width: 1023px) {
+  .flex-auto-md {
+    flex: auto;
+  }
+}
+
 // mobile view
 @media (max-width: 768px) {
 
@@ -171,6 +178,12 @@ body {
 
     .k-grid {
       width: 300vw;
+    }
+  }
+
+  .page-body.w-120-sm {
+    .k-grid {
+      width: 120vw;
     }
   }
 

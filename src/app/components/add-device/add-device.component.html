@@ -1,43 +1,46 @@
 <div class="k-d-flex k-gap-3">
-    <kendo-label text="Customer" class="k-w-full">
-        <b class="required-label"></b>
-        <kendo-combobox [data]="customer" [(ngModel)]="customerSelected" [textField]="'customerName'"
-            [valueField]="'customerID'" placeholder="Select" rounded="large"></kendo-combobox>
-    </kendo-label>
-    <kendo-label text="Device Type" class="k-w-full">
-        <b class="required-label"></b>
-        <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
-            rounded="large"></kendo-combobox>
-    </kendo-label>
+  <kendo-label text="Customer" class="k-w-full">
+    <b class="required-label"></b>
+    <kendo-combobox [data]="customer" [(ngModel)]="customerSelected" [textField]="'customerName'"
+      [valueField]="'customerID'" placeholder="Select" rounded="large"></kendo-combobox>
+  </kendo-label>
+  <kendo-label text="Device Type" class="k-w-full">
+    <b class="required-label"></b>
+    <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select"
+      rounded="large"></kendo-combobox>
+  </kendo-label>
 </div>
 
-<div class="search-box k-mt-3">
-    <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
-    <input kendoTextBox type="search" placeholder="Search" class="search-input" rounded="full" />
-    <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
+<div class="search-box k-w-full k-mt-3">
+  <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
+  <input kendoTextBox type="search" placeholder="Search" class="search-input k-w-full" rounded="full"
+    style="width: inherit;" />
+  <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
 </div>
 
-<kendo-grid [kendoGridBinding]="gridData2" [selectable]="selectableSettings" [resizable]="true" class="wrap-header-grid"
-    *ngIf="!false" class="bold-column-header cell-border-none k-mt-3">
+<div class="page-body w-120-sm">
+  <kendo-grid [kendoGridBinding]="gridData2" [selectable]="selectableSettings" [resizable]="true"
+    class="wrap-header-grid" *ngIf="!false" class="bold-column-header cell-border-none k-mt-3">
     <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
     <kendo-grid-column field="Steps" title="Steps"></kendo-grid-column>
     <kendo-grid-column field="Process" title="Process"></kendo-grid-column>
     <kendo-grid-column field="ExpectedQty" title="Qty"></kendo-grid-column>
     <kendo-grid-column field="Expedite" title="Unprocessed">
-        <ng-template kendoGridCellTemplate let-dataItem>
-            {{dataItem.Expedite ? 'Yes' : 'No'}}
-        </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem>
+        {{dataItem.Expedite ? 'Yes' : 'No'}}
+      </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="PartNum" title="Good"></kendo-grid-column>
     <kendo-grid-column field="Hold" title="Reject">
-        <ng-template kendoGridCellTemplate let-dataItem>
-            {{dataItem.Hold ? 'Yes' : 'No'}}
-        </ng-template>
+      <ng-template kendoGridCellTemplate let-dataItem>
+        {{dataItem.Hold ? 'Yes' : 'No'}}
+      </ng-template>
     </kendo-grid-column>
-</kendo-grid>
+  </kendo-grid>
+</div>
 
 <div class="k-d-flex k-gap-3 k-mt-3">
-    <button kendoButton type="button" rounded="large" themeColor="error" class="k-ml-auto"
-        style="width:6rem">Cancel</button>
-    <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem">Add</button>
+  <button kendoButton type="button" rounded="large" themeColor="error" class="k-ml-auto"
+    style="width:6rem">Cancel</button>
+  <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem">Add</button>
 </div>
