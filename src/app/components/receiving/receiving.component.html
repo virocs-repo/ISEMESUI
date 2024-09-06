@@ -23,9 +23,9 @@
   <button kendoButton (click)="doTestEditMode()">Test Edit Mode</button>
 </div> -->
 <div class="page-body k-m-10" *ngIf="!false">
-  <kendo-grid [data]="data" [selectable]="selectableSettings" [columnMenu]="columnMenuSettings" [filterable]="true"
-    [sortable]="true" [resizable]="true" [pageSize]="pageSize" [skip]="skip" [pageable]="true"
-    (pageChange)="pageChange($event)" class="grid-header-sm grid-header-bold">
+  <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings"
+    [columnMenu]="columnMenuSettings" [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
+    [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" class="grid-header-sm grid-header-bold">
     <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
     <kendo-grid-column field="receiptID" title="Receipt ID"></kendo-grid-column>
     <kendo-grid-column field="customerType" title="Receive From"></kendo-grid-column>
@@ -33,7 +33,7 @@
     <kendo-grid-column field="receivedOnBehalf" title="Received on Behalf"></kendo-grid-column>
     <kendo-grid-column field="receiptLocation" title="Receiving Location"></kendo-grid-column>
     <kendo-grid-column field="deliveryMode" title="Delivery Method"></kendo-grid-column>
-    <kendo-grid-column field="active" title="Active">
+    <kendo-grid-column field="active" title="Active" filter="boolean">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="k-d-flex">
           <span>{{dataItem.active?'Yes': 'No'}}</span>

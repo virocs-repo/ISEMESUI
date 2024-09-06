@@ -12,11 +12,11 @@ import { AppService } from 'src/app/services/app.service';
 })
 export class ReceivingComponent {
   readonly ICON = ICON;
-  public pageSize = 5;
-  public skip = 2;
-  public receipts: Receipt[] = [];
+  public pageSize = 10;
+  public skip = 0;
+  // public receipts: Receipt[] = [];
   // public gridData: Receipt[] = [];
-  public data: GridDataResult = { data: [], total: 0 };
+  public gridDataResult: GridDataResult = { data: [], total: 0 };
 
   isAddButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == 'Receiving Add')?.active ?? false;
   isEditButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Edit")?.active ?? false;
@@ -49,9 +49,9 @@ export class ReceivingComponent {
   private fetchdata() {
     this.apiService.getReceiptdata().subscribe({
       next: (v: any) => {
-        this.receipts = v;
-        this.data.data = this.receipts;
-        this.data.total = this.receipts.length
+        // this.receipts = v;
+        this.gridDataResult.data = v;
+        this.gridDataResult.total = v.length
         console.log(v);
       },
       error: (v: any) => { }
@@ -69,7 +69,7 @@ export class ReceivingComponent {
     { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
   ];
   doTestEditMode() {
-    this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.receipts[0]);
+    this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridDataResult.data[0]);
   }
   onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: Receipt) {
     console.log(e);
@@ -90,6 +90,7 @@ export class ReceivingComponent {
           next: (value) => {
             console.log(value);
             this.appService.successMessage(MESSAGES.DataSaved);
+            this.fetchdata()
           },
           error: (err) => {
             console.log(err);

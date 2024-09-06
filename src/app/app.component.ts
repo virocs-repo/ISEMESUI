@@ -4,6 +4,7 @@ import { AppService } from './services/app.service';
 import { DrawerItem, DrawerSelectEvent } from '@progress/kendo-angular-layout';
 import { Router } from '@angular/router';
 import { ApiService } from './services/api.service';
+import { ICON } from './services/app.interface';
 
 interface DrawerItemExtra extends DrawerItem {
   routerLink?: string;
@@ -19,12 +20,12 @@ export class AppComponent implements OnInit {
 
   public expanded = false;
   public items: Array<DrawerItemExtra> = [
-    { text: 'Receiving', icon: 'k-i-home', routerLink: '/receiving', selected: true },
-    { text: 'Inventory Move', icon: 'k-i-info', routerLink: '/inventory-move' },
-    { text: 'Shipping', icon: 'k-i-email', routerLink: '/shipping' },
-    { text: 'Inventory', icon: 'k-i-email', routerLink: '/inventory' },
-    { text: 'Customer Order/Request', icon: 'k-i-email', routerLink: '/customer-order' },
-    { text: 'Reports', icon: 'k-i-email', routerLink: '/reports' },
+    { text: 'Receiving', svgIcon: ICON.selectBoxIcon, routerLink: '/receiving', selected: true },
+    { text: 'Inventory Move', svgIcon: ICON.cartIcon, routerLink: '/inventory-move' },
+    { text: 'Shipping', svgIcon: ICON.exportIcon, routerLink: '/shipping' },
+    { text: 'Inventory', svgIcon: ICON.windowRestoreIcon, routerLink: '/inventory' },
+    { text: 'Customer Order/Request', svgIcon: ICON.jsIcon, routerLink: '/customer-order' },
+    { text: 'Reports', svgIcon: ICON.clipboardTextIcon, routerLink: '/reports' },
   ];
 
 
