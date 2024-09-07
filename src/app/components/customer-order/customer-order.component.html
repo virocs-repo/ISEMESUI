@@ -31,5 +31,5 @@
         <button kendoButton type="button" rounded="full" class="k-ml-auto" icon="close" size="small"
             (click)="closeDialog()"></button>
     </div>
-    <app-add-customer-request></app-add-customer-request>
+    <app-add-customer-request (cancel)="closeDialog()" ></app-add-customer-request>
 </kendo-dialog>

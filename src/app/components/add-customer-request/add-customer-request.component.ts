@@ -1,4 +1,4 @@
-import { Component, OnInit,ChangeDetectorRef,NgZone  } from '@angular/core';
+import { Component, OnInit,ChangeDetectorRef,NgZone, EventEmitter, Output  } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable,of  } from 'rxjs';
 import { CustomerService } from '../../services/customer.service';  // Adjust the path as necessary
@@ -13,7 +13,9 @@ export class AddCustomerRequestComponent implements OnInit {
 
 
   public columns: any[] = [];  // Array to hold column configurations
- 
+ // Create an EventEmitter to emit the cancel event to the parent
+@Output() cancel = new EventEmitter<void>();
+
   public gridData$: Observable<any[]> = of([]);  // Observable for grid data, initialized as empty array
   public customers$: Observable<any[]> = of([]);  // Observable for customers, initialized as empty array
  
@@ -92,13 +94,17 @@ export class AddCustomerRequestComponent implements OnInit {
     console.log('Selected Customer:', value);
     this.selectedCustomer =  value.customerID;  // Update the selectedCustomer with the selected value
   } 
-
+  cancelRequest(): void {
+    this.cancel.emit();  // Emit the cancel event when Cancel button is clicked
+  }
     
   onDeviceTypeChange(value: string): void {
 
     console.log('Selected Device Type:', value);
     this.selectedDeviceType = value;  // Update the selectedDeviceType with the selected value
   }
+
+
  // Function to load data from the API based on selected filters
  onSearch(): void {
   debugger;
