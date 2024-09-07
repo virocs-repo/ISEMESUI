@@ -3,7 +3,7 @@
     <div class="search-box k-ml-auto">
         <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
         <input kendoTextBox [(ngModel)]="searchTerm" (input)="onSearch()" type="search" placeholder="Search" class="search-input" rounded="full" />
-        <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="onSearch()">Search</button>
+        <!-- <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="onSearch()">Search</button> -->
     </div>
     <button rounded="full" themeColor="info" style="padding: 0.3rem 1.2rem" (click)="openDialog()" kendoButton>Add
         Customer Request</button>
@@ -11,7 +11,8 @@
 
 <div class="k-m-10" *ngIf="!false">
     <kendo-grid [data]="filteredGridData" [selectable]="selectableSettings" [columnMenu]="columnMenuSettings"
-        [filterable]="true" [sortable]="true" [resizable]="true">
+        [filterable]="true" [sortable]="true" [resizable]="true"     [filter]="gridFilter" 
+        (filterChange)="onFilterChange($event)">
         <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
 
         <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title"></kendo-grid-column>

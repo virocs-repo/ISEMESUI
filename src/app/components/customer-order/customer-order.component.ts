@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { process, State } from '@progress/kendo-data-query';  // For Kendo filtering
+
 @Component({
   selector: 'app-customer-order',
   templateUrl: './customer-order.component.html',
@@ -8,6 +10,10 @@ import { HttpClient } from '@angular/common/http';
 export class CustomerOrderComponent implements OnInit {
 
   public gridData: any[] = [];
+  public gridFilter: any = {
+    logic: 'and',  // Filter logic (can be 'and' or 'or')
+    filters: []
+  };
   public filteredGridData: any[] = [];
   public searchTerm: string = '';
   public columnData: any[] = [
@@ -71,7 +77,10 @@ export class CustomerOrderComponent implements OnInit {
         this.filteredGridData = data;  // Initialize with full data
       });
   }
-
+  onFilterChange(event: any): void {
+    this.gridFilter = event;
+    this.filteredGridData = process(this.gridData, { filter: this.gridFilter }).data;  // Apply filters
+  }
 
   onSearch(): void {
     if (this.searchTerm) {

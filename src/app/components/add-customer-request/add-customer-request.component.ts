@@ -19,7 +19,7 @@ export class AddCustomerRequestComponent implements OnInit {
  
   public selectedCustomer: any = null; // Selected customer ID
   public deviceTypes: string[] = ['Device', 'Hardware', 'All'];  // Array to hold device types
-  public selectedDeviceType: string='';  // Variable to hold the selected device type
+  public selectedDeviceType: string='Device';  // Variable to hold the selected device type
   public lotNumber: string | null = null;  // Lot number
   //public selectedRecords: any[] = []; // Array to track selected records
   public selectableSettings = { checkboxOnly: true, mode: 'multiple' };
@@ -71,8 +71,8 @@ export class AddCustomerRequestComponent implements OnInit {
      /*  { field: 'receiptID', title: 'Receipt ID', width: 100 },
       { field: 'inventoryID', title: 'Inventory ID', width: 100 },
       { field: 'hardwareType', title: 'Hardware Type', width: 150, template: (dataItem: any) => dataItem.hardwareType || 'N/A' }, */
-      { field: 'iseLotNum', title: 'ISE Lot Number', width: 120 },
-      { field: 'customerLotNum', title: 'Customer Lot Number', width: 120 },
+      { field: 'iseLotNum', title: 'ISE Lot Number', width: 100 },
+      { field: 'customerLotNum', title: 'Customer Lot Number', width: 100 },
       { field: 'expectedQty', title: 'Expected Quantity', width: 60 },
       { field: 'expedite', title: 'Expedite', width: 60, template: (dataItem: any) => dataItem.expedite ? 'Yes' : 'No' },
       { field: 'partNum', title: 'Part Number', width: 100 },
@@ -88,29 +88,38 @@ export class AddCustomerRequestComponent implements OnInit {
     ];
   }
   // Function to handle customer selection
-  onCustomerChange(value: any): void {
+ onCustomerChange(value: any): void {
     console.log('Selected Customer:', value);
     this.selectedCustomer =  value.customerID;  // Update the selectedCustomer with the selected value
-  }
+  } 
 
+    
   onDeviceTypeChange(value: string): void {
- 
+
     console.log('Selected Device Type:', value);
     this.selectedDeviceType = value;  // Update the selectedDeviceType with the selected value
   }
  // Function to load data from the API based on selected filters
  onSearch(): void {
+  debugger;
   const customerId = this.selectedCustomer;
   const goodsType = this.selectedDeviceType || 'All';  // Fallback to 'All' if undefined
   const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set
+
+
+
+
 // Assign the Observable directly to the gridData$
 this.gridData$ = this.customerService.getGridData(customerId, goodsType, lotNumber);
 
-
+/* this.customerService.getGridData(customerId, goodsType, lotNumber).subscribe(data => {
+  this.gridData$ = of(data);  // Reassign gridData$ with fresh data observable
+  this.cdr.detectChanges();   // Manually trigger change detection if needed
+}); */
  
 }
 
-  
+
 
   editHandler({ sender, rowIndex, columnIndex, dataItem }: CellClickEvent): void {
     // Adjust columnIndex by subtracting 1 to account for the checkbox column
@@ -136,7 +145,7 @@ this.gridData$ = this.customerService.getGridData(customerId, goodsType, lotNumb
 cellCloseHandler({ sender, dataItem, column }: any): void {
   // Check if the column being edited is 'shippedQty'
   if (column.field === 'shippedQty') {
-    debugger;
+  
     // The new value is already bound to the dataItem via ngModel
     console.log('Updated shippedQty:', dataItem.shippedQty);  // This should log the new value
   }
@@ -148,7 +157,7 @@ cellCloseHandler({ sender, dataItem, column }: any): void {
   submitForm(): void {
 
  
-debugger;
+
     const customerOrder: CustomerOrder = {
       CustomerOrderID: null,
       //CustomerId: this.selectedCustomer,
