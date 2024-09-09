@@ -4,6 +4,9 @@ import { Observable,of  } from 'rxjs';
 import { CustomerService } from '../../services/customer.service';  // Adjust the path as necessary
 import { GridComponent, CellClickEvent,SelectionEvent ,SaveEvent } from '@progress/kendo-angular-grid';
 import { CustomerOrder, CustomerOrderDetail, OrderRequest } from '../add-customer-request/customerorder'
+import { AppService } from 'src/app/services/app.service';
+import { Receipt, ICON, MESSAGES } from 'src/app/services/app.interface';
+
 @Component({
   selector: 'app-add-customer-request',
   templateUrl: './add-customer-request.component.html',
@@ -16,7 +19,8 @@ export class AddCustomerRequestComponent implements OnInit {
  // Create an EventEmitter to emit the cancel event to the parent
 @Output() cancel = new EventEmitter<void>();
 
-  public gridData$: Observable<any[]> = of([]);  // Observable for grid data, initialized as empty array
+  //public gridAddData$: Observable<any[]> = of([]);  // Observable for grid data, initialized as empty array
+  public gridAddData: any[] = [];
   public customers$: Observable<any[]> = of([]);  // Observable for customers, initialized as empty array
  
   public selectedCustomer: any = null; // Selected customer ID
@@ -41,7 +45,7 @@ export class AddCustomerRequestComponent implements OnInit {
     zip: '',
     country: ''
   };
-  constructor(private http: HttpClient,private cdr: ChangeDetectorRef,private ngZone: NgZone,private customerService: CustomerService) {}
+  constructor(private http: HttpClient,private cdr: ChangeDetectorRef,private ngZone: NgZone,private customerService: CustomerService,public appService: AppService) {}
 
   ngOnInit(): void {
     this.initializeColumns();
@@ -115,11 +119,34 @@ export class AddCustomerRequestComponent implements OnInit {
 
 
 
-// Assign the Observable directly to the gridData$
-this.gridData$ = this.customerService.getGridData(customerId, goodsType, lotNumber);
+// Assign the Observable directly to the gridAddData$
+//this.gridAddData$ = this.customerService.getGridData(customerId, goodsType, lotNumber);
+
+this.customerService.getGridData(customerId, goodsType, lotNumber).subscribe({
+  next: (data) => {
+    // Handle the data received from the API
+    
+    //this.gridAddData$ = of(data);
+    this.gridAddData = data;
+    //alert(data.length)
+    this.cdr.detectChanges();
+  },
+  error: (err) => {
+    // Handle the error
+    console.error('Error fetching grid data:', err);
+    //this.gridAddData$ = of([]);
+    this.gridAddData = [];
+    this.cdr.detectChanges();
+  },
+  complete: () => {
+    // Optionally handle the completion of the Observable
+    console.log('API call completed');
+  }
+});
+
 
 /* this.customerService.getGridData(customerId, goodsType, lotNumber).subscribe(data => {
-  this.gridData$ = of(data);  // Reassign gridData$ with fresh data observable
+  this.gridAddData$ = of(data);  // Reassign gridAddData$ with fresh data observable
   this.cdr.detectChanges();   // Manually trigger change detection if needed
 }); */
  
@@ -194,6 +221,7 @@ cellCloseHandler({ sender, dataItem, column }: any): void {
     this.customerService.processCustomerOrder(payload)
       .subscribe(response => {
         console.log('Form and records saved successfully', response);
+        this.appService.successMessage(MESSAGES.DataSaved);
       }, error => {
         console.error('Error saving form and records', error);
       });

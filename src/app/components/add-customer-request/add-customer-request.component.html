@@ -42,9 +42,9 @@
         Search
     </kendo-button>
     </div>
-      
+
       <kendo-grid 
-    [kendoGridBinding]="(gridData$ | async) || []" 
+      [data]="gridAddData" 
     class="k-my-3" 
     [height]="300" 
     [selectable]="{ checkboxOnly: true, mode: 'multiple' }" 
