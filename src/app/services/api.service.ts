@@ -39,4 +39,13 @@ export class ApiService {
   getShippingData() {
     return this.httpClient.get(`${API}v1/ise/shipment/shipmentdata`);
   }
+  getShipmentCategories() {
+    return this.httpClient.get(`${API}v1/ise/shipment/shipmentcategory`);
+  }
+  getShipmentTypes() {
+    return this.httpClient.get(`${API}v1/ise/shipment/shipmenttypes`);
+  }
+  getShipmentDetails(customerID: number) {
+    return this.httpClient.get(`${API}v1/ise/shipment/shipment-details?customerID=${customerID}`);
+  }
 }

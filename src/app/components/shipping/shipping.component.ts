@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
-import { ColumnMenuSettings, GridDataResult, SelectableSettings } from '@progress/kendo-angular-grid';
-import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
+import { Component, ViewChild } from '@angular/core';
+import { CellClickEvent, ColumnMenuSettings, GridDataResult, SelectableSettings } from '@progress/kendo-angular-grid';
+import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
-import { ICON, Receipt } from 'src/app/services/app.interface';
+import { ICON, MESSAGES, Receipt } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -28,6 +28,27 @@ export class ShippingComponent {
       },
       error: (v: any) => { }
     });
+    if (this.appService.shipmentCategories.length) {
+    } else {
+      this.apiService.getShipmentCategories().subscribe({
+        next: (shipmentCategories: any) => {
+          this.appService.shipmentCategories = shipmentCategories;
+          console.log({ shipmentCategories });
+        },
+        error: (v: any) => { }
+      })
+    }
+    if (this.appService.shipmentTypes.length) {
+    } else {
+      this.apiService.getShipmentTypes().subscribe({
+        next: (shipmentTypes: any) => {
+          this.appService.shipmentTypes = shipmentTypes;
+          console.log({ shipmentTypes });
+        },
+        error: (v: any) => { }
+      })
+    }
+
   }
   gridData4 = [
     {
@@ -89,30 +110,55 @@ export class ShippingComponent {
     this.isDialogOpen = false;
   }
 
-  rowActionMenu: MenuItem[] = [
-    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
-    { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
-    { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
-    { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
-  ];
   doTestEditMode() {
     // this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridData[0]);
   }
-  onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: Receipt) {
+
+  @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
+  rowActionMenu: MenuItem[] = [
+    { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
+    { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
+  ];
+  dataItemSelected!: Receipt;
+  selectedRowIndex: number = -1;
+  onCellClick(e: CellClickEvent): void {
+    console.log(e);
+    if (e.type === 'contextmenu') {
+      const originalEvent = e.originalEvent;
+      originalEvent.preventDefault();
+      this.dataItemSelected = e.dataItem;
+      this.selectedRowIndex = e.rowIndex;
+      this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
+    }
+  }
+  onSelectRowActionMenu(e: ContextMenuSelectEvent) {
+    const dataItem = this.dataItemSelected;
     console.log(e);
     console.log(dataItem);
     dataItem.holdComments = dataItem.holdComments || '';
     switch (e.item.text) {
-      case 'Void Data':
-        break;
       case 'View Data':
+        this.appService.sharedData.shipping.dataItem = dataItem
+        this.appService.sharedData.shipping.isEditMode = false;
+        this.appService.sharedData.shipping.isViewMode = true;
+        // access the same in receipt component
+        this.openDialog()
         break;
       case 'Edit Data':
+        this.appService.sharedData.shipping.dataItem = dataItem
+        this.appService.sharedData.shipping.isEditMode = true;
+        this.appService.sharedData.shipping.isViewMode = false;
+        // access the same in receipt component
+        this.openDialog()
         break;
 
       default:
         break;
     }
-
+  }
+  rowCallback = (context: any) => {
+    return {
+      'highlighted-row': context.index === this.selectedRowIndex
+    };
   }
 }

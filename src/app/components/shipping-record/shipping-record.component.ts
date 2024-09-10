@@ -1,4 +1,8 @@
 import { Component } from '@angular/core';
+import { GridDataResult } from '@progress/kendo-angular-grid';
+import { ApiService } from 'src/app/services/api.service';
+import { Customer, ReceiptLocation, ShipmentCategory, ShipmentDetails } from 'src/app/services/app.interface';
+import { AppService } from 'src/app/services/app.service';
 
 @Component({
   selector: 'app-shipping-record',
@@ -6,6 +10,67 @@ import { Component } from '@angular/core';
   styleUrls: ['./shipping-record.component.scss']
 })
 export class ShippingRecordComponent {
+  customer: Customer[] = []
+  customerSelected: Customer | undefined;
+
+  receiptLocation: ReceiptLocation[] = []
+  receiptLocationSelected: ReceiptLocation | undefined;
+  senderInformation: string = ''
+  shippingNo: string = ''
+  shipmentCategories: ShipmentCategory[] = []
+  shipmentCategorySelected: ShipmentCategory | undefined;
+
+  gridDataResult: GridDataResult = { data: [], total: 0 };
+  customerID: number = 0;
+  isDisabled: any = {
+    shipBtn: false,
+    clearBtn: false
+  }
+  constructor(public appService: AppService, private apiService: ApiService) { }
+
+  ngOnInit(): void {
+    this.customer = this.appService.masterData.customer;
+    this.receiptLocation = this.appService.masterData.receiptLocation;
+    this.shipmentCategories = this.appService.shipmentCategories
+
+    if (this.appService.sharedData.shipping.isViewMode || this.appService.sharedData.shipping.isEditMode) {
+      const dataItem = this.appService.sharedData.shipping.dataItem;
+      console.log({ dataItem })
+      this.customerSelected = this.customer.find(c => c.customerID == dataItem.customerID);
+      // this.shipmentCategorySelected = this.shipmentCategories.find(c => c.shipmentCategoryID == dataItem.shipmentTypeID);
+
+      this.receiptLocationSelected = this.receiptLocation.find(c => c.receiptLocationID == dataItem.receiptLocationID);
+      this.customerID = dataItem.customerID;
+      this.fetchData();
+    }
+    if (this.appService.sharedData.shipping.isViewMode) {
+      this.isDisabled.shipBtn = true;
+      this.isDisabled.clearBtn = true;
+    }
+  }
+  private fetchData() {
+    if (!this.customerID) {
+      return;
+    }
+    this.apiService.getShipmentDetails(this.customerID).subscribe({
+      next: (shipmentDetails: ShipmentDetails[] | any) => {
+        this.gridDataResult.data = shipmentDetails;
+        this.gridDataResult.data.forEach(v => {
+          v.shipmentTypeSelected = this.appService.shipmentTypes.find(s => s.shipmentTypeID == v.shipmentTypeID);
+        })
+        console.log({ shipmentDetails });
+      },
+      error: (v: any) => { }
+    });
+  }
+  ship() {
+    if (!this.customerSelected) {
+      this.appService.errorMessage('Please select customer');
+      return;
+    }
+    this.appService.errorMessage('Work in progess');
+  }
+  // test data
   public selectedValues: string = "";
   public listItems: Array<string> = [
     "Baseball",
@@ -16,40 +81,6 @@ export class ShippingRecordComponent {
     "Table Tennis",
     "Tennis",
     "Volleyball",
-  ];
-  gridData4 = [
-    {
-      lot: 'LT453454',
-      Location: 'Shelf 10',
-      Person: 'Peter',
-      Qty: 100,
-      SystemUser: 'Eswar',
-      Status: 'Checked In'
-    },
-    {
-      lot: 'LT453465',
-      Location: 'Shelf 09',
-      Person: 'John',
-      Qty: 100,
-      SystemUser: 'surya',
-      Status: 'Checked Out'
-    },
-    {
-      lot: 'LT453476',
-      Location: 'Shelf 08',
-      Person: 'Sam',
-      Qty: 100,
-      SystemUser: 'Eswar',
-      Status: 'Checked In'
-    },
-    {
-      lot: 'LT453487',
-      Location: 'Shelf 07',
-      Person: 'Peter',
-      Qty: 100,
-      SystemUser: 'surya',
-      Status: 'Checked Out'
-    },
   ];
 
   selectableSettings: any = {
@@ -63,10 +94,4 @@ export class ShippingRecordComponent {
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
-  public items: any[] = [
-    { text: 'Item1', icon: 'edit' },
-    { text: 'Item2', icon: 'delete' },
-    { text: 'Item3', icon: 'copy' }
-  ];
-
 }
