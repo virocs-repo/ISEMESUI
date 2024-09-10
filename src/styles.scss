@@ -243,3 +243,8 @@ body {
 .k-input-solid.invalid {
   --kendo-color-border: var(--kendo-color-error);
 }
+
+.highlighted-row,
+.highlighted-row:hover {
+  background-color: var(--kendo-color-primary-emphasis) !important;
+}
