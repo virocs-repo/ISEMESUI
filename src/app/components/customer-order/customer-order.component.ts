@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { process, State } from '@progress/kendo-data-query';  // For Kendo filtering
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-customer-order',
@@ -17,13 +18,13 @@ export class CustomerOrderComponent implements OnInit {
   public filteredGridData: any[] = [];
   public searchTerm: string = '';
   public columnData: any[] = [
-/*     { field: 'customerOrderID', title: 'Customer Order ID' },
-    { field: 'customerOrderDetailID', title: 'Customer Order Detail ID' },
-    { field: 'customerId', title: 'Customer ID' },
-    { field: 'customerName', title: 'Customer Name' },
-    { field: 'goodsType', title: 'Goods Type' },
-    { field: 'inventoryID', title: 'Inventory ID' },
-    { field: 'hardwareType', title: 'Hardware Type' }, */
+    /*     { field: 'customerOrderID', title: 'Customer Order ID' },
+        { field: 'customerOrderDetailID', title: 'Customer Order Detail ID' },
+        { field: 'customerId', title: 'Customer ID' },
+        { field: 'customerName', title: 'Customer Name' },
+        { field: 'goodsType', title: 'Goods Type' },
+        { field: 'inventoryID', title: 'Inventory ID' },
+        { field: 'hardwareType', title: 'Hardware Type' }, */
     { field: 'iseLotNum', title: 'ISE Lot Number' },
     { field: 'customerLotNum', title: 'Customer Lot Number' },
     { field: 'shippedQty', title: 'Shipped Quantity' },
@@ -64,14 +65,14 @@ export class CustomerOrderComponent implements OnInit {
     this.isDialogOpen = false;
   }
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
     this.loadGridData();
   }
 
   loadGridData(): void {
-    this.http.get<any[]>('https://localhost:44303/api/v1/ise/inventory/customer/getallorder')
+    this.http.get<any[]>(environment.apiUrl + 'v1/ise/inventory/customer/getallorder')
       .subscribe((data) => {
         this.gridData = data;
         this.filteredGridData = data;  // Initialize with full data

@@ -12,23 +12,26 @@
   </div>
 </div>
 <div class="k-m-10" *ngIf="!false">
-  <kendo-grid [kendoGridBinding]="gridData4" [selectable]="selectableSettings" [resizable]="true"
+  <!-- "shipmentId": 1,
+  "shipmentLineItemID": 1,
+  "inventoryID": 3,
+  "lotNum": "ISE00001",
+  "customerVendor": "Customer",
+  "customerID": 1,
+  "trackingNum": "SH10001",
+  "location": "San Francisco, CA",
+  "customer": "Amazon",
+  "address": "410 Terry Ave N:Suite 100:Seattle:WA:98109:USA",
+  "goodsType": "Device" -->
+  <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
     class="bold-column-header cell-border-none" [filterable]="true">
     <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-    <kendo-grid-column field="lot" title="Lot#"></kendo-grid-column>
-    <kendo-grid-column field="Location" title="Customer/Vendor"></kendo-grid-column>
-    <kendo-grid-column field="Person" title="Tracking#"></kendo-grid-column>
-    <kendo-grid-column field="SystemUser" title="Customer"></kendo-grid-column>
-    <kendo-grid-column field="Status" title="Address">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <div class="k-d-flex">
-          <span>{{dataItem.active?'Yes': 'No'}}</span>
-          <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
-          <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
-            (select)="onSelectRowActionMenu($event, dataItem)"></kendo-contextmenu>
-        </div>
-      </ng-template>
-    </kendo-grid-column>
+    <kendo-grid-column field="lotNum" title="Lot#"></kendo-grid-column>
+    <kendo-grid-column field="customerVendor" title="Customer/Vendor"></kendo-grid-column>
+    <kendo-grid-column field="trackingNum" title="Tracking#"></kendo-grid-column>
+    <kendo-grid-column field="customer" title="Customer"></kendo-grid-column>
+    <kendo-grid-column field="address" title="Address"></kendo-grid-column>
+    <kendo-grid-column field="goodsType" title="Goods Type"></kendo-grid-column>
   </kendo-grid>
 </div>
 <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'68%'" class="dialog-round">

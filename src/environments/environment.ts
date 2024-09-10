@@ -10,6 +10,6 @@ export const environment = {
     scopes: ['user.read'],
     uri: 'ENTER_URI'
   },
-  apiUrl: 'https://localhost:44303/api/',
+  apiUrl: 'https://localhost:44341/api/',
   ACCESS_CODE: ''
 };

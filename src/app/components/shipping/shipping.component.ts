@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
-import { ColumnMenuSettings, SelectableSettings } from '@progress/kendo-angular-grid';
+import { ColumnMenuSettings, GridDataResult, SelectableSettings } from '@progress/kendo-angular-grid';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
+import { ApiService } from 'src/app/services/api.service';
 import { ICON, Receipt } from 'src/app/services/app.interface';
+import { AppService } from 'src/app/services/app.service';
 
 @Component({
   selector: 'app-shipping',
@@ -10,7 +12,23 @@ import { ICON, Receipt } from 'src/app/services/app.interface';
 })
 export class ShippingComponent {
   readonly ICON = ICON;
+  gridDataResult: GridDataResult = { data: [], total: 0 };
 
+  constructor(public appService: AppService, private apiService: ApiService) { }
+
+  ngOnInit(): void {
+    this.fetchdata();
+  }
+  private fetchdata() {
+    this.apiService.getShippingData().subscribe({
+      next: (v: any) => {
+        this.gridDataResult.data = v;
+        this.gridDataResult.total = v.length
+        console.log(v);
+      },
+      error: (v: any) => { }
+    });
+  }
   gridData4 = [
     {
       lot: 'LT453454',
@@ -71,10 +89,6 @@ export class ShippingComponent {
     this.isDialogOpen = false;
   }
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
   rowActionMenu: MenuItem[] = [
     { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
     { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
