@@ -35,4 +35,17 @@ export class ApiService {
   postProcessHardware(body: unknown) {
     return this.httpClient.post(`${API}v1/ise/inventory/processHardware`, body);
   }
+  // Shipping
+  getShippingData() {
+    return this.httpClient.get(`${API}v1/ise/shipment/shipmentdata`);
+  }
+  getShipmentCategories() {
+    return this.httpClient.get(`${API}v1/ise/shipment/shipmentcategory`);
+  }
+  getShipmentTypes() {
+    return this.httpClient.get(`${API}v1/ise/shipment/shipmenttypes`);
+  }
+  getShipmentDetails(customerID: number) {
+    return this.httpClient.get(`${API}v1/ise/shipment/shipment-details?customerID=${customerID}`);
+  }
 }

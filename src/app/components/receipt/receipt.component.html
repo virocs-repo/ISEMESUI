@@ -159,8 +159,8 @@
     </div>
   </div>
   <div class="page-body">
-    <kendo-grid *ngIf="!false" [kendoGridBinding]="gridDataDevice" [selectable]="selectableSettings" [filterable]="true"
-      [sortable]="true" [resizable]="true" class="bold-column-header wrap-header-grid">
+    <kendo-grid *ngIf="!false" [kendoGridBinding]="gridDataDevice" [selectable]="selectableSettings" [sortable]="true"
+      [resizable]="true" class="bold-column-header wrap-header-grid">
       <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
       <kendo-grid-column field="iseLotNum" title="ISELot#">
         <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
@@ -272,8 +272,8 @@
     </div>
   </div>
   <div class="page-body w-120-sm">
-    <kendo-grid [kendoGridBinding]="gridDataHardware" [selectable]="selectableSettings" [filterable]="true"
-      [sortable]="true" [resizable]="true" class="bold-column-header wrap-header-grid" *ngIf="!false">
+    <kendo-grid [kendoGridBinding]="gridDataHardware" [selectable]="selectableSettings" [sortable]="true"
+      [resizable]="true" class="bold-column-header wrap-header-grid" *ngIf="!false">
       <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
       <kendo-grid-column field="serialNumber" title="Serial#">
         <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">

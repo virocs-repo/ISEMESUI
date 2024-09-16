@@ -25,8 +25,8 @@
 <div class="page-body k-m-10" *ngIf="!false">
   <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings"
     [columnMenu]="columnMenuSettings" [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
-    [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" class="grid-header-sm grid-header-bold">
-    <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+    [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" class="grid-header-sm grid-header-bold"
+    (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
     <kendo-grid-column field="receiptID" title="Receipt ID"></kendo-grid-column>
     <kendo-grid-column field="customerType" title="Receive From"></kendo-grid-column>
     <kendo-grid-column field="customerVendor" title="Customer / Vendor"></kendo-grid-column>
@@ -37,14 +37,17 @@
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="k-d-flex">
           <span>{{dataItem.active?'Yes': 'No'}}</span>
-          <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
+          <!-- <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
           <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
-            (select)="onSelectRowActionMenu($event, dataItem)"></kendo-contextmenu>
+            (select)="onSelectRowActionMenuV1($event, dataItem)"></kendo-contextmenu> -->
         </div>
       </ng-template>
     </kendo-grid-column>
   </kendo-grid>
 </div>
+
+<kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
+  #gridContextMenu></kendo-contextmenu>
 
 <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'75%'"
   class="dialog-round receipt-dialog">

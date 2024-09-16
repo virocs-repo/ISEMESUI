@@ -146,3 +146,25 @@ export interface UserData {
   firstName: string;
   email: string
 }
+
+export interface ShipmentCategory {
+  shipmentCategoryID: number
+  shipmentCategoryName: string
+}
+export interface ShipmentType {
+  shipmentTypeID: number
+  shipmentTypeName: string
+}
+export interface ShipmentDetails {
+  inventoryID: number;
+  shipmentLineItemID: number;
+  customerLotNum: string;
+  iseLotNum: string;
+  goodsType: string;
+  partNum: string;
+  currentQty: number;
+  shipmentQty: number;
+  shipmentTypeID: number;
+  shipmentType: string;
+  address: string;
+}

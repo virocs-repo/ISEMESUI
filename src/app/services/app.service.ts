@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MasterData, UserData } from './app.interface';
+import { MasterData, ShipmentCategory, ShipmentType, UserData } from './app.interface';
 import { NotificationService } from '@progress/kendo-angular-notification';
 
 
@@ -47,14 +47,14 @@ export class AppService {
   }
   sharedData: {
     receiving: SharedInfo
+    shipping: SharedInfo
   } = {
-      receiving: {
-        isEditMode: false,
-        isViewMode: false,
-        dataItem: {}
-      }
+      receiving: { isEditMode: false, isViewMode: false, dataItem: {} },
+      shipping: { isEditMode: false, isViewMode: false, dataItem: {} }
     }
   userData: UserData = { email: '', name: '', firstName: '' }
+  shipmentCategories: Array<ShipmentCategory> = Array();
+  shipmentTypes: Array<ShipmentType> = Array();
 
   constructor(private notificationService: NotificationService) {
     const up = localStorage.getItem('UserPreferences');
