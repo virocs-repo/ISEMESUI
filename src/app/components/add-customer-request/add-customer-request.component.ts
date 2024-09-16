@@ -48,6 +48,8 @@ export class AddCustomerRequestComponent implements OnInit {
   constructor(private http: HttpClient,private cdr: ChangeDetectorRef,private ngZone: NgZone,private customerService: CustomerService,public appService: AppService) {}
 
   ngOnInit(): void {
+
+    console.log('Component initialized or reloaded');
     this.initializeColumns();
     this.customers$ = this.customerService.getCustomers();
     
@@ -56,7 +58,7 @@ export class AddCustomerRequestComponent implements OnInit {
 
   
     onSelectionChange(event: any): void {
-      debugger;
+     
       (event.selectedRows || []).forEach((row: { dataItem: any }) => this.selectedRecords.add({
         CustomerOrderDetailID: null, // Assuming new records
         InventoryID: row.dataItem.inventoryID,
@@ -95,8 +97,14 @@ export class AddCustomerRequestComponent implements OnInit {
   }
   // Function to handle customer selection
  onCustomerChange(value: any): void {
-    console.log('Selected Customer:', value);
-    this.selectedCustomer =  value.customerID;  // Update the selectedCustomer with the selected value
+   if (value && value.customerID) {
+    this.selectedCustomer = value.customerID;
+    console.log('Customer selected:', this.selectedCustomer);
+  } else {
+    this.selectedCustomer = null;
+    console.log('Customer selection cleared');
+    
+  }
   } 
   cancelRequest(): void {
     this.cancel.emit();  // Emit the cancel event when Cancel button is clicked
@@ -111,7 +119,7 @@ export class AddCustomerRequestComponent implements OnInit {
 
  // Function to load data from the API based on selected filters
  onSearch(): void {
-  debugger;
+  
   const customerId = this.selectedCustomer;
   const goodsType = this.selectedDeviceType || 'All';  // Fallback to 'All' if undefined
   const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set

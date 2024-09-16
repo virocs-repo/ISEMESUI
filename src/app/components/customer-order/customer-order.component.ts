@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { process, State } from '@progress/kendo-data-query';  // For Kendo filtering
+import { CustomerService } from '../../services/customer.service';
 
 @Component({
   selector: 'app-customer-order',
@@ -64,18 +65,18 @@ export class CustomerOrderComponent implements OnInit {
     this.isDialogOpen = false;
   }
 
-  constructor(private http: HttpClient) {}
+  constructor(private customerService: CustomerService) {}
 
   ngOnInit(): void {
     this.loadGridData();
   }
 
   loadGridData(): void {
-    this.http.get<any[]>('https://localhost:44303/api/v1/ise/inventory/customer/getallorder')
-      .subscribe((data) => {
-        this.gridData = data;
-        this.filteredGridData = data;  // Initialize with full data
-      });
+    this.customerService.getallconsumersGridData().subscribe((data) => {
+      this.gridData = data;
+      this.filteredGridData = data;  // Initialize with full data
+    });
+  
   }
   onFilterChange(event: any): void {
     this.gridFilter = event;

@@ -14,8 +14,12 @@ export class LoginComponent {
   readonly ICON = ICON
   isPasswordVisible: boolean = false;
   isRememberMeChecked: boolean = false;
-  email: string = '';
+  username: string = '';
   password: string = '';
+  external: boolean = false; // Set to true or false based on your use case
+  email: string = '';
+  idToken: string = ''; 
+ 
 
   constructor(private authService: AuthService, private msalService: MsalService, private apiService: ApiService,
     private appService: AppService
@@ -30,6 +34,7 @@ export class LoginComponent {
     if (this.email == 'admin' && this.password == 'admin') {
       this.authService.loginSuccess();
     } else {
+     
       this.getUserPreference(this.email, "string")
     }
   }
@@ -43,9 +48,20 @@ export class LoginComponent {
         const email = authenticationResult.account.username;
         this.getUserPreference(email, idToken);
         alert(`Welcome ${name} (${email})`);
+
+        debugger;
+
         console.log({ name });
         console.log({ email });
         const firstName = this.appService.extractFirstName(name);
+       /*  const loginData = {
+          username: this.username,
+          password: this.password,
+          external: this.external,
+          email: this.email,
+          idToken: this.idToken
+        }; 
+        this.apiService.login(loginData)*/
         this.appService.saveUserInfo({ name, email, firstName })
       },
       error: (error) => console.log(error)

@@ -4,13 +4,18 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { OrderRequest } from '../components/add-customer-request/customerorder';
+import { environment } from 'src/environments/environment';
 
+const API = environment.apiUrl;
 @Injectable({
   providedIn: 'root'
 })
 export class CustomerService {
 
-  private baseUrl = 'https://localhost:44303/api/v1/ise/inventory';  // Base URL for the API
+  private baseUrl = `${API}v1/ise/inventory`;
+  
+  
+  // Base URL for the API
 
   constructor(private http: HttpClient) { }
 
@@ -25,7 +30,10 @@ export class CustomerService {
     const url = `${this.baseUrl}/customer/inventory?customerId=${customerId}&goodsType=${goodsType}&lotNumber=${lotNumber}`;
     return this.http.get<any[]>(url);  // Return an Observable of the HTTP GET request
   }
-
+  getallconsumersGridData(): Observable<any[]> {
+    const url = `${this.baseUrl}/customer/getallorder`;
+    return this.http.get<any[]>(url);  // Return an Observable of the HTTP GET request
+  }
   processCustomerOrder(payload: OrderRequest): Observable<any> {
     const body = {
       LoginId: 1,

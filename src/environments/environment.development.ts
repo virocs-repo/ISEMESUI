@@ -1,14 +1,15 @@
 export const environment = {
   msalConfig: {
     auth: {
-      clientId: "0addb380-e2a1-46ec-8197-d93a34f13a10", // Application (client) ID from the app registration
-      authority: "https://login.microsoftonline.com/cc04fc65-6f74-4864-90c9-f9aa6354d17b", // The Azure cloud instance and the app's sign-in audience (tenant ID, common, organizations, or consumers)
-      redirectUri: "/"
+      clientId: "ebddece1-c584-4f09-81f4-56bbf059f4cb", // Replace with your actual Azure AD Application (client) ID
+      authority: "https://login.microsoftonline.com/b7066282-ee4d-4f53-a68a-e274fb51a9c1", // Replace with your Azure AD tenant ID or "common" for multi-tenant apps
+      
+      redirectUri: "/",
     }
   },
   apiConfig: {
     scopes: ['user.read'],
-    uri: 'ENTER_URI'
+    uri: 'https://graph.microsoft.com/v1.0/me'
   },
   apiUrl: 'https://localhost:44303/api/',
   ACCESS_CODE: ''
