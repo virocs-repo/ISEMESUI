@@ -69,6 +69,8 @@ export class AddCustomerRequestComponent implements OnInit {
       ShippedQty: Number(row.dataItem.shippedQty),
       RecordStatus: 'I'
     }));
+
+     
   }
 
   initializeColumns(): void {
@@ -125,6 +127,9 @@ export class AddCustomerRequestComponent implements OnInit {
 
       // Restrict editing to the 'shippedQty' column only
       if (clickedColumn === 'shippedQty') {
+
+         
+      
         sender.editCell(rowIndex, sender.columns.toArray()[columnIndex], dataItem);
 
       } else {
@@ -134,7 +139,7 @@ export class AddCustomerRequestComponent implements OnInit {
       sender.closeCell();  // Close the cell if the checkbox column is clicked
     }
 
-    //alert(dataItem.shippedQty);
+   
   }
 
   cellCloseHandler({ sender, dataItem, column }: any): void {
@@ -155,8 +160,8 @@ export class AddCustomerRequestComponent implements OnInit {
 
     const customerOrder: CustomerOrder = {
       CustomerOrderID: null,
-      //CustomerId: this.selectedCustomer,
-      CustomerId: 1,
+      CustomerId: this.customerSelected?.customerID || 1,
+      //CustomerId: 1,
       OQA: this.formData.oqa,
       Bake: this.formData.bake,
       PandL: this.formData.pl,
@@ -174,20 +179,38 @@ export class AddCustomerRequestComponent implements OnInit {
       Active: true,
       CustomerOrderDetails: Array.from(this.selectedRecords)
     };
-
+ 
     const payload: OrderRequest = {
       CustomerOrder: [customerOrder]
     };
 
-
-    this.customerService.processCustomerOrder(payload)
-      .subscribe(response => {
-        console.log('Form and records saved successfully', response);
+    this.apiService.processCustomerOrder(payload).subscribe({
+      next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
-      }, error => {
-        console.error('Error saving form and records', error);
-      });
+        
+        
+      },
+      error: (err) => {
+        this.appService.errorMessage(MESSAGES.DataSaveError);
+        console.log(err);
+      }
+    });
 
+
+    const customerId = this.customerSelected?.customerID || 1;
+    const goodsType = this.deviceTypeSelected || 'All';  // Fallback to 'All' if undefined
+    const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set
+
+    this.apiService.getInventory(customerId, goodsType, lotNumber).subscribe({
+      next: (res: any) => {
+        console.log(res);
+        this.gridDataResult.data = res;
+      },
+      error: (err) => {
+        this.gridDataResult.data = []
+      }
+    });
+  
 
   }
 

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { OrderRequest } from '../components/add-customer-request/customerorder';
 
 const API = environment.apiUrl;
 
@@ -52,5 +53,14 @@ export class ApiService {
   getInventory(customerId: number, goodsType: string, lotNumber: string) {
     const url = `${API}v1/ise/inventory/customer/inventory?customerId=${customerId}&goodsType=${goodsType}&lotNumber=${lotNumber}`;
     return this.httpClient.get(url);
+  }
+
+  processCustomerOrder(payload: OrderRequest)  {
+    const body = {
+      LoginId: 1,
+      InputJSON: JSON.stringify(payload)
+    };
+    return this.httpClient.post(`${API}v1/ise/inventory/customer/addcustomerorder`, body);
+  
   }
 }
