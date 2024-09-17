@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { process, State } from '@progress/kendo-data-query';  // For Kendo filtering
 import { environment } from 'src/environments/environment';
+import { ICON } from 'src/app/services/app.interface';
 
 @Component({
   selector: 'app-customer-order',
@@ -9,6 +10,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./customer-order.component.scss']
 })
 export class CustomerOrderComponent implements OnInit {
+  readonly ICON = ICON
 
   public gridData: any[] = [];
   public gridFilter: any = {

@@ -48,4 +48,9 @@ export class ApiService {
   getShipmentDetails(customerID: number) {
     return this.httpClient.get(`${API}v1/ise/shipment/shipment-details?customerID=${customerID}`);
   }
+  // Customer Orders
+  getInventory(customerId: number, goodsType: string, lotNumber: string) {
+    const url = `${API}v1/ise/inventory/customer/inventory?customerId=${customerId}&goodsType=${goodsType}&lotNumber=${lotNumber}`;
+    return this.httpClient.get(url);
+  }
 }

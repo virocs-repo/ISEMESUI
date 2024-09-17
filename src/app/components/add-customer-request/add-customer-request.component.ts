@@ -1,11 +1,10 @@
-import { Component, OnInit,ChangeDetectorRef,NgZone, EventEmitter, Output  } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable,of  } from 'rxjs';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { CustomerService } from '../../services/customer.service';  // Adjust the path as necessary
-import { GridComponent, CellClickEvent,SelectionEvent ,SaveEvent } from '@progress/kendo-angular-grid';
-import { CustomerOrder, CustomerOrderDetail, OrderRequest } from '../add-customer-request/customerorder'
+import { CellClickEvent, GridDataResult } from '@progress/kendo-angular-grid';
+import { CustomerOrder, OrderRequest } from '../add-customer-request/customerorder'
 import { AppService } from 'src/app/services/app.service';
-import { Receipt, ICON, MESSAGES } from 'src/app/services/app.interface';
+import { ICON, MESSAGES, Customer } from 'src/app/services/app.interface';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-add-customer-request',
@@ -14,19 +13,19 @@ import { Receipt, ICON, MESSAGES } from 'src/app/services/app.interface';
 })
 export class AddCustomerRequestComponent implements OnInit {
 
+  gridDataResult: GridDataResult = { data: [], total: 0 };
+  customer: Customer[] = []
+  customerSelected: Customer | undefined;
+  deviceTypes: string[] = ['Device', 'Hardware', 'All'];  // Array to hold device types
+  deviceTypeSelected: string = 'Device';  // Variable to hold the selected device type
+  lotNumber: string | null = null;  // Lot number
+  // below code can be changed/removed
+
 
   public columns: any[] = [];  // Array to hold column configurations
- // Create an EventEmitter to emit the cancel event to the parent
-@Output() cancel = new EventEmitter<void>();
+  // Create an EventEmitter to emit the cancel event to the parent
+  @Output() cancel = new EventEmitter<void>();
 
-  //public gridAddData$: Observable<any[]> = of([]);  // Observable for grid data, initialized as empty array
-  public gridAddData: any[] = [];
-  public customers$: Observable<any[]> = of([]);  // Observable for customers, initialized as empty array
- 
-  public selectedCustomer: any = null; // Selected customer ID
-  public deviceTypes: string[] = ['Device', 'Hardware', 'All'];  // Array to hold device types
-  public selectedDeviceType: string='Device';  // Variable to hold the selected device type
-  public lotNumber: string | null = null;  // Lot number
   //public selectedRecords: any[] = []; // Array to track selected records
   public selectableSettings = { checkboxOnly: true, mode: 'multiple' };
   public selectedRecords: Set<any> = new Set<any>(); // Use Set to track unique selected records
@@ -45,40 +44,38 @@ export class AddCustomerRequestComponent implements OnInit {
     zip: '',
     country: ''
   };
-  constructor(private http: HttpClient,private cdr: ChangeDetectorRef,private ngZone: NgZone,private customerService: CustomerService,public appService: AppService) {}
+  constructor(private customerService: CustomerService, public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
+    this.customer = this.appService.masterData.customer;
 
     console.log('Component initialized or reloaded');
     this.initializeColumns();
-    this.customers$ = this.customerService.getCustomers();
-    
- 
   }
 
-  
-    onSelectionChange(event: any): void {
-     
-      (event.selectedRows || []).forEach((row: { dataItem: any }) => this.selectedRecords.add({
-        CustomerOrderDetailID: null, // Assuming new records
-        InventoryID: row.dataItem.inventoryID,
-        ShippedQty: Number(row.dataItem.shippedQty),
-        RecordStatus: 'I'
-      }));
-    
-      (event.deselectedRows || []).forEach((row: { dataItem: any }) => this.selectedRecords.delete({
-        CustomerOrderDetailID: null,
-        InventoryID: row.dataItem.inventoryID,
-        ShippedQty: Number(row.dataItem.shippedQty),
-        RecordStatus: 'I'
-      }));
-    }
+
+  onSelectionChange(event: any): void {
+
+    (event.selectedRows || []).forEach((row: { dataItem: any }) => this.selectedRecords.add({
+      CustomerOrderDetailID: null, // Assuming new records
+      InventoryID: row.dataItem.inventoryID,
+      ShippedQty: Number(row.dataItem.shippedQty),
+      RecordStatus: 'I'
+    }));
+
+    (event.deselectedRows || []).forEach((row: { dataItem: any }) => this.selectedRecords.delete({
+      CustomerOrderDetailID: null,
+      InventoryID: row.dataItem.inventoryID,
+      ShippedQty: Number(row.dataItem.shippedQty),
+      RecordStatus: 'I'
+    }));
+  }
 
   initializeColumns(): void {
     this.columns = [
-     /*  { field: 'receiptID', title: 'Receipt ID', width: 100 },
-      { field: 'inventoryID', title: 'Inventory ID', width: 100 },
-      { field: 'hardwareType', title: 'Hardware Type', width: 150, template: (dataItem: any) => dataItem.hardwareType || 'N/A' }, */
+      /*  { field: 'receiptID', title: 'Receipt ID', width: 100 },
+       { field: 'inventoryID', title: 'Inventory ID', width: 100 },
+       { field: 'hardwareType', title: 'Hardware Type', width: 150, template: (dataItem: any) => dataItem.hardwareType || 'N/A' }, */
       { field: 'iseLotNum', title: 'ISE Lot Number', width: 100 },
       { field: 'customerLotNum', title: 'Customer Lot Number', width: 100 },
       { field: 'expectedQty', title: 'Expected Quantity', width: 60 },
@@ -95,70 +92,27 @@ export class AddCustomerRequestComponent implements OnInit {
       // { field: 'active', title: 'Active', width: 80, template: (dataItem: any) => dataItem.active ? 'Yes' : 'No' }
     ];
   }
-  // Function to handle customer selection
- onCustomerChange(value: any): void {
-   if (value && value.customerID) {
-    this.selectedCustomer = value.customerID;
-    console.log('Customer selected:', this.selectedCustomer);
-  } else {
-    this.selectedCustomer = null;
-    console.log('Customer selection cleared');
-    
-  }
-  } 
+
   cancelRequest(): void {
     this.cancel.emit();  // Emit the cancel event when Cancel button is clicked
   }
-    
-  onDeviceTypeChange(value: string): void {
 
-    console.log('Selected Device Type:', value);
-    this.selectedDeviceType = value;  // Update the selectedDeviceType with the selected value
+  // Function to load data from the API based on selected filters
+  onSearch(): void {
+    const customerId = this.customerSelected?.customerID || 1;
+    const goodsType = this.deviceTypeSelected || 'All';  // Fallback to 'All' if undefined
+    const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set
+
+    this.apiService.getInventory(customerId, goodsType, lotNumber).subscribe({
+      next: (res: any) => {
+        console.log(res);
+        this.gridDataResult.data = res;
+      },
+      error: (err) => {
+        this.gridDataResult.data = []
+      }
+    });
   }
-
-
- // Function to load data from the API based on selected filters
- onSearch(): void {
-  
-  const customerId = this.selectedCustomer;
-  const goodsType = this.selectedDeviceType || 'All';  // Fallback to 'All' if undefined
-  const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set
-
-
-
-
-// Assign the Observable directly to the gridAddData$
-//this.gridAddData$ = this.customerService.getGridData(customerId, goodsType, lotNumber);
-
-this.customerService.getGridData(customerId, goodsType, lotNumber).subscribe({
-  next: (data) => {
-    // Handle the data received from the API
-    
-    //this.gridAddData$ = of(data);
-    this.gridAddData = data;
-    //alert(data.length)
-    this.cdr.detectChanges();
-  },
-  error: (err) => {
-    // Handle the error
-    console.error('Error fetching grid data:', err);
-    //this.gridAddData$ = of([]);
-    this.gridAddData = [];
-    this.cdr.detectChanges();
-  },
-  complete: () => {
-    // Optionally handle the completion of the Observable
-    console.log('API call completed');
-  }
-});
-
-
-/* this.customerService.getGridData(customerId, goodsType, lotNumber).subscribe(data => {
-  this.gridAddData$ = of(data);  // Reassign gridAddData$ with fresh data observable
-  this.cdr.detectChanges();   // Manually trigger change detection if needed
-}); */
- 
-}
 
 
 
@@ -172,7 +126,7 @@ this.customerService.getGridData(customerId, goodsType, lotNumber).subscribe({
       // Restrict editing to the 'shippedQty' column only
       if (clickedColumn === 'shippedQty') {
         sender.editCell(rowIndex, sender.columns.toArray()[columnIndex], dataItem);
-     
+
       } else {
         sender.closeCell();  // Close the cell without any arguments
       }
@@ -183,21 +137,21 @@ this.customerService.getGridData(customerId, goodsType, lotNumber).subscribe({
     //alert(dataItem.shippedQty);
   }
 
-cellCloseHandler({ sender, dataItem, column }: any): void {
-  // Check if the column being edited is 'shippedQty'
-  if (column.field === 'shippedQty') {
-  
-    // The new value is already bound to the dataItem via ngModel
-    console.log('Updated shippedQty:', dataItem.shippedQty);  // This should log the new value
-  }
+  cellCloseHandler({ sender, dataItem, column }: any): void {
+    // Check if the column being edited is 'shippedQty'
+    if (column.field === 'shippedQty') {
 
-  // Close the cell after the edit
-  sender.closeCell();
-}
+      // The new value is already bound to the dataItem via ngModel
+      console.log('Updated shippedQty:', dataItem.shippedQty);  // This should log the new value
+    }
+
+    // Close the cell after the edit
+    sender.closeCell();
+  }
 
   submitForm(): void {
 
- 
+
 
     const customerOrder: CustomerOrder = {
       CustomerOrderID: null,
@@ -224,7 +178,7 @@ cellCloseHandler({ sender, dataItem, column }: any): void {
     const payload: OrderRequest = {
       CustomerOrder: [customerOrder]
     };
-   
+
 
     this.customerService.processCustomerOrder(payload)
       .subscribe(response => {
@@ -234,7 +188,7 @@ cellCloseHandler({ sender, dataItem, column }: any): void {
         console.error('Error saving form and records', error);
       });
 
-   
+
   }
 
 }
