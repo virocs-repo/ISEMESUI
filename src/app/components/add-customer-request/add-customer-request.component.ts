@@ -127,10 +127,8 @@ export class AddCustomerRequestComponent implements OnInit {
 
       // Restrict editing to the 'shippedQty' column only
       if (clickedColumn === 'shippedQty') {
-
-         
-      
         sender.editCell(rowIndex, sender.columns.toArray()[columnIndex], dataItem);
+      
 
       } else {
         sender.closeCell();  // Close the cell without any arguments
@@ -156,7 +154,55 @@ export class AddCustomerRequestComponent implements OnInit {
 
   submitForm(): void {
 
+   
+    if ( this.selectedRecords.size <=0) {
+      
+      this.appService.errorMessage('Please select atleast one row ');
+      return;
+    } 
 
+
+    if (!this.formData.companyName) {
+      
+      this.appService.errorMessage('Please add companyName');
+      return;
+    } 
+
+    if (!this.formData.contactName) {
+      
+      this.appService.errorMessage('Please add contactName');
+      return;
+    } 
+    if (!this.formData.phoneNumber) {
+      
+      this.appService.errorMessage('Please add phoneNumber');
+      return;
+    } 
+    if (!this.formData.addressLine1) {
+      
+      this.appService.errorMessage('Please add addressLine1');
+      return;
+    } 
+    if (!this.formData.city) {
+      
+      this.appService.errorMessage('Please add city');
+      return;
+    } 
+    if (!this.formData.state) {
+      
+      this.appService.errorMessage('Please add state');
+      return;
+    } 
+    if (!this.formData.zip) {
+      
+      this.appService.errorMessage('Please add zip');
+      return;
+    } 
+    if (!this.formData.country) {
+      
+      this.appService.errorMessage('Please add country');
+      return;
+    } 
 
     const customerOrder: CustomerOrder = {
       CustomerOrderID: null,
@@ -187,7 +233,7 @@ export class AddCustomerRequestComponent implements OnInit {
     this.apiService.processCustomerOrder(payload).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
-        
+        this.cancel.emit();
         
       },
       error: (err) => {
@@ -197,19 +243,7 @@ export class AddCustomerRequestComponent implements OnInit {
     });
 
 
-    const customerId = this.customerSelected?.customerID || 1;
-    const goodsType = this.deviceTypeSelected || 'All';  // Fallback to 'All' if undefined
-    const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set
-
-    this.apiService.getInventory(customerId, goodsType, lotNumber).subscribe({
-      next: (res: any) => {
-        console.log(res);
-        this.gridDataResult.data = res;
-      },
-      error: (err) => {
-        this.gridDataResult.data = []
-      }
-    });
+    
   
 
   }
