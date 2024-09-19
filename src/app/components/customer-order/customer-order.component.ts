@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { CellClickEvent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { HttpClient } from '@angular/common/http';
 import { process, State } from '@progress/kendo-data-query';  // For Kendo filtering
 import { environment } from 'src/environments/environment';
 import { ICON } from 'src/app/services/app.interface';
+import { ApiService } from 'src/app/services/api.service';
+import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 
 @Component({
   selector: 'app-customer-order',
@@ -10,14 +13,17 @@ import { ICON } from 'src/app/services/app.interface';
   styleUrls: ['./customer-order.component.scss']
 })
 export class CustomerOrderComponent implements OnInit {
+  @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
   readonly ICON = ICON
-
-  public gridData: any[] = [];
+  public pageSize = 10;
+  public skip = 0;
+ selectedRowIndex: number = -1;
+   public gridDataResult: GridDataResult = { data: [], total: 0 };
   public gridFilter: any = {
     logic: 'and',  // Filter logic (can be 'and' or 'or')
     filters: []
   };
-  public filteredGridData: any[] = [];
+  isEditButtonEnabled: boolean=true;
   public searchTerm: string = '';
   public columnData: any[] = [
     /*     { field: 'customerOrderID', title: 'Customer Order ID' },
@@ -53,11 +59,7 @@ export class CustomerOrderComponent implements OnInit {
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
-  public items: any[] = [
-    { text: 'View Data', icon: 'eye' },
-    { text: 'Export Data', icon: 'export' }
-  ];
-
+  
 
   isDialogOpen = false;
   openDialog() {
@@ -66,34 +68,81 @@ export class CustomerOrderComponent implements OnInit {
   closeDialog() {
     this.isDialogOpen = false;
   }
+  pageChange(event: PageChangeEvent): void {
+    this.skip = event.skip;
+    this.loadGridData();  // Reload data with pagination
+  }
 
-  constructor(private http: HttpClient) { }
+  rowActionMenu: MenuItem[] = [
+    
+    { text: 'Edit Data', icon: 'edit', disabled: !this.isEditButtonEnabled, svgIcon: ICON.pencilIcon },
+    { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
+    // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
+  ];
+  constructor(private apiService: ApiService) { }
 
   ngOnInit(): void {
     this.loadGridData();
   }
 
-  loadGridData(): void {
-    this.http.get<any[]>(environment.apiUrl + 'v1/ise/inventory/customer/getallorder')
-      .subscribe((data) => {
-        this.gridData = data;
-        this.filteredGridData = data;  // Initialize with full data
-      });
-  }
-  onFilterChange(event: any): void {
-    this.gridFilter = event;
-    this.filteredGridData = process(this.gridData, { filter: this.gridFilter }).data;  // Apply filters
+
+  loadGridData() {
+
+    this.apiService.getallCustomerOrder().subscribe({
+      next: (v: any) => {
+        // this.receipts = v;
+        this.gridDataResult.data = v;
+        this.gridDataResult.total = v.length
+        console.log(v);
+      },
+      error: (v: any) => { }
+    });
+
+
   }
 
+  pageData(): void {
+    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
+
+    // Paginate the data
+    const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+    this.gridDataResult.data = paginatedData;
+        this.gridDataResult.total =filteredData.length ;
+
+   
+  } 
+  filterData(data: any[]): any[] {
+    if (!this.searchTerm) {
+      return data;
+    }
+    const term = this.searchTerm.toLowerCase();
+    return data.filter(item =>
+      Object.values(item).some(val => String(val).toLowerCase().includes(term))
+    );
+  }
+
+
   onSearch(): void {
-    if (this.searchTerm) {
-      this.filteredGridData = this.gridData.filter(item => {
-        return Object.values(item).some(val => {
-          return String(val).toLowerCase().includes(this.searchTerm.toLowerCase());
-        });
-      });
-    } else {
-      this.filteredGridData = this.gridData;  // Reset to full data if no search term
+    this.skip = 0;  // Reset pagination when searching
+    this.pageData();  // Apply search and pagination
+  }
+  onCellClick(e: CellClickEvent): void {
+    console.log(e);
+    if (e.type === 'contextmenu') {
+      const originalEvent = e.originalEvent;
+      originalEvent.preventDefault();
+      //this.dataItemSelected = e.dataItem;
+      this.selectedRowIndex = e.rowIndex;
+      this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
     }
   }
+  onSelectRowActionMenu(e: ContextMenuSelectEvent) {
+  }
+  rowCallback = (context: any) => {
+    return {
+      'highlighted-row': context.index === this.selectedRowIndex
+    };
+  }
+
+
 }

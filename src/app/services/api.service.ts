@@ -63,4 +63,11 @@ export class ApiService {
     return this.httpClient.post(`${API}v1/ise/inventory/customer/addcustomerorder`, body);
   
   }
+
+  getallCustomerOrder()  {
+    //v1/ise/inventory/customer/getallorder
+    return this.httpClient.get(`${API}v1/ise/inventory/customer/getallorder`);
+  
+  }
+
 }
