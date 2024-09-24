@@ -23,7 +23,7 @@
         [skip]="skip" 
         [pageable]="true" 
         (pageChange)="pageChange($event)" 
-        class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" >
+        class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)"  [rowClass]="rowCallback" >
 
        <!--  <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column> -->
 
@@ -47,5 +47,5 @@
         <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
             (click)="closeDialog()"></button>
     </div>
-    <app-add-customer-request (cancel)="closeDialog()"></app-add-customer-request>
+    <app-add-customer-request  [isEditMode]="isEditMode"  (cancel)="closeDialog()"></app-add-customer-request>
 </kendo-dialog>

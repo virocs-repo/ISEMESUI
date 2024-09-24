@@ -14,6 +14,7 @@ import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progres
 })
 export class CustomerOrderComponent implements OnInit {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
+  public isEditMode: boolean = true;  // Default to edit mode
   readonly ICON = ICON
   public pageSize = 10;
   public skip = 0;
@@ -126,17 +127,44 @@ export class CustomerOrderComponent implements OnInit {
     this.skip = 0;  // Reset pagination when searching
     this.pageData();  // Apply search and pagination
   }
+  dataItemSelected:any;
   onCellClick(e: CellClickEvent): void {
     console.log(e);
     if (e.type === 'contextmenu') {
       const originalEvent = e.originalEvent;
       originalEvent.preventDefault();
-      //this.dataItemSelected = e.dataItem;
+      this.dataItemSelected = e.dataItem;
       this.selectedRowIndex = e.rowIndex;
       this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
     }
   }
   onSelectRowActionMenu(e: ContextMenuSelectEvent) {
+
+
+const dataItem = this.dataItemSelected;
+console.log(e);
+console.log(dataItem);
+
+switch (e.item.text) {
+  
+    
+  case 'View Data':
+    // access the same in receipt component
+    this.isEditMode = false;  // Set to view mode
+    this.openDialog()
+    break;
+  case 'Edit Data':
+    // access the same in receipt component
+    this.isEditMode = true;  // Set to edit mode
+    this.openDialog()
+    break;
+
+  default:
+    break;
+}
+
+
+
   }
   rowCallback = (context: any) => {
     return {

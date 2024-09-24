@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { OrderRequest } from '../components/add-customer-request/customerorder';
-
+import { CustomerOrder, OrderRequest } from 'src/app/services/app.interface';
 const API = environment.apiUrl;
 
 @Injectable({

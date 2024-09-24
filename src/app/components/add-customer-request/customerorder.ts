@@ -1,4 +1,4 @@
-export interface CustomerOrderDetail {
+/* export interface CustomerOrderDetail {
     CustomerOrderDetailID: number | null;
     InventoryID: number;
     ShippedQty: number;
@@ -29,4 +29,4 @@ export interface CustomerOrderDetail {
   export interface OrderRequest {
     CustomerOrder: CustomerOrder[];
   }
-  
+   */

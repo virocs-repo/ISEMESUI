@@ -1,7 +1,7 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { CustomerService } from '../../services/customer.service';  // Adjust the path as necessary
 import { CellClickEvent, GridDataResult } from '@progress/kendo-angular-grid';
-import { CustomerOrder, OrderRequest } from '../add-customer-request/customerorder'
+import { CustomerOrder, OrderRequest } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { ICON, MESSAGES, Customer } from 'src/app/services/app.interface';
 import { ApiService } from 'src/app/services/api.service';
@@ -12,7 +12,7 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrls: ['./add-customer-request.component.scss']
 })
 export class AddCustomerRequestComponent implements OnInit {
-
+  @Input() isEditMode: boolean = true;  // Use this flag to control view/edit mode
   gridDataResult: GridDataResult = { data: [], total: 0 };
   customer: Customer[] = []
   customerSelected: Customer | undefined;
@@ -56,6 +56,7 @@ export class AddCustomerRequestComponent implements OnInit {
 
   onSelectionChange(event: any): void {
 
+    if (this.isEditMode) {
     (event.selectedRows || []).forEach((row: { dataItem: any }) => this.selectedRecords.add({
       CustomerOrderDetailID: null, // Assuming new records
       InventoryID: row.dataItem.inventoryID,
@@ -69,7 +70,7 @@ export class AddCustomerRequestComponent implements OnInit {
       ShippedQty: Number(row.dataItem.shippedQty),
       RecordStatus: 'I'
     }));
-
+  }
      
   }
 
@@ -119,6 +120,8 @@ export class AddCustomerRequestComponent implements OnInit {
 
 
   editHandler({ sender, rowIndex, columnIndex, dataItem }: CellClickEvent): void {
+
+    if (!this.isEditMode) return; // Disable cell edits in view mode
     // Adjust columnIndex by subtracting 1 to account for the checkbox column
     const adjustedColumnIndex = columnIndex - 1;
 
@@ -147,6 +150,13 @@ export class AddCustomerRequestComponent implements OnInit {
       // The new value is already bound to the dataItem via ngModel
       console.log('Updated shippedQty:', dataItem.shippedQty);  // This should log the new value
     }
+
+    // You can manually update the selected records here if needed
+  this.selectedRecords.forEach((selectedRecord) => {
+    if (selectedRecord.InventoryID === dataItem.inventoryID) {
+      selectedRecord.ShippedQty = Number(dataItem.shippedQty);  // Update the ShippedQty in selectedRecords
+    }
+  });
 
     // Close the cell after the edit
     sender.closeCell();
@@ -230,6 +240,7 @@ export class AddCustomerRequestComponent implements OnInit {
       CustomerOrder: [customerOrder]
     };
 
+ debugger;
     this.apiService.processCustomerOrder(payload).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);

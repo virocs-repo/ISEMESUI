@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { OrderRequest } from '../components/add-customer-request/customerorder';
+import { CustomerOrder, OrderRequest } from 'src/app/services/app.interface';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
