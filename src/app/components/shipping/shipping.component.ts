@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { CellClickEvent, ColumnMenuSettings, GridDataResult, SelectableSettings } from '@progress/kendo-angular-grid';
+import { CellClickEvent, ColumnMenuSettings, GridDataResult, PageChangeEvent, SelectableSettings } from '@progress/kendo-angular-grid';
 import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
 import { ICON, MESSAGES, Receipt } from 'src/app/services/app.interface';
@@ -13,7 +13,8 @@ import { AppService } from 'src/app/services/app.service';
 export class ShippingComponent {
   readonly ICON = ICON;
   gridDataResult: GridDataResult = { data: [], total: 0 };
-
+  public pageSize = 10;
+  public skip = 0;
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
@@ -48,7 +49,12 @@ export class ShippingComponent {
         error: (v: any) => { }
       })
     }
+  }
 
+  pageChange(event: PageChangeEvent): void {
+    this.skip = event.skip;
+    console.log(event);
+    this.fetchdata();
   }
   gridData4 = [
     {

@@ -30,7 +30,9 @@ export class LoginComponent {
     if (this.email == 'admin' && this.password == 'admin') {
       this.authService.loginSuccess();
     } else {
-      this.getUserPreference(this.email, "string")
+      if (this.email && this.password) {
+        this.getUserPreference(this.email, "")
+      }
     }
   }
   loginWithMicrosoft() {
@@ -52,22 +54,30 @@ export class LoginComponent {
     })
   }
   getUserPreference(email: string, idToken: string) {
-    this.apiService.login({
-      "username": "string",
-      "password": "string",
-      "external": false,
-      "email": email,
-      "idToken": idToken
-    }).subscribe({
+    const body = {
+      username: this.email,
+      password: this.password,
+      external: true,
+      email,
+      idToken
+    }
+    if (idToken) {
+      body.external = false;
+    }
+    this.apiService.login(body).subscribe({
       next: (res: any) => {
         console.log(res);
         this.appService.savePreferences(res);
         this.authService.loginSuccess();
       },
       error: (err) => {
-        console.error(`Login error 500`);
+        console.error(`Login error`);
         console.log(err);
-        alert("Error while logging in")
+        if (err && err.status == 401 && body.external) {
+          alert('Invalid username or password!')
+        } else {
+          alert("Error while logging in")
+        }
       },
     })
   }
@@ -76,6 +86,4 @@ export class LoginComponent {
     // this.loginDisplay = this.authService.instance.getAllAccounts().length > 0;
     this.authService.loginSuccess();
   }
-
-
 }

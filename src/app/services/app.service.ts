@@ -18,7 +18,12 @@ interface MainMenuItem {
   loginId: number;
 }
 interface UserPreferences {
-  mainMenuItem: Array<MainMenuItem>
+  roles: {
+    mainMenuItem: Array<MainMenuItem>
+  },
+  token: string
+  userType: string
+  username: string
 }
 interface SharedInfo {
   isEditMode: boolean,
@@ -33,11 +38,11 @@ interface SharedInfo {
 export class AppService {
   isDrawerExpanded: boolean = false;
   userPreferences: UserPreferences | null = null;
+  accessToken = '';
   activeNavigationUrls: string[] = []
   feature: Array<Feature> = []
   loginId: number = 0;
 
-  token = 'Bearer token';
   masterData: MasterData = {
     customerType: [],
     receiptLocation: [],
@@ -97,12 +102,19 @@ export class AppService {
     this.initPreferences()
   }
   private initPreferences() {
-    const item = this.userPreferences?.mainMenuItem[0];
-    console.log({ item });
-    if (item) {
-      this.activeNavigationUrls.push(item.navigationUrl)
-      this.feature = item.feature;
-      this.loginId = item.loginId
+    console.log(this.userPreferences);
+    if (this.userPreferences?.token) {
+      this.accessToken = this.userPreferences.token;
+    }
+    if (this.userPreferences?.roles.mainMenuItem) {
+      const item = this.userPreferences?.roles.mainMenuItem[0];
+      if (item) {
+        this.activeNavigationUrls.push(item.navigationUrl)
+        this.feature = item.feature || [];
+        this.loginId = item.loginId
+      }
+    } else {
+      console.error("Main Menu Item is missing!")
     }
   }
   successMessage(content: string) {

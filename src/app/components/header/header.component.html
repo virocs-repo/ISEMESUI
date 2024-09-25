@@ -34,7 +34,10 @@
         <b>{{appService.userData.firstName}}</b> <br>
         <small>Admin</small>
       </div>
-      <kendo-avatar [imageSrc]="img1" class="avatar-size" (click)="authService.logout()" title="Logout"></kendo-avatar>
+      <span #profileMenuTarget>
+        <kendo-avatar [imageSrc]="img1" class="avatar-size"></kendo-avatar>
+      </span>
+      <!-- <kendo-avatar [imageSrc]="img1" class="avatar-size" (click)="authService.logout()" title="Logout"></kendo-avatar> -->
       <!-- <kendo-avatar [svgIcon]="ICON.userIcon" class="avatar-size"></kendo-avatar> -->
     </div>
   </kendo-appbar-section>
@@ -53,6 +56,11 @@
   </kendo-appbar-section>
   <kendo-appbar-spacer></kendo-appbar-spacer>
   <kendo-appbar-section>
-    <kendo-avatar [imageSrc]="img1" class="avatar-size" (click)="authService.logout()" title="Logout"></kendo-avatar>
+    <span #profileMenuTarget>
+      <kendo-avatar [imageSrc]="img1" class="avatar-size"></kendo-avatar>
+    </span>
   </kendo-appbar-section>
 </kendo-appbar>
+
+<kendo-contextmenu showOn="click" size="large" [target]="profileMenuTarget" [items]="profileActionMenu"
+  (select)="onSelectRowActionMenu($event)"></kendo-contextmenu>

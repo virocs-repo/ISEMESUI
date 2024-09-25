@@ -1,4 +1,4 @@
-import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, jsIcon, menuIcon, moreVerticalIcon, pencilIcon, selectBoxIcon, windowRestoreIcon, xIcon } from "@progress/kendo-svg-icons";
+import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, selectBoxIcon, userIcon, windowRestoreIcon, xIcon } from "@progress/kendo-svg-icons";
 
 export interface CustomerType {
   customerTypeID: number;
@@ -134,7 +134,10 @@ export const ICON = {
   cartIcon,
   windowRestoreIcon,
   jsIcon,
-  clipboardTextIcon
+  clipboardTextIcon,
+  userIcon,
+  gearIcon,
+  logoutIcon
 }
 
 export const MESSAGES = {
