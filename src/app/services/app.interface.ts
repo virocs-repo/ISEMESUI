@@ -181,9 +181,9 @@ export interface CustomerOrderDetail {
 export interface CustomerOrder {
   CustomerOrderID: number | null;
   CustomerId: number;
-  OQA: boolean;
-  Bake: boolean;
-  PandL: boolean;
+  OQA: boolean | false;
+  Bake: boolean | false;
+  PandL: boolean | false;
   CompanyName: string;
   ContactPerson: string;
   ContactPhone: string;

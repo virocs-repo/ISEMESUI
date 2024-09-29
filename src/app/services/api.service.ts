@@ -50,7 +50,7 @@ export class ApiService {
   }
   // Customer Orders
   getInventory(customerId: number, goodsType: string, lotNumber: string) {
-    const url = `${API}v1/ise/inventory/customer/inventory?customerId=${customerId}&goodsType=${goodsType}&lotNumber=${lotNumber}`;
+    const url = `${API}v1/ise/inventory/customerorder/inventory?customerId=${customerId}&goodsType=${goodsType}&lotNumber=${lotNumber}`;
     return this.httpClient.get(url);
   }
 
@@ -59,14 +59,20 @@ export class ApiService {
       LoginId: 1,
       InputJSON: JSON.stringify(payload)
     };
-    return this.httpClient.post(`${API}v1/ise/inventory/customer/addcustomerorder`, body);
+    return this.httpClient.post(`${API}v1/ise/inventory/customerorder/addcustomerorder`, body);
   
   }
 
   getallCustomerOrder()  {
     //v1/ise/inventory/customer/getallorder
-    return this.httpClient.get(`${API}v1/ise/inventory/customer/getallorder`);
+    return this.httpClient.get(`${API}v1/ise/inventory/customerorder/all`);
   
+  }
+
+  // Customer Orders
+  viewEditCustomerOrder(customerOrderID: string,editdata:boolean) {
+    const url = `${API}v1/ise/inventory/customerorder/vieweditorder?customerOrderID=${customerOrderID}&editdata=${editdata}`;
+    return this.httpClient.get(url);
   }
 
 }
