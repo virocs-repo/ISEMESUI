@@ -198,7 +198,8 @@ export class AddCustomerRequestComponent implements OnInit {
     const customerId = this.customerSelected?.customerID || 1;
     const goodsType = this.deviceTypeSelected || 'All';  // Fallback to 'All' if undefined
     const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set
-
+    this.gridDataResult.data = [];
+    this.customerOrd=[];
     this.apiService.getInventory(customerId, goodsType, lotNumber).subscribe({
       next: (res: any) => {
         console.log(res);
