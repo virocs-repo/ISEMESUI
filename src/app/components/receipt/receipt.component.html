@@ -299,10 +299,10 @@
         </kendo-grid-column>
         <kendo-grid-column field="isHold" title="Hold">
           <ng-template kendoGridCellTemplate let-dataItem>
-            <input type="checkbox" name="isHold" [(ngModel)]="dataItem.isHold" kendoCheckBox>
             <div class="k-d-flex">
+              <input type="checkbox" name="isHold" [(ngModel)]="dataItem.isHold" kendoCheckBox>
               <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
-              <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
+              <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenuDevice"
                 (select)="onSelectRowActionMenu($event, dataItem, true)"></kendo-contextmenu>
             </div>
           </ng-template>
@@ -329,8 +329,7 @@
     <i class="k-ml-auto"></i>
     <button kendoButton (click)="doTestEditMode()">Test Edit Mode</button>
   </div> -->
-  <div>
-    <!-- <div *ngIf="goodsTypeSelected?.goodsTypeName == 'Hardware'"> -->
+  <div *ngIf="goodsTypeSelected?.goodsTypeName == 'Hardware'">
     <div class="k-d-flex k-align-items-center">
       <h2>Hardware</h2>
       <div class="k-ml-auto">

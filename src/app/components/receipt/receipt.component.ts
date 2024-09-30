@@ -477,6 +477,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     // { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
     // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
   ];
+  rowActionMenuDevice: MenuItem[] = [
+    { text: 'Receive', svgIcon: ICON.cartIcon },
+    { text: 'Print', svgIcon: ICON.printIcon },
+    { text: 'Hold', svgIcon: ICON.kpiStatusHoldIcon },
+  ]
 
   doTestEditMode() {
     const isDevice = !false
