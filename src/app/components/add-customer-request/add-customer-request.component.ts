@@ -64,7 +64,7 @@ export class AddCustomerRequestComponent implements OnInit {
     this.formData.OQA = false;   // Initialize OQA as false
     this.formData.Bake = false;  // Initialize Bake as false
     this.formData.PandL = false; // Initialize P&L as false
-
+    this.formData.CustomerId=null;
     this.customer = this.appService.masterData.customer;
 
     console.log('Component initialized or reloaded');
@@ -306,10 +306,12 @@ export class AddCustomerRequestComponent implements OnInit {
       this.appService.errorMessage('Please add country');
       return;
     } 
-
+    const customerOrderID = (this.customerOrd && this.customerOrd.length > 0) 
+    ? (this.customerOrd.find((order: any) => order.customerOrderID !== null && order.customerOrderID !== undefined)?.customerOrderID ?? null)
+    : null;
     const customerOrder: CustomerOrder = {
-      CustomerOrderID: this.customerOrd?.customerOrderID != null ? this.customerOrd.customerOrderID : null,
-      CustomerId: this.customerSelected?.customerID || 1,
+      CustomerOrderID: customerOrderID, 
+      CustomerId: this.formData.CustomerId ?? this.customerSelected?.customerID,
       //CustomerId: 1,
       OQA: this.formData.OQA,
       Bake: this.formData.Bake,
@@ -324,7 +326,7 @@ export class AddCustomerRequestComponent implements OnInit {
       Zip: this.formData.Zip,
       Country: this.formData.Country,
       OrderStatus: null,
-      RecordStatus: this.customerOrd?.customerOrderID != null ? 'U' : 'I',
+      RecordStatus: customerOrderID != null ? 'U' : 'I',
       Active: true,
       CustomerOrderDetails: Array.from(this.selectedRecords)
     };
