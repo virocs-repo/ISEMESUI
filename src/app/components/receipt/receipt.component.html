@@ -169,8 +169,8 @@
         </kendo-grid-column>
         <kendo-grid-column field="holdComments" title="Hold Comments">
           <ng-template kendoGridCellTemplate let-dataItem>
-            <kendo-textbox [(ngModel)]="dataItem.holdComments" placeholder="Enter comments"
-              [disabled]="dataItem.isHoldCommentEnabled || !dataItem.isHold"></kendo-textbox>
+            <kendo-textbox [(ngModel)]="dataItem.holdComments" (ngModelChange)="onChangeHoldComments()"
+              placeholder="Enter comments" [disabled]="dataItem.isHoldCommentEnabled"></kendo-textbox>
           </ng-template>
         </kendo-grid-column>
       </kendo-grid>
@@ -194,11 +194,13 @@
     <div class="k-d-flex k-align-items-center">
       <h2>Device</h2>
       <div class="k-ml-auto">
-        <button kendoButton type="button" rounded="large" themeColor="info" (click)="addDevice()"
+        <!-- <button kendoButton type="button" rounded="large" themeColor="info" (click)="addDevice()"
           [disabled]="isDisabled.addDevice">
           <ng-container *ngIf="device.isAddMode">Add Device</ng-container>
           <ng-container *ngIf="device.isEditMode">Update Device</ng-container>
-        </button>
+        </button> -->
+        <button kendoButton type="button" rounded="large" themeColor="info" (click)="addDeviceRow()">Add Device
+          Row</button>
       </div>
     </div>
     <div class="page-body">
@@ -299,7 +301,7 @@
         </kendo-grid-column>
         <kendo-grid-column field="isHold" title="Hold">
           <ng-template kendoGridCellTemplate let-dataItem>
-            <div class="k-d-flex">
+            <div class="k-d-flex k-align-items-center">
               <input type="checkbox" name="isHold" [(ngModel)]="dataItem.isHold" kendoCheckBox>
               <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
               <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenuDevice"
@@ -333,16 +335,18 @@
     <div class="k-d-flex k-align-items-center">
       <h2>Hardware</h2>
       <div class="k-ml-auto">
-        <button kendoButton type="button" rounded="large" themeColor="info" (click)="addHardware()"
+        <!-- <button kendoButton type="button" rounded="large" themeColor="info" (click)="addHardware()"
           [disabled]="isDisabled.addHardware">
           <ng-container *ngIf="hardware.isAddMode">Add Hardware</ng-container>
           <ng-container *ngIf="hardware.isEditMode">Update Hardware</ng-container>
-        </button>
+        </button> -->
+        <button kendoButton type="button" rounded="large" themeColor="info" (click)="addHardwareRow()">Add Hardware
+          Row</button>
       </div>
     </div>
     <div class="page-body w-120-sm">
       <kendo-grid [kendoGridBinding]="gridDataHardware" [selectable]="selectableSettings" [sortable]="true"
-        [resizable]="true" class="bold-column-header wrap-header-grid" *ngIf="!false">
+        [resizable]="true" class="bold-column-header wrap-header-grid">
         <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
         <kendo-grid-column field="serialNumber" title="Serial#">
         </kendo-grid-column>

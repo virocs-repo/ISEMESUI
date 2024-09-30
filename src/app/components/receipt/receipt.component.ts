@@ -121,6 +121,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       next: (v: any) => {
         this.gridDataDevice = v;
         this.gridDataDevice.splice(0, 0, { ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID });
+        this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Device')
         console.log(v);
       }
     });
@@ -136,6 +137,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       next: (v: any) => {
         this.gridDataHardware = v;
         this.gridDataHardware.splice(0, 0, { ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID });
+        this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Hardware')
         console.log(v);
       }
     });
@@ -305,6 +307,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.appService.errorMessage("All fields are required!")
       }
     }
+  }
+  addDeviceRow() {
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    this.gridDataDevice.splice(0, 0, { ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID })
+  }
+  addHardwareRow() {
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    this.gridDataHardware.splice(0, 0, { ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID })
   }
   private doPostProcessDevice(data: JSON_Object) {
     const body = {
@@ -479,6 +489,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   ];
   rowActionMenuDevice: MenuItem[] = [
     { text: 'Receive', svgIcon: ICON.cartIcon },
+    { text: 'Undo Receive', svgIcon: ICON.cartIcon, disabled: true },
     { text: 'Print', svgIcon: ICON.printIcon },
     { text: 'Hold', svgIcon: ICON.kpiStatusHoldIcon },
   ]
@@ -500,6 +511,17 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           this.hardware.isAddMode = false;
           this.hardware.rowIndex = this.gridDataHardware.findIndex(d => d.hardwareID == dataItem.hardwareID);
         }
+        break;
+      case 'Receive':
+        this.rowActionMenuDevice[0].disabled = true;
+        this.rowActionMenuDevice[1].disabled = false;
+        break;
+      case 'Undo Receive':
+        this.rowActionMenuDevice[0].disabled = false;
+        this.rowActionMenuDevice[1].disabled = true;
+        break;
+      case 'Hold':
+        dataItem.isHold = !dataItem.isHold
         break;
       default:
         break;
@@ -526,6 +548,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.isDisabledBehalfOfCusotmer = true
     } else {
       this.isDisabledBehalfOfCusotmer = false
+    }
+  }
+  onChangeHoldComments() {
+    this.gridData[0].holdComments = this.gridData[0].holdComments.trim()
+    if (this.gridData[0].holdComments) {
+      this.gridData[0].isHold = true
+    } else {
+      this.gridData[0].isHold = false
     }
   }
 }
