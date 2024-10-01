@@ -1,6 +1,6 @@
 import { Component, OnInit, EventEmitter, Output, Input, ViewChild } from '@angular/core';
 import { CustomerService } from '../../services/customer.service';  // Adjust the path as necessary
-import { CellClickEvent, GridComponent, GridDataResult } from '@progress/kendo-angular-grid';
+import { CellClickEvent, GridComponent, GridDataResult,RowArgs  } from '@progress/kendo-angular-grid';
 import { CustomerOrder, OrderRequest } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { ICON, MESSAGES, Customer } from 'src/app/services/app.interface';
@@ -14,7 +14,7 @@ import { ApiService } from 'src/app/services/api.service';
 export class AddCustomerRequestComponent implements OnInit {
   @Input() isEditMode: boolean = true;  // Use this flag to control view/edit mode
   @Input() addCustomerMode: boolean = false;  // Use this flag to control view/edit mode
-  
+  @Output() customerAdded = new EventEmitter<void>();
   @Input() customerOrd: any;  // Receive the customer order data
   @Input() formOrdData:any;
   @ViewChild('grid', { static: true }) grid!: GridComponent; 
@@ -26,37 +26,17 @@ export class AddCustomerRequestComponent implements OnInit {
   lotNumber: string | null = null;  // Lot number
   // below code can be changed/removed
   selectedRows: any[] = []; 
- 
+  selectedcheckBoxs: Set<number> = new Set<number>();
   public columns: any[] = [];  // Array to hold column configurations
   // Create an EventEmitter to emit the cancel event to the parent
   @Output() cancel = new EventEmitter<void>();
-
+ 
   //public selectedRecords: any[] = []; // Array to track selected records
   public selectableSettings = { checkboxOnly: true, mode: 'multiple' };
   public selectedRecords: Set<any> = new Set<any>(); // Use Set to track unique selected records
   public formData : any = {}; 
 
-   // Function to determine if a row should be selected
- /*   isRowSelected = (dataItem: any): boolean => {
 
-      const customerOrderDetailID = Number(dataItem.dataItem.customerOrderDetailID);
-      return customerOrderDetailID >0;
-    
-   
-  }; */
-   /*  oqa: false,
-    bake: false,
-    pl: false,
-    contactName: '',
-    companyName: '',
-    phoneNumber: '',
-    addressLine1: '',
-    addressLine2: '',
-    addressLine3: '',
-    city: '',
-    state: '',
-    zip: '',
-    country: '' */
   
   constructor(private customerService: CustomerService, public appService: AppService, private apiService: ApiService) { }
 
@@ -92,9 +72,22 @@ export class AddCustomerRequestComponent implements OnInit {
 
       if (!this.addCustomerMode && Number(dataItem.customerOrderDetailID) > 0) // Positive number
        {
-        // Add the row to the selectedRows array
-        this.selectedRows.push(dataItem);
-      }
+        
+
+        const selectedRecord = {
+          CustomerOrderDetailID: dataItem.customerOrderDetailID,
+          InventoryID: dataItem.inventoryID,
+          ShippedQty: Number(dataItem.shippedQty),
+          RecordStatus: 'U' // Assuming existing records are set to 'U'
+        };
+
+        // Add the record to the selectedRecords set
+        this.selectedRecords.add(selectedRecord);
+
+
+        this.selectedcheckBoxs.add(dataItem.inventoryID);
+        // Ensure `this.grid` is a reference to the Kendo Grid component
+       }
     });
 
     console.log( this.selectedRows);
@@ -103,6 +96,11 @@ export class AddCustomerRequestComponent implements OnInit {
     
   }
 
+  isRowSelected = (rowArgs: RowArgs): boolean => {
+    // Return true if the row's unique key is in the selectedRecords Set
+    return this.selectedcheckBoxs.has(rowArgs.dataItem.inventoryID);
+  };
+  
   /* onSelectionChange(event: any): void {
 
   
@@ -140,6 +138,7 @@ export class AddCustomerRequestComponent implements OnInit {
         };
     
         this.selectedRecords.add(selectedRecord); // Add the selected record to the set
+        this.selectedcheckBoxs.add(row.dataItem.inventoryID);
       });
     
       // Loop through the deselected rows and remove them from the selectedRecords set
@@ -159,6 +158,7 @@ export class AddCustomerRequestComponent implements OnInit {
         };
     
         this.selectedRecords.delete(deselectedRecord); // Remove the deselected record from the set
+        this.selectedcheckBoxs.delete(row.dataItem.inventoryID);
       });
     
       console.log('Updated Selected Records:', Array.from(this.selectedRecords)); // Optional: Log selected records for debugging
@@ -340,6 +340,7 @@ export class AddCustomerRequestComponent implements OnInit {
     this.apiService.processCustomerOrder(payload).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
+        this.customerAdded.emit();
         this.cancel.emit();
         
       },

@@ -134,7 +134,9 @@ export class CustomerOrderComponent implements OnInit {
       Object.values(item).some(val => String(val).toLowerCase().includes(term))
     );
   }
-
+  submitForm(): void {
+    this.loadGridData();
+  }
 
   onSearch(): void {
     this.skip = 0;  // Reset pagination when searching
