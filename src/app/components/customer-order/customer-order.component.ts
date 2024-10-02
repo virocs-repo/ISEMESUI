@@ -16,10 +16,12 @@ export class CustomerOrderComponent implements OnInit {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
   public isEditMode: boolean = true;  // Default to edit mode
   public addCustomerMode : boolean = false; 
+  
   readonly ICON = ICON
   public pageSize = 10;
   public skip = 0;
  selectedRowIndex: number = -1;
+ private originalData: any[] = []; 
    public gridDataResult: GridDataResult = { data: [], total: 0 };
   public gridFilter: any = {
     logic: 'and',  // Filter logic (can be 'and' or 'or')
@@ -105,8 +107,10 @@ export class CustomerOrderComponent implements OnInit {
     this.apiService.getallCustomerOrder().subscribe({
       next: (v: any) => {
         // this.receipts = v;
-        this.gridDataResult.data = v;
-        this.gridDataResult.total = v.length
+        //this.gridDataResult.data = v;
+        this.originalData = v;
+        //this.gridDataResult.total = v.length;
+        this.pageData(); // Apply search and pagination
         console.log(v);
       },
       error: (v: any) => { }
@@ -116,12 +120,19 @@ export class CustomerOrderComponent implements OnInit {
   }
 
   pageData(): void {
-    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
+ /*    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
 
     // Paginate the data
     const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
     this.gridDataResult.data = paginatedData;
-        this.gridDataResult.total =filteredData.length ;
+        this.gridDataResult.total =filteredData.length ; */
+
+        const filteredData = this.filterData(this.originalData);
+    const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+    this.gridDataResult.data = filteredData;
+    this.gridDataResult.total = filteredData.length; 
+
+   
 
    
   } 
