@@ -1,46 +1,33 @@
-<div class="k-d-flex k-align-items-center k-gap-3 k-mb-3">
-  <div class="search-box k-ml-auto">
-    <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
-    <input kendoTextBox type="search" placeholder="Search" class="search-input" rounded="full" />
-    <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
-  </div>
-  <button kendoButton rounded="full" themeColor="info" style="width:7rem">Add</button>
-</div>
-<kendo-card class="card-green card-full">
-  <kendo-card-body class="card-flex">
-    <div class="k-d-flex k-gap-3">
-      <kendo-label text="Location" class="k-w-full">
-        <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Location"
-          rounded="large"></kendo-combobox>
-      </kendo-label>
-      <kendo-label text="Received From" class="k-w-full">
-        <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Choose"
-          rounded="large"></kendo-combobox>
-      </kendo-label>
-    </div>
-  </kendo-card-body>
-</kendo-card>
-<div class="k-my-6">
-  <kendo-grid [kendoGridBinding]="gridData4" [selectable]="selectableSettings" [resizable]="true"
-    class="bold-column-header cell-border-none">
-    <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-    <kendo-grid-column field="lot" title="Lot#/Serial#"></kendo-grid-column>
-    <kendo-grid-column field="Location" title="Location"></kendo-grid-column>
-    <kendo-grid-column field="Person" title="Person"></kendo-grid-column>
-    <kendo-grid-column field="Qty" title="Qty"></kendo-grid-column>
-    <kendo-grid-column field="SystemUser" title="System User"></kendo-grid-column>
-    <kendo-grid-column field="Status" title="Status"></kendo-grid-column>
-    <kendo-grid-column [width]="60">
+<div class="k-m-3 k-overflow-y-auto" style="height: 50vh;">
+  <kendo-card class="card-green card-full">
+    <kendo-card-body class="card-flex">
+      <div class="k-d-flex k-align-items-end k-gap-3">
+        <kendo-label text="Location" class="k-w-full">
+          <kendo-combobox [data]="uniqueLocations" [(ngModel)]="selectedLocation" placeholder="Location" rounded="large"></kendo-combobox>
+        </kendo-label>
+        <kendo-label text="Received From" class="k-w-full">
+          <kendo-combobox [data]="uniqueReceivedFrom" [(ngModel)]="selectedReceivedFrom" placeholder="Choose" rounded="large"></kendo-combobox>
+        </kendo-label>
+        <kendo-label text="Lot Number" class="k-w-full">
+          <kendo-textbox [(ngModel)]="selectedLotNumber" placeholder="#Lot Number" rounded="large"></kendo-textbox>
+        </kendo-label>
+        <kendo-button themeColor="info" rounded="large" style="width: 14rem" (click)="onSearch()">Add</kendo-button>
+      </div>
+    </kendo-card-body>
+  </kendo-card>
+
+  <div class="k-my-6">
+    <kendo-grid class="k-my-3" [kendoGridBinding]="gridDataResult.data" [height]="300" [sortable]="true" [resizable]="true" [selectable]="{ checkboxOnly: true, mode: 'multiple' }">
+      <kendo-grid-column *ngFor="let c of columnData" [hidden]="!c.visible" [field]="c.field" [title]="c.title"></kendo-grid-column>
       <ng-template kendoGridCellTemplate let-dataItem>
         <button kendoButton [svgIcon]="ICON.moreVerticalIcon" #rowActionMenu></button>
         <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
       </ng-template>
-    </kendo-grid-column>
-  </kendo-grid>
-</div>
-<div class="k-d-flex k-gap-3 k-mt-3">
-  <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto"
-    style="width:6rem">Clear</button>
-  <button kendoButton type="button" rounded="full" themeColor="info">Check in / Check
-    out</button>
+    </kendo-grid>
+  </div>
+
+  <div class="k-d-flex k-gap-3 k-mt-3">
+    <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem"(click)="clearRequest()">Clear</button>
+    <button kendoButton type="button" rounded="full" themeColor="info">Check in / Check out</button>
+  </div>
 </div>
