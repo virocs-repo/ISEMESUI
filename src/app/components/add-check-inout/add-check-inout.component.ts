@@ -22,7 +22,6 @@ export class AddCheckInoutComponent implements OnInit {
   public uniqueLocations: Array<string> = [];
   public uniqueReceivedFrom: Array<string> = [];
   public uniqueLotNumber: Array<string> = [];
-  
   public pageSize = 10;
   public skip = 0;
   public combinedData: any[] = [];
@@ -108,5 +107,38 @@ export class AddCheckInoutComponent implements OnInit {
 
   clearRequest(): void {
     this.cancel.emit();
+  }
+
+  onCheckInOut(): void {
+    // Get the selected records
+    const selectedItems = this.selectedRecords;
+
+    if (selectedItems.length === 0) {
+      alert('Please select at least one record to check in/out.');
+      return;
+    }
+
+    // Update the status for each selected item
+    selectedItems.forEach((record: { status: string; }) => {
+      const newStatus = record.status === 'Checked In' ? 'Checked Out' : 'Checked In';
+      const updatedRecord = { ...record, status: newStatus };
+
+      // Call the API to update the status in the backend
+      this.apiService.upsertInventoryMoveStatus(updatedRecord).subscribe({
+        next: () => {
+          this.loadGridData();
+        },
+        error: (err) => {
+          console.error('Error updating status:', err);
+          alert('Failed to update status. Please try again.');
+        }
+      });
+    });
+  }
+
+
+  // Function to handle grid row selection
+  onRowSelect(event: any): void {
+    this.selectedRecords = event.selectedRows.map((row: { dataItem: any; }) => row.dataItem);
   }
 }

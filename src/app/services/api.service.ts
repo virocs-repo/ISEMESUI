@@ -79,4 +79,8 @@ export class ApiService {
     const url = `${API}v1/ise/inventory/inventoryMove/getInventoryMoveStatus?lotNumber=${lotNumber}&location=${location}&receivedFrom=${receivedFrom}`;
     return this.httpClient.get(url);
   }
+
+  upsertInventoryMoveStatus(data: unknown){
+    return this.httpClient.post(`${API}v1/ise/inventory/inventoryMove/UpsertInventoryMoveStatus`, data);
+  }
 }
