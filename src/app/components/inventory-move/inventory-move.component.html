@@ -2,34 +2,45 @@
     <h2>Inventory Move</h2>
     <div class="search-box k-ml-auto">
         <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
-        <input kendoTextBox type="search" placeholder="Search" class="search-input" rounded="full" />
-        <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
+        <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input" rounded="full" />
+        <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="onSearch()">Search</button>
     </div>
-    <button kendoButton rounded="full" themeColor="info" style="width:7rem" (click)="openDialog()">Add</button>
+    <button kendoButton rounded="full" themeColor="info" style="padding: 0.3rem 1.2rem" (click)="openDialog()" kendoButton>Add Inventory Move</button>
 </div>
 <div class="k-m-10" *ngIf="!false">
-    <kendo-grid [kendoGridBinding]="gridData4" [selectable]="selectableSettings" [resizable]="true"
-        class="bold-column-header cell-border-none">
-        <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-        <kendo-grid-column field="lot" title="Lot#/Serial#"></kendo-grid-column>
-        <kendo-grid-column field="Location" title="Location"></kendo-grid-column>
-        <kendo-grid-column field="Person" title="Person"></kendo-grid-column>
-        <kendo-grid-column field="Qty" title="Qty"></kendo-grid-column>
-        <kendo-grid-column field="SystemUser" title="System User"></kendo-grid-column>
-        <kendo-grid-column field="Status" title="Status"></kendo-grid-column>
-        <kendo-grid-column [width]="60">
-            <ng-template kendoGridCellTemplate let-dataItem>
-                <button kendoButton [svgIcon]="ICON.moreVerticalIcon" #rowActionMenu></button>
-                <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
-            </ng-template>
+    <kendo-grid 
+        [kendoGridBinding]="gridDataResult.data"  
+        [selectable]="selectableSettings" 
+        [columnMenu]="columnMenuSettings"
+        [filterable]="true" 
+        [sortable]="true" 
+        [resizable]="true" 
+        [pageSize]="pageSize"
+        [skip]="skip" 
+        [pageable]="true" 
+        (pageChange)="pageChange($event)" 
+        class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" >
+
+       <!--  <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column> -->
+
+        <!-- Loop through the columns dynamically -->
+        <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title">
+
+
         </kendo-grid-column>
+
+      <ng-template kendoGridCellTemplate let-dataItem>
+
+       </ng-template>
     </kendo-grid>
 </div>
+<kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
+  #gridContextMenu></kendo-contextmenu>
 <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'68%'" class="dialog-round">
     <div class="k-d-flex k-align-items-center k-mb-3">
         <h2 class="k-m-0">Check In / Check Out</h2>
         <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
             (click)="closeDialog()"></button>
     </div>
-    <app-add-check-inout></app-add-check-inout>
+    <app-add-check-inout (cancel)="closeDialog()"></app-add-check-inout>
 </kendo-dialog>

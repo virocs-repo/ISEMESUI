@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
-import { ColumnMenuSettings, SelectableSettings } from '@progress/kendo-angular-grid';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { CellClickEvent, ColumnMenuSettings, GridDataResult, PageChangeEvent, SelectableSettings } from '@progress/kendo-angular-grid';
+import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
+import { ApiService } from 'src/app/services/api.service';
 import { ICON } from 'src/app/services/app.interface';
 
 @Component({
@@ -7,59 +9,40 @@ import { ICON } from 'src/app/services/app.interface';
   templateUrl: './inventory-move.component.html',
   styleUrls: ['./inventory-move.component.scss']
 })
-export class InventoryMoveComponent {
+export class InventoryMoveComponent implements OnInit{
+  @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
   readonly ICON = ICON
-  gridData4 = [
-    {
-      lot: 'LT453454',
-      Location: 'Shelf 10',
-      Person: 'Peter',
-      Qty: 100,
-      SystemUser: 'Eswar',
-      Status: 'Checked In'
-    },
-    {
-      lot: 'LT453465',
-      Location: 'Shelf 09',
-      Person: 'John',
-      Qty: 100,
-      SystemUser: 'surya',
-      Status: 'Checked Out'
-    },
-    {
-      lot: 'LT453476',
-      Location: 'Shelf 08',
-      Person: 'Sam',
-      Qty: 100,
-      SystemUser: 'Eswar',
-      Status: 'Checked In'
-    },
-    {
-      lot: 'LT453487',
-      Location: 'Shelf 07',
-      Person: 'Peter',
-      Qty: 100,
-      SystemUser: 'surya',
-      Status: 'Checked Out'
-    },
+  public pageSize = 10;
+  public skip = 0;
+ selectedRowIndex: number = -1;
+ public selectedRowData: any;
+   public gridDataResult: GridDataResult = { data: [], total: 0 };
+  public gridFilter: any = {
+    logic: 'and',  // Filter logic (can be 'and' or 'or')
+    filters: []
+  };
+  isEditButtonEnabled: boolean=true;
+  public searchTerm: string = '';
+  public columnData: any[] = [
+    { field: 'lotNum', title: 'Lot#/Serial#' },
+    { field: 'location', title: 'Location' },
+    { field: 'person', title: 'Person' },
+    { field: 'qty', title: 'Qty' },
+    { field: 'systemUser', title: 'System User' },
+    { field: 'status', title: 'Status' },
   ];
-
-  selectableSettings: SelectableSettings = {
+  selectableSettings: any = {
     checkboxOnly: true,
-    mode: 'multiple'
+    mode: 'single',
   }
-  columnMenuSettings: ColumnMenuSettings = {
+  columnMenuSettings: any = {
     lock: false,
     stick: false,
     setColumnPosition: { expanded: true },
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
-  public items: any[] = [
-    { text: 'Item1', icon: 'edit' },
-    { text: 'Item2', icon: 'delete' },
-    { text: 'Item3', icon: 'copy' }
-  ];
+  
 
   isDialogOpen = false;
   openDialog() {
@@ -68,10 +51,100 @@ export class InventoryMoveComponent {
   closeDialog() {
     this.isDialogOpen = false;
   }
+  pageChange(event: PageChangeEvent): void {
+    this.skip = event.skip;
+    this.loadGridData();  // Reload data with pagination
+  }
 
-  constructor() { }
+  rowActionMenu: MenuItem[] = [
+    
+    { text: 'Edit Data', icon: 'edit', disabled: !this.isEditButtonEnabled, svgIcon: ICON.pencilIcon },
+    { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
+    // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
+  ];
+  constructor(private apiService: ApiService) { }
 
   ngOnInit(): void {
+    this.loadGridData();
+  }
+
+
+  loadGridData() {
+
+    this.apiService.getAllInventoryMoveStatus().subscribe({
+      next: (v: any) => {
+        // this.receipts = v;
+        this.gridDataResult.data = v;
+        this.gridDataResult.total = v.length
+        console.log(v);
+      },
+      error: (v: any) => { }
+    });
+
+
+  }
+
+  pageData(): void {
+    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
+
+    // Paginate the data
+    const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+    this.gridDataResult.data = paginatedData;
+        this.gridDataResult.total =filteredData.length ;
+
+   
+  } 
+  filterData(data: any[]): any[] {
+    if (!this.searchTerm) {
+      return data;
+    }
+    const term = this.searchTerm.toLowerCase();
+    return data.filter(item =>
+      Object.values(item).some(val => String(val).toLowerCase().includes(term))
+    );
+  }
+
+
+  onSearch(): void {
+    this.skip = 0;  // Reset pagination when searching
+    this.pageData();  // Apply search and pagination
+  }
+  onCellClick(e: CellClickEvent): void {
+    console.log(e);
+    if (e.type === 'contextmenu') {
+      const originalEvent = e.originalEvent;
+      originalEvent.preventDefault();
+      //this.dataItemSelected = e.dataItem;
+      this.selectedRowIndex = e.rowIndex;
+      this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
+    }
+  }
+  onSelectRowActionMenu(e: ContextMenuSelectEvent) {
+  }
+  rowCallback = (context: any) => {
+    return {
+      'highlighted-row': context.index === this.selectedRowIndex
+    };
+  }
+
+  toggleCheckInCheckOut() {
+    if (this.selectedRowData) {
+      // Toggle the status between 'checkin' and 'checkout'
+      this.selectedRowData.status = this.selectedRowData.status === 'checkin' ? 'checkout' : 'checkin';
+
+      // Update the grid to reflect the new status
+      this.gridDataResult.data = [...this.gridDataResult.data];  // Trigger change detection
+
+      // Optionally, save the updated status to the server (API call)
+      this.apiService.updateInventoryStatus(this.selectedRowData).subscribe({
+        next: (response: any) => {
+          console.log('Status updated successfully');
+        },
+        error: (error: any) => {
+          console.error('Error updating status', error);
+        }
+      });
+    }
   }
 
 }

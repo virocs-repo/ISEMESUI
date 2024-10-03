@@ -70,4 +70,13 @@ export class ApiService {
   
   }
 
+  //Inventory Move
+  getAllInventoryMoveStatus(){
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryMove/getallInventoryMoveStatus`);
+  }
+
+  getInventoryMove(lotNumber: string, location: string, receivedFrom: string) {
+    const url = `${API}v1/ise/inventory/inventoryMove/getInventoryMoveStatus?lotNumber=${lotNumber}&location=${location}&receivedFrom=${receivedFrom}`;
+    return this.httpClient.get(url);
+  }
 }
