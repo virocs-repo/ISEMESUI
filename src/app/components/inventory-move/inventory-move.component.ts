@@ -126,25 +126,4 @@ export class InventoryMoveComponent implements OnInit{
       'highlighted-row': context.index === this.selectedRowIndex
     };
   }
-
-  toggleCheckInCheckOut() {
-    if (this.selectedRowData) {
-      // Toggle the status between 'checkin' and 'checkout'
-      this.selectedRowData.status = this.selectedRowData.status === 'checkin' ? 'checkout' : 'checkin';
-
-      // Update the grid to reflect the new status
-      this.gridDataResult.data = [...this.gridDataResult.data];  // Trigger change detection
-
-      // Optionally, save the updated status to the server (API call)
-      this.apiService.updateInventoryStatus(this.selectedRowData).subscribe({
-        next: (response: any) => {
-          console.log('Status updated successfully');
-        },
-        error: (error: any) => {
-          console.error('Error updating status', error);
-        }
-      });
-    }
-  }
-
 }
