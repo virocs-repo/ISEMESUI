@@ -3,30 +3,30 @@
         <kendo-label text="Customer">
             <b class="required-label"></b>
             <kendo-combobox [data]="customer" [(ngModel)]="customerSelected" [textField]="'customerName'"
-                [valueField]="'customerID'" placeholder="Select" rounded="large"></kendo-combobox>
+                [valueField]="'customerID'" placeholder="Select" rounded="large"  [disabled]="!addCustomerMode"></kendo-combobox>
         </kendo-label>
 
         <!-- Device Type ComboBox -->
         <kendo-label text="Device Type">
             <b class="required-label"></b>
-            <kendo-combobox [data]="deviceTypes" placeholder="Device" rounded="large" [(ngModel)]="deviceTypeSelected">
+            <kendo-combobox [data]="deviceTypes" placeholder="Device" rounded="large" [(ngModel)]="deviceTypeSelected"  [disabled]="!addCustomerMode">
             </kendo-combobox>
         </kendo-label>
         <kendo-label text="Lot Number">
             <!-- <b class="required-label"></b> -->
-            <kendo-textbox placeholder="#Lot Number" rounded="large" [(ngModel)]="lotNumber">
+            <kendo-textbox placeholder="#Lot Number" rounded="large" [(ngModel)]="lotNumber"  [disabled]="!addCustomerMode">
             </kendo-textbox>
         </kendo-label>
 
-        <kendo-button themeColor="success" rounded="large" style="width: 7rem" (click)="onSearch()">
+        <kendo-button themeColor="success" rounded="large" style="width: 7rem" (click)="onSearch()"  [disabled]="!addCustomerMode" >
             Search
         </kendo-button>
     </div>
 
-    <kendo-grid [kendoGridBinding]="gridDataResult.data" class="k-my-3" [height]="300"
+    <kendo-grid   #grid  [kendoGridBinding]="gridDataResult.data" class="k-my-3" [height]="300"
         [selectable]="{ checkboxOnly: true, mode: 'multiple' }" (selectionChange)="onSelectionChange($event)" [sortable]="true" [resizable]="true"
-        (cellClose)="cellCloseHandler($event)" (cellClick)="editHandler($event)" class="grid-header-sm grid-header-bold" >
-        <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+        (cellClose)="cellCloseHandler($event)" (cellClick)="editHandler($event)"  [rowSelected]="isRowSelected"   class="grid-header-sm grid-header-bold" >
+        <kendo-grid-checkbox-column [width]="40"  ></kendo-grid-checkbox-column>
 
         <kendo-grid-column *ngFor="let column of columns" [field]="column.field" [title]="column.title"
             [width]="column.width">
@@ -47,11 +47,11 @@
 
 
     <div class="k-d-flex k-gap-4 k-mb-4" style="padding-top:2%;">
-        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.oqa">
+        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.OQA" [disabled]="!isEditMode" >
         <kendo-label text="OQA"></kendo-label>
-        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.bake">
+        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.Bake" [disabled]="!isEditMode">
         <kendo-label text="Bake"></kendo-label>
-        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.pl">
+        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.PandL" [disabled]="!isEditMode">
         <kendo-label text="P&L"></kendo-label>
     </div>
     <kendo-card class="card-full">
@@ -60,33 +60,33 @@
             <div class="k-d-flex k-flex-col k-gap-2 k-w-full">
                 <div class="k-d-flex k-gap-4">
                     <input type="text" placeholder="Contact Name" class="k-w-full" kendoTextBox
-                        [(ngModel)]="formData.contactName" name="contactName" required #contactName="ngModel">
+                        [(ngModel)]="formData.ContactPerson" name="ContactPerson" required #ContactPerson="ngModel" [disabled]="!isEditMode ">
 
                     <input type="text" placeholder="Company Name" class="k-w-full" kendoTextBox
-                        [(ngModel)]="formData.companyName" name="companyName" required #companyName="ngModel">
+                        [(ngModel)]="formData.CompanyName" name="CompanyName" required #CompanyName="ngModel" [disabled]="!isEditMode">
                     <input type="text" placeholder="Phone Number" class="k-w-full" kendoTextBox
-                        [(ngModel)]="formData.phoneNumber" name="phoneNumber" required pattern="[0-9]{10}"
-                        #phoneNumber="ngModel">
+                        [(ngModel)]="formData.ContactPhone" name="ContactPhone" required pattern="[0-9]{10}"
+                        #ContactPhone="ngModel" [disabled]="!isEditMode">
                 </div>
                 <div class="k-d-flex k-gap-4">
                     <input type="text" placeholder="Address Line1" class="k-w-full" kendoTextBox
-                        [(ngModel)]="formData.addressLine1" name="addressLine1" required #addressLine1="ngModel">
+                        [(ngModel)]="formData.Address1" name="addressLine1" required #addressLine1="ngModel" [disabled]="!isEditMode">
                     <input type="text" placeholder="Address Line2" class="k-w-full" kendoTextBox
-                        [(ngModel)]="formData.addressLine2">
-                    <input type="text" placeholder="Zip" class="k-w-full" kendoTextBox [(ngModel)]="formData.zip"
-                        name="zip" required #zip="ngModel">
+                        [(ngModel)]="formData.Address2" [disabled]="!isEditMode">
+                    <input type="text" placeholder="Zip" class="k-w-full" kendoTextBox [(ngModel)]="formData.Zip"
+                        name="Zip" required #zip="ngModel" [disabled]="!isEditMode">
                 </div>
                 <div class="k-d-flex k-gap-4">
                     <!--  <kendo-combobox placeholder="City" class="k-w-full" rounded="large" [(ngModel)]="formData.city"></kendo-combobox>
                 <kendo-combobox placeholder="State" class="k-w-full" rounded="large" [(ngModel)]="formData.state"></kendo-combobox>
                 <kendo-combobox placeholder="Country" class="k-w-full" rounded="large" [(ngModel)]="formData.country"></kendo-combobox>
  -->
-                    <input type="text" placeholder="City" class="k-w-full" kendoTextBox [(ngModel)]="formData.city"
-                        name="city" required #city="ngModel">
-                    <input type="text" placeholder="State" class="k-w-full" kendoTextBox [(ngModel)]="formData.state"
-                        name="state" required #state="ngModel">
+                    <input type="text" placeholder="City" class="k-w-full" kendoTextBox [(ngModel)]="formData.City"
+                        name="City" required #city="ngModel" [disabled]="!isEditMode">
+                    <input type="text" placeholder="State" class="k-w-full" kendoTextBox [(ngModel)]="formData.State"
+                        name="State" required #state="ngModel" [disabled]="!isEditMode">
                     <input type="text" placeholder="Country" class="k-w-full" kendoTextBox
-                        [(ngModel)]="formData.country" name="country" required #country="ngModel">
+                        [(ngModel)]="formData.Country" name="Country" required #country="ngModel" [disabled]="!isEditMode">
                 </div>
             </div>
         </kendo-card-body>
@@ -95,6 +95,6 @@
         <button kendoButton type="button" rounded="large" themeColor="error" class="k-ml-auto" style="width:6rem"
             (click)="cancelRequest()">Cancel</button>
         <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem"
-            (click)="submitForm()">Submit</button>
+            (click)="submitForm()"  [disabled]="!isEditMode" >Submit</button>
     </div>
 </div>

@@ -31,6 +31,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   name: string = '';
   email: string = '';
   comments: string = '';
+  deliveryComments: string = '';
   address: any;
 
   description: string = '';
@@ -42,9 +43,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
   gridData = [
     {
-      noOfCartons: 18,
+      noOfCartons: undefined,
       isHold: false,
-      holdComments: "Chai",
+      holdComments: "",
       isHoldCheckboxEnabled: !this.isHoldCheckboxEnabled,
       isHoldCommentEnabled: !this.isHoldCommentEnabled
     }
@@ -98,8 +99,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.gridData[0].isHold = dataItem.isHold
       this.gridData[0].holdComments = dataItem.holdComments
       this.expectedDateTime = new Date(dataItem.expectedDateTime);
-      this.fetchData();
     }
+    this.fetchData();
     if (this.appService.sharedData.receiving.isViewMode) {
       this.disabledAllBtns()
     }
@@ -110,20 +111,33 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   private fetchDataDevice() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
+    if (!dataItem.receiptID) {
+      // this is for new form
+      this.gridDataDevice = [{ ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID }]
+      return;
+    }
+
     this.apiService.getDeviceData(dataItem.receiptID).subscribe({
       next: (v: any) => {
         this.gridDataDevice = v;
         this.gridDataDevice.splice(0, 0, { ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID });
+        this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Device')
         console.log(v);
       }
     });
   }
   private fetchDataHardware() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
+    if (!dataItem.receiptID) {
+      // this is for new form
+      this.gridDataHardware = [{ ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID }]
+      return;
+    }
     this.apiService.getHardwaredata(dataItem.receiptID).subscribe({
       next: (v: any) => {
         this.gridDataHardware = v;
         this.gridDataHardware.splice(0, 0, { ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID });
+        this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Hardware')
         console.log(v);
       }
     });
@@ -294,6 +308,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       }
     }
   }
+  addDeviceRow() {
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    this.gridDataDevice.splice(0, 0, { ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID })
+  }
+  addHardwareRow() {
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    this.gridDataHardware.splice(0, 0, { ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID })
+  }
   private doPostProcessDevice(data: JSON_Object) {
     const body = {
       "deviceDetails": [
@@ -396,6 +418,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     });
   }
   public selectedValues: string = "";
+  public selectedReceivers: string = "";
   public listItems: Array<string> = [
     "Baseball",
     "Basketball",
@@ -464,6 +487,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     // { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
     // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
   ];
+  rowActionMenuDevice: MenuItem[] = [
+    { text: 'Receive', svgIcon: ICON.cartIcon },
+    { text: 'Undo Receive', svgIcon: ICON.cartIcon, disabled: true },
+    { text: 'Print', svgIcon: ICON.printIcon },
+    { text: 'Hold', svgIcon: ICON.kpiStatusHoldIcon },
+  ]
 
   doTestEditMode() {
     const isDevice = !false
@@ -483,6 +512,17 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           this.hardware.rowIndex = this.gridDataHardware.findIndex(d => d.hardwareID == dataItem.hardwareID);
         }
         break;
+      case 'Receive':
+        this.rowActionMenuDevice[0].disabled = true;
+        this.rowActionMenuDevice[1].disabled = false;
+        break;
+      case 'Undo Receive':
+        this.rowActionMenuDevice[0].disabled = false;
+        this.rowActionMenuDevice[1].disabled = true;
+        break;
+      case 'Hold':
+        dataItem.isHold = !dataItem.isHold
+        break;
       default:
         break;
     }
@@ -499,5 +539,23 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     Object.keys(this.isDisabled).forEach((k: any) => {
       this.isDisabled[k] = true;
     });
+  }
+  isDisabledBehalfOfCusotmer = false
+  onChangeCustomerType() {
+    console.log(this.customerTypeSelected)
+    console.log(this)
+    if (this.customerTypeSelected?.customerTypeName == 'Vendor') {
+      this.isDisabledBehalfOfCusotmer = true
+    } else {
+      this.isDisabledBehalfOfCusotmer = false
+    }
+  }
+  onChangeHoldComments() {
+    this.gridData[0].holdComments = this.gridData[0].holdComments.trim()
+    if (this.gridData[0].holdComments) {
+      this.gridData[0].isHold = true
+    } else {
+      this.gridData[0].isHold = false
+    }
   }
 }

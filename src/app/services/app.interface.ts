@@ -1,4 +1,4 @@
-import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, jsIcon, menuIcon, moreVerticalIcon, pencilIcon, selectBoxIcon, windowRestoreIcon, xIcon } from "@progress/kendo-svg-icons";
+import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, kpiStatusHoldIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, printIcon, selectBoxIcon, userIcon, windowRestoreIcon, xIcon } from "@progress/kendo-svg-icons";
 
 export interface CustomerType {
   customerTypeID: number;
@@ -134,7 +134,12 @@ export const ICON = {
   cartIcon,
   windowRestoreIcon,
   jsIcon,
-  clipboardTextIcon
+  clipboardTextIcon,
+  userIcon,
+  gearIcon,
+  logoutIcon,
+  printIcon,
+  kpiStatusHoldIcon
 }
 
 export const MESSAGES = {
@@ -167,4 +172,35 @@ export interface ShipmentDetails {
   shipmentTypeID: number;
   shipmentType: string;
   address: string;
+}
+export interface CustomerOrderDetail {
+  CustomerOrderDetailID: number | null;
+  InventoryID: number;
+  ShippedQty: number;
+  RecordStatus: string;
+}
+
+export interface CustomerOrder {
+  CustomerOrderID: number | null;
+  CustomerId: number;
+  OQA: boolean | false;
+  Bake: boolean | false;
+  PandL: boolean | false;
+  CompanyName: string;
+  ContactPerson: string;
+  ContactPhone: string;
+  Address1: string;
+  Address2: string | null;
+  City: string;
+  State: string;
+  Zip: string;
+  Country: string;
+  OrderStatus: string | null;
+  RecordStatus: string;
+  Active: boolean;
+  CustomerOrderDetails: CustomerOrderDetail[];
+}
+
+export interface OrderRequest {
+  CustomerOrder: CustomerOrder[];
 }

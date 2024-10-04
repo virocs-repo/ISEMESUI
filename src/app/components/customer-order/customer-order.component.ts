@@ -14,16 +14,22 @@ import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progres
 })
 export class CustomerOrderComponent implements OnInit {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
+  public isEditMode: boolean = true;  // Default to edit mode
+  public addCustomerMode : boolean = false; 
+  
   readonly ICON = ICON
   public pageSize = 10;
   public skip = 0;
  selectedRowIndex: number = -1;
+ private originalData: any[] = []; 
    public gridDataResult: GridDataResult = { data: [], total: 0 };
   public gridFilter: any = {
     logic: 'and',  // Filter logic (can be 'and' or 'or')
     filters: []
   };
   isEditButtonEnabled: boolean=true;
+  public customerOrd: any = {}; 
+  public formOrdData: any = {}; 
   public searchTerm: string = '';
   public columnData: any[] = [
     /*     { field: 'customerOrderID', title: 'Customer Order ID' },
@@ -33,20 +39,18 @@ export class CustomerOrderComponent implements OnInit {
         { field: 'goodsType', title: 'Goods Type' },
         { field: 'inventoryID', title: 'Inventory ID' },
         { field: 'hardwareType', title: 'Hardware Type' }, */
-    { field: 'iseLotNum', title: 'ISE Lot Number' },
-    { field: 'customerLotNum', title: 'Customer Lot Number' },
-    { field: 'shippedQty', title: 'Shipped Quantity' },
-    { field: 'expedite', title: 'Expedite' },
-    { field: 'partNum', title: 'Part Number' },
-    { field: 'unprocessed', title: 'Unprocessed' },
-    { field: 'good', title: 'Good' },
-    { field: 'reject', title: 'Reject' },
-    { field: 'coo', title: 'Country of Origin (COO)' },
-    { field: 'dateCode', title: 'Date Code' },
-    { field: 'fgPartNum', title: 'FG Part Number' },
-    { field: 'orderStatus', title: 'Order Status' }
-    // { field: 'createdOn', title: 'Created On' },
-    // { field: 'modifiedOn', title: 'Modified On' }
+    { field: 'customerName', title: 'Customer Name' },
+    //{ field: 'oqa', title: 'oqa' },
+   // { field: 'bake', title: 'bake' },
+   // { field: 'pandL', title: 'pandL' },
+    { field: 'companyName', title: 'Company Name' },
+    { field: 'contactPerson', title: 'Contact Person' },
+    { field: 'contactPhone', title: 'Contact Phone' },
+    //{ field: 'address', title: 'address' },
+    { field: 'orderStatus', title: 'Order Status' },
+    { field: 'active', title: 'Active' },
+    { field: 'createdOn', title: 'Created On' }
+   // { field: 'modifiedOn', title: 'Modified On' }
   ];
   selectableSettings: any = {
     checkboxOnly: true,
@@ -63,10 +67,22 @@ export class CustomerOrderComponent implements OnInit {
 
   isDialogOpen = false;
   openDialog() {
+  
     this.isDialogOpen = true;
+    
+
+  }
+
+  onAddButtonClick(): void {
+    this.addCustomerMode=true;
+  
+    this.openDialog();
   }
   closeDialog() {
     this.isDialogOpen = false;
+    this.isEditMode=true;
+
+   
   }
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;
@@ -91,8 +107,10 @@ export class CustomerOrderComponent implements OnInit {
     this.apiService.getallCustomerOrder().subscribe({
       next: (v: any) => {
         // this.receipts = v;
-        this.gridDataResult.data = v;
-        this.gridDataResult.total = v.length
+        //this.gridDataResult.data = v;
+        this.originalData = v;
+        //this.gridDataResult.total = v.length;
+        this.pageData(); // Apply search and pagination
         console.log(v);
       },
       error: (v: any) => { }
@@ -102,12 +120,19 @@ export class CustomerOrderComponent implements OnInit {
   }
 
   pageData(): void {
-    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
+ /*    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
 
     // Paginate the data
     const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
     this.gridDataResult.data = paginatedData;
-        this.gridDataResult.total =filteredData.length ;
+        this.gridDataResult.total =filteredData.length ; */
+
+        const filteredData = this.filterData(this.originalData);
+    const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+    this.gridDataResult.data = filteredData;
+    this.gridDataResult.total = filteredData.length; 
+
+   
 
    
   } 
@@ -120,23 +145,93 @@ export class CustomerOrderComponent implements OnInit {
       Object.values(item).some(val => String(val).toLowerCase().includes(term))
     );
   }
-
+  submitForm(): void {
+    this.loadGridData();
+  }
 
   onSearch(): void {
     this.skip = 0;  // Reset pagination when searching
     this.pageData();  // Apply search and pagination
   }
+  dataItemSelected:any;
   onCellClick(e: CellClickEvent): void {
     console.log(e);
     if (e.type === 'contextmenu') {
       const originalEvent = e.originalEvent;
       originalEvent.preventDefault();
-      //this.dataItemSelected = e.dataItem;
+      this.dataItemSelected = e.dataItem;
       this.selectedRowIndex = e.rowIndex;
       this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
     }
   }
   onSelectRowActionMenu(e: ContextMenuSelectEvent) {
+
+
+const dataItem = this.dataItemSelected;
+console.log(e);
+console.log(dataItem);
+// Split the address into parts
+const addressParts = dataItem.address.split(':');
+this.formOrdData = {
+  CustomerOrderID: dataItem.customerOrderID,
+  CustomerId: dataItem.customerId,
+  OQA: dataItem.oqa,
+  Bake: dataItem.bake,
+  PandL: dataItem.pandL,
+  CompanyName: dataItem.companyName,
+  ContactPerson: dataItem.contactPerson,
+  ContactPhone: dataItem.contactPhone,
+  Address1: addressParts[0],  // First part of the address
+  Address2: addressParts[1],  // Second part of the address
+  City: addressParts[2],      // Third part is the city
+  Zip: addressParts[3],       // Fourth part is the zip code
+  State: addressParts[4],     // Fifth part is the state
+  Country: addressParts[5],   // Sixth part is the country
+  OrderStatus: dataItem.orderStatus,
+  Active: dataItem.active
+};
+
+switch (e.item.text) {
+
+  
+  case 'View Data':
+    // access the same in receipt component
+    this.isEditMode = false;  // Set to view mode
+    this.addCustomerMode=false;
+    this.apiService.viewEditCustomerOrder(dataItem.customerOrderID,false).subscribe({
+      next: (v: any) => {
+        // this.receipts = v;
+        this.customerOrd = v;
+        console.log(v);
+        this.openDialog()
+      },
+      error: (v: any) => { }
+    });
+
+   
+    break;
+  case 'Edit Data':
+    // access the same in receipt component
+    this.isEditMode = true;  // Set to edit mode
+    this.addCustomerMode=false;
+    this.apiService.viewEditCustomerOrder(dataItem.customerOrderID,true).subscribe({
+      next: (v: any) => {
+        // this.receipts = v;
+        this.customerOrd = v;
+        console.log(v);
+        this.openDialog()
+      },
+      error: (v: any) => { }
+    });
+   
+    break;
+
+  default:
+    break;
+}
+
+
+
   }
   rowCallback = (context: any) => {
     return {

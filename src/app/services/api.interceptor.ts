@@ -15,9 +15,9 @@ export class ApiInterceptor implements HttpInterceptor {
   constructor(private appService: AppService) { }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    if (this.appService.token) {
+    if (this.appService.accessToken) {
       request = request.clone({
-        setHeaders: { AccessCode: environment.ACCESS_CODE, Authorization: this.appService.token, 'X-Referer': window.location.href }
+        setHeaders: { AccessCode: environment.ACCESS_CODE, Authorization: this.appService.accessToken, 'X-Referer': window.location.href }
       });
     } else {
       request = request.clone({

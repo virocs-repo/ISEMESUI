@@ -14,7 +14,7 @@ import { ContextMenuModule, MenuModule } from '@progress/kendo-angular-menu';
 import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
 import { GridModule } from '@progress/kendo-angular-grid';
 import { LabelModule } from '@progress/kendo-angular-label';
-import { AutoCompleteModule, ComboBoxModule } from '@progress/kendo-angular-dropdowns';
+import { AutoCompleteModule, ComboBoxModule, MultiSelectModule } from '@progress/kendo-angular-dropdowns';
 import { DialogsModule } from '@progress/kendo-angular-dialog';
 import { UploadsModule } from '@progress/kendo-angular-upload';
 
@@ -145,6 +145,7 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     SVGIconModule,
     DrawerModule,
     NotificationModule,
+    MultiSelectModule
   ],
   providers: [
     {
