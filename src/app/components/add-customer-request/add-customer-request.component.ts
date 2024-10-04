@@ -145,20 +145,27 @@ export class AddCustomerRequestComponent implements OnInit {
       (event.deselectedRows || []).forEach((row: { dataItem: any }) => {
         // If CustomerOrderDetailID is null or undefined, set it to null; otherwise, keep the original value
         let customerOrderDetailID = row.dataItem.customerOrderDetailID ?? null;
-    
-        // Set RecordStatus based on whether CustomerOrderDetailID is null or not
-        const recordStatus = customerOrderDetailID !== null ? 'U' : 'I';
-    
-        // Create a deselected record object with the modified CustomerOrderDetailID
-        const deselectedRecord = {
-          CustomerOrderDetailID: customerOrderDetailID, // Use the modified CustomerOrderDetailID
-          InventoryID: row.dataItem.inventoryID,
-          ShippedQty: Number(row.dataItem.shippedQty),
-          RecordStatus: recordStatus
-        };
-    
-        this.selectedRecords.delete(deselectedRecord); // Remove the deselected record from the set
-        this.selectedcheckBoxs.delete(row.dataItem.inventoryID);
+        const uniqueKey = row.dataItem.inventoryID || customerOrderDetailID;
+
+
+      // If the deselected row has a valid CustomerOrderDetailID, mark it for deletion ('D') instead of removing it
+    if (customerOrderDetailID !== null) {
+      // Find the record in the selectedRecords set and update its status to 'D'
+      this.selectedRecords.forEach(record => {
+        if (record.CustomerOrderDetailID === customerOrderDetailID && record.InventoryID === row.dataItem.inventoryID) {
+          record.RecordStatus = 'D'; // Update the status to 'D'
+        }
+      });
+    } else {
+      // If the record does not have a CustomerOrderDetailID, remove it from the selectedRecords set
+      this.selectedRecords.forEach(record => {
+        if (record.InventoryID === row.dataItem.inventoryID) {
+          this.selectedRecords.delete(record);
+        }
+      });
+    }
+
+    this.selectedcheckBoxs.delete(row.dataItem.inventoryID);
       });
     
       console.log('Updated Selected Records:', Array.from(this.selectedRecords)); // Optional: Log selected records for debugging
