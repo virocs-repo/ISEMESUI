@@ -75,4 +75,17 @@ export class ApiService {
     return this.httpClient.get(url);
   }
 
+  //Inventory Move
+  getAllInventoryMoveStatus(){
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryMove/getallInventoryMoveStatus`);
+  }
+
+  getInventoryMove(lotNumber: string, location: string, receivedFrom: string) {
+    const url = `${API}v1/ise/inventory/inventoryMove/getInventoryMoveStatus?lotNumber=${lotNumber}&location=${location}&receivedFrom=${receivedFrom}`;
+    return this.httpClient.get(url);
+  }
+
+  upsertInventoryMoveStatus(data: unknown){
+    return this.httpClient.post(`${API}v1/ise/inventory/inventoryMove/UpsertInventoryMoveStatus`, data);
+  }
 }
