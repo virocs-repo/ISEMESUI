@@ -53,9 +53,7 @@ export class AddCustomerRequestComponent implements OnInit {
       // Execute logic if `customerOrd` array has elements
       this.gridDataResult.data = this.customerOrd;
     
-      console.log(this.customerOrd);
-      console.log(this.formOrdData);
-  
+     
       this.formData=this.formOrdData;
       this.initializeSelectedRows();
 

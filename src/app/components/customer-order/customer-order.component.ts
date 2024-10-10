@@ -3,9 +3,10 @@ import { CellClickEvent, GridDataResult, PageChangeEvent } from '@progress/kendo
 import { HttpClient } from '@angular/common/http';
 import { process, State } from '@progress/kendo-data-query';  // For Kendo filtering
 import { environment } from 'src/environments/environment';
-import { ICON } from 'src/app/services/app.interface';
+import { CustomerOrder, ICON, MESSAGES, OrderRequest } from 'src/app/services/app.interface';
 import { ApiService } from 'src/app/services/api.service';
 import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
+import { AppService } from 'src/app/services/app.service';
 
 @Component({
   selector: 'app-customer-order',
@@ -90,12 +91,13 @@ export class CustomerOrderComponent implements OnInit {
   }
 
   rowActionMenu: MenuItem[] = [
+    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
     
     { text: 'Edit Data', icon: 'edit', disabled: !this.isEditButtonEnabled, svgIcon: ICON.pencilIcon },
     { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
     // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
   ];
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService,public appService: AppService) { }
 
   ngOnInit(): void {
     this.loadGridData();
@@ -188,6 +190,7 @@ this.formOrdData = {
   State: addressParts[4],     // Fifth part is the state
   Country: addressParts[5],   // Sixth part is the country
   OrderStatus: dataItem.orderStatus,
+  
   Active: dataItem.active
 };
 
@@ -202,7 +205,7 @@ switch (e.item.text) {
       next: (v: any) => {
         // this.receipts = v;
         this.customerOrd = v;
-        console.log(v);
+       
         this.openDialog()
       },
       error: (v: any) => { }
@@ -218,13 +221,56 @@ switch (e.item.text) {
       next: (v: any) => {
         // this.receipts = v;
         this.customerOrd = v;
-        console.log(v);
+        
         this.openDialog()
       },
       error: (v: any) => { }
     });
    
     break;
+    case 'Void Data':
+      // access the same in receipt component
+    
+      const customervoidOrder: CustomerOrder = {
+        CustomerOrderID: dataItem.customerOrderID,
+        CustomerId: dataItem.customerId,
+        OQA: dataItem.oqa,
+        Bake: dataItem.bake,
+        PandL: dataItem.pandL,
+        CompanyName: dataItem.companyName,
+        ContactPerson: dataItem.contactPerson,
+        ContactPhone: dataItem.contactPhone,
+        Address1: addressParts[0],  // First part of the address
+        Address2: addressParts[1],  // Second part of the address
+        City: addressParts[2],      // Third part is the city
+        Zip: addressParts[3],       // Fourth part is the zip code
+        State: addressParts[4],     // Fifth part is the state
+        Country: addressParts[5],   // Sixth part is the country
+        OrderStatus: dataItem.orderStatus,
+        Active: false,
+        RecordStatus: 'D',
+        CustomerOrderDetails: []
+      };
+   
+      const payload: OrderRequest = {
+        CustomerOrder: [customervoidOrder]
+      };
+
+      this.apiService.processCustomerOrder(payload).subscribe({
+        next: (v: any) => {
+          this.appService.successMessage(MESSAGES.DataSaved);
+          this.loadGridData();
+          
+        },
+        error: (err) => {
+          this.appService.errorMessage(MESSAGES.DataSaveError);
+          console.log(err);
+        }
+      });
+
+
+     
+      break;
 
   default:
     break;
