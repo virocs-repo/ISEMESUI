@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
-import { Customer, CustomerType, DeliveryMode, DeviceItem, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, JSON_Object, MESSAGES, ReceiptLocation } from 'src/app/services/app.interface';
+import { Customer, CustomerType, DeliveryMode, DeviceItem, Employee, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, JSON_Object, MESSAGES, MiscellaneousGoods, ReceiptLocation } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -27,6 +27,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
   contactPhone = '';
   contactPerson = ''
+
+  signatureName = ''
+  signatureEmployeeSelected: Employee | undefined;
+  signatureTypeSelected: CustomerType | undefined;
   expectedDateTime: Date = new Date();
   format = "MM/dd/yyyy HH:mm";
 
@@ -76,7 +80,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   private init() {
     this.customerTypes = this.appService.masterData.customerType;
-    this.customer = this.appService.masterData.customer;
+    console.log(this.customerTypes);
+    if (!this.customerTypes.find(c => c.customerTypeName == 'Employee')) {
+      this.customerTypes.push({
+        customerTypeID: 3,
+        customerTypeName: 'Employee'
+      })
+    }
+    this.customer = this.appService.masterData.customer || [];
     this.receiptLocation = this.appService.masterData.receiptLocation;
     this.deliveryMode = this.appService.masterData.deliveryMode;
     this.goodsType = this.appService.masterData.goodsType;
@@ -106,10 +117,20 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     if (this.appService.sharedData.receiving.isViewMode) {
       this.disabledAllBtns()
     }
+    this.getAddresses();
+  }
+  private getAddresses() {
+    this.apiService.getAddresses().subscribe({
+      next: (value: any) => {
+        console.log(value);
+
+      }
+    });
   }
   private fetchData() {
     this.fetchDataDevice();
     this.fetchDataHardware();
+    this.fetchDataMiscellaneousGoods();
   }
   private fetchDataDevice() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
@@ -118,7 +139,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.gridDataDevice = [{ ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID }]
       return;
     }
-
+    dataItem.receiptID = 1;// for testing
     this.apiService.getDeviceData(dataItem.receiptID).subscribe({
       next: (v: any) => {
         this.gridDataDevice = v;
@@ -141,6 +162,25 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.gridDataHardware.splice(0, 0, { ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID });
         this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Hardware')
         console.log(v);
+      }
+    });
+  }
+  gridDataMiscellaneousGoods: MiscellaneousGoods[] = [];
+  private fetchDataMiscellaneousGoods() {
+    console.log(123);
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    if (!dataItem.receiptID) {
+      // this is for new form
+      this.gridDataMiscellaneousGoods = [{ ...INIT_MISCELLANEOUS_GOODS, receiptID: dataItem.receiptID }]
+      return;
+    }
+    dataItem.receiptID = 1; // for testing
+    this.apiService.getMiscellaneousGoods(dataItem.receiptID).subscribe({
+      next: (v: any) => {
+        console.log(v);
+        this.gridDataMiscellaneousGoods = v;
+        this.gridDataMiscellaneousGoods.splice(0, 0, { ...INIT_MISCELLANEOUS_GOODS, receiptID: dataItem.receiptID });
+        this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Miscellaneous Goods')
       }
     });
   }
@@ -184,7 +224,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       noOfCartons: this.gridData[0].noOfCartons,
       isHold: this.gridData[0].isHold,
       holdComments: this.gridData[0].holdComments,
-      loginId: this.appService.loginId
+      loginId: this.appService.loginId,
+
+      SignaturePersonType: this.signatureEmployeeSelected?.EmployeeName,
+      SignaturePersonID: this.signatureEmployeeSelected?.EmployeeID,
+      Signature: this.signatureName,
+      SignatureDate: new Date().toISOString()
     }
     if (this.appService.sharedData.receiving.isEditMode) {
       // @ts-ignore
@@ -318,6 +363,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const dataItem = this.appService.sharedData.receiving.dataItem;
     this.gridDataHardware.splice(0, 0, { ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID })
   }
+  addMiscellaneousRow() {
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    this.gridDataMiscellaneousGoods.splice(0, 0, { ...INIT_MISCELLANEOUS_GOODS, receiptID: dataItem.receiptID })
+  }
   private doPostProcessDevice(data: JSON_Object) {
     const body = {
       "deviceDetails": [
@@ -420,7 +469,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     });
   }
   public selectedValues: string = "";
-  public selectedReceivers: string = "";
+  employees: Employee[] = []
+  selectedReceivers: Employee[] = [];
   public listItems: Array<string> = [
     "Baseball",
     "Basketball",
@@ -481,6 +531,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     isEditMode: false, isAddMode: true, rowIndex: 0
   }
   hardware = {
+    isEditMode: false, isAddMode: true, rowIndex: 0
+  }
+  miscellaneousGoods = {
     isEditMode: false, isAddMode: true, rowIndex: 0
   }
   rowActionMenu: MenuItem[] = [
@@ -575,7 +628,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     // @ts-ignore
     this.customerTextField = entityType + 'Name';
     // @ts-ignore
-    this.customerValueField = entityType + 'ID'
+    this.customerValueField = entityType + 'ID';
+    if (entityType == 'Employee') {
+      this.employees = this.entityMap[entityType]
+    }
   }
   onChangeHoldComments() {
     this.gridData[0].holdComments = this.gridData[0].holdComments.trim()

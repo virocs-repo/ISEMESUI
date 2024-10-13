@@ -71,6 +71,19 @@ export interface HardwareItem {
   modifiedOn: string; // Assuming ISO 8601 format
   active: boolean;
 }
+
+export interface MiscellaneousGoods {
+  miscellaneousGoodsID: number;
+  receiptID: number;
+  inventoryID: number;
+  customerVendorID: number;
+  customerVendor: string;
+  serialNumber: string;
+  additionalInfo: string;
+  createdOn: Date | string;
+  modifiedOn: Date | string;
+  active: boolean;
+}
 export const INIT_HARDWARE_ITEM: HardwareItem = {
   hardwareID: 0,
   receiptID: 0,
@@ -80,6 +93,18 @@ export const INIT_HARDWARE_ITEM: HardwareItem = {
   customer: '',
   serialNumber: '',
   expectedQty: 0,
+  createdOn: '',
+  modifiedOn: '',
+  active: false
+}
+export const INIT_MISCELLANEOUS_GOODS: MiscellaneousGoods = {
+  miscellaneousGoodsID: 0,
+  receiptID: 0,
+  inventoryID: 0,
+  customerVendorID: 0,
+  customerVendor: '',
+  serialNumber: '',
+  additionalInfo: '',
   createdOn: '',
   modifiedOn: '',
   active: false
@@ -205,4 +230,25 @@ export interface CustomerOrder {
 
 export interface OrderRequest {
   CustomerOrder: CustomerOrder[];
+}
+
+export interface Address {
+  addressId: number;
+  addressType: string;
+  address1: string;
+  address2?: string;
+  city: string;
+  state: string;
+  country: string;
+  phone: string;
+  shipTo: string;
+  aeType: number;
+  createdOn: Date | string;
+  modifiedOn: Date | string;
+  active: boolean;
+}
+
+export interface Employee {
+  EmployeeID: number
+  EmployeeName: string
 }

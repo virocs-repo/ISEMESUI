@@ -63,8 +63,8 @@
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="PM/Receiver" class="k-w-full">
-            <kendo-multiselect [data]="listItems" [(ngModel)]="selectedReceivers" placeholder="Select"
-              rounded="large"></kendo-multiselect>
+            <kendo-multiselect [data]="employees" [(ngModel)]="selectedReceivers" [textField]="'EmployeeName'"
+              [valueField]="'EmployeeID'" placeholder="Select" rounded="large"></kendo-multiselect>
           </kendo-label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
@@ -395,6 +395,36 @@
       </kendo-grid>
     </div>
   </div>
+  <div *ngIf="goodsTypeSelected?.goodsTypeName == 'Miscellaneous Goods'">
+    <div class="k-d-flex k-align-items-center">
+      <h2>Miscellaneous Goods</h2>
+      <div class="k-ml-auto">
+        <button kendoButton type="button" rounded="large" themeColor="info" (click)="addMiscellaneousRow()">Add
+          Miscellaneous
+          Row</button>
+      </div>
+    </div>
+    <div class="page-body w-120-sm">
+      <kendo-grid [kendoGridBinding]="gridDataMiscellaneousGoods" [selectable]="selectableSettings" [sortable]="true"
+        [resizable]="true" class="bold-column-header wrap-header-grid">
+        <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+        <kendo-grid-column field="serialNumber" title="Serial#">
+        </kendo-grid-column>
+        <kendo-grid-column field="additionalInfo" title="Additional Info">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            <ng-container *ngIf="rowIndex == miscellaneousGoods.rowIndex">
+              <kendo-textbox [(ngModel)]="dataItem.additionalInfo" placeholder="Additional Info"></kendo-textbox>
+            </ng-container>
+            <ng-container *ngIf="rowIndex != miscellaneousGoods.rowIndex">
+              <span>{{dataItem.additionalInfo}}</span>
+            </ng-container>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="customerVendor" title="Customer Vendor"></kendo-grid-column>
+        <kendo-grid-column field="modifiedOn" title="Modified On"></kendo-grid-column>
+      </kendo-grid>
+    </div>
+  </div>
 
   <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
     <span style="margin-left: auto;"></span>
@@ -402,14 +432,22 @@
       [disabled]="isDisabled.addReceipt">Submit</button>
   </div>
   <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-4 k-mt-3">
-    <kendo-label text="Signature"></kendo-label>
-    <kendo-card>
-      <div class="k-p-5">
-        <img src="" alt="" srcset="">
-      </div>
-    </kendo-card>
-    <kendo-dateinput format="eee dd MMMM yyyy" [value]="expectedDateTime" class="k-center"
-      style="width:8rem;"></kendo-dateinput>
+    <kendo-label text="Customer / Employee">
+      <kendo-combobox [data]="customerTypes" [(ngModel)]="signatureTypeSelected" [textField]="'customerTypeName'"
+        [valueField]="'customerTypeID'" (ngModelChange)="onChangeCustomerType()" placeholder="Select"
+        rounded="large"></kendo-combobox>
+    </kendo-label>
+    <kendo-label text="Employee">
+      <kendo-combobox [data]="employees" [(ngModel)]="signatureEmployeeSelected" [textField]="'EmployeeName'"
+        [valueField]="'EmployeeID'" placeholder="Select" rounded="large"></kendo-combobox>
+    </kendo-label>
+    <kendo-label text="Signature">
+      <input type="text" placeholder="Name" class="k-w-full" kendoTextBox [(ngModel)]="signatureName"
+        name="signatureName" required>
+    </kendo-label>
+    <kendo-label text="Date">
+      <kendo-dateinput format="eee dd MMMM yyyy" [value]="expectedDateTime" class="k-center"></kendo-dateinput>
+    </kendo-label>
     <span style="margin-left: auto;"></span>
     <!-- <button kendoButton type="button" rounded="large" themeColor="error" style="width:6rem"
       [disabled]="isDisabled.cancelBtn">Cancel</button>

@@ -26,6 +26,9 @@ export class ApiService {
   getHardwaredata(receiptId: string) {
     return this.httpClient.get(`${API}v1/ise/inventory/hardwaredata?receiptId=${receiptId}`);
   }
+  getMiscellaneousGoods(receiptId: string) {
+    return this.httpClient.get(`${API}v1/ise/inventory/miscellaneousGoods?receiptId=${receiptId}`);
+  }
   postProcessReceipt(body: unknown) {
     return this.httpClient.post(`${API}v1/ise/inventory/processReceipt`, body);
   }
@@ -35,9 +38,13 @@ export class ApiService {
   postProcessHardware(body: unknown) {
     return this.httpClient.post(`${API}v1/ise/inventory/processHardware`, body);
   }
+
   // Receipt
   getEntitiesName(entityType: string) {
     return this.httpClient.get(`${API}v1/ise/inventory/entity/${entityType}`);
+  }
+  getAddresses() {
+    return this.httpClient.get(`${API}v1/ise/inventory/address`);
   }
 
   // Shipping
