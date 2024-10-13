@@ -48,7 +48,13 @@ export class AppService {
     receiptLocation: [],
     goodsType: [],
     deliveryMode: [],
-    customer: [],
+    customer: [], // remove this in next version
+    entityMap: {
+      Customer: [],
+      Vendor: [],
+      Employee: []
+    },
+    addresses: []
   }
   sharedData: {
     receiving: SharedInfo

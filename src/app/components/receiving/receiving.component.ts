@@ -56,6 +56,7 @@ export class ReceivingComponent {
         this.gridDataResult.data = v;
         this.gridDataResult.total = v.length
         console.log(v);
+        console.log(v[0]);
       },
       error: (v: any) => { }
     });

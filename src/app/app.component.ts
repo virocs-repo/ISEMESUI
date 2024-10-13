@@ -4,7 +4,7 @@ import { AppService } from './services/app.service';
 import { DrawerItem, DrawerSelectEvent } from '@progress/kendo-angular-layout';
 import { Router } from '@angular/router';
 import { ApiService } from './services/api.service';
-import { ICON } from './services/app.interface';
+import { Address, ICON } from './services/app.interface';
 
 interface DrawerItemExtra extends DrawerItem {
   routerLink?: string;
@@ -33,6 +33,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.initMasterData();
+    this.getAllEntityData();
+    this.getAddresses();
   }
 
   public toggleDrawer(): void {
@@ -50,14 +52,47 @@ export class AppComponent implements OnInit {
   private initMasterData() {
     this.apiService.getMasterData().subscribe({
       next: (v: any) => {
-        console.log(v)
-        this.appService.masterData = v.root[0]
+        const masterData = v.root[0];
+        if (masterData) {
+          delete masterData.customer;
+        }
+        this.appService.masterData = Object.assign(this.appService.masterData, masterData)
         console.log(this.appService.masterData);
-
       },
       error: (v) => {
         console.error(v)
       }
     })
+  }
+  private getAllEntityData() {
+    this.getEntity('Customer');
+    this.getEntity('Vendor');
+    this.getEntity('Employee');
+  }
+  private getEntity(entityType: 'Customer' | 'Vendor' | 'Employee') {
+    if (this.appService.masterData.entityMap[entityType].length > 0) {
+      return;
+    }
+    this.apiService.getEntitiesName(entityType).subscribe({
+      next: (value: any) => {
+        console.log(value);
+        this.appService.masterData.entityMap[entityType] = value;
+      },
+      error(err) { }
+    })
+  }
+
+  private getAddresses() {
+    this.apiService.getAddresses().subscribe({
+      next: (value: any) => {
+        console.log(value);
+        if (value) {
+          this.appService.masterData.addresses = value.map((a: Address) => {
+            a.fullAddress = `${a.address1}\n${a.address2}\n${a.city}, ${a.state}, ${a.country}`;
+            return a;
+          })
+        }
+      }
+    });
   }
 }

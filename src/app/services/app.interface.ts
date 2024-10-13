@@ -24,12 +24,25 @@ export interface Customer {
   email: string;
   phone: string;
 }
+
+export interface Vendor {
+  VendorID: number;
+  VendorName: string;
+}
+export type EntityType = 'Customer' | 'Vendor' | 'Employee';
+export interface EntityMap {
+  Customer: Customer[]
+  Vendor: Vendor[],
+  Employee: Employee[]
+}
 export interface MasterData {
   customerType: CustomerType[]
   receiptLocation: ReceiptLocation[]
   goodsType: GoodsType[]
   deliveryMode: DeliveryMode[]
-  customer: Customer[]
+  customer: Customer[]  // remove this in next version
+  entityMap: EntityMap;
+  addresses: Address[]
 }
 export interface Receipt {
   receiptID: number;

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
-import { Address, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, JSON_Object, MESSAGES, MiscellaneousGoods, ReceiptLocation } from 'src/app/services/app.interface';
+import { Address, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, JSON_Object, MESSAGES, MiscellaneousGoods, ReceiptLocation } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -89,7 +89,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         customerTypeName: 'Employee'
       })
     }
-    this.customer = this.appService.masterData.customer || [];
+    this.customer = this.appService.masterData.entityMap.Customer;
     this.receiptLocation = this.appService.masterData.receiptLocation;
     this.deliveryMode = this.appService.masterData.deliveryMode;
     this.goodsType = this.appService.masterData.goodsType;
@@ -99,7 +99,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
       this.isFTZ = dataItem.isFTZ;
       this.isInterim = dataItem.isInterim;
-      this.customerSelected = this.customer.find(c => c.CustomerID == dataItem.CustomerID);
+      this.customerSelected = this.customer.find(c => c.CustomerID == dataItem.customerVendorID);
       this.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.customerTypeID);
 
       this.receiptLocationSelected = this.receiptLocation.find(c => c.receiptLocationID == dataItem.receiptLocationID);
@@ -119,20 +119,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     if (this.appService.sharedData.receiving.isViewMode) {
       this.disabledAllBtns()
     }
-    this.getAddresses();
-  }
-  private getAddresses() {
-    this.apiService.getAddresses().subscribe({
-      next: (value: any) => {
-        console.log(value);
-        if (value) {
-          this.addresses = value.map((a: Address) => {
-            a.fullAddress = `${a.address1}\n${a.address2}\n${a.city}, ${a.state}, ${a.country}`;
-            return a;
-          })
-        }
-      }
-    });
+    this.addresses = this.appService.masterData.addresses;
   }
   onChangeAddress() {
     if (this.addressSelected) {
@@ -152,7 +139,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.gridDataDevice = [{ ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID }]
       return;
     }
-    dataItem.receiptID = 1;// for testing
+    // dataItem.receiptID = 1;// for testing
     this.apiService.getDeviceData(dataItem.receiptID).subscribe({
       next: (v: any) => {
         this.gridDataDevice = v;
@@ -180,14 +167,13 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   gridDataMiscellaneousGoods: MiscellaneousGoods[] = [];
   private fetchDataMiscellaneousGoods() {
-    console.log(123);
     const dataItem = this.appService.sharedData.receiving.dataItem;
     if (!dataItem.receiptID) {
       // this is for new form
       this.gridDataMiscellaneousGoods = [{ ...INIT_MISCELLANEOUS_GOODS, receiptID: dataItem.receiptID }]
       return;
     }
-    dataItem.receiptID = 1; // for testing
+    // dataItem.receiptID = 1; // for testing
     this.apiService.getMiscellaneousGoods(dataItem.receiptID).subscribe({
       next: (v: any) => {
         console.log(v);
@@ -618,32 +604,18 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.isDisabledBehalfOfCusotmer = false
     }
     if (this.customerTypeSelected?.customerTypeName) {
-      this.getCustomerNames(this.customerTypeSelected?.customerTypeName)
+      this.initCustomersList(this.customerTypeSelected?.customerTypeName as any)
     }
   }
-  entityMap: any = {}
-  private getCustomerNames(entityType: string) {
-    if (this.entityMap[entityType] && this.entityMap[entityType].length > 0) {
-      this.initCustomersList(entityType)
-      return;
-    }
-    this.apiService.getEntitiesName(entityType).subscribe({
-      next: (value) => {
-        console.log(value);
-        this.entityMap[entityType] = value;
-        this.initCustomersList(entityType)
-      },
-      error(err) { },
-    })
-  }
-  private initCustomersList(entityType: string) {
-    this.customer = this.entityMap[entityType]
+  private initCustomersList(entityType: EntityType) {
+    // @ts-ignore
+    this.customer = this.appService.masterData.entityMap[entityType]
     // @ts-ignore
     this.customerTextField = entityType + 'Name';
     // @ts-ignore
     this.customerValueField = entityType + 'ID';
     if (entityType == 'Employee') {
-      this.employees = this.entityMap[entityType]
+      this.employees = this.appService.masterData.entityMap[entityType]
     }
   }
   onChangeHoldComments() {
