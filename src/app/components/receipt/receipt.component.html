@@ -133,12 +133,14 @@
           <kendo-label *ngIf="deliveryModeSelected?.deliveryModeName=='Pick Up'" text="Address"
             class="k-relative k-w-full">
             <b class="required-label"></b>
-            <!-- <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Enter details"
-                       rounded="large"></kendo-combobox> -->
+            <!-- <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Enter details" rounded="large"></kendo-combobox> -->
             <!-- <kendo-autocomplete [data]="areaList" [(ngModel)]="address" placeholder="Enter details"
               style="padding-right: 1.5rem;" [class.invalid]="!receipt.isValid.address"></kendo-autocomplete>
             <img src="/assets/location-outline.svg" class="input-icon" width="18" /> -->
-            <kendo-textarea placeholder="Address" [rows]="3" resizable="vertical" [readonly]="true"></kendo-textarea>
+            <!-- <kendo-textarea placeholder="Address" [rows]="3" resizable="vertical" [readonly]="true"></kendo-textarea> -->
+            <kendo-combobox [data]="addresses" [(ngModel)]="addressSelected" (ngModelChange)="onChangeAddress()"
+              [textField]="'fullAddress'" [valueField]="'addressId'" placeholder="Select"
+              rounded="large"></kendo-combobox>
           </kendo-label>
         </div>
         <!-- show kedo icon using src image -->

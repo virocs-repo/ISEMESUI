@@ -246,6 +246,7 @@ export interface Address {
   createdOn: Date | string;
   modifiedOn: Date | string;
   active: boolean;
+  fullAddress?: string; // custom property to show on UI
 }
 
 export interface Employee {

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
-import { Customer, CustomerType, DeliveryMode, DeviceItem, Employee, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, JSON_Object, MESSAGES, MiscellaneousGoods, ReceiptLocation } from 'src/app/services/app.interface';
+import { Address, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, JSON_Object, MESSAGES, MiscellaneousGoods, ReceiptLocation } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -39,6 +39,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   comments: string = '';
   deliveryComments: string = '';
   address: any;
+  addresses: Address[] = []
+  addressSelected: Address | undefined;
 
   description: string = '';
 
@@ -123,9 +125,20 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.apiService.getAddresses().subscribe({
       next: (value: any) => {
         console.log(value);
-
+        if (value) {
+          this.addresses = value.map((a: Address) => {
+            a.fullAddress = `${a.address1}\n${a.address2}\n${a.city}, ${a.state}, ${a.country}`;
+            return a;
+          })
+        }
       }
     });
+  }
+  onChangeAddress() {
+    if (this.addressSelected) {
+      console.log(this.addressSelected);
+      this.contactPhone = this.addressSelected.phone
+    }
   }
   private fetchData() {
     this.fetchDataDevice();
