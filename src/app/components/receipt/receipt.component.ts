@@ -31,6 +31,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   signatureName = ''
   signatureEmployeeSelected: Employee | undefined;
   signatureTypeSelected: CustomerType | undefined;
+  signatureDate: Date = new Date();
   expectedDateTime: Date = new Date();
   format = "MM/dd/yyyy HH:mm";
 
@@ -81,6 +82,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.appService.sharedData.receiving.isViewMode = false;
   }
   private init() {
+    this.employees = this.appService.masterData.entityMap.Employee;
     this.customerTypes = this.appService.masterData.customerType;
     console.log(this.customerTypes);
     if (!this.customerTypes.find(c => c.customerTypeName == 'Employee')) {
@@ -101,7 +103,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.isInterim = dataItem.isInterim;
       this.customerSelected = this.customer.find(c => c.CustomerID == dataItem.customerVendorID);
       this.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.customerTypeID);
-
+      this.signatureTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.customerTypeID);
       this.receiptLocationSelected = this.receiptLocation.find(c => c.receiptLocationID == dataItem.receiptLocationID);
       this.deliveryModeSelected = this.deliveryMode.find(c => c.deliveryModeID == dataItem.deliveryModeID);
       this.goodsTypeSelected = this.goodsType.find(c => c.goodsTypeID == dataItem.goodsTypeID);
@@ -114,6 +116,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.gridData[0].isHold = dataItem.isHold
       this.gridData[0].holdComments = dataItem.holdComments
       this.expectedDateTime = new Date(dataItem.expectedDateTime);
+      if (dataItem.signatureDate) {
+        this.signatureDate = new Date(dataItem.signatureDate);
+      }
+      this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeName == dataItem.signaturePerson)
+      this.signatureName = dataItem.signature
     }
     this.fetchData();
     if (this.appService.sharedData.receiving.isViewMode) {
