@@ -17,8 +17,10 @@ export interface DeliveryMode {
   deliveryModeName: string;
 }
 export interface Customer {
-  customerID: number;
-  customerName: string;
+  CustomerID: number;
+  CustomerName?: string;
+  VendorID?: number;
+  VendorName?: string;
   email: string;
   phone: string;
 }

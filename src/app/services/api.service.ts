@@ -35,6 +35,11 @@ export class ApiService {
   postProcessHardware(body: unknown) {
     return this.httpClient.post(`${API}v1/ise/inventory/processHardware`, body);
   }
+  // Receipt
+  getEntitiesName(entityType: string) {
+    return this.httpClient.get(`${API}v1/ise/inventory/entity/${entityType}`);
+  }
+
   // Shipping
   getShippingData() {
     return this.httpClient.get(`${API}v1/ise/shipment/shipmentdata`);
@@ -54,29 +59,29 @@ export class ApiService {
     return this.httpClient.get(url);
   }
 
-  processCustomerOrder(payload: OrderRequest)  {
+  processCustomerOrder(payload: OrderRequest) {
     const body = {
       LoginId: 1,
       InputJSON: JSON.stringify(payload)
     };
     return this.httpClient.post(`${API}v1/ise/inventory/customerorder/addcustomerorder`, body);
-  
+
   }
 
-  getallCustomerOrder()  {
+  getallCustomerOrder() {
     //v1/ise/inventory/customer/getallorder
     return this.httpClient.get(`${API}v1/ise/inventory/customerorder/all`);
-  
+
   }
 
   // Customer Orders
-  viewEditCustomerOrder(customerOrderID: string,editdata:boolean) {
+  viewEditCustomerOrder(customerOrderID: string, editdata: boolean) {
     const url = `${API}v1/ise/inventory/customerorder/vieweditorder?customerOrderID=${customerOrderID}&editdata=${editdata}`;
     return this.httpClient.get(url);
   }
 
   //Inventory Move
-  getAllInventoryMoveStatus(){
+  getAllInventoryMoveStatus() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryMove/getallInventoryMoveStatus`);
   }
 
@@ -85,7 +90,7 @@ export class ApiService {
     return this.httpClient.get(url);
   }
 
-  upsertInventoryMoveStatus(data: unknown){
+  upsertInventoryMoveStatus(data: unknown) {
     return this.httpClient.post(`${API}v1/ise/inventory/inventoryMove/UpsertInventoryMoveStatus`, data);
   }
 }

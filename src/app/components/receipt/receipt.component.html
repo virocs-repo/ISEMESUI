@@ -36,8 +36,8 @@
           </kendo-label>
           <kendo-label text="Customer / Vendor Name" class="k-w-full">
             <b class="required-label"></b>
-            <kendo-combobox id="customer" [data]="customer" [(ngModel)]="customerSelected" [textField]="'customerName'"
-              [valueField]="'customerID'" placeholder="Select" rounded="large"
+            <kendo-combobox id="customer" [data]="customer" [(ngModel)]="customerSelected"
+              [textField]="customerTextField" [valueField]="customerValueField" placeholder="Select" rounded="large"
               [class.invalid]="!receipt.isValid.customer"></kendo-combobox>
           </kendo-label>
         </div>

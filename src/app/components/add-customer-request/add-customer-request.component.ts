@@ -200,7 +200,7 @@ export class AddCustomerRequestComponent implements OnInit {
 
   // Function to load data from the API based on selected filters
   onSearch(): void {
-    const customerId = this.customerSelected?.customerID || 1;
+    const customerId = this.customerSelected?.CustomerID || 1;
     const goodsType = this.deviceTypeSelected || 'All';  // Fallback to 'All' if undefined
     const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set
     this.gridDataResult.data = [];
@@ -317,7 +317,7 @@ export class AddCustomerRequestComponent implements OnInit {
     : null;
     const customerOrder: CustomerOrder = {
       CustomerOrderID: customerOrderID, 
-      CustomerId: this.formData.CustomerId ?? this.customerSelected?.customerID,
+      CustomerId: this.formData.CustomerId ?? this.customerSelected?.CustomerID,
       //CustomerId: 1,
       OQA: this.formData.OQA,
       Bake: this.formData.Bake,

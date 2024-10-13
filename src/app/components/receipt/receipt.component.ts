@@ -19,9 +19,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   goodsTypeSelected: GoodsType | undefined;
   deliveryMode: DeliveryMode[] = []
   deliveryModeSelected: DeliveryMode | undefined;
+
   customer: Customer[] = []
   customerSelected: Customer | undefined;
-
+  customerTextField: 'CustomerName' | 'VendorName' = 'CustomerName'
+  customerValueField: 'CustomerID' | 'VendorID' = 'CustomerID'
 
   contactPhone = '';
   contactPerson = ''
@@ -84,7 +86,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
       this.isFTZ = dataItem.isFTZ;
       this.isInterim = dataItem.isInterim;
-      this.customerSelected = this.customer.find(c => c.customerID == dataItem.customerID);
+      this.customerSelected = this.customer.find(c => c.CustomerID == dataItem.CustomerID);
       this.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.customerTypeID);
 
       this.receiptLocationSelected = this.receiptLocation.find(c => c.receiptLocationID == dataItem.receiptLocationID);
@@ -168,7 +170,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       isInterim: this.isInterim,
 
       customerTypeID: this.customerTypeSelected?.customerTypeID,
-      customerID: this.customerSelected?.customerID,
+      customerID: this.customerSelected?.CustomerID,
       receiptLocationID: this.receiptLocationSelected?.receiptLocationID || 1,
       deliveryModeID: this.deliveryModeSelected?.deliveryModeID,
       expectedDateTime: this.expectedDateTime.toISOString(),
@@ -549,6 +551,31 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     } else {
       this.isDisabledBehalfOfCusotmer = false
     }
+    if (this.customerTypeSelected?.customerTypeName) {
+      this.getCustomerNames(this.customerTypeSelected?.customerTypeName)
+    }
+  }
+  entityMap: any = {}
+  private getCustomerNames(entityType: string) {
+    if (this.entityMap[entityType] && this.entityMap[entityType].length > 0) {
+      this.initCustomersList(entityType)
+      return;
+    }
+    this.apiService.getEntitiesName(entityType).subscribe({
+      next: (value) => {
+        console.log(value);
+        this.entityMap[entityType] = value;
+        this.initCustomersList(entityType)
+      },
+      error(err) { },
+    })
+  }
+  private initCustomersList(entityType: string) {
+    this.customer = this.entityMap[entityType]
+    // @ts-ignore
+    this.customerTextField = entityType + 'Name';
+    // @ts-ignore
+    this.customerValueField = entityType + 'ID'
   }
   onChangeHoldComments() {
     this.gridData[0].holdComments = this.gridData[0].holdComments.trim()

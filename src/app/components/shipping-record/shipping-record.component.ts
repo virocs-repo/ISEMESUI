@@ -36,7 +36,7 @@ export class ShippingRecordComponent {
     if (this.appService.sharedData.shipping.isViewMode || this.appService.sharedData.shipping.isEditMode) {
       const dataItem = this.appService.sharedData.shipping.dataItem;
       console.log({ dataItem })
-      this.customerSelected = this.customer.find(c => c.customerID == dataItem.customerID);
+      this.customerSelected = this.customer.find(c => c.CustomerID == dataItem.customerID);
       // this.shipmentCategorySelected = this.shipmentCategories.find(c => c.shipmentCategoryID == dataItem.shipmentTypeID);
 
       this.receiptLocationSelected = this.receiptLocation.find(c => c.receiptLocationID == dataItem.receiptLocationID);
