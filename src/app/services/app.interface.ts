@@ -368,3 +368,8 @@ export const INIT_POST_HARDWARE = {
   Active: true,
   LoginId: 1
 }
+
+export interface HardwareType {
+  hardwareTypeID: number
+  hardwareType: string
+}

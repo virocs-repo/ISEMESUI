@@ -32,6 +32,9 @@ export class ApiService {
   getReceiptEmployees(receiptId: string) {
     return this.httpClient.get(`${API}v1/ise/inventory/receiptEmployee?receiptId=${receiptId}`);
   }
+  getHardwareTypes() {
+    return this.httpClient.get(`${API}v1/ise/inventory/hardwareType`);
+  }
   postProcessReceipt(body: unknown) {
     return this.httpClient.post(`${API}v1/ise/inventory/processReceipt`, body);
   }

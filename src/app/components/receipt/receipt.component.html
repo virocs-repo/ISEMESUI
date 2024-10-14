@@ -186,8 +186,8 @@
         [valueField]="'goodsTypeID'" placeholder="Select type" rounded="large"></kendo-combobox>
     </kendo-label>
     <span style="margin-left: auto;"></span>
-    <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
-      (click)="testAddReceipt()">Test</button>
+    <!-- <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
+      (click)="testAddReceipt()">Test</button> -->
     <button kendoButton type="button" rounded="large" themeColor="primary" style="width:6rem"
       [disabled]="isDisabled.clearReceipt">Clear</button>
     <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" (click)="addReceipt()"
@@ -349,9 +349,8 @@
         <kendo-grid-column field="customerID" title="Customer ID">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
-              <kendo-combobox [data]="customer" [(ngModel)]="dataItem.customer" [textField]="customerTextField"
-              [valueField]="customerValueField" placeholder="Select" rounded="large"
-              [disabled]="isDisabledBehalfOfCusotmer"></kendo-combobox>
+              <kendo-combobox [data]="customer" [(ngModel)]="dataItem.customerSelected" [textField]="customerTextField"
+                [valueField]="customerValueField" placeholder="Select" rounded="large"></kendo-combobox>
               <!-- <kendo-textbox [(ngModel)]="dataItem.customerID" placeholder="Customer ID"></kendo-textbox> -->
             </ng-container>
             <ng-template #showValue>
@@ -375,7 +374,11 @@
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
               <div class="k-d-flex">
-                <kendo-textbox [(ngModel)]="dataItem.hardwareType" placeholder="Hardware Type"></kendo-textbox>
+
+                <kendo-combobox [data]="hardwareTypes" [(ngModel)]="dataItem.hardwareTypeSelected"
+                  [textField]="'hardwareType'" [valueField]="'hardwareTypeID'" placeholder="Select"
+                  rounded="large"></kendo-combobox>
+
                 <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
                 <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
                   (select)="onSelectRowActionMenu($event, dataItem, 'Hardware')"></kendo-contextmenu>

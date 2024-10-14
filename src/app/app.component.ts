@@ -35,6 +35,7 @@ export class AppComponent implements OnInit {
     this.initMasterData();
     this.getAllEntityData();
     this.getAddresses();
+    this.fetchHardwareTypes();
   }
 
   public toggleDrawer(): void {
@@ -95,5 +96,15 @@ export class AppComponent implements OnInit {
         }
       }
     });
+  }
+
+  private fetchHardwareTypes() {
+    // getHardwareTypes
+    this.apiService.getHardwareTypes().subscribe({
+      next: (hardwareTypes: any) => {
+        console.log({ hardwareTypes });
+        this.appService.hardwareTypes = hardwareTypes;
+      }
+    })
   }
 }

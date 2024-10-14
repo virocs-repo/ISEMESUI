@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MasterData, ShipmentCategory, ShipmentType, UserData } from './app.interface';
+import { HardwareType, MasterData, ShipmentCategory, ShipmentType, UserData } from './app.interface';
 import { NotificationService } from '@progress/kendo-angular-notification';
 
 
@@ -63,6 +63,7 @@ export class AppService {
       receiving: { isEditMode: false, isViewMode: false, dataItem: {} },
       shipping: { isEditMode: false, isViewMode: false, dataItem: {} }
     }
+  hardwareTypes: HardwareType[] = []
   userData: UserData = { email: '', name: '', firstName: '' }
   shipmentCategories: Array<ShipmentCategory> = Array();
   shipmentTypes: Array<ShipmentType> = Array();

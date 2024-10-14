@@ -79,6 +79,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     cancelBtn: false
   }
   tracking = ''
+  readonly hardwareTypes = this.appService.hardwareTypes ;
 
   constructor(private appService: AppService, private apiService: ApiService) { }
 
@@ -138,7 +139,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.gridData[0].holdComments = dataItem.holdComments
 
       this.signatureTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.signaturePersonID);
-      this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeName == dataItem.signaturePerson)
+      this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeID == dataItem.signaturePersonID)
       this.signatureName = dataItem.signature
       if (dataItem.signatureDate) {
         this.signatureDate = new Date(dataItem.signatureDate);
@@ -192,7 +193,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         console.log(v);
         if (v) {
           v.forEach((h: any) => {
-            h.customer = this.customer.find(c => c.CustomerID == h.customerID)
+            h.hardwareTypeSelected = this.hardwareTypes.find(c => c.hardwareTypeID == h.hardwareTypeID)
+            h.customerSelected = this.customer.find(c => c.CustomerID == h.customerID)
           })
         }
         this.gridDataHardware = v;
@@ -571,8 +573,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const HardwareDetails: PostHardware[] = [];
     filteredRecords.forEach((r: any) => {
       r.loginId = this.appService.loginId
-      if (r.customer) {
-        r.customerID = r.customer?.CustomerID;
+      if (r.customerSelected) {
+        r.customerID = r.customerSelected?.CustomerID;
+      }
+      if(r.hardwareTypeSelected) {
+        r.hardwareTypeID = r.hardwareTypeSelected?.hardwareTypeID
       }
       const postHardware: PostHardware = {
         HardwareID: r.hardwareID,
