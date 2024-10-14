@@ -45,7 +45,7 @@ export class AddCustomerRequestComponent implements OnInit {
     this.formData.Bake = false;  // Initialize Bake as false
     this.formData.PandL = false; // Initialize P&L as false
     this.formData.CustomerId=null;
-    this.customer = this.appService.masterData.customer;
+    this.customer = this.appService.masterData.entityMap.Customer;
 
     console.log('Component initialized or reloaded');
     this.initializeColumns();
