@@ -38,6 +38,9 @@ export class ApiService {
   postProcessHardware(body: unknown) {
     return this.httpClient.post(`${API}v1/ise/inventory/processHardware`, body);
   }
+  postProcessMiscellaneous(body: unknown) {
+    return this.httpClient.post(`${API}v1/ise/inventory/processMiscellaneousGoods`, body);
+  }
 
   // Receipt
   getEntitiesName(entityType: string) {

@@ -137,7 +137,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   private fetchData() {
     this.fetchDataDevice();
     this.fetchDataHardware();
-    this.fetchDataMiscellaneousGoods();
+    this.fetchDataMiscellaneous();
   }
   private fetchDataDevice() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
@@ -168,20 +168,18 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       }
     });
   }
-  gridDataMiscellaneousGoods: MiscellaneousGoods[] = [];
-  private fetchDataMiscellaneousGoods() {
+  gridDataMiscellaneous: MiscellaneousGoods[] = [];
+  private fetchDataMiscellaneous() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
     if (!dataItem.receiptID) {
       // this is for new form
-      this.gridDataMiscellaneousGoods = [{ ...INIT_MISCELLANEOUS_GOODS, receiptID: dataItem.receiptID }]
       return;
     }
     // dataItem.receiptID = 1; // for testing
     this.apiService.getMiscellaneousGoods(dataItem.receiptID).subscribe({
       next: (v: any) => {
         console.log(v);
-        this.gridDataMiscellaneousGoods = v;
-        this.gridDataMiscellaneousGoods.splice(0, 0, { ...INIT_MISCELLANEOUS_GOODS, receiptID: dataItem.receiptID });
+        this.gridDataMiscellaneous = v;
         // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Miscellaneous Goods')
       }
     });
@@ -398,7 +396,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   addMiscellaneousRow() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
-    this.gridDataMiscellaneousGoods.splice(0, 0, { ...INIT_MISCELLANEOUS_GOODS, receiptID: dataItem.receiptID })
+    this.gridDataMiscellaneous.splice(0, 0, { ...INIT_MISCELLANEOUS_GOODS, receiptID: dataItem.receiptID })
   }
   private doPostProcessDevice(data: JSON_Object) {
     const body = {
@@ -496,7 +494,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     });
   }
   saveHardwares() {
-    if (!this.gridDataDevice || !this.gridDataDevice.length) {
+    if (!this.gridDataHardware || !this.gridDataHardware.length) {
       this.appService.infoMessage(MESSAGES.NoChanges)
     }
     const filteredRecords = this.gridDataHardware.filter(d => d.recordStatus == "I" || d.recordStatus == "U")
@@ -514,6 +512,32 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         console.log({ v });
         this.appService.successMessage(MESSAGES.DataSaved);
         this.fetchDataHardware();
+      },
+      error: (err) => {
+        this.appService.errorMessage(MESSAGES.DataSaveError);
+        console.log(err);
+      }
+    });
+  }
+  saveMiscellaneous() {
+    if (!this.gridDataMiscellaneous || !this.gridDataMiscellaneous.length) {
+      this.appService.infoMessage(MESSAGES.NoChanges)
+    }
+    const filteredRecords = this.gridDataMiscellaneous.filter(d => d.recordStatus == "I" || d.recordStatus == "U")
+    if (!filteredRecords || filteredRecords.length < 1) {
+      this.appService.infoMessage(MESSAGES.NoChanges);
+      return;
+    }
+    filteredRecords.forEach((r: any) => { r.loginId = this.appService.loginId })
+    const body = { miscGoodsDetails: filteredRecords }
+    console.log(filteredRecords);
+    console.log(filteredRecords[0]);
+
+    this.apiService.postProcessMiscellaneous(body).subscribe({
+      next: (v: any) => {
+        console.log({ v });
+        this.appService.successMessage(MESSAGES.DataSaved);
+        this.fetchDataMiscellaneous();
       },
       error: (err) => {
         this.appService.errorMessage(MESSAGES.DataSaveError);

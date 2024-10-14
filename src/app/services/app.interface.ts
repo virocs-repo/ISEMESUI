@@ -100,6 +100,7 @@ export interface MiscellaneousGoods {
   createdOn: Date | string;
   modifiedOn: Date | string;
   active: boolean;
+  recordStatus?: "I" | "U";
 }
 export const INIT_HARDWARE_ITEM: HardwareItem = {
   hardwareID: 0,
@@ -126,7 +127,8 @@ export const INIT_MISCELLANEOUS_GOODS: MiscellaneousGoods = {
   additionalInfo: '',
   createdOn: '',
   modifiedOn: '',
-  active: false
+  active: false,
+  recordStatus: 'I'
 }
 export interface DeviceItem {
   deviceID: number;

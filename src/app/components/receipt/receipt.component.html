@@ -393,14 +393,13 @@
   <div *ngIf="goodsTypeSelected?.goodsTypeName == 'Miscellaneous Goods'">
     <div class="k-d-flex k-align-items-center">
       <h2>Miscellaneous Goods</h2>
-      <div class="k-ml-auto">
-        <button kendoButton type="button" rounded="large" themeColor="info" (click)="addMiscellaneousRow()">Add
-          Miscellaneous
-          Row</button>
-      </div>
+      <i class="k-ml-auto"></i>
+      <button kendoButton type="button" rounded="large" themeColor="info" (click)="addMiscellaneousRow()">Add
+        Miscellaneous Row</button>
+      <button kendoButton type="button" rounded="large" themeColor="info" (click)="saveMiscellaneous()">Save</button>
     </div>
     <div class="page-body w-120-sm">
-      <kendo-grid [kendoGridBinding]="gridDataMiscellaneousGoods" [selectable]="selectableSettings" [sortable]="true"
+      <kendo-grid [kendoGridBinding]="gridDataMiscellaneous" [selectable]="selectableSettings" [sortable]="true"
         [resizable]="true" class="bold-column-header wrap-header-grid">
         <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
         <kendo-grid-column field="serialNumber" title="Serial#">
