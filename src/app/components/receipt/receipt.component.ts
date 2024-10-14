@@ -436,20 +436,20 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   // addHardware
   gridDataHardware: HardwareItem[] = []
   addHardware() {
-    const data = {
-      ... this.gridDataHardware[this.hardware.rowIndex],
+    const data: any = {
+      // ... this.gridDataHardware[this.hardware.rowIndex],
       loginId: this.appService.loginId
     }
-    if (this.hardware.isEditMode) {
-      // @ts-ignore
-      data.recordStatus = "U";
-    }
-    if (this.hardware.isAddMode) {
-      // @ts-ignore
-      data.recordStatus = "I";
-      // @ts-ignore
-      data.hardwareID = null
-    }
+    // if (this.hardware.isEditMode) {
+    //   // @ts-ignore
+    //   data.recordStatus = "U";
+    // }
+    // if (this.hardware.isAddMode) {
+    //   // @ts-ignore
+    //   data.recordStatus = "I";
+    //   // @ts-ignore
+    //   data.hardwareID = null
+    // }
     console.log(data);
     if (data.serialNumber && data.expectedQty && data.hardwareType) {
       this.doPostProcessHardware(data);
@@ -481,11 +481,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.appService.successMessage(MESSAGES.DataSaved);
         console.log({ v });
         this.fetchDataHardware();
-        if (this.hardware.isEditMode) {
-          this.hardware.isAddMode = true;
-          this.hardware.isEditMode = false;
-          this.hardware.rowIndex = 0;
-        }
       },
       error: (err) => {
         this.appService.errorMessage(MESSAGES.DataSaveError);
@@ -604,12 +599,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
-  hardware = {
-    isEditMode: false, isAddMode: true, rowIndex: 0
-  }
-  miscellaneousGoods = {
-    isEditMode: false, isAddMode: true, rowIndex: 0
-  }
   rowActionMenu: MenuItem[] = [
     // { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
     { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
@@ -625,22 +614,13 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   ]
 
   doTestEditMode() {
-    const isDevice = !false
-    this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridDataHardware[3], isDevice);
+    this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridDataHardware[3], 'Device');
   }
-  onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, isDevice: boolean) {
+  onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, tableName: 'Device' | 'Hardware' | 'Misc') {
     console.log(e); console.log(dataItem);
     switch (e.item.text) {
       case 'Edit Data':
-        if (isDevice) {
-          // this.device.isEditMode = true;
-          // this.device.isAddMode = false;
-          // this.device.rowIndex = this.gridDataDevice.findIndex(d => d.deviceID == dataItem.deviceID);
-        } else {
-          this.hardware.isEditMode = true;
-          this.hardware.isAddMode = false;
-          this.hardware.rowIndex = this.gridDataHardware.findIndex(d => d.hardwareID == dataItem.hardwareID);
-        }
+        dataItem.recordStatus = 'U'
         break;
       case 'Receive':
         this.rowActionMenuDevice[0].disabled = true;
