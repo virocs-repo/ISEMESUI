@@ -143,14 +143,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const dataItem = this.appService.sharedData.receiving.dataItem;
     if (!dataItem.receiptID) {
       // this is for new form
-      this.gridDataDevice = [{ ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID }]
       return;
     }
     // dataItem.receiptID = 1;// for testing
     this.apiService.getDeviceData(dataItem.receiptID).subscribe({
       next: (v: any) => {
         this.gridDataDevice = v;
-        this.gridDataDevice.splice(0, 0, { ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID });
         this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Device')
         console.log(v);
       }
@@ -167,7 +165,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       next: (v: any) => {
         this.gridDataHardware = v;
         this.gridDataHardware.splice(0, 0, { ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID });
-        this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Hardware')
+        // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Hardware')
         console.log(v);
       }
     });
@@ -186,7 +184,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         console.log(v);
         this.gridDataMiscellaneousGoods = v;
         this.gridDataMiscellaneousGoods.splice(0, 0, { ...INIT_MISCELLANEOUS_GOODS, receiptID: dataItem.receiptID });
-        this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Miscellaneous Goods')
+        // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Miscellaneous Goods')
       }
     });
   }
@@ -334,19 +332,19 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   public gridDataDevice: DeviceItem[] = [];
   addDevice() {
     if (this.gridDataDevice && this.gridDataDevice.length) {
-      const data = {
-        ... this.gridDataDevice[this.device.rowIndex]
+      const data: any = {
+        // ... this.gridDataDevice[this.device.rowIndex]
       }
-      if (this.device.isEditMode) {
-        // @ts-ignore
-        data.recordStatus = "U";
-      }
-      if (this.device.isAddMode) {
-        // @ts-ignore
-        data.recordStatus = "I";
-        // @ts-ignore
-        data.deviceID = null
-      }
+      // if (this.device.isEditMode) {
+      //   // @ts-ignore
+      //   data.recordStatus = "U";
+      // }
+      // if (this.device.isAddMode) {
+      //   // @ts-ignore
+      //   data.recordStatus = "I";
+      //   // @ts-ignore
+      //   data.deviceID = null
+      // }
       console.log(data);
       const mandatoryFields = [
         data.iseLotNum, data.customerLotNum, data.expectedQty, data.partNum, data.labelCount,
@@ -361,9 +359,40 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       }
     }
   }
+  saveDevices() {
+    if (this.gridDataDevice && this.gridDataDevice.length) {
+      console.log(this.gridDataDevice);
+      this.doPostProcessDevices()
+    }
+  }
+  private doPostProcessDevices() {
+    const filteredRecords = this.gridDataDevice.filter(d => d.recordStatus == "I" || d.recordStatus == "U")
+    if (!filteredRecords || filteredRecords.length < 1) {
+      this.appService.infoMessage(MESSAGES.NoChanges);
+      return;
+    }
+    filteredRecords.forEach((r: any) => {
+      r.loginId = this.appService.loginId
+    })
+    const body = { deviceDetails: filteredRecords }
+    console.log(filteredRecords);
+    console.log(filteredRecords[0]);
+
+    this.apiService.postProcessDevice(body).subscribe({
+      next: (v: any) => {
+        this.appService.successMessage(MESSAGES.DataSaved);
+        // this.fetchDataDevice();
+        console.log({ v });
+      },
+      error: (err) => {
+        this.appService.errorMessage(MESSAGES.DataSaveError);
+        console.log(err);
+      }
+    });
+  }
   addDeviceRow() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
-    this.gridDataDevice.splice(0, 0, { ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID })
+    this.gridDataDevice.splice(0, 0, { ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID, recordStatus: "I" })
   }
   addHardwareRow() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
@@ -401,11 +430,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
         this.fetchDataDevice();
-        if (this.device.isEditMode) {
-          this.device.isAddMode = true;
-          this.device.isEditMode = false;
-          this.device.rowIndex = 0;
-        }
+        // if (this.device.isEditMode) {
+        //   this.device.isAddMode = true;
+        //   this.device.isEditMode = false;
+        //   this.device.rowIndex = 0;
+        // }
         console.log({ v });
       },
       error: (err) => {
@@ -533,9 +562,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
-  device = {
-    isEditMode: false, isAddMode: true, rowIndex: 0
-  }
   hardware = {
     isEditMode: false, isAddMode: true, rowIndex: 0
   }
@@ -553,6 +579,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     { text: 'Undo Receive', svgIcon: ICON.cartIcon, disabled: true },
     { text: 'Print', svgIcon: ICON.printIcon },
     { text: 'Hold', svgIcon: ICON.kpiStatusHoldIcon },
+    { text: 'Edit Data', svgIcon: ICON.pencilIcon },
   ]
 
   doTestEditMode() {
@@ -564,9 +591,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     switch (e.item.text) {
       case 'Edit Data':
         if (isDevice) {
-          this.device.isEditMode = true;
-          this.device.isAddMode = false;
-          this.device.rowIndex = this.gridDataDevice.findIndex(d => d.deviceID == dataItem.deviceID);
+          // this.device.isEditMode = true;
+          // this.device.isAddMode = false;
+          // this.device.rowIndex = this.gridDataDevice.findIndex(d => d.deviceID == dataItem.deviceID);
         } else {
           this.hardware.isEditMode = true;
           this.hardware.isAddMode = false;

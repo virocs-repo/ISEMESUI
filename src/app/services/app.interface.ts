@@ -124,13 +124,11 @@ export const INIT_MISCELLANEOUS_GOODS: MiscellaneousGoods = {
 }
 export interface DeviceItem {
   deviceID: number;
-  inventoryID: number;
   receiptID: number;
-  iseLotNum: string;
-  customerLotNum: string;
-  expectedQty: number;
+  iseLotNumber: string;
+  customerLotNumber: string;
   expedite: boolean;
-  partNum: string;
+  customerCount: string;
   labelCount: number;
   coo: string; // Assuming "Country of Origin"
   dateCode: number;
@@ -139,16 +137,17 @@ export interface DeviceItem {
   createdOn: string; // Assuming ISO 8601 format
   modifiedOn: string; // Assuming ISO 8601 format
   active: boolean;
+  recordStatus?:  "I" | "U";
+  lotOwner: string
+  iqa: string
 }
 export const INIT_DEVICE_ITEM: DeviceItem = {
   deviceID: 0,
-  inventoryID: 0,
   receiptID: 0,
-  iseLotNum: '',
-  customerLotNum: '',
-  expectedQty: 0,
+  iseLotNumber: '',
+  customerLotNumber: '',
   expedite: false,
-  partNum: '',
+  customerCount: '',
   labelCount: 0,
   coo: '',
   dateCode: 0,
@@ -157,6 +156,8 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   createdOn: new Date().toISOString(), // Set to current time
   modifiedOn: new Date().toISOString(), // Set to current time
   active: true,
+  lotOwner: '',
+  iqa: '',
 };
 export interface JSON_Object {
   [key: string]: any
@@ -184,7 +185,8 @@ export const ICON = {
 
 export const MESSAGES = {
   DataSaved: "Data Saved!",
-  DataSaveError: 'Error while saving data, try again!'
+  DataSaveError: 'Error while saving data, try again!',
+  NoChanges: 'No changes, nothing to update or insert'
 }
 export interface UserData {
   name: string;

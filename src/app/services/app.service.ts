@@ -143,4 +143,14 @@ export class AppService {
       closable: false
     });
   }
+  infoMessage(content: string) {
+    this.notificationService.show({
+      content,
+      cssClass: "button-notification custom-notification",
+      animation: { type: "slide", duration: 400 },
+      position: { horizontal: "right", vertical: "top" },
+      type: { style: "info", icon: true },
+      closable: false
+    });
+  }
 }
