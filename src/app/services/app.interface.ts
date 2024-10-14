@@ -77,12 +77,16 @@ export interface HardwareItem {
   inventoryID: number;
   hardwareType: string;
   customerID: number;
-  customer: string;
   serialNumber: string;
   expectedQty: number;
   createdOn: string; // Assuming ISO 8601 format (e.g., "2024-08-28T03:20:22.767")
   modifiedOn: string; // Assuming ISO 8601 format
   active: boolean;
+
+  customerName: string;
+  hardwareTypeID: number;
+
+  recordStatus?: "I" | "U";
 }
 
 export interface MiscellaneousGoods {
@@ -102,13 +106,15 @@ export const INIT_HARDWARE_ITEM: HardwareItem = {
   receiptID: 0,
   inventoryID: 0,
   hardwareType: '',
+  hardwareTypeID: 0,
   customerID: 0,
-  customer: '',
+  customerName: '',
   serialNumber: '',
   expectedQty: 0,
   createdOn: '',
   modifiedOn: '',
-  active: false
+  active: false,
+  recordStatus: 'I'
 }
 export const INIT_MISCELLANEOUS_GOODS: MiscellaneousGoods = {
   miscellaneousGoodsID: 0,
@@ -137,7 +143,7 @@ export interface DeviceItem {
   createdOn: string; // Assuming ISO 8601 format
   modifiedOn: string; // Assuming ISO 8601 format
   active: boolean;
-  recordStatus?:  "I" | "U";
+  recordStatus?: "I" | "U";
   lotOwner: string
   iqa: string
 }
@@ -158,6 +164,7 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   active: true,
   lotOwner: '',
   iqa: '',
+  recordStatus: 'I'
 };
 export interface JSON_Object {
   [key: string]: any

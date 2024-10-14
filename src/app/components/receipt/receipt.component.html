@@ -196,14 +196,10 @@
     <div class="k-d-flex k-align-items-center k-gap-3">
       <h2>Device</h2>
       <i class="k-ml-auto"></i>
-      <button kendoButton type="button" rounded="large" themeColor="info" (click)="saveDevices()"
-        [disabled]="isDisabled.addDevice">
-        Save
-        <!-- <ng-container *ngIf="device.isAddMode">Add Device</ng-container>
-          <ng-container *ngIf="device.isEditMode">Update Device</ng-container> -->
-      </button>
       <button kendoButton type="button" rounded="large" themeColor="info" (click)="addDeviceRow()">Add Device
         Row</button>
+      <button kendoButton type="button" rounded="large" themeColor="info" (click)="saveDevices()"
+        [disabled]="isDisabled.addDevice">Save</button>
     </div>
     <div class="page-body">
       <kendo-grid [kendoGridBinding]="gridDataDevice" [selectable]="selectableSettings" [sortable]="true"
@@ -335,17 +331,13 @@
     <button kendoButton (click)="doTestEditMode()">Test Edit Mode</button>
   </div> -->
   <div *ngIf="goodsTypeSelected?.goodsTypeName == 'Hardware'">
-    <div class="k-d-flex k-align-items-center">
+    <div class="k-d-flex k-align-items-center k-gap-3">
       <h2>Hardware</h2>
-      <div class="k-ml-auto">
-        <!-- <button kendoButton type="button" rounded="large" themeColor="info" (click)="addHardware()"
-          [disabled]="isDisabled.addHardware">
-          <ng-container *ngIf="hardware.isAddMode">Add Hardware</ng-container>
-          <ng-container *ngIf="hardware.isEditMode">Update Hardware</ng-container>
-        </button> -->
-        <button kendoButton type="button" rounded="large" themeColor="info" (click)="addHardwareRow()">Add Hardware
-          Row</button>
-      </div>
+      <i class="k-ml-auto"></i>
+      <button kendoButton type="button" rounded="large" themeColor="info" (click)="addHardwareRow()">Add Hardware
+        Row</button>
+      <button kendoButton type="button" rounded="large" themeColor="info" (click)="saveHardwares()"
+        [disabled]="isDisabled.addHardware">Save</button>
     </div>
     <div class="page-body w-120-sm">
       <kendo-grid [kendoGridBinding]="gridDataHardware" [selectable]="selectableSettings" [sortable]="true"
@@ -353,13 +345,13 @@
         <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
         <kendo-grid-column field="serialNumber" title="Serial#">
         </kendo-grid-column>
-        <kendo-grid-column field="customer" title="Customer ID">
+        <kendo-grid-column field="customerID" title="Customer ID">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <ng-container *ngIf="rowIndex == hardware.rowIndex">
-              <kendo-textbox [(ngModel)]="dataItem.customer" placeholder="Customer ID"></kendo-textbox>
+              <kendo-textbox [(ngModel)]="dataItem.customerID" placeholder="Customer ID"></kendo-textbox>
             </ng-container>
             <ng-container *ngIf="rowIndex != hardware.rowIndex">
-              <span>{{dataItem.customer}}</span>
+              <span>{{dataItem.customerID}}</span>
             </ng-container>
           </ng-template>
         </kendo-grid-column>

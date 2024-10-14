@@ -158,13 +158,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const dataItem = this.appService.sharedData.receiving.dataItem;
     if (!dataItem.receiptID) {
       // this is for new form
-      this.gridDataHardware = [{ ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID }]
       return;
     }
     this.apiService.getHardwaredata(dataItem.receiptID).subscribe({
       next: (v: any) => {
         this.gridDataHardware = v;
-        this.gridDataHardware.splice(0, 0, { ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID });
         // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Hardware')
         console.log(v);
       }
@@ -381,7 +379,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.apiService.postProcessDevice(body).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
-        // this.fetchDataDevice();
+        this.fetchDataDevice();
         console.log({ v });
       },
       error: (err) => {
@@ -430,12 +428,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
         this.fetchDataDevice();
-        // if (this.device.isEditMode) {
-        //   this.device.isAddMode = true;
-        //   this.device.isEditMode = false;
-        //   this.device.rowIndex = 0;
-        // }
-        console.log({ v });
       },
       error: (err) => {
         this.appService.errorMessage(MESSAGES.DataSaveError);
@@ -461,7 +453,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       data.hardwareID = null
     }
     console.log(data);
-    if (data.serialNumber && data.customer && data.expectedQty && data.hardwareType) {
+    if (data.serialNumber && data.expectedQty && data.hardwareType) {
       this.doPostProcessHardware(data);
     } else {
       this.appService.errorMessage("All fields are required!")
@@ -496,6 +488,32 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           this.hardware.isEditMode = false;
           this.hardware.rowIndex = 0;
         }
+      },
+      error: (err) => {
+        this.appService.errorMessage(MESSAGES.DataSaveError);
+        console.log(err);
+      }
+    });
+  }
+  saveHardwares() {
+    if (!this.gridDataDevice || !this.gridDataDevice.length) {
+      this.appService.infoMessage(MESSAGES.NoChanges)
+    }
+    const filteredRecords = this.gridDataHardware.filter(d => d.recordStatus == "I" || d.recordStatus == "U")
+    if (!filteredRecords || filteredRecords.length < 1) {
+      this.appService.infoMessage(MESSAGES.NoChanges);
+      return;
+    }
+    filteredRecords.forEach((r: any) => { r.loginId = this.appService.loginId })
+    const body = { hardwareDetails: filteredRecords }
+    console.log(filteredRecords);
+    console.log(filteredRecords[0]);
+
+    this.apiService.postProcessHardware(body).subscribe({
+      next: (v: any) => {
+        console.log({ v });
+        this.appService.successMessage(MESSAGES.DataSaved);
+        this.fetchDataHardware();
       },
       error: (err) => {
         this.appService.errorMessage(MESSAGES.DataSaveError);
