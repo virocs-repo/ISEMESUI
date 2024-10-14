@@ -29,6 +29,9 @@ export class ApiService {
   getMiscellaneousGoods(receiptId: string) {
     return this.httpClient.get(`${API}v1/ise/inventory/miscellaneousGoods?receiptId=${receiptId}`);
   }
+  getReceiptEmployees(receiptId: string) {
+    return this.httpClient.get(`${API}v1/ise/inventory/receiptEmployee?receiptId=${receiptId}`);
+  }
   postProcessReceipt(body: unknown) {
     return this.httpClient.post(`${API}v1/ise/inventory/processReceipt`, body);
   }

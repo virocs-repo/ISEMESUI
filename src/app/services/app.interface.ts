@@ -90,7 +90,7 @@ export interface HardwareItem {
 }
 
 export interface MiscellaneousGoods {
-  miscellaneousGoodsID: number;
+  miscellaneousGoodsID: number | null;
   receiptID: number;
   inventoryID: number;
   customerVendorID: number;
@@ -114,11 +114,11 @@ export const INIT_HARDWARE_ITEM: HardwareItem = {
   expectedQty: 0,
   createdOn: '',
   modifiedOn: '',
-  active: false,
+  active: true,
   recordStatus: 'I'
 }
 export const INIT_MISCELLANEOUS_GOODS: MiscellaneousGoods = {
-  miscellaneousGoodsID: 0,
+  miscellaneousGoodsID: null,
   receiptID: 0,
   inventoryID: 0,
   customerVendorID: 0,
@@ -127,7 +127,7 @@ export const INIT_MISCELLANEOUS_GOODS: MiscellaneousGoods = {
   additionalInfo: '',
   createdOn: '',
   modifiedOn: '',
-  active: false,
+  active: true,
   recordStatus: 'I'
 }
 export interface DeviceItem {
@@ -347,4 +347,24 @@ export const INIT_POST_RECEIPT = {
   Active: true,
   LoginId: 1,
   EmployeeDetail: []
+}
+export interface PostHardware {
+  HardwareID: number;
+  ReceiptID: number;
+  CustomerID: number;
+  HardwareTypeID: number;
+  ExpectedQty: number;
+  RecordStatus: "I" | "U";
+  Active: boolean;
+  LoginId: number;
+}
+export const INIT_POST_HARDWARE = {
+  HardwareID: 5,
+  ReceiptID: 4,
+  CustomerID: 6,
+  HardwareTypeID: 10,
+  ExpectedQty: 1,
+  RecordStatus: "I",
+  Active: true,
+  LoginId: 1
 }

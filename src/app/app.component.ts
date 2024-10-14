@@ -85,10 +85,11 @@ export class AppComponent implements OnInit {
   private getAddresses() {
     this.apiService.getAddresses().subscribe({
       next: (value: any) => {
-        console.log(value);
         if (value) {
           this.appService.masterData.addresses = value.map((a: Address) => {
-            a.fullAddress = `${a.address1}\n${a.address2}\n${a.city}, ${a.state}, ${a.country}`;
+            let props = [a.address1, a.address2, a.city, a.state, a.country]
+            props = props.filter(a => a)
+            a.fullAddress = props.join(', ')
             return a;
           })
         }
