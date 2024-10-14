@@ -1,5 +1,5 @@
 <div class="k-m-4">
-  <div *ngIf="!false" class="k-d-flex k-flex-wrap k-align-items-center k-gap-4 k-pb-3">
+  <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-4 k-pb-3">
     <!-- <h2>Receipt</h2> -->
     <i class="k-ml-auto d-none-sm"></i>
     <div>
@@ -25,7 +25,7 @@
     </div>
   </div>
 
-  <div *ngIf="!false" class="k-d-flex k-flex-wrap k-align-items-stretch k-gap-4 k-w-full k">
+  <div class="k-d-flex k-flex-wrap k-align-items-stretch k-gap-4 k-w-full k">
     <kendo-card class="card-green k-flex-1 flex-auto-md">
       <kendo-card-body class="card-flex">
         <div class="k-d-flex k-align-items-center k-gap-4">
@@ -49,8 +49,8 @@
           <kendo-label text="Receiving Facility" class="k-w-full">
             <b class="required-label"></b>
             <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
-              [textField]="'receiptLocationName'" [valueField]="'receiptLocationID'" placeholder="Select"
-              rounded="large"></kendo-combobox>
+              [textField]="'receiptLocationName'" [valueField]="'receiptLocationID'" [allowCustom]="true"
+              placeholder="Select" rounded="large"></kendo-combobox>
           </kendo-label>
         </div>
         <div *ngIf="goodsTypeSelected?.goodsTypeName == 'Device'" class="k-d-flex k-align-items-center k-gap-4">
@@ -63,7 +63,7 @@
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="PM/Receiver" class="k-w-full">
-            <kendo-multiselect [data]="employees" [(ngModel)]="selectedReceivers" [textField]="'EmployeeName'"
+            <kendo-multiselect [data]="employees" [(ngModel)]="employeesSelected" [textField]="'EmployeeName'"
               [valueField]="'EmployeeID'" placeholder="Select" rounded="large"></kendo-multiselect>
           </kendo-label>
         </div>
@@ -88,24 +88,24 @@
             text="Phone" class="k-w-full">
             <b class="required-label"></b>
             <kendo-textbox [(ngModel)]="contactPhone" placeholder="Enter phone" rounded="large"
-              [class.invalid]="!receipt.isValid.contactPhone"></kendo-textbox>
+              [class.invalid]="!receipt.isValid.contactPhone"></kendo-textbox>|
           </kendo-label>
           <kendo-label *ngIf="deliveryModeSelected?.deliveryModeName=='Courier'" text="Tracking/AWB#" class="k-w-full">
             <b class="required-label"></b>
-            <kendo-textbox [(ngModel)]="contactPhone" placeholder="Tracking/AWB" rounded="large"
-              [class.invalid]="!receipt.isValid.contactPhone"></kendo-textbox>
+            <kendo-textbox [(ngModel)]="tracking" placeholder="Tracking/AWB" rounded="large"
+              [class.invalid]="!receipt.isValid.tracking"></kendo-textbox>
           </kendo-label>
         </div>
         <div *ngIf="deliveryModeSelected?.deliveryModeName=='Courier'" class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Courier Name" class="k-w-full">
-            <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Select" rounded="large"
+            <kendo-combobox [data]="couriers" [(ngModel)]="courierSelected" [textField]="'CourierName'"
+              [valueField]="'CourierDetailID'" placeholder="Select" rounded="large"
               [disabled]="isDisabledBehalfOfCusotmer"></kendo-combobox>
           </kendo-label>
           <kendo-label text="Country From" class="k-w-full">
             <b class="required-label"></b>
-            <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
-              [textField]="'receiptLocationName'" [valueField]="'receiptLocationID'" placeholder="Select"
-              rounded="large"></kendo-combobox>
+            <kendo-combobox [data]="countries" [(ngModel)]="countrySelected" [textField]="'CountryName'"
+              [valueField]="'CountryID'" placeholder="Select" rounded="large"></kendo-combobox>
           </kendo-label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
@@ -138,8 +138,8 @@
               style="padding-right: 1.5rem;" [class.invalid]="!receipt.isValid.address"></kendo-autocomplete>
             <img src="/assets/location-outline.svg" class="input-icon" width="18" /> -->
             <!-- <kendo-textarea placeholder="Address" [rows]="3" resizable="vertical" [readonly]="true"></kendo-textarea> -->
-            <kendo-combobox [data]="addresses" [(ngModel)]="addressSelected" (ngModelChange)="onChangeAddress()"
-              [textField]="'fullAddress'" [valueField]="'addressId'" placeholder="Select"
+            <kendo-combobox [data]="addresses" [(ngModel)]="addressSelected" (change)="onChangeAddress()"
+              (blur)="onBlur($event)" [textField]="'fullAddress'" [valueField]="'addressId'" placeholder="Select"
               rounded="large"></kendo-combobox>
           </kendo-label>
         </div>
@@ -185,8 +185,8 @@
         [valueField]="'goodsTypeID'" placeholder="Select type" rounded="large"></kendo-combobox>
     </kendo-label>
     <span style="margin-left: auto;"></span>
-    <!-- <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
-      (click)="testAddReceipt()">Test</button> -->
+    <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
+      (click)="testAddReceipt()">Test</button>
     <button kendoButton type="button" rounded="large" themeColor="primary" style="width:6rem"
       [disabled]="isDisabled.clearReceipt">Clear</button>
     <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" (click)="addReceipt()"

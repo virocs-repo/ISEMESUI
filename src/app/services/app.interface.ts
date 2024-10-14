@@ -277,3 +277,74 @@ export interface Employee {
   EmployeeID: number
   EmployeeName: string
 }
+export interface PostReceipt {
+  ReceiptID: number | null;
+  VendorID: number | null;
+  VendorName: string | null;
+  CustomerTypeID: number;
+  CustomerVendorID: number;
+  BehalfID: number;
+  ReceivingFacilityID: number;
+  DeliveryModeID: number;
+  CourierDetailID: number | null;
+  CountryFromID: number | null;
+  ContactPerson: string;
+  ContactPhone: string;
+  Email: string;
+  ExpectedDateTime: Date | string;
+  AddressID: number;
+  MailComments: string | null;
+  PMComments: string | null;
+  NoOfCartons: number;
+  IsHold: boolean;
+  HoldComments: string | null;
+  IsExpected: boolean;
+  IsInterim: boolean;
+  IsFTZ: boolean;
+  MailStatus: string | null;
+  ReceivingStatus: string | null;
+  SignaturePersonType: string;
+  SignaturePersonID: number;
+  Signature: string;
+  SignatureDate: Date | string;
+  RecordStatus: string;
+  Active: boolean;
+  LoginId: number;
+  EmployeeDetail: Employee[];
+}
+export const INIT_POST_RECEIPT = {
+
+  ReceiptID: null,
+  VendorID: null,
+  VendorName: null,
+  CustomerTypeID: 1,
+  CustomerVendorID: 31,
+  BehalfID: 33,
+  ReceivingFacilityID: 1,
+  DeliveryModeID: 3,
+  CourierDetailID: null,
+  CountryFromID: null,
+  ContactPerson: "Amith S",
+  ContactPhone: "215-634-123",
+  Email: "Amith_s@xyz.com",
+  ExpectedDateTime: "2024-08-27 09:28:39.187",
+  AddressID: 1,
+  MailComments: null,
+  PMComments: null,
+  NoOfCartons: 2,
+  IsHold: false,
+  HoldComments: null,
+  IsExpected: false,
+  IsInterim: false,
+  IsFTZ: false,
+  MailStatus: null,
+  ReceivingStatus: null,
+  SignaturePersonType: "Vendor",
+  SignaturePersonID: 1,
+  Signature: "Amithsvc",
+  SignatureDate: "2024-08-27 09:28:39.187",
+  RecordStatus: "I",
+  Active: true,
+  LoginId: 1,
+  EmployeeDetail: []
+}
