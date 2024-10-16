@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
-import { Address, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_RECEIPT, JSON_Object, MESSAGES, MiscellaneousGoods, PostHardware, PostReceipt, ReceiptLocation } from 'src/app/services/app.interface';
+import { Address, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostReceipt, ReceiptLocation, SignatureTypes } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -33,11 +33,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   contactPerson = ''
 
   signatureName = ''
-  signatureTypes = [
+  readonly signatureTypes: SignatureTypes[] = [
     { customerTypeID: 1, customerTypeName: 'Customer' }, { customerTypeID: 3, customerTypeName: 'Employee' },
   ]
   signatureEmployeeSelected: Employee | undefined;
-  signatureTypeSelected: CustomerType | undefined;
+  signatureTypeSelected: SignatureTypes | undefined;
   signatureDate: Date = new Date();
   expectedDateTime: Date = new Date();
   format = "MM/dd/yyyy HH:mm";
@@ -117,8 +117,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       // this.employeesSelected = not coming in the respose
       this.comments = dataItem.pmComments;
       // auto select is diabled
-      // this.deliveryModeSelected = this.deliveryMode.find(c => c.deliveryModeID == dataItem.deliveryModeID);
-      // this.tracking = dataItem. not coming
+      this.deliveryModeSelected = this.deliveryMode.find(c => c.deliveryModeID == dataItem.deliveryModeID);
+      this.tracking = dataItem.trackingNumber || ''
       if (dataItem.courierDetailID) {
         this.courierSelected = this.couriers.find(c => c.CourierDetailID == dataItem.courierDetailID)
       }
@@ -134,14 +134,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.gridData[0].isHold = dataItem.isHold
       this.gridData[0].holdComments = dataItem.holdComments
 
-      this.signatureTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.signaturePersonID);
+      this.signatureTypeSelected = this.signatureTypes.find(c => c.customerTypeName == dataItem.signaturePersonType);
       this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeID == dataItem.signaturePersonID)
       this.signatureName = dataItem.signature
       if (dataItem.signatureDate) {
         this.signatureDate = new Date(dataItem.signatureDate);
       }
 
-      this.goodsTypeSelected = this.goodsType.find(c => c.goodsTypeID == dataItem.goodsTypeID);
+      // this.goodsTypeSelected = this.goodsType.find(c => c.goodsTypeID == dataItem.goodsTypeID);
       this.address = dataItem.address
       this.email = dataItem.email
       this.contactPhone = dataItem.contactPhone
@@ -173,7 +173,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.apiService.getDeviceData(dataItem.receiptID).subscribe({
       next: (v: any) => {
         this.gridDataDevice = v;
-        this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Device')
+        // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Device')
         console.log(v);
       }
     });
@@ -282,14 +282,15 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       IsFTZ: this.isFTZ,
       MailStatus: null,
       ReceivingStatus: null,
-      SignaturePersonType: this.signatureEmployeeSelected?.EmployeeName || '',
+      SignaturePersonType: this.signatureTypeSelected?.customerTypeName || '',
       SignaturePersonID: this.signatureEmployeeSelected?.EmployeeID || 1,
       Signature: this.signatureName,
       SignatureDate: this.appService.formattedDateTime(new Date().toISOString()),
       RecordStatus: "I",
       Active: true,
       LoginId: this.appService.loginId,
-      EmployeeDetail: this.employeesSelected
+      EmployeeDetail: this.employeesSelected,
+      TrackingNumber: this.tracking
     }
     if (this.appService.sharedData.receiving.isEditMode) {
       data.RecordStatus = "U";
@@ -423,26 +424,42 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
   }
   saveDevices() {
-    if (this.gridDataDevice && this.gridDataDevice.length) {
-      console.log(this.gridDataDevice);
-      this.doPostProcessDevices()
+    if (!this.gridDataDevice || !this.gridDataDevice.length) {
+      this.appService.infoMessage(MESSAGES.NoChanges)
     }
-  }
-  private doPostProcessDevices() {
     const filteredRecords = this.gridDataDevice.filter(d => d.recordStatus == "I" || d.recordStatus == "U")
     if (!filteredRecords || filteredRecords.length < 1) {
       this.appService.infoMessage(MESSAGES.NoChanges);
       return;
     }
-    filteredRecords.forEach((r: any) => {
-      r.loginId = this.appService.loginId
-      if (r.recordStatus == "I") {
-        r.deviceID = null;
+    const DeviceDetails: PostDevice[] = []
+    filteredRecords.forEach((r) => {
+      const postDevice: PostDevice = {
+        DeviceID: r.deviceID,
+        ReceiptID: r.receiptID,
+        CustomerLotNumber: r.customerLotNumber,
+        CustomerCount: r.customerCount,
+        Expedite: r.expedite,
+        IQA: r.iqa,
+        LotID: null,
+        LotOwnerID: null,
+        LabelCount: r.labelCount,
+        DateCode: r.dateCode,
+        COO: r.coo,
+        IsHold: r.isHold,
+        HoldComments: r.holdComments,
+        RecordStatus: r.recordStatus || 'I',
+        Active: true,
+        LoginId: this.appService.loginId
       }
+
+      if (postDevice.RecordStatus == "I") {
+        postDevice.DeviceID = null;
+      }
+
+      DeviceDetails.push(postDevice)
     })
-    const body = { deviceDetails: filteredRecords }
-    console.log(filteredRecords);
-    console.log(filteredRecords[0]);
+    const body = { DeviceDetails }
 
     this.apiService.postProcessDevice(body).subscribe({
       next: (v: any) => {
@@ -470,7 +487,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   private doPostProcessDevice(data: JSON_Object) {
     const body = {
-      "deviceDetails": [
+      DeviceDetails: [
         {
           "deviceID": 0,
           "inventoryID": 0,
@@ -593,8 +610,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       HardwareDetails.push(postHardware)
     })
     const body = { HardwareDetails }
-    console.log(filteredRecords);
-    console.log(filteredRecords[0]);
 
     this.apiService.postProcessHardware(body).subscribe({
       next: (v: any) => {

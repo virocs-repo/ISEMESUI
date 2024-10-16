@@ -137,7 +137,7 @@ export interface DeviceItem {
   iseLotNumber: string;
   customerLotNumber: string;
   expedite: boolean;
-  customerCount: string;
+  customerCount: number;
   labelCount: number;
   coo: string; // Assuming "Country of Origin"
   dateCode: number;
@@ -148,7 +148,7 @@ export interface DeviceItem {
   active: boolean;
   recordStatus?: "I" | "U";
   lotOwner: string
-  iqa: string
+  iqa: boolean
 }
 export const INIT_DEVICE_ITEM: DeviceItem = {
   deviceID: 0,
@@ -156,7 +156,7 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   iseLotNumber: '',
   customerLotNumber: '',
   expedite: false,
-  customerCount: '',
+  customerCount: 0,
   labelCount: 0,
   coo: '',
   dateCode: 0,
@@ -166,7 +166,7 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   modifiedOn: new Date().toISOString(), // Set to current time
   active: true,
   lotOwner: '',
-  iqa: '',
+  iqa: true,
   recordStatus: 'I'
 };
 export interface JSON_Object {
@@ -312,9 +312,9 @@ export interface PostReceipt {
   Active: boolean;
   LoginId: number;
   EmployeeDetail: Employee[];
+  TrackingNumber: string | null;
 }
-export const INIT_POST_RECEIPT = {
-
+export const INIT_POST_RECEIPT: PostReceipt = {
   ReceiptID: null,
   VendorID: null,
   VendorName: null,
@@ -347,7 +347,8 @@ export const INIT_POST_RECEIPT = {
   RecordStatus: "I",
   Active: true,
   LoginId: 1,
-  EmployeeDetail: []
+  EmployeeDetail: [],
+  TrackingNumber: null
 }
 export interface PostHardware {
   HardwareID: number;
@@ -369,8 +370,48 @@ export const INIT_POST_HARDWARE = {
   Active: true,
   LoginId: 1
 }
+export interface PostDevice {
+  DeviceID: number | null;
+  ReceiptID: number;
+  CustomerLotNumber: string;
+  CustomerCount: number;
+  Expedite: boolean;
+  IQA: boolean;
+  LotID: number | null;
+  LotOwnerID: number | null;
+  LabelCount: number;
+  DateCode: number;
+  COO: string;
+  IsHold: boolean;
+  HoldComments: string | null;
+  RecordStatus: "I" | "U";
+  Active: boolean;
+  LoginId: number;
+}
 
+export const INIT_POST_DEVICE: PostDevice = {
+  DeviceID: null,
+  ReceiptID: 4,
+  CustomerLotNumber: "CL008",
+  CustomerCount: 50,
+  Expedite: false,
+  IQA: true,
+  LotID: 14054,
+  LotOwnerID: 1,
+  LabelCount: 50,
+  DateCode: 202304,
+  COO: "CA",
+  IsHold: true,
+  HoldComments: "Quality check",
+  RecordStatus: "I",
+  Active: true,
+  LoginId: 1
+}
 export interface HardwareType {
   hardwareTypeID: number
   hardwareType: string
+}
+export interface SignatureTypes {
+  customerTypeID: number;
+  customerTypeName: string
 }
