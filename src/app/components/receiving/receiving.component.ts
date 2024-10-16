@@ -122,7 +122,7 @@ export class ReceivingComponent {
     }
 
   }
-  dataItemSelected!: Receipt;
+  dataItemSelected: Receipt | undefined;
   selectedRowIndex: number = -1;
   onCellClick(e: CellClickEvent): void {
     console.log(e);
@@ -136,6 +136,10 @@ export class ReceivingComponent {
   }
   onSelectRowActionMenu(e: ContextMenuSelectEvent) {
     const dataItem = this.dataItemSelected;
+    if (!dataItem) {
+      console.error('Selected dataItem is not set');
+      return;
+    }
     console.log(e);
     console.log(dataItem);
     dataItem.holdComments = dataItem.holdComments || '';
@@ -143,7 +147,11 @@ export class ReceivingComponent {
       case 'Void Data':
         const body = {
           receiptDetails: [
-            { ...dataItem, recordStatus: "U", loginId: this.appService.loginId, active: false }
+            {
+              ...dataItem, recordStatus: "U", loginId: this.appService.loginId, active: false,
+              expectedDateTime: this.appService.formattedDateTime(dataItem.expectedDateTime),
+              signatureDate: this.appService.formattedDateTime(dataItem.signatureDate),
+            }
           ]
         };
         // temp fix
@@ -185,5 +193,11 @@ export class ReceivingComponent {
     return {
       'highlighted-row': context.index === this.selectedRowIndex
     };
+  }
+  onClearForm() {
+    this.isDialogOpen = false;
+    setTimeout(() => {
+      this.isDialogOpen = true;
+    }, 300);
   }
 }

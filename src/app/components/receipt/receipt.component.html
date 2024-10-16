@@ -36,14 +36,14 @@
           </kendo-label>
           <kendo-label text="Customer / Vendor Name" class="k-w-full">
             <b class="required-label"></b>
-            <kendo-combobox id="customer" [data]="customer" [(ngModel)]="customerSelected"
+            <kendo-combobox id="customer" [data]="customers" [(ngModel)]="customerSelected"
               [textField]="customerTextField" [valueField]="customerValueField" placeholder="Select" rounded="large"
               [class.invalid]="!receipt.isValid.customer"></kendo-combobox>
           </kendo-label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Behalf of Customer" class="k-w-full">
-            <kendo-combobox [data]="customer" [(ngModel)]="behalfOfCusotmerSelected" [textField]="customerTextField"
+            <kendo-combobox [data]="customers" [(ngModel)]="behalfOfCusotmerSelected" [textField]="customerTextField"
               [valueField]="customerValueField" placeholder="Select" rounded="large"
               [disabled]="isDisabledBehalfOfCusotmer"></kendo-combobox>
           </kendo-label>
@@ -189,7 +189,7 @@
     <!-- <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
       (click)="testAddReceipt()">Test</button> -->
     <button kendoButton type="button" rounded="large" themeColor="primary" style="width:6rem"
-      [disabled]="isDisabled.clearReceipt">Clear</button>
+      [disabled]="isDisabled.clearReceipt" (click)="onClearForm()">Clear</button>
     <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" (click)="addReceipt()"
       [disabled]="isDisabled.addReceipt">Submit</button>
   </div>
@@ -207,14 +207,14 @@
         [resizable]="true" class="bold-column-header wrap-header-grid">
         <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
         <kendo-grid-column field="iseLotNumber" title="ISELot#">
-          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+          <!-- <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
               <kendo-textbox [(ngModel)]="dataItem.iseLotNumber" placeholder="Lot Number"></kendo-textbox>
             </ng-container>
             <ng-template #showValue>
               <span>{{dataItem.iseLotNumber}}</span>
             </ng-template>
-          </ng-template>
+          </ng-template> -->
         </kendo-grid-column>
         <kendo-grid-column field="customerLotNumber" title="Customer Lot#">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
@@ -344,12 +344,11 @@
       <kendo-grid [kendoGridBinding]="gridDataHardware" [selectable]="selectableSettings" [sortable]="true"
         [resizable]="true" class="bold-column-header wrap-header-grid">
         <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-        <kendo-grid-column field="serialNumber" title="Serial#">
-        </kendo-grid-column>
+        <kendo-grid-column field="hardwareID" title="Serial#"></kendo-grid-column>
         <kendo-grid-column field="customerID" title="Customer ID">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
-              <kendo-combobox [data]="customer" [(ngModel)]="dataItem.customerSelected" [textField]="customerTextField"
+              <kendo-combobox [data]="customers" [(ngModel)]="dataItem.customerSelected" [textField]="customerTextField"
                 [valueField]="customerValueField" placeholder="Select" rounded="large"></kendo-combobox>
               <!-- <kendo-textbox [(ngModel)]="dataItem.customerID" placeholder="Customer ID"></kendo-textbox> -->
             </ng-container>
@@ -436,22 +435,17 @@
     </div>
   </div>
 
-  <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
-    <span style="margin-left: auto;"></span>
-    <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" (click)="addReceipt()"
-      [disabled]="isDisabled.addReceipt">Submit</button>
-  </div>
   <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-4 k-mt-3">
     <kendo-label text="Customer / Employee">
-      <kendo-combobox [data]="customerTypes" [(ngModel)]="signatureTypeSelected" [textField]="'customerTypeName'"
+      <kendo-combobox [data]="signatureTypes" [(ngModel)]="signatureTypeSelected" [textField]="'customerTypeName'"
         [valueField]="'customerTypeID'" (ngModelChange)="onChangeCustomerType()" placeholder="Select"
         rounded="large"></kendo-combobox>
     </kendo-label>
-    <kendo-label text="Employee">
+    <kendo-label text="Employee" *ngIf="signatureTypeSelected?.customerTypeName == 'Employee'">
       <kendo-combobox [data]="employees" [(ngModel)]="signatureEmployeeSelected" [textField]="'EmployeeName'"
         [valueField]="'EmployeeID'" placeholder="Select" rounded="large"></kendo-combobox>
     </kendo-label>
-    <kendo-label text="Signature">
+    <kendo-label text="Signature" *ngIf="signatureTypeSelected?.customerTypeName == 'Customer'">
       <input type="text" placeholder="Name" class="k-w-full" kendoTextBox [(ngModel)]="signatureName"
         name="signatureName" required>
     </kendo-label>

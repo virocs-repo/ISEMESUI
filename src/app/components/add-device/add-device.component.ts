@@ -9,13 +9,12 @@ import { AppService } from 'src/app/services/app.service';
   styleUrls: ['./add-device.component.scss']
 })
 export class AddDeviceComponent implements OnInit {
-  customer: Customer[] = []
+  readonly customers: Customer[] =this.appService.masterData.entityMap.Customer;
   customerSelected: Customer | undefined;
 
   constructor(private appService: AppService) { }
   
   ngOnInit(): void {
-    this.customer = this.appService.masterData.customer;
   }
 
   // Dummy data: can be removed later
