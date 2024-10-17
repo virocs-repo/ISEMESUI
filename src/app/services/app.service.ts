@@ -54,7 +54,9 @@ export class AppService {
       Vendor: [],
       Employee: []
     },
-    addresses: []
+    addresses: [],
+    country: [],
+    courierDetails: []
   }
   sharedData: {
     receiving: SharedInfo
@@ -164,103 +166,4 @@ export class AppService {
     const formattedDate = isoString.replace('T', ' ').replace('Z', '');
     return formattedDate;
   }
-  m = {
-    "CustomerType": [
-      {
-        "CustomerTypeID": 1,
-        "CustomerTypeName": "Customer"
-      },
-      {
-        "CustomerTypeID": 2,
-        "CustomerTypeName": "Vendor"
-      }
-    ],
-    "ReceiptLocation": [
-      {
-        "ReceivingFacilityID": 1,
-        "ReceivingFacilityName": "Fremont CA",
-        receiptLocationID: 1,
-        receiptLocationName: "Fremont CA"
-      },
-      {
-        receiptLocationID: 3,
-        receiptLocationName: "Sanjose CA",
-        "ReceivingFacilityID": 3,
-        "ReceivingFacilityName": "Sanjose CA"
-      }
-    ],
-    "GoodsType": [
-      {
-        "GoodsTypeID": 2,
-        "GoodsTypeName": "Device"
-      },
-      {
-        "GoodsTypeID": 1,
-        "GoodsTypeName": "Hardware"
-      },
-      {
-        "GoodsTypeID": 3,
-        "GoodsTypeName": "Miscellaneous Goods"
-      }
-    ],
-    "DeliveryMode": [
-      {
-        "DeliveryModeID": 1,
-        "DeliveryModeName": "Courier"
-      },
-      {
-        "DeliveryModeID": 3,
-        "DeliveryModeName": "Drop Off"
-      },
-      {
-        "DeliveryModeID": 2,
-        "DeliveryModeName": "Pick Up"
-      }
-    ],
-    "CourierDetails": [
-      {
-        "CourierDetailID": 7,
-        "CourierName": "Amazon Logistics"
-      },
-      {
-        "CourierDetailID": 11,
-        "CourierName": "BlueDart"
-      },
-      {
-        "CourierDetailID": 19,
-        "CourierName": "Coyote Logistics"
-      },
-      {
-        "CourierDetailID": 18,
-        "CourierName": "Deliv"
-      },
-      {
-        "CourierDetailID": 4,
-        "CourierName": "DHL"
-      }
-    ],
-    "Country": [
-      {
-        "CountryID": 89,
-        "CountryName": "Afghanistan"
-      },
-      {
-        "CountryID": 137,
-        "CountryName": "Albania"
-      },
-      {
-        "CountryID": 35,
-        "CountryName": "Algeria"
-      },
-      {
-        "CountryID": 138,
-        "CountryName": "Andorra"
-      },
-      {
-        "CountryID": 36,
-        "CountryName": "Angola"
-      }
-    ]
-  }
-
 }

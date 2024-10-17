@@ -50,7 +50,7 @@
           <kendo-label text="Receiving Facility" class="k-w-full">
             <b class="required-label"></b>
             <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
-              [textField]="'receiptLocationName'" [valueField]="'receiptLocationID'" [allowCustom]="true"
+              [textField]="'receivingFacilityName'" [valueField]="'receivingFacilityID'" [allowCustom]="true"
               placeholder="Select" rounded="large"></kendo-combobox>
           </kendo-label>
         </div>
@@ -99,14 +99,14 @@
         </div>
         <div *ngIf="deliveryModeSelected?.deliveryModeName=='Courier'" class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Courier Name" class="k-w-full">
-            <kendo-combobox [data]="couriers" [(ngModel)]="courierSelected" [textField]="'CourierName'"
-              [valueField]="'CourierDetailID'" placeholder="Select" rounded="large"
+            <kendo-combobox [data]="couriers" [(ngModel)]="courierSelected" [textField]="'courierName'"
+              [valueField]="'courierDetailID'" placeholder="Select" rounded="large"
               [disabled]="isDisabledBehalfOfCusotmer"></kendo-combobox>
           </kendo-label>
           <kendo-label text="Country From" class="k-w-full">
             <b class="required-label"></b>
-            <kendo-combobox [data]="countries" [(ngModel)]="countrySelected" [textField]="'CountryName'"
-              [valueField]="'CountryID'" placeholder="Select" rounded="large"></kendo-combobox>
+            <kendo-combobox [data]="countries" [(ngModel)]="countrySelected" [textField]="'countryName'"
+              [valueField]="'countryID'" placeholder="Select" rounded="large"></kendo-combobox>
           </kendo-label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">

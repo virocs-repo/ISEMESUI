@@ -5,8 +5,8 @@ export interface CustomerType {
   customerTypeName: string;
 }
 export interface ReceiptLocation {
-  receiptLocationID: number;
-  receiptLocationName: string;
+  receivingFacilityID: number;
+  receivingFacilityName: string;
 }
 export interface GoodsType {
   goodsTypeID: number;
@@ -35,6 +35,14 @@ export interface EntityMap {
   Vendor: Vendor[],
   Employee: Employee[]
 }
+export interface Country {
+  countryID: number
+  countryName: string
+}
+export interface CourierDetails {
+  courierDetailID: number
+  courierName: string
+}
 export interface MasterData {
   customerType: CustomerType[]
   receiptLocation: ReceiptLocation[]
@@ -42,7 +50,9 @@ export interface MasterData {
   deliveryMode: DeliveryMode[]
   customer: Customer[]  // remove this in next version
   entityMap: EntityMap;
-  addresses: Address[]
+  addresses: Address[];
+  country: Country[];
+  courierDetails: CourierDetails[];
 }
 export interface Receipt {
   receiptID: number;

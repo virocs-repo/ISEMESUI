@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/cor
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { Address, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostReceipt, ReceiptLocation, SignatureTypes } from 'src/app/services/app.interface';
+import { Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostReceipt, ReceiptLocation, SignatureTypes } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -17,7 +17,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
   readonly customerTypes: CustomerType[] = this.appService.masterData.customerType;
   customerTypeSelected: CustomerType | undefined;
-  readonly receiptLocation: ReceiptLocation[] = this.appService.m.ReceiptLocation
+  readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
   receiptLocationSelected: ReceiptLocation | undefined;
   readonly goodsType: GoodsType[] = this.appService.masterData.goodsType;
   goodsTypeSelected: GoodsType | undefined;
@@ -50,10 +50,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   address: any;
   readonly addresses: Address[] = this.appService.masterData.addresses;
   addressSelected: Address | undefined;
-  countries = this.appService.m.Country
-  countrySelected: any;
-  couriers = this.appService.m.CourierDetails
-  courierSelected: any
+  readonly countries = this.appService.masterData.country
+  countrySelected: Country | undefined;
+  readonly couriers = this.appService.masterData.courierDetails
+  courierSelected: CourierDetails | undefined
 
   description: string = '';
 
@@ -132,7 +132,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
       this.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.customerTypeID);
       this.customerSelected = this.customers.find(c => c.CustomerID == dataItem.customerVendorID);
-      this.receiptLocationSelected = this.receiptLocation.find(c => c.receiptLocationID == dataItem.receivingFacilityID);
+      this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.receivingFacilityID);
       this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID == dataItem.behalfID);
 
       // this.employeesSelected = not coming in the respose
@@ -141,10 +141,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.deliveryModeSelected = this.deliveryMode.find(c => c.deliveryModeID == dataItem.deliveryModeID);
       this.tracking = dataItem.trackingNumber || ''
       if (dataItem.courierDetailID) {
-        this.courierSelected = this.couriers.find(c => c.CourierDetailID == dataItem.courierDetailID)
+        this.courierSelected = this.couriers.find(c => c.courierDetailID == dataItem.courierDetailID)
       }
       if (dataItem.countryFromID) {
-        this.countrySelected = this.countries.find(c => c.CountryID == dataItem.countryFromID)
+        this.countrySelected = this.countries.find(c => c.countryID == dataItem.countryFromID)
       }
       this.expectedDateTime = new Date(dataItem.expectedDateTime);
       this.deliveryComments = dataItem.mailComments;
@@ -287,10 +287,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       CustomerTypeID: this.customerTypeSelected?.customerTypeID || 1,
       CustomerVendorID: this.customerSelected?.CustomerID || 1,
       BehalfID: this.behalfOfCusotmerSelected?.CustomerID || 1,
-      ReceivingFacilityID: this.receiptLocationSelected?.receiptLocationID || 1,
+      ReceivingFacilityID: this.receiptLocationSelected?.receivingFacilityID || 1,
       DeliveryModeID: this.deliveryModeSelected?.deliveryModeID || 1,
-      CourierDetailID: this.courierSelected?.CourierDetailID,
-      CountryFromID: this.countrySelected?.CountryID,
+      CourierDetailID: this.courierSelected?.courierDetailID || 1,
+      CountryFromID: this.countrySelected?.countryID || 1,
       ContactPerson: this.contactPerson,
       ContactPhone: this.contactPhone,
       Email: this.email,
