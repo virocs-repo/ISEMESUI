@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
+import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { Address, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostReceipt, ReceiptLocation, SignatureTypes } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
@@ -23,7 +24,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   readonly deliveryMode: DeliveryMode[] = this.appService.masterData.deliveryMode;
   deliveryModeSelected: DeliveryMode | undefined;
 
-  readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
+  customers: Customer[] = this.appService.masterData.entityMap.Customer;
   customerSelected: Customer | undefined;
   behalfOfCusotmerSelected: Customer | undefined;
   customerTextField: 'CustomerName' | 'VendorName' = 'CustomerName'
@@ -83,16 +84,36 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     cancelBtn: false
   }
   tracking = ''
+  customVendorName: string | undefined;
   readonly hardwareTypes = this.appService.hardwareTypes;
-
+  readonly subscription = new Subscription()
   constructor(private appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
     this.init();
+    this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
+      switch (v) {
+        case 'canCloseDialog?':
+          let closeDialog = false;
+          closeDialog = this.areThereAnyChanges();
+          if (closeDialog) {
+            closeDialog = confirm('Do you want to Discard changes?')
+          } else {
+            closeDialog = true
+          }
+          if (closeDialog) {
+            this.appService.sharedData.receiving.eventEmitter.emit('closeDialog');
+          }
+          break;
+        default:
+          break;
+      }
+    }))
   }
   ngOnDestroy(): void {
     this.appService.sharedData.receiving.isEditMode = false
     this.appService.sharedData.receiving.isViewMode = false;
+    this.subscription.unsubscribe();
   }
   private init() {
     // if (!this.customerTypes.find(c => c.customerTypeName == 'Employee')) {
@@ -254,6 +275,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.email = 'test@gmail.com'
   }
   addReceipt() {
+    console.log(this.customVendorName);
+    console.log(this.customerSelected);
+
     const data: PostReceipt = {
       ...INIT_POST_RECEIPT,
 
@@ -376,9 +400,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
     this.doPostProcessReceipt(data);
   }
-  private doPostProcessReceipt(data: JSON_Object) {
-    const body = { ReceiptDetails: [data] }
-
+  private doPostProcessReceipt(postReceipt: PostReceipt) {
+    const body = { ReceiptDetails: [postReceipt] }
     this.apiService.postProcessReceipt(body).subscribe({
       next: (v: any) => {
         console.log({ v });
@@ -820,7 +843,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   private initCustomersList(entityType: EntityType) {
     // @ts-ignore
-    this.customer = this.appService.masterData.entityMap[entityType]
+    this.customers = this.appService.masterData.entityMap[entityType]
     // @ts-ignore
     this.customerTextField = entityType + 'Name';
     // @ts-ignore
@@ -869,5 +892,41 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.contactPhone = ''
     this.contactPerson = ''
     this.employeesSelected = [];
+  }
+  private areThereAnyChanges() {
+    if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
+      return false
+    } else {
+      // new form
+      const valuesToCheck = [
+        this.customerTypeSelected,
+        this.customerSelected,
+        this.receiptLocationSelected,
+        this.behalfOfCusotmerSelected,
+
+        this.comments,
+        this.deliveryModeSelected,
+        this.tracking,
+        this.courierSelected,
+        this.countrySelected,
+        this.deliveryComments,
+
+        this.addressSelected,
+
+        this.gridData[0].noOfCartons,
+        this.gridData[0].holdComments,
+
+        this.signatureTypeSelected,
+        this.signatureEmployeeSelected,
+        this.signatureName,
+
+        this.address,
+        this.email,
+        this.contactPhone,
+        this.contactPerson
+      ]
+      const hasTruthyValue = valuesToCheck.some(v => v);
+      return hasTruthyValue
+    }
   }
 }

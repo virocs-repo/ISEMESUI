@@ -56,7 +56,7 @@
     <small *ngIf="appService.sharedData.receiving.isViewMode">(View Mode)</small>
     <small *ngIf="appService.sharedData.receiving.isEditMode">(Edit Mode)</small>
     <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
-      (click)="closeDialog()"></button>
+      (click)="canCloseDialog()"></button>
   </div>
   <div class="dialog-body k-overflow-y-auto">
     <app-receipt (onClose)="isDialogOpen = false" (onRestart)="onClearForm()"></app-receipt>

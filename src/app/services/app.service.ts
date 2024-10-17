@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { HardwareType, MasterData, ShipmentCategory, ShipmentType, UserData } from './app.interface';
 import { NotificationService } from '@progress/kendo-angular-notification';
 
@@ -28,8 +28,8 @@ interface UserPreferences {
 interface SharedInfo {
   isEditMode: boolean,
   isViewMode: boolean,
-  dataItem: any
-
+  dataItem: any,
+  eventEmitter: EventEmitter<any>
 }
 
 @Injectable({
@@ -60,8 +60,8 @@ export class AppService {
     receiving: SharedInfo
     shipping: SharedInfo
   } = {
-      receiving: { isEditMode: false, isViewMode: false, dataItem: {} },
-      shipping: { isEditMode: false, isViewMode: false, dataItem: {} }
+      receiving: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
+      shipping: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() }
     }
   hardwareTypes: HardwareType[] = []
   userData: UserData = { email: '', name: '', firstName: '' }
