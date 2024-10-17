@@ -275,9 +275,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.email = 'test@gmail.com'
   }
   addReceipt() {
-    console.log(this.customVendorName);
-    console.log(this.customerSelected);
-
     const data: PostReceipt = {
       ...INIT_POST_RECEIPT,
 
@@ -368,6 +365,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       } else {
         this.receipt.isValid.contactPerson = true;
       }
+      // email validation
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(this.email)) {
+        this.appService.errorMessage('Invalid email address');
+        return;
+      }
     }
     console.log(this.addressSelected);
     if (this.deliveryModeSelected?.deliveryModeName == 'Pick Up') {
@@ -417,35 +420,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
   // addDevice
   public gridDataDevice: DeviceItem[] = [];
-  addDevice() {
-    if (this.gridDataDevice && this.gridDataDevice.length) {
-      const data: any = {
-        // ... this.gridDataDevice[this.device.rowIndex]
-      }
-      // if (this.device.isEditMode) {
-      //   // @ts-ignore
-      //   data.recordStatus = "U";
-      // }
-      // if (this.device.isAddMode) {
-      //   // @ts-ignore
-      //   data.recordStatus = "I";
-      //   // @ts-ignore
-      //   data.deviceID = null
-      // }
-      console.log(data);
-      const mandatoryFields = [
-        data.iseLotNum, data.customerLotNum, data.expectedQty, data.partNum, data.labelCount,
-        data.coo, data.dateCode, data.holdComments
-      ]
-      const isValid = !mandatoryFields.some(v => !v);
-      console.log({ isValid });
-      if (isValid) {
-        this.doPostProcessDevice(data);
-      } else {
-        this.appService.errorMessage("All fields are required!")
-      }
-    }
-  }
   saveDevices() {
     if (!this.gridDataDevice || !this.gridDataDevice.length) {
       this.appService.infoMessage(MESSAGES.NoChanges)
@@ -456,7 +430,18 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       return;
     }
     const DeviceDetails: PostDevice[] = []
-    filteredRecords.forEach((r) => {
+    for (let index = 0; index < filteredRecords.length; index++) {
+      const r = filteredRecords[index];
+      const mandatoryFields = [
+        r.customerCount, r.labelCount, r.dateCode, r.coo,
+      ]
+      const isValid = !mandatoryFields.some(v => !v);
+      console.log({ mandatoryFields });
+      console.log({ isValid });
+      if (!isValid) {
+        this.appService.errorMessage("All fields are required!")
+        return;
+      }
       const postDevice: PostDevice = {
         DeviceID: r.deviceID,
         ReceiptID: r.receiptID,
@@ -481,9 +466,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       }
 
       DeviceDetails.push(postDevice)
-    })
+    }
     const body = { DeviceDetails }
-
     this.apiService.postProcessDevice(body).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
@@ -508,41 +492,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const dataItem = this.appService.sharedData.receiving.dataItem;
     this.gridDataMiscellaneous.splice(0, 0, { ...INIT_MISCELLANEOUS_GOODS, receiptID: dataItem.receiptID })
   }
-  private doPostProcessDevice(data: JSON_Object) {
-    const body = {
-      DeviceDetails: [
-        {
-          "deviceID": 0,
-          "inventoryID": 0,
-          "receiptID": 0,
-          "iseLotNum": "string",
-          "customerLotNum": "string",
-          "expectedQty": 0,
-          "expedite": true,
-          "partNum": "string",
-          "labelCount": 0,
-          "coo": "string",
-          "dateCode": 0,
-          "isHold": true,
-          "holdComments": "string",
-          "createdOn": "2024-09-02T03:38:12.175Z",
-          "modifiedOn": "2024-09-02T03:38:12.175Z",
-          "active": true,
-          ...data
-        }
-      ]
-    }
-    this.apiService.postProcessDevice(body).subscribe({
-      next: (v: any) => {
-        this.appService.successMessage(MESSAGES.DataSaved);
-        this.fetchDataDevice();
-      },
-      error: (err) => {
-        this.appService.errorMessage(MESSAGES.DataSaveError);
-        console.log(err);
-      }
-    });
-  }
+
   // addHardware
   gridDataHardware: HardwareItem[] = []
   addHardware() {
@@ -765,14 +715,32 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       case 'Hold':
         dataItem.isHold = !dataItem.isHold
         break;
+      case 'Print':
+        this.doPrint(dataItem, tableName)
+        break;
       case 'Void Data':
-        console.log(tableName)
         this.doVoidData(dataItem, tableName)
         break;
 
       default:
         break;
     }
+  }
+  private doPrint(r: any, tableName: 'Device' | 'Hardware' | 'Misc') {
+    switch (tableName) {
+      case 'Device':
+        const text = this.appService.formatJson(r);
+        console.log(text);
+        this.printPreview(text)
+
+        break;
+    }
+  }
+  private printPreview(textToPrint: string) {
+    const printWindow: any = window.open('', '_blank');
+    printWindow.document.write(textToPrint);
+    printWindow.print();
+    // printWindow.close();
   }
   private doVoidData(r: any, tableName: 'Device' | 'Hardware' | 'Misc') {
     switch (tableName) {

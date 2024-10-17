@@ -166,4 +166,44 @@ export class AppService {
     const formattedDate = isoString.replace('T', ' ').replace('Z', '');
     return formattedDate;
   }
+  formatJson(obj: any): string {
+    const formattedObj: { [key: string]: any } = {};
+
+    // Recursively traverse the object
+    function traverse(obj: any) {
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          const newKey = splitCamelCase(key);
+          if (typeof obj[key] === 'object') {
+            formattedObj[newKey] = traverse(obj[key]);
+          } else {
+            formattedObj[newKey] = obj[key];
+          }
+        }
+      }
+      return formattedObj;
+    }
+
+    // Split camelCase string into separate words
+    // Split camelCase string into separate words and capitalize first letter
+    function splitCamelCase(str: string): string {
+      return str
+        .replace(/([A-Z])/g, ' $1')
+        .trim()
+        .replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.substring(1).toLowerCase());
+    }
+
+    const formattedJson = traverse(obj);
+
+    // Format output as text with design
+    let output = '';
+    for (const key in formattedJson) {
+      if (formattedJson.hasOwnProperty(key)) {
+        output += `<div><b>${key}</b>: ${formattedJson[key]}</div>`;
+      }
+    }
+
+    return output;
+  }
+
 }
