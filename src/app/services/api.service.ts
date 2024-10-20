@@ -71,8 +71,8 @@ export class ApiService {
     return this.httpClient.get(`${API}v1/ise/shipment/shipment-details?customerID=${customerID}`);
   }
   // Customer Orders
-  getInventory(customerId: number, goodsType: string, lotNumber: string) {
-    const url = `${API}v1/ise/inventory/customerorder/inventory?customerId=${customerId}&goodsType=${goodsType}&lotNumber=${lotNumber}`;
+  getInventory(customerId: number, goodsType: string, lotNumber: string,customerordType:string) {
+    const url = `${API}v1/ise/inventory/customerorder/inventory?customerId=${customerId}&goodsType=${goodsType}&lotNumber=${lotNumber}&customerOrderType=${customerordType}`;
     return this.httpClient.get(url);
   }
 

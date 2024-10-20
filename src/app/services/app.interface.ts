@@ -245,6 +245,7 @@ export interface CustomerOrderDetail {
 export interface CustomerOrder {
   CustomerOrderID: number | null;
   CustomerId: number;
+  CustomerOrderType:string;
   OQA: boolean | false;
   Bake: boolean | false;
   PandL: boolean | false;

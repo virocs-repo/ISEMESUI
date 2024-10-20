@@ -1,5 +1,11 @@
 <div class="k-m-3 k-overflow-y-auto" style="height: 80vh;">
     <div class="k-d-flex k-align-items-end k-gap-3">
+        <kendo-label text="Customer OrderType">
+            <b class="required-label"></b>
+            <kendo-combobox [data]="customerOrderTypes" placeholder="Select" rounded="large" [(ngModel)]="customerOrderTypeSelected"  [disabled]="!addCustomerMode">
+            </kendo-combobox>
+        </kendo-label>
+
         <kendo-label text="Customer">
             <b class="required-label"></b>
             <kendo-combobox [data]="customer" [(ngModel)]="customerSelected" [textField]="'CustomerName'"

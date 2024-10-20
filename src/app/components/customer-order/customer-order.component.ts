@@ -33,13 +33,7 @@ export class CustomerOrderComponent implements OnInit {
   public formOrdData: any = {}; 
   public searchTerm: string = '';
   public columnData: any[] = [
-    /*     { field: 'customerOrderID', title: 'Customer Order ID' },
-        { field: 'customerOrderDetailID', title: 'Customer Order Detail ID' },
-        { field: 'customerId', title: 'Customer ID' },
-        { field: 'customerName', title: 'Customer Name' },
-        { field: 'goodsType', title: 'Goods Type' },
-        { field: 'inventoryID', title: 'Inventory ID' },
-        { field: 'hardwareType', title: 'Hardware Type' }, */
+
     { field: 'customerName', title: 'Customer Name' },
     //{ field: 'oqa', title: 'oqa' },
    // { field: 'bake', title: 'bake' },
@@ -50,6 +44,7 @@ export class CustomerOrderComponent implements OnInit {
     //{ field: 'address', title: 'address' },
     { field: 'orderStatus', title: 'Order Status' },
     { field: 'active', title: 'Active' },
+    { field: 'customerOrderType', title: 'CustomerOrderType' },
     { field: 'createdOn', title: 'Created On' }
    // { field: 'modifiedOn', title: 'Modified On' }
   ];
@@ -177,6 +172,7 @@ const addressParts = dataItem.address.split(':');
 this.formOrdData = {
   CustomerOrderID: dataItem.customerOrderID,
   CustomerId: dataItem.customerId,
+  CustomerOrderType:dataItem.customerOrderType,
   OQA: dataItem.oqa,
   Bake: dataItem.bake,
   PandL: dataItem.pandL,
@@ -234,6 +230,7 @@ switch (e.item.text) {
       const customervoidOrder: CustomerOrder = {
         CustomerOrderID: dataItem.customerOrderID,
         CustomerId: dataItem.customerId,
+        CustomerOrderType:dataItem.customerOrderType,
         OQA: dataItem.oqa,
         Bake: dataItem.bake,
         PandL: dataItem.pandL,
