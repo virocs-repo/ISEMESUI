@@ -45,15 +45,18 @@
 
     </kendo-grid>
 
-
+    <kendo-card class="card-full" >
+        <kendo-card-body>
     <div class="k-d-flex k-gap-4 k-mb-4" style="padding-top:2%;">
-        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.OQA" [disabled]="!isEditMode" >
+        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.OQA" [disabled]="!isEditMode" style="transform: scale(1.5); border: 1px solid black;  border-radius: 4px; " >
         <kendo-label text="OQA"></kendo-label>
-        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.Bake" [disabled]="!isEditMode">
+        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.Bake" [disabled]="!isEditMode" style="transform: scale(1.5);border: 1px solid black;  border-radius: 4px;">
         <kendo-label text="Bake"></kendo-label>
-        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.PandL" [disabled]="!isEditMode">
+        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.PandL" [disabled]="!isEditMode" style="transform: scale(1.5);border: 1px solid black;  border-radius: 4px;">
         <kendo-label text="P&L"></kendo-label>
     </div>
+</kendo-card-body>
+</kendo-card>
     <kendo-card class="card-full">
         <kendo-card-body>
             <h2 class="k-mt-2">Address:</h2>
