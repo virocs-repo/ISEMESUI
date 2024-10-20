@@ -56,14 +56,14 @@
  
   <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [columnMenu]="columnMenuSettings"
     [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
-    [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" (cellClick)="onCellClick($event)" class="inventory-grid">
-    <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+    [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" (cellClick)="onCellClick($event)" class="inventory-grid" [rowClass]="rowCallback" >
+   
     <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <span [class.link]="c.isLink">{{ dataItem[c.field] }}</span>
+        <span [class.link]="c.isLink" (click)="onLinkClick(c.field, dataItem)" >{{ dataItem[c.field] }}</span>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column [width]="120">
+   <!--  <kendo-grid-column [width]="120">
       <ng-template kendoGridCellTemplate let-dataItem>
         <button kendoButton (click)="onButtonClick()" [svgIcon]="eyeIcon" fillMode="flat" title="Browse"
           themeColor="tertiary"></button>
@@ -72,9 +72,13 @@
         <button kendoButton [svgIcon]="ICON.moreVerticalIcon" #rowActionMenu></button>
         <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
       </ng-template>
-    </kendo-grid-column>
+    </kendo-grid-column> -->
   </kendo-grid>
 </div>
+<kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
+  #gridContextMenu></kendo-contextmenu>
+  
+
 <!-- <div class="k-d-flex k-gap-3 k-mt-3 k-mx-10">
     <button kendoButton type="button" (click)="openDialog()" class="k-w-24">Details</button>
     <button kendoButton type="button" (click)="isDialogOpen1 = !isDialogOpen1" class="k-w-24">On/Off Hold</button>

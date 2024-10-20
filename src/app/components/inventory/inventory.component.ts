@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { CellClickEvent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
+import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { eyeIcon, folderIcon, pencilIcon, SVGIcon } from '@progress/kendo-svg-icons';
 import { ApiService } from 'src/app/services/api.service';
-import { Customer, CustomerType, EntityType, ICON, ReceiptLocation } from 'src/app/services/app.interface';
+import { Customer, CustomerType, EntityType, ICON, Receipt, ReceiptLocation } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -11,6 +12,7 @@ import { AppService } from 'src/app/services/app.service';
   styleUrls: ['./inventory.component.scss']
 })
 export class InventoryComponent implements OnInit {
+  @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
   readonly ICON = ICON
   public pageSize = 10;
   public skip = 0;
@@ -42,7 +44,11 @@ export class InventoryComponent implements OnInit {
     { title: "Status", field: 'status' },
     // { title: "Hold", field: 'Status' }
   ]
-  
+  rowActionMenu: MenuItem[] = [
+     { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
+  ];
+  dataItemSelected: Receipt | undefined;
+  selectedRowIndex: number = -1;
   entityType: string[] = ['Customer' , 'Vendor'];  // Array to hold device types
   entityTypeSelected: string = 'Customer';  // Variable to hold the selected device type
   constructor(private apiService: ApiService,public appService: AppService) { }
@@ -69,7 +75,6 @@ export class InventoryComponent implements OnInit {
   }
   onSearch(): void {
     this.skip = 0;  // Reset pagination when searching
-    debugger;
     let custTypeID =null;
     let custVendorID=null;
     let behalfOfCustomerID=null;
@@ -88,8 +93,6 @@ export class InventoryComponent implements OnInit {
       behalfOfCustomerID=this.behalfOfCusotmerSelected?.CustomerID;
     }
     receivingFacilityID = this.receiptLocationSelected?.receivingFacilityID;
-
-  debugger;
     this.apiService.getinventorydata(custTypeID,custVendorID,behalfOfCustomerID,receivingFacilityID).subscribe({
       next: (v: any) => {
         this.gridDataResult.data = v;
@@ -128,6 +131,63 @@ export class InventoryComponent implements OnInit {
     this.loadGridData();
   }
 
+  onLinkClick(field: string, dataItem: any) 
+  {
+
+   
+    if (field === 'receiptID')
+    {
+      console.log(dataItem.receiptID)
+
+      if(dataItem.goodType==='Hardware')
+      {
+       
+        this.apiService.getHardwaredata(dataItem.receiptID).subscribe({
+          next: (v: any) => {
+            // this.receipts = v;
+            console.log(v);
+            this.isDialogOpen3 = !this.isDialogOpen3
+          },
+          error: (v: any) => { }
+        });
+
+      }
+      else if(dataItem.goodType==='Device')
+      {
+        this.apiService.getDeviceData(dataItem.receiptID).subscribe({
+          next: (v: any) => {
+            // this.receipts = v;
+            console.log(v);
+            this.isDialogOpen3 = !this.isDialogOpen3
+          },
+          error: (v: any) => { }
+        });
+      
+      }
+
+    }
+
+  }
+
+  onCellClick(e: CellClickEvent): void {
+    console.log(e);
+    if (e.type === 'contextmenu') {
+      const originalEvent = e.originalEvent;
+      originalEvent.preventDefault();
+      this.dataItemSelected = e.dataItem;
+      this.selectedRowIndex = e.rowIndex;
+      this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
+    }
+  }
+  onSelectRowActionMenu(e: ContextMenuSelectEvent)
+   {
+
+  }
+  rowCallback = (context: any) => {
+    return {
+      'highlighted-row': context.index === this.selectedRowIndex
+    };
+  }
   selectableSettings: any = {
     checkboxOnly: true,
     mode: 'single',
@@ -162,7 +222,7 @@ export class InventoryComponent implements OnInit {
     console.log("click");
     this.isDialogOpen1 = !this.isDialogOpen1
   }
-  onCellClick(event: any): void {
+/*   onCellClick(event: any): void {
     console.log(event);
     switch (event.columnIndex) {
       case 1:
@@ -175,5 +235,5 @@ export class InventoryComponent implements OnInit {
       default:
         break;
     }
-  }
+  } */
 }
