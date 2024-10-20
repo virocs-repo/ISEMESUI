@@ -20,7 +20,7 @@ export class InventoryComponent implements OnInit {
   isDisabledBehalfOfCusotmer = false;
   customerTypes: CustomerType[] = []
   customerTypeSelected: CustomerType | undefined;
-  receiptLocation: ReceiptLocation[] = []
+ receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
   receiptLocationSelected: ReceiptLocation | undefined;
   customer: Customer[] = []
   customerSelected: Customer | undefined;
@@ -50,8 +50,8 @@ export class InventoryComponent implements OnInit {
   ngOnInit(): void {
     this.customerTypes = this.appService.masterData.customerType;
     this.customer = this.appService.masterData.entityMap.Customer;
-    // this.receiptLocation = this.appService.masterData.receiptLocation; temp
-    this.receiptLocation = this.appService.m.ReceiptLocation;
+   this.receiptLocation = this.appService.masterData.receiptLocation; 
+    
     this.loadGridData();
   }
 
@@ -87,7 +87,7 @@ export class InventoryComponent implements OnInit {
       custVendorID=this.customerSelected?.CustomerID;
       behalfOfCustomerID=this.behalfOfCusotmerSelected?.CustomerID;
     }
-    receivingFacilityID = this.receiptLocationSelected?.receiptLocationID;
+    receivingFacilityID = this.receiptLocationSelected?.receivingFacilityID;
 
   debugger;
     this.apiService.getinventorydata(custTypeID,custVendorID,behalfOfCustomerID,receivingFacilityID).subscribe({
