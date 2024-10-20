@@ -31,7 +31,7 @@
     <kendo-grid-column field="customerType" title="Receive From"></kendo-grid-column>
     <kendo-grid-column field="customerVendor" title="Customer / Vendor"></kendo-grid-column>
     <kendo-grid-column field="receivedOnBehalf" title="Received on Behalf"></kendo-grid-column>
-    <kendo-grid-column field="receiptLocation" title="Receiving Location"></kendo-grid-column>
+    <kendo-grid-column field="receivingFacility" title="Receiving Facility"></kendo-grid-column>
     <kendo-grid-column field="deliveryMode" title="Delivery Method"></kendo-grid-column>
     <kendo-grid-column field="active" title="Active" filter="boolean">
       <ng-template kendoGridCellTemplate let-dataItem>
@@ -56,9 +56,9 @@
     <small *ngIf="appService.sharedData.receiving.isViewMode">(View Mode)</small>
     <small *ngIf="appService.sharedData.receiving.isEditMode">(Edit Mode)</small>
     <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
-      (click)="closeDialog()"></button>
+      (click)="canCloseDialog()"></button>
   </div>
   <div class="dialog-body k-overflow-y-auto">
-    <app-receipt></app-receipt>
+    <app-receipt (onClose)="isDialogOpen = false" (onRestart)="onClearForm()"></app-receipt>
   </div>
 </kendo-dialog>

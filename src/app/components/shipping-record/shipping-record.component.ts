@@ -39,7 +39,7 @@ export class ShippingRecordComponent {
       this.customerSelected = this.customer.find(c => c.CustomerID == dataItem.customerID);
       // this.shipmentCategorySelected = this.shipmentCategories.find(c => c.shipmentCategoryID == dataItem.shipmentTypeID);
 
-      this.receiptLocationSelected = this.receiptLocation.find(c => c.receiptLocationID == dataItem.receiptLocationID);
+      this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.receiptLocationID);
       this.customerID = dataItem.customerID;
       this.fetchData();
     }

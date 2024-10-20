@@ -1,7 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
+import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { Address, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_RECEIPT, JSON_Object, MESSAGES, MiscellaneousGoods, PostHardware, PostReceipt, ReceiptLocation } from 'src/app/services/app.interface';
+import { Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostReceipt, ReceiptLocation, SignatureTypes } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -11,16 +12,19 @@ import { AppService } from 'src/app/services/app.service';
 })
 export class ReceiptComponent implements OnInit, OnDestroy {
   readonly ICON = ICON;
-  customerTypes: CustomerType[] = []
+  @Output() onClose = new EventEmitter<void>();
+  @Output() onRestart = new EventEmitter<void>();
+
+  readonly customerTypes: CustomerType[] = this.appService.masterData.customerType;
   customerTypeSelected: CustomerType | undefined;
-  receiptLocation: ReceiptLocation[] = []
+  readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
   receiptLocationSelected: ReceiptLocation | undefined;
-  goodsType: GoodsType[] = []
+  readonly goodsType: GoodsType[] = this.appService.masterData.goodsType;
   goodsTypeSelected: GoodsType | undefined;
-  deliveryMode: DeliveryMode[] = []
+  readonly deliveryMode: DeliveryMode[] = this.appService.masterData.deliveryMode;
   deliveryModeSelected: DeliveryMode | undefined;
 
-  customer: Customer[] = []
+  customers: Customer[] = this.appService.masterData.entityMap.Customer;
   customerSelected: Customer | undefined;
   behalfOfCusotmerSelected: Customer | undefined;
   customerTextField: 'CustomerName' | 'VendorName' = 'CustomerName'
@@ -30,8 +34,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   contactPerson = ''
 
   signatureName = ''
+  readonly signatureTypes: SignatureTypes[] = [
+    { customerTypeID: 1, customerTypeName: 'Customer' }, { customerTypeID: 3, customerTypeName: 'Employee' },
+  ]
   signatureEmployeeSelected: Employee | undefined;
-  signatureTypeSelected: CustomerType | undefined;
+  signatureTypeSelected: SignatureTypes | undefined;
   signatureDate: Date = new Date();
   expectedDateTime: Date = new Date();
   format = "MM/dd/yyyy HH:mm";
@@ -41,17 +48,15 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   comments: string = '';
   deliveryComments: string = '';
   address: any;
-  addresses: Address[] = []
+  readonly addresses: Address[] = this.appService.masterData.addresses;
   addressSelected: Address | undefined;
-  countries = this.appService.m.Country
-  countrySelected: any;
-  couriers = this.appService.m.CourierDetails
-  courierSelected: any
+  readonly countries = this.appService.masterData.country
+  countrySelected: Country | undefined;
+  readonly couriers = this.appService.masterData.courierDetails
+  courierSelected: CourierDetails | undefined
 
   description: string = '';
-  onBlur(event: any) {
-    event.stopPropagation();
-  }
+
   isHoldCheckboxEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
     featureField?.find(o => o.featureFieldName == 'HoldCheckbox')?.active ?? false;
   isHoldCommentEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
@@ -79,33 +84,44 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     cancelBtn: false
   }
   tracking = ''
-  readonly hardwareTypes = this.appService.hardwareTypes ;
-
+  customVendorName: string | undefined;
+  readonly hardwareTypes = this.appService.hardwareTypes;
+  readonly subscription = new Subscription()
   constructor(private appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
     this.init();
+    this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
+      switch (v) {
+        case 'canCloseDialog?':
+          let closeDialog = false;
+          closeDialog = this.areThereAnyChanges();
+          if (closeDialog) {
+            closeDialog = confirm('Do you want to Discard changes?')
+          } else {
+            closeDialog = true
+          }
+          if (closeDialog) {
+            this.appService.sharedData.receiving.eventEmitter.emit('closeDialog');
+          }
+          break;
+        default:
+          break;
+      }
+    }))
   }
   ngOnDestroy(): void {
     this.appService.sharedData.receiving.isEditMode = false
     this.appService.sharedData.receiving.isViewMode = false;
+    this.subscription.unsubscribe();
   }
   private init() {
-    this.employees = this.appService.masterData.entityMap.Employee;
-    this.customerTypes = this.appService.masterData.customerType;
-    console.log(this.customerTypes);
     // if (!this.customerTypes.find(c => c.customerTypeName == 'Employee')) {
     //   this.customerTypes.push({
     //     customerTypeID: 3,
     //     customerTypeName: 'Employee'
     //   })
     // }
-    this.customer = this.appService.masterData.entityMap.Customer;
-    // this.receiptLocation = this.appService.masterData.receiptLocation; temp
-    this.receiptLocation = this.appService.m.ReceiptLocation;
-    this.deliveryMode = this.appService.masterData.deliveryMode;
-    this.goodsType = this.appService.masterData.goodsType;
-    this.addresses = this.appService.masterData.addresses;
 
     if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
       const dataItem = this.appService.sharedData.receiving.dataItem;
@@ -115,19 +131,20 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.expectedOrNot = dataItem.isExpected ? 'Expected' : 'Unexpected';
 
       this.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.customerTypeID);
-      this.customerSelected = this.customer.find(c => c.CustomerID == dataItem.customerVendorID);
-      this.receiptLocationSelected = this.receiptLocation.find(c => c.receiptLocationID == dataItem.receivingFacilityID);
-      this.behalfOfCusotmerSelected = this.customer.find(c => c.CustomerID == dataItem.behalfID);
+      this.customerSelected = this.customers.find(c => c.CustomerID == dataItem.customerVendorID);
+      this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.receivingFacilityID);
+      this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID == dataItem.behalfID);
 
       // this.employeesSelected = not coming in the respose
       this.comments = dataItem.pmComments;
+      // auto select is diabled
       this.deliveryModeSelected = this.deliveryMode.find(c => c.deliveryModeID == dataItem.deliveryModeID);
-      // this.tracking = dataItem. not coming
+      this.tracking = dataItem.trackingNumber || ''
       if (dataItem.courierDetailID) {
-        this.courierSelected = this.couriers.find(c => c.CourierDetailID == dataItem.courierDetailID)
+        this.courierSelected = this.couriers.find(c => c.courierDetailID == dataItem.courierDetailID)
       }
       if (dataItem.countryFromID) {
-        this.countrySelected = this.countries.find(c => c.CountryID == dataItem.countryFromID)
+        this.countrySelected = this.countries.find(c => c.countryID == dataItem.countryFromID)
       }
       this.expectedDateTime = new Date(dataItem.expectedDateTime);
       this.deliveryComments = dataItem.mailComments;
@@ -138,14 +155,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.gridData[0].isHold = dataItem.isHold
       this.gridData[0].holdComments = dataItem.holdComments
 
-      this.signatureTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.signaturePersonID);
+      this.signatureTypeSelected = this.signatureTypes.find(c => c.customerTypeName == dataItem.signaturePersonType);
       this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeID == dataItem.signaturePersonID)
       this.signatureName = dataItem.signature
       if (dataItem.signatureDate) {
         this.signatureDate = new Date(dataItem.signatureDate);
       }
 
-      this.goodsTypeSelected = this.goodsType.find(c => c.goodsTypeID == dataItem.goodsTypeID);
+      // this.goodsTypeSelected = this.goodsType.find(c => c.goodsTypeID == dataItem.goodsTypeID);
       this.address = dataItem.address
       this.email = dataItem.email
       this.contactPhone = dataItem.contactPhone
@@ -177,7 +194,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.apiService.getDeviceData(dataItem.receiptID).subscribe({
       next: (v: any) => {
         this.gridDataDevice = v;
-        this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Device')
+        // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Device')
         console.log(v);
       }
     });
@@ -194,7 +211,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         if (v) {
           v.forEach((h: any) => {
             h.hardwareTypeSelected = this.hardwareTypes.find(c => c.hardwareTypeID == h.hardwareTypeID)
-            h.customerSelected = this.customer.find(c => c.CustomerID == h.customerID)
+            h.customerSelected = this.customers.find(c => c.CustomerID == h.customerID)
           })
         }
         this.gridDataHardware = v;
@@ -241,7 +258,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
   }
   testAddReceipt() {
-    this.customerSelected = this.customer[0];
+    this.customerSelected = this.customers[0];
     this.customerTypeSelected = this.customerTypes[0];
     this.receiptLocationSelected = this.receiptLocation[0];
     this.employeesSelected = [this.employees[0]]
@@ -267,17 +284,17 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       CustomerTypeID: this.customerTypeSelected?.customerTypeID || 1,
       CustomerVendorID: this.customerSelected?.CustomerID || 1,
       BehalfID: this.behalfOfCusotmerSelected?.CustomerID || 1,
-      ReceivingFacilityID: this.receiptLocationSelected?.receiptLocationID || 1,
+      ReceivingFacilityID: this.receiptLocationSelected?.receivingFacilityID || 1,
       DeliveryModeID: this.deliveryModeSelected?.deliveryModeID || 1,
-      CourierDetailID: this.courierSelected?.CourierDetailID,
-      CountryFromID: this.countrySelected?.CountryID,
+      CourierDetailID: this.courierSelected?.courierDetailID || 1,
+      CountryFromID: this.countrySelected?.countryID || 1,
       ContactPerson: this.contactPerson,
       ContactPhone: this.contactPhone,
       Email: this.email,
       ExpectedDateTime: this.appService.formattedDateTime(this.expectedDateTime.toISOString()),
       AddressID: 1,
       MailComments: this.deliveryComments,
-      PMComments: this.comments.trim() || null,
+      PMComments: this.comments?.trim() || null,
       NoOfCartons: this.gridData[0].noOfCartons || 0,
       IsHold: this.gridData[0].isHold,
       HoldComments: this.gridData[0].holdComments || null,
@@ -286,14 +303,15 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       IsFTZ: this.isFTZ,
       MailStatus: null,
       ReceivingStatus: null,
-      SignaturePersonType: this.signatureEmployeeSelected?.EmployeeName || '',
+      SignaturePersonType: this.signatureTypeSelected?.customerTypeName || '',
       SignaturePersonID: this.signatureEmployeeSelected?.EmployeeID || 1,
       Signature: this.signatureName,
       SignatureDate: this.appService.formattedDateTime(new Date().toISOString()),
       RecordStatus: "I",
       Active: true,
       LoginId: this.appService.loginId,
-      EmployeeDetail: this.employeesSelected
+      EmployeeDetail: this.employeesSelected,
+      TrackingNumber: this.tracking
     }
     if (this.appService.sharedData.receiving.isEditMode) {
       data.RecordStatus = "U";
@@ -347,6 +365,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       } else {
         this.receipt.isValid.contactPerson = true;
       }
+      // email validation
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(this.email)) {
+        this.appService.errorMessage('Invalid email address');
+        return;
+      }
     }
     console.log(this.addressSelected);
     if (this.deliveryModeSelected?.deliveryModeName == 'Pick Up') {
@@ -379,13 +403,13 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
     this.doPostProcessReceipt(data);
   }
-  private doPostProcessReceipt(data: JSON_Object) {
-    const body = { ReceiptDetails: [data] }
-
+  private doPostProcessReceipt(postReceipt: PostReceipt) {
+    const body = { ReceiptDetails: [postReceipt] }
     this.apiService.postProcessReceipt(body).subscribe({
       next: (v: any) => {
         console.log({ v });
         this.appService.successMessage(MESSAGES.DataSaved);
+        this.onClose.emit();
       },
       error: (err) => {
         this.appService.errorMessage(MESSAGES.DataSaveError);
@@ -396,57 +420,54 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
   // addDevice
   public gridDataDevice: DeviceItem[] = [];
-  addDevice() {
-    if (this.gridDataDevice && this.gridDataDevice.length) {
-      const data: any = {
-        // ... this.gridDataDevice[this.device.rowIndex]
-      }
-      // if (this.device.isEditMode) {
-      //   // @ts-ignore
-      //   data.recordStatus = "U";
-      // }
-      // if (this.device.isAddMode) {
-      //   // @ts-ignore
-      //   data.recordStatus = "I";
-      //   // @ts-ignore
-      //   data.deviceID = null
-      // }
-      console.log(data);
-      const mandatoryFields = [
-        data.iseLotNum, data.customerLotNum, data.expectedQty, data.partNum, data.labelCount,
-        data.coo, data.dateCode, data.holdComments
-      ]
-      const isValid = !mandatoryFields.some(v => !v);
-      console.log({ isValid });
-      if (isValid) {
-        this.doPostProcessDevice(data);
-      } else {
-        this.appService.errorMessage("All fields are required!")
-      }
-    }
-  }
   saveDevices() {
-    if (this.gridDataDevice && this.gridDataDevice.length) {
-      console.log(this.gridDataDevice);
-      this.doPostProcessDevices()
+    if (!this.gridDataDevice || !this.gridDataDevice.length) {
+      this.appService.infoMessage(MESSAGES.NoChanges)
     }
-  }
-  private doPostProcessDevices() {
     const filteredRecords = this.gridDataDevice.filter(d => d.recordStatus == "I" || d.recordStatus == "U")
     if (!filteredRecords || filteredRecords.length < 1) {
       this.appService.infoMessage(MESSAGES.NoChanges);
       return;
     }
-    filteredRecords.forEach((r: any) => {
-      r.loginId = this.appService.loginId
-      if (r.recordStatus == "I") {
-        r.deviceID = null;
+    const DeviceDetails: PostDevice[] = []
+    for (let index = 0; index < filteredRecords.length; index++) {
+      const r = filteredRecords[index];
+      const mandatoryFields = [
+        r.customerCount, r.labelCount, r.dateCode, r.coo,
+      ]
+      const isValid = !mandatoryFields.some(v => !v);
+      console.log({ mandatoryFields });
+      console.log({ isValid });
+      if (!isValid) {
+        this.appService.errorMessage("All fields are required!")
+        return;
       }
-    })
-    const body = { deviceDetails: filteredRecords }
-    console.log(filteredRecords);
-    console.log(filteredRecords[0]);
+      const postDevice: PostDevice = {
+        DeviceID: r.deviceID,
+        ReceiptID: r.receiptID,
+        CustomerLotNumber: r.customerLotNumber,
+        CustomerCount: r.customerCount,
+        Expedite: r.expedite,
+        IQA: r.iqa,
+        LotID: null,
+        LotOwnerID: null,
+        LabelCount: r.labelCount,
+        DateCode: r.dateCode,
+        COO: r.coo,
+        IsHold: r.isHold,
+        HoldComments: r.holdComments,
+        RecordStatus: r.recordStatus || 'I',
+        Active: true,
+        LoginId: this.appService.loginId
+      }
 
+      if (postDevice.RecordStatus == "I") {
+        postDevice.DeviceID = null;
+      }
+
+      DeviceDetails.push(postDevice)
+    }
+    const body = { DeviceDetails }
     this.apiService.postProcessDevice(body).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
@@ -471,41 +492,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const dataItem = this.appService.sharedData.receiving.dataItem;
     this.gridDataMiscellaneous.splice(0, 0, { ...INIT_MISCELLANEOUS_GOODS, receiptID: dataItem.receiptID })
   }
-  private doPostProcessDevice(data: JSON_Object) {
-    const body = {
-      "deviceDetails": [
-        {
-          "deviceID": 0,
-          "inventoryID": 0,
-          "receiptID": 0,
-          "iseLotNum": "string",
-          "customerLotNum": "string",
-          "expectedQty": 0,
-          "expedite": true,
-          "partNum": "string",
-          "labelCount": 0,
-          "coo": "string",
-          "dateCode": 0,
-          "isHold": true,
-          "holdComments": "string",
-          "createdOn": "2024-09-02T03:38:12.175Z",
-          "modifiedOn": "2024-09-02T03:38:12.175Z",
-          "active": true,
-          ...data
-        }
-      ]
-    }
-    this.apiService.postProcessDevice(body).subscribe({
-      next: (v: any) => {
-        this.appService.successMessage(MESSAGES.DataSaved);
-        this.fetchDataDevice();
-      },
-      error: (err) => {
-        this.appService.errorMessage(MESSAGES.DataSaveError);
-        console.log(err);
-      }
-    });
-  }
+
   // addHardware
   gridDataHardware: HardwareItem[] = []
   addHardware() {
@@ -576,7 +563,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       if (r.customerSelected) {
         r.customerID = r.customerSelected?.CustomerID;
       }
-      if(r.hardwareTypeSelected) {
+      if (r.hardwareTypeSelected) {
         r.hardwareTypeID = r.hardwareTypeSelected?.hardwareTypeID
       }
       const postHardware: PostHardware = {
@@ -596,8 +583,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       HardwareDetails.push(postHardware)
     })
     const body = { HardwareDetails }
-    console.log(filteredRecords);
-    console.log(filteredRecords[0]);
 
     this.apiService.postProcessHardware(body).subscribe({
       next: (v: any) => {
@@ -638,7 +623,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     });
   }
   public selectedValues: string = "";
-  employees: Employee[] = []
+  readonly employees: Employee[] = this.appService.masterData.entityMap.Employee
   employeesSelected: Employee[] = [];
   public listItems: Array<string> = [
     "Baseball",
@@ -730,14 +715,32 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       case 'Hold':
         dataItem.isHold = !dataItem.isHold
         break;
+      case 'Print':
+        this.doPrint(dataItem, tableName)
+        break;
       case 'Void Data':
-        console.log(tableName)
         this.doVoidData(dataItem, tableName)
         break;
 
       default:
         break;
     }
+  }
+  private doPrint(r: any, tableName: 'Device' | 'Hardware' | 'Misc') {
+    switch (tableName) {
+      case 'Device':
+        const text = this.appService.formatJson(r);
+        console.log(text);
+        this.printPreview(text)
+
+        break;
+    }
+  }
+  private printPreview(textToPrint: string) {
+    const printWindow: any = window.open('', '_blank');
+    printWindow.document.write(textToPrint);
+    printWindow.print();
+    // printWindow.close();
   }
   private doVoidData(r: any, tableName: 'Device' | 'Hardware' | 'Misc') {
     switch (tableName) {
@@ -808,14 +811,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   private initCustomersList(entityType: EntityType) {
     // @ts-ignore
-    this.customer = this.appService.masterData.entityMap[entityType]
+    this.customers = this.appService.masterData.entityMap[entityType]
     // @ts-ignore
     this.customerTextField = entityType + 'Name';
     // @ts-ignore
     this.customerValueField = entityType + 'ID';
-    if (entityType == 'Employee') {
-      this.employees = this.appService.masterData.entityMap[entityType]
-    }
   }
   onChangeHoldComments() {
     this.gridData[0].holdComments = this.gridData[0].holdComments.trim()
@@ -823,6 +823,78 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.gridData[0].isHold = true
     } else {
       this.gridData[0].isHold = false
+    }
+  }
+  onClearForm() {
+    this.isFTZ = false;
+    this.isInterim = false;
+    this.expectedOrNot = 'Unexpected';
+
+    this.customerTypeSelected = undefined
+    this.customerSelected = undefined
+    this.receiptLocationSelected = undefined
+    this.behalfOfCusotmerSelected = undefined
+
+    this.comments = '';
+    this.deliveryModeSelected = undefined
+    this.tracking = ''
+    this.courierSelected = undefined
+    this.countrySelected = undefined
+    this.expectedDateTime = new Date();
+    this.deliveryComments = ''
+
+    this.addressSelected = undefined
+
+    this.gridData[0].noOfCartons = undefined
+    this.gridData[0].isHold = false
+    this.gridData[0].holdComments = ''
+
+    this.signatureTypeSelected = undefined
+    this.signatureEmployeeSelected = undefined
+    this.signatureName = ''
+    this.signatureDate = new Date();
+
+    this.goodsTypeSelected = undefined
+    this.address = ''
+    this.email = ''
+    this.contactPhone = ''
+    this.contactPerson = ''
+    this.employeesSelected = [];
+  }
+  private areThereAnyChanges() {
+    if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
+      return false
+    } else {
+      // new form
+      const valuesToCheck = [
+        this.customerTypeSelected,
+        this.customerSelected,
+        this.receiptLocationSelected,
+        this.behalfOfCusotmerSelected,
+
+        this.comments,
+        this.deliveryModeSelected,
+        this.tracking,
+        this.courierSelected,
+        this.countrySelected,
+        this.deliveryComments,
+
+        this.addressSelected,
+
+        this.gridData[0].noOfCartons,
+        this.gridData[0].holdComments,
+
+        this.signatureTypeSelected,
+        this.signatureEmployeeSelected,
+        this.signatureName,
+
+        this.address,
+        this.email,
+        this.contactPhone,
+        this.contactPerson
+      ]
+      const hasTruthyValue = valuesToCheck.some(v => v);
+      return hasTruthyValue
     }
   }
 }
