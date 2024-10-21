@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CellClickEvent, ColumnMenuSettings, GridDataResult, PageChangeEvent, SelectableSettings } from '@progress/kendo-angular-grid';
-import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
+import { CellClickEvent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
+import { ContextMenuComponent, ContextMenuSelectEvent } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
 import { ICON } from 'src/app/services/app.interface';
 
@@ -18,7 +18,7 @@ export class InventoryMoveComponent implements OnInit{
  public selectedRowData: any;
    public gridDataResult: GridDataResult = { data: [], total: 0 };
   public gridFilter: any = {
-    logic: 'and',  // Filter logic (can be 'and' or 'or')
+    logic: 'and', 
     filters: []
   };
   isEditButtonEnabled: boolean=true;
@@ -43,7 +43,6 @@ export class InventoryMoveComponent implements OnInit{
     autoSizeAllColumns: true,
   }
   
-
   isDialogOpen = false;
   openDialog() {
     this.isDialogOpen = true;
@@ -53,27 +52,19 @@ export class InventoryMoveComponent implements OnInit{
   }
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;
-    this.loadGridData();  // Reload data with pagination
+    this.loadGridData();
   }
 
-  rowActionMenu: MenuItem[] = [
-    
-    { text: 'Edit Data', icon: 'edit', disabled: !this.isEditButtonEnabled, svgIcon: ICON.pencilIcon },
-    { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
-    // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
-  ];
   constructor(private apiService: ApiService) { }
 
   ngOnInit(): void {
     this.loadGridData();
   }
 
-
   loadGridData() {
 
     this.apiService.getAllInventoryMoveStatus().subscribe({
       next: (v: any) => {
-        // this.receipts = v;
         this.gridDataResult.data = v;
         this.gridDataResult.total = v.length
         console.log(v);
@@ -86,14 +77,11 @@ export class InventoryMoveComponent implements OnInit{
 
   pageData(): void {
     const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
-
-    // Paginate the data
     const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
     this.gridDataResult.data = paginatedData;
         this.gridDataResult.total =filteredData.length ;
+  }
 
-   
-  } 
   filterData(data: any[]): any[] {
     if (!this.searchTerm) {
       return data;
@@ -104,23 +92,23 @@ export class InventoryMoveComponent implements OnInit{
     );
   }
 
-
   onSearch(): void {
-    this.skip = 0;  // Reset pagination when searching
-    this.pageData();  // Apply search and pagination
+    this.skip = 0;
+    this.pageData();
   }
+
   onCellClick(e: CellClickEvent): void {
     console.log(e);
     if (e.type === 'contextmenu') {
       const originalEvent = e.originalEvent;
       originalEvent.preventDefault();
-      //this.dataItemSelected = e.dataItem;
       this.selectedRowIndex = e.rowIndex;
       this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
     }
   }
   onSelectRowActionMenu(e: ContextMenuSelectEvent) {
   }
+
   rowCallback = (context: any) => {
     return {
       'highlighted-row': context.index === this.selectedRowIndex

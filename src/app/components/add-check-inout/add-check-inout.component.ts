@@ -1,6 +1,8 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { GridComponent, GridDataResult } from '@progress/kendo-angular-grid';
 import { ContextMenuComponent } from '@progress/kendo-angular-menu';
+import { forkJoin } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { Employee, ICON } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
@@ -17,7 +19,7 @@ export class AddCheckInoutComponent implements OnInit {
   gridDataResult: GridDataResult = { data: [], total: 0 };
   readonly ICON = ICON;
   
-  public selectedLocation: string = '';
+  public selectedLocation: number= 0;
   public selectedReceivedFrom: string = '';
   public selectedLotNumber: string = '';
   public uniqueLocations: Array<string> = [];
@@ -34,6 +36,9 @@ export class AddCheckInoutComponent implements OnInit {
     { field: 'systemUser', title: 'System User', visible: true },
     { field: 'status', title: 'Status', visible: true },
     { field: 'receivedFrom', title: 'Received From', visible: false },
+    { field: 'inventoryId', title: 'Inventory ID', visible: false},
+    { field: 'locationId', title: 'Location ID',visible: false},
+    { field: 'receivedFromId',title: 'ID',visible: false}
   ];
   employees: Employee[] = []
   employeesSelected: Employee[] = [];
@@ -48,19 +53,20 @@ export class AddCheckInoutComponent implements OnInit {
   extractUniqueValues(data: any[]) {
     const locationsSet = new Set<string>();
     const lotNumberSet = new Set<string>();
-
+  
     data.forEach(item => {
       if (item.location) {
         locationsSet.add(item.location);
       }
-      if(item.lotNum){
+      if (item.lotNum) {
         lotNumberSet.add(item.lotNum);
       }
     });
-
+  
     this.uniqueLocations = Array.from(locationsSet);
     this.uniqueLotNumber = Array.from(lotNumberSet);
   }
+  
 
   loadGridData(): void {
     this.apiService.getAllInventoryMoveStatus().subscribe({
@@ -74,15 +80,16 @@ export class AddCheckInoutComponent implements OnInit {
   }
 
   add(): void {
-    // Check if all required fields are filled
     if (!this.selectedLotNumber || !this.selectedLocation || this.employeesSelected.length === 0) {
       console.error('All three fields (Lot Number, Location, and Employee) must be filled.');
-      return; // Exit the function if any of the fields are missing
+      return;
     }
   
     const lotNumber = this.selectedLotNumber;
     const location = this.selectedLocation;
-    const employeeIds = this.employeesSelected.map(emp => emp.EmployeeID); // Use Employee IDs
+    const employeeIds = this.employeesSelected.map(emp => emp.EmployeeID); 
+    const existingRecordIndex = this.combinedData.findIndex(record => record.lotNum === lotNumber);
+
   
     this.apiService.getInventoryMove(lotNumber, location, employeeIds).subscribe({
       next: (res: any) => {
@@ -92,11 +99,19 @@ export class AddCheckInoutComponent implements OnInit {
             record.employeeName = employee.EmployeeName;
           }
         });
-        this.combinedData = [...this.combinedData, ...res];
+        if (existingRecordIndex === -1) {
+          this.combinedData = [...this.combinedData, ...res];
+        } else {
+          this.combinedData[existingRecordIndex] = { ...this.combinedData[existingRecordIndex], ...res[0] };
+        }
+  
         this.gridDataResult = {
           data: this.combinedData,
           total: this.combinedData.length
         };
+        this.selectedLotNumber = '';
+        this.selectedLocation = 0;
+        this.employeesSelected = [];
       },
       error: (err) => {
         console.error('Error fetching data:', err);
@@ -106,7 +121,7 @@ export class AddCheckInoutComponent implements OnInit {
   
   clearRequest(): void {
     this.gridDataResult = { data: [], total: 0 };
-    this.selectedLocation = '';
+    this.selectedLocation = 0;
     this.selectedReceivedFrom = '';
     this.selectedLotNumber = '';
     this.cancel.emit();
@@ -120,73 +135,40 @@ export class AddCheckInoutComponent implements OnInit {
 
   onCheckInOut(): void {
     const selectedRows = this.selectedRecords;
+  
     if (selectedRows.length === 0) {
-      alert('Please select at least one record to check in/out.');
+      this.appService.errorMessage('Please select at least one record to check in/out.');
       return;
     }
-    if (selectedRows.length === 0) {
-      this.toggleAllRowsStatus();
-      return;
-    }
-    
-    selectedRows.forEach((record: any) => {
-      const newStatus = record.status === 'Checked In' ? 'Checked Out' : 'Checked In';
-      record.status = newStatus;
-      const updateData = {
-        InvMovementDetails: [{
-          InventoryID: record.inventoryID,
-          LocationID: record.locationID,
-          StatusID: newStatus === 'Checked In' ? 1 : 2,
+  
+    // Prepare update requests based on selected rows
+    const updateData = {
+      InvMovementDetails: selectedRows.map((record: any) => {
+        const newStatus = record.status === 'Checked In' ? 'Checked Out' : 'Checked In';
+        // Update the record status for local reference (optional)
+        record.status = newStatus;
+  
+        return {
+          InventoryID: record.inventoryId,
+          LocationID: record.locationId,
+          StatusID: newStatus === 'Checked In' ? 1 : 2, // Assuming 1 is Checked In and 2 is Checked Out
+          ReceivedFromID: record.receivedFromId, 
           LoginId: record.loginId
-        }]
-      };
+        };
+      })
+    };
   
-      console.log('Sending update data to API:', updateData);
-  
-      // Call the API to update the status
-      this.apiService.upsertInventoryMoveStatus(updateData, { responseType: 'text' }).subscribe({
-        next: (response: any) => {
-          console.log('API response:', response); // Log the response to ensure success
-          console.log('Status updated for Inventory ID:', record.inventoryID);
-        },
-        error: (err: any) => {
-          console.error('Error updating status:', err);
-        }
-      });
-    });
-  
-    // Refresh grid data after the update
-    this.loadGridData();
-  }
-  
-  
-  toggleAllRowsStatus(): void {
-    this.gridDataResult.data.forEach((record: any) => {
-      const newStatus = record.status === 'Checked In' ? 'Checked Out' : 'Checked In';
-      record.status = newStatus;
-      const requestPayload = {
-        InvMovementDetails: [{
-          InventoryID: record.inventoryID,
-          LocationID: record.locationID,
-          StatusID: newStatus === 'Checked In' ? 1 : 2,
-          LoginId: record.loginId 
-        }]
-      };
-      console.log('Sending update data to API:', requestPayload);
-  
-      // Pass both the payload and the options (with responseType: 'text') here
-      this.apiService.upsertInventoryMoveStatus(requestPayload, { responseType: 'text' }).subscribe({
-        next: () => {
-          console.log('Status updated for Inventory ID:', record.inventoryID);
+    console.log('Sending update data to API:', updateData);
+    this.apiService.upsertInventoryMoveStatus(updateData, { responseType: 'text' })
+      .subscribe({
+        next: (response) => {
+          console.log('Inventory move status updated successfully:', response);
+          this.loadGridData();
         },
         error: (err) => {
-          console.error('Error updating status:', err);
+          console.error('Error updating inventory move status:', err);
         }
       });
-    });
-  
-    // Reload grid data after the status update
-    this.loadGridData();
   }
   
 }
