@@ -49,6 +49,8 @@ export class InventoryMoveComponent implements OnInit{
   }
   closeDialog() {
     this.isDialogOpen = false;
+    this.loadGridData();
+
   }
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;
