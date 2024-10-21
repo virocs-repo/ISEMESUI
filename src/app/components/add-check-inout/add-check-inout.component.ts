@@ -81,7 +81,7 @@ export class AddCheckInoutComponent implements OnInit {
 
   add(): void {
     if (!this.selectedLotNumber || !this.selectedLocation || this.employeesSelected.length === 0) {
-      console.error('All three fields (Lot Number, Location, and Employee) must be filled.');
+      this.appService.errorMessage('All three fields (Lot Number, Location, and Employee) must be filled.');
       return;
     }
   
