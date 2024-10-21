@@ -16,7 +16,7 @@ export class InventoryComponent implements OnInit {
   readonly ICON = ICON
   public pageSize = 10;
   public skip = 0;
-  // public receipts: Receipt[] = [];
+ public receipts: Receipt[] = [];
   // public gridData: Receipt[] = [];
   public gridDataResult: GridDataResult = { data: [], total: 0 };
   isDisabledBehalfOfCusotmer = false;
@@ -133,37 +133,20 @@ export class InventoryComponent implements OnInit {
 
   onLinkClick(field: string, dataItem: any) 
   {
-
-   
     if (field === 'receiptID')
     {
       console.log(dataItem.receiptID)
 
-      if(dataItem.goodType==='Hardware')
-      {
-       
-        this.apiService.getHardwaredata(dataItem.receiptID).subscribe({
-          next: (v: any) => {
-            // this.receipts = v;
-            console.log(v);
-            this.isDialogOpen3 = !this.isDialogOpen3
-          },
-          error: (v: any) => { }
-        });
-
-      }
-      else if(dataItem.goodType==='Device')
-      {
-        this.apiService.getDeviceData(dataItem.receiptID).subscribe({
-          next: (v: any) => {
-            // this.receipts = v;
-            console.log(v);
-            this.isDialogOpen3 = !this.isDialogOpen3
-          },
-          error: (v: any) => { }
-        });
-      
-      }
+      this.apiService.getReceiptdata().subscribe({
+        next: (v: any) => {
+          this.receipts=v;
+          this.appService.sharedData.receiving.dataItem = this.receipts.find(c => c.receiptID ==dataItem.receiptID);
+          this.appService.sharedData.receiving.isEditMode = false;
+          this.appService.sharedData.receiving.isViewMode = true;
+          this.isDialogOpen3 = !this.isDialogOpen3;
+        },
+        error: (v: any) => { }
+      });
 
     }
 

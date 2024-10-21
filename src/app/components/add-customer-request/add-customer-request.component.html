@@ -1,5 +1,5 @@
 <div class="k-m-3 k-overflow-y-auto" style="height: 80vh;">
-    <div class="k-d-flex k-align-items-end k-gap-3">
+    <div class="k-d-flex k-align-items-end k-gap-3" style="padding-bottom: 20px">
         <kendo-label text="Customer OrderType">
             <b class="required-label"></b>
             <kendo-combobox [data]="customerOrderTypes" placeholder="Select" rounded="large" [(ngModel)]="customerOrderTypeSelected"  [disabled]="!addCustomerMode">
@@ -29,7 +29,7 @@
         </kendo-button>
     </div>
 
-    <kendo-grid   #grid  [kendoGridBinding]="gridDataResult.data" class="k-my-3" [height]="300"
+    <kendo-grid   #grid  [kendoGridBinding]="gridDataResult.data" class="k-my-3" [height]="300" 
         [selectable]="{ checkboxOnly: true, mode: 'multiple' }" (selectionChange)="onSelectionChange($event)" [sortable]="true" [resizable]="true"
         (cellClose)="cellCloseHandler($event)" (cellClick)="editHandler($event)"  [rowSelected]="isRowSelected"   class="grid-header-sm grid-header-bold" >
         <kendo-grid-checkbox-column [width]="40"  ></kendo-grid-checkbox-column>
@@ -51,18 +51,16 @@
 
     </kendo-grid>
 
-    <kendo-card class="card-full" >
-        <kendo-card-body>
+   
     <div class="k-d-flex k-gap-4 k-mb-4" style="padding-top:2%;">
-        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.OQA" [disabled]="!isEditMode" style="transform: scale(1.5); border: 1px solid black;  border-radius: 4px; " >
+        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.OQA" [disabled]="!isEditMode" style=" border: 1px solid black;  border-radius: 4px; " >
         <kendo-label text="OQA"></kendo-label>
-        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.Bake" [disabled]="!isEditMode" style="transform: scale(1.5);border: 1px solid black;  border-radius: 4px;">
+        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.Bake" [disabled]="!isEditMode" style="border: 1px solid black;  border-radius: 4px;">
         <kendo-label text="Bake"></kendo-label>
-        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.PandL" [disabled]="!isEditMode" style="transform: scale(1.5);border: 1px solid black;  border-radius: 4px;">
+        <input type="checkbox" kendoCheckBox [(ngModel)]="formData.PandL" [disabled]="!isEditMode" style="border: 1px solid black;  border-radius: 4px;">
         <kendo-label text="P&L"></kendo-label>
     </div>
-</kendo-card-body>
-</kendo-card>
+
     <kendo-card class="card-full">
         <kendo-card-body>
             <h2 class="k-mt-2">Address:</h2>
