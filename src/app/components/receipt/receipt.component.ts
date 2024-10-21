@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/cor
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostReceipt, ReceiptLocation, SignatureTypes } from 'src/app/services/app.interface';
+import { Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt, ReceiptLocation, SignatureTypes } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 enum TableType {
@@ -204,7 +204,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       next: (v: any) => {
         this.gridDataDevice = v;
         // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Device')
-        console.log(v);
+        this.gridDataDevice.forEach(d=>{
+          d.employeeSelected = this.employees.find(e=>e.EmployeeID == d.lotOwnerID);
+        })
       }
     });
   }
@@ -458,14 +460,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         Expedite: r.expedite,
         IQA: r.iqa,
         LotID: 1,
-        LotOwnerID: 1,
+        LotOwnerID: r.employeeSelected?.EmployeeID || 1,
         LabelCount: r.labelCount,
         DateCode: r.dateCode,
         COO: r.coo,
         IsHold: r.isHold,
         HoldComments: r.holdComments,
         RecordStatus: r.recordStatus || 'I',
-        Active: true,
+        Active: r.active,
         LoginId: this.appService.loginId
       }
 
@@ -504,8 +506,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   // addHardware
   gridDataHardware: HardwareItem[] = [];
   private doPostProcessHardware(HardwareDetails: PostHardware[]) {
-    const body = { HardwareDetails }
-    this.apiService.postProcessHardware(body).subscribe({
+    this.apiService.postProcessHardware({ HardwareDetails }).subscribe({
       next: (v: any) => {
         console.log({ v });
         this.appService.successMessage(MESSAGES.DataSaved);
@@ -562,18 +563,26 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   saveMiscellaneous() {
     if (!this.gridDataMiscellaneous || !this.gridDataMiscellaneous.length) {
       this.appService.infoMessage(MESSAGES.NoChanges)
+      return;
     }
     const filteredRecords = this.gridDataMiscellaneous.filter(d => d.recordStatus == "I" || d.recordStatus == "U")
     if (!filteredRecords || filteredRecords.length < 1) {
       this.appService.infoMessage(MESSAGES.NoChanges);
       return;
     }
-    filteredRecords.forEach((r: any) => { r.loginId = this.appService.loginId })
-    const body = { miscGoodsDetails: filteredRecords }
-    console.log(filteredRecords);
-    console.log(filteredRecords[0]);
-
-    this.apiService.postProcessMiscellaneous(body).subscribe({
+    const MiscGoodsDetails: PostMiscGoods[] = []
+    filteredRecords.forEach((r) => {
+      const postMiscGoods: PostMiscGoods = {
+        MiscellaneousGoodsID: r.miscellaneousGoodsID || null,
+        ReceiptID: r.receiptID,
+        AdditionalInfo: r.additionalInfo,
+        RecordStatus: r.recordStatus || "U",
+        Active: r.active,
+        LoginId: this.appService.loginId
+      }
+      MiscGoodsDetails.push(postMiscGoods);
+    })
+    this.apiService.postProcessMiscellaneous({ MiscGoodsDetails }).subscribe({
       next: (v: any) => {
         console.log({ v });
         this.appService.successMessage(MESSAGES.DataSaved);
@@ -657,6 +666,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     { text: 'Print', svgIcon: ICON.printIcon },
     { text: 'Hold', svgIcon: ICON.kpiStatusHoldIcon },
     { text: 'Edit Data', svgIcon: ICON.pencilIcon },
+    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
     { text: 'Remove', svgIcon: ICON.trashIcon },
   ]
 
@@ -684,7 +694,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.doPrint(dataItem, tableName)
         break;
       case 'Void Data':
-        this.doVoidData(dataItem, tableName)
+        this.doVoidData(dataItem, rowIndex, tableName)
         break;
       case 'Remove':
         this.doRemoveRow(rowIndex, tableName);
@@ -699,8 +709,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     if (a) a.disabled = false;
     switch (tableType) {
       case TableType.Device:
+        const ac = this.rowActionMenuDevice.find(a => a.text == ActionType.Remove);
+        if (ac) ac.disabled = false;
         if (dateItem.deviceID) {
-          if (a) a.disabled = true;
+          if (ac) ac.disabled = true;
         }
         break;
       case TableType.Hardware:
@@ -743,32 +755,22 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     printWindow.print();
     // printWindow.close();
   }
-  private doVoidData(r: any, tableName: 'Device' | 'Hardware' | 'Misc') {
+  private doVoidData(r: any, rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc') {
     switch (tableName) {
+      case 'Device':
+        this.gridDataDevice[rowIndex].active = false;
+        this.gridDataDevice[rowIndex].recordStatus = "U";
+        this.saveDevices();
+        break;
       case 'Hardware':
-        const postHardware: PostHardware = {
-          HardwareID: r.hardwareID,
-          ReceiptID: r.receiptID,
-          CustomerID: r.customerID,
-          HardwareTypeID: r.hardwareTypeID || 10,
-          ExpectedQty: r.expectedQty,
-          RecordStatus: "U",
-          Active: false,
-          LoginId: this.appService.loginId
-        }
-        const HardwareDetails = [postHardware]
-        const body = { HardwareDetails }
-        this.apiService.postProcessHardware(body).subscribe({
-          next: (v: any) => {
-            console.log({ v });
-            this.appService.successMessage(MESSAGES.DataSaved);
-            this.fetchDataHardware();
-          },
-          error: (err) => {
-            this.appService.errorMessage(MESSAGES.DataSaveError);
-            console.log(err);
-          }
-        });
+        this.gridDataHardware[rowIndex].active = false;
+        this.gridDataHardware[rowIndex].recordStatus = "U";
+        this.saveHardwares();
+        break;
+      case 'Misc':
+        this.gridDataMiscellaneous[rowIndex].active = false;
+        this.gridDataMiscellaneous[rowIndex].recordStatus = "U";
+        this.saveMiscellaneous();
         break;
 
       default:

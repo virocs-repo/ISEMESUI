@@ -158,7 +158,9 @@ export interface DeviceItem {
   active: boolean;
   recordStatus?: "I" | "U";
   lotOwner: string
+  lotOwnerID: number
   iqa: boolean
+  employeeSelected: Employee | undefined
 }
 export const INIT_DEVICE_ITEM: DeviceItem = {
   deviceID: 0,
@@ -176,8 +178,10 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   modifiedOn: new Date().toISOString(), // Set to current time
   active: true,
   lotOwner: '',
+  lotOwnerID: 0,
   iqa: true,
-  recordStatus: 'I'
+  recordStatus: 'I',
+  employeeSelected: undefined
 };
 export interface JSON_Object {
   [key: string]: any
@@ -246,7 +250,7 @@ export interface CustomerOrderDetail {
 export interface CustomerOrder {
   CustomerOrderID: number | null;
   CustomerId: number;
-  CustomerOrderType:string;
+  CustomerOrderType: string;
   OQA: boolean | false;
   Bake: boolean | false;
   PandL: boolean | false;
@@ -426,4 +430,12 @@ export interface HardwareType {
 export interface SignatureTypes {
   customerTypeID: number;
   customerTypeName: string
+}
+export interface PostMiscGoods {
+  MiscellaneousGoodsID: number | null
+  ReceiptID: number,
+  AdditionalInfo: string,
+  RecordStatus: "I" | "U"
+  Active: boolean
+  LoginId: number
 }

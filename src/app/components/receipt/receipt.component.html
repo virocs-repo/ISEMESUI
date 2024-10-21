@@ -192,16 +192,7 @@
       <kendo-grid [kendoGridBinding]="gridDataDevice" [selectable]="selectableSettings" [sortable]="true"
         [resizable]="true" class="bold-column-header wrap-header-grid">
         <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-        <kendo-grid-column field="iseLotNumber" title="ISELot#">
-          <!-- <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-            <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
-              <kendo-textbox [(ngModel)]="dataItem.iseLotNumber" placeholder="Lot Number"></kendo-textbox>
-            </ng-container>
-            <ng-template #showValue>
-              <span>{{dataItem.iseLotNumber}}</span>
-            </ng-template>
-          </ng-template> -->
-        </kendo-grid-column>
+        <kendo-grid-column field="iseLotNumber" title="ISE Lot#"></kendo-grid-column>
         <kendo-grid-column field="customerLotNumber" title="Customer Lot#">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
@@ -226,7 +217,7 @@
             <input type="checkbox" name="expedite" [(ngModel)]="dataItem.expedite" kendoCheckBox>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="iqa" title="IQA Optional">
+        <kendo-grid-column field="iqa" title="IQA">
           <ng-template kendoGridCellTemplate let-dataItem>
             <input type="checkbox" name="iqa" [(ngModel)]="dataItem.iqa" kendoCheckBox>
           </ng-template>
@@ -242,7 +233,8 @@
         <kendo-grid-column field="lotOwner" title="Lot Owner">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
-              <kendo-textbox [(ngModel)]="dataItem.lotOwner" placeholder="Lot Owner"></kendo-textbox>
+              <kendo-combobox [data]="employees" [(ngModel)]="dataItem.employeeSelected" [textField]="'EmployeeName'"
+                [valueField]="'EmployeeID'" placeholder="Select" rounded="large"></kendo-combobox>
             </ng-container>
             <ng-template #showValue>
               <span>{{dataItem.lotOwner}}</span>
@@ -292,7 +284,8 @@
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <div class="k-d-flex k-align-items-center">
               <input type="checkbox" name="isHold" [(ngModel)]="dataItem.isHold" kendoCheckBox>
-              <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
+              <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
+                (click)="onOpenRowActionMenu(dataItem, TableType.Device)" #rowActionMenuTarget></button>
               <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenuDevice"
                 (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Device')"></kendo-contextmenu>
             </div>
