@@ -22,6 +22,8 @@ export class AddCustomerRequestComponent implements OnInit {
   customer: Customer[] = []
   customerSelected: Customer | undefined;
   deviceTypes: string[] = ['Device', 'Hardware', 'All'];  // Array to hold device types
+  customerOrderTypes: string[] = ['Finished Goods', 'WIP', 'Scrap']; 
+  customerOrderTypeSelected:string='Finished Goods';
   deviceTypeSelected: string = 'Device';  // Variable to hold the selected device type
   lotNumber: string | null = null;  // Lot number
   // below code can be changed/removed
@@ -46,6 +48,7 @@ export class AddCustomerRequestComponent implements OnInit {
     this.formData.PandL = false; // Initialize P&L as false
     this.formData.CustomerId=null;
     this.customer = this.appService.masterData.entityMap.Customer;
+    this.formData.customerOrderTypeSelected=this.customerOrderTypeSelected;
 
     console.log('Component initialized or reloaded');
     this.initializeColumns();
@@ -203,9 +206,10 @@ export class AddCustomerRequestComponent implements OnInit {
     const customerId = this.customerSelected?.CustomerID || 1;
     const goodsType = this.deviceTypeSelected || 'All';  // Fallback to 'All' if undefined
     const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set
+    const customerordType=this.customerOrderTypeSelected;
     this.gridDataResult.data = [];
     this.customerOrd=[];
-    this.apiService.getInventory(customerId, goodsType, lotNumber).subscribe({
+    this.apiService.getInventory(customerId, goodsType, lotNumber,customerordType).subscribe({
       next: (res: any) => {
         console.log(res);
         this.gridDataResult.data = res;
@@ -318,6 +322,7 @@ export class AddCustomerRequestComponent implements OnInit {
     const customerOrder: CustomerOrder = {
       CustomerOrderID: customerOrderID, 
       CustomerId: this.formData.CustomerId ?? this.customerSelected?.CustomerID,
+      CustomerOrderType: this.formData.customerOrderTypeSelected ?? this.customerOrderTypeSelected,
       //CustomerId: 1,
       OQA: this.formData.OQA,
       Bake: this.formData.Bake,

@@ -1,12 +1,12 @@
-import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, kpiStatusHoldIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, printIcon, selectBoxIcon, userIcon, windowRestoreIcon, xIcon } from "@progress/kendo-svg-icons";
+import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, kpiStatusHoldIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, printIcon, selectBoxIcon, trashIcon, userIcon, windowRestoreIcon, xIcon } from "@progress/kendo-svg-icons";
 
 export interface CustomerType {
   customerTypeID: number;
   customerTypeName: string;
 }
 export interface ReceiptLocation {
-  receiptLocationID: number;
-  receiptLocationName: string;
+  receivingFacilityID: number;
+  receivingFacilityName: string;
 }
 export interface GoodsType {
   goodsTypeID: number;
@@ -35,6 +35,14 @@ export interface EntityMap {
   Vendor: Vendor[],
   Employee: Employee[]
 }
+export interface Country {
+  countryID: number
+  countryName: string
+}
+export interface CourierDetails {
+  courierDetailID: number
+  courierName: string
+}
 export interface MasterData {
   customerType: CustomerType[]
   receiptLocation: ReceiptLocation[]
@@ -42,7 +50,9 @@ export interface MasterData {
   deliveryMode: DeliveryMode[]
   customer: Customer[]  // remove this in next version
   entityMap: EntityMap;
-  addresses: Address[]
+  addresses: Address[];
+  country: Country[];
+  courierDetails: CourierDetails[];
 }
 export interface Receipt {
   receiptID: number;
@@ -70,6 +80,7 @@ export interface Receipt {
   mailStatus: string;
   receivingStutus: string; // Corrected typo from "receivingStatus"
   receivingStatus: string; // Corrected typo from "receivingStatus"
+  signatureDate: string;
 }
 export interface HardwareItem {
   hardwareID: number;
@@ -136,7 +147,7 @@ export interface DeviceItem {
   iseLotNumber: string;
   customerLotNumber: string;
   expedite: boolean;
-  customerCount: string;
+  customerCount: number;
   labelCount: number;
   coo: string; // Assuming "Country of Origin"
   dateCode: number;
@@ -147,7 +158,9 @@ export interface DeviceItem {
   active: boolean;
   recordStatus?: "I" | "U";
   lotOwner: string
-  iqa: string
+  lotOwnerID: number
+  iqa: boolean
+  employeeSelected: Employee | undefined
 }
 export const INIT_DEVICE_ITEM: DeviceItem = {
   deviceID: 0,
@@ -155,18 +168,20 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   iseLotNumber: '',
   customerLotNumber: '',
   expedite: false,
-  customerCount: '',
+  customerCount: 0,
   labelCount: 0,
   coo: '',
   dateCode: 0,
   isHold: false,
-  holdComments: null,
+  holdComments: '',
   createdOn: new Date().toISOString(), // Set to current time
   modifiedOn: new Date().toISOString(), // Set to current time
   active: true,
   lotOwner: '',
-  iqa: '',
-  recordStatus: 'I'
+  lotOwnerID: 0,
+  iqa: true,
+  recordStatus: 'I',
+  employeeSelected: undefined
 };
 export interface JSON_Object {
   [key: string]: any
@@ -189,7 +204,8 @@ export const ICON = {
   gearIcon,
   logoutIcon,
   printIcon,
-  kpiStatusHoldIcon
+  kpiStatusHoldIcon,
+  trashIcon
 }
 
 export const MESSAGES = {
@@ -234,6 +250,7 @@ export interface CustomerOrderDetail {
 export interface CustomerOrder {
   CustomerOrderID: number | null;
   CustomerId: number;
+  CustomerOrderType: string;
   OQA: boolean | false;
   Bake: boolean | false;
   PandL: boolean | false;
@@ -311,9 +328,9 @@ export interface PostReceipt {
   Active: boolean;
   LoginId: number;
   EmployeeDetail: Employee[];
+  TrackingNumber: string | null;
 }
-export const INIT_POST_RECEIPT = {
-
+export const INIT_POST_RECEIPT: PostReceipt = {
   ReceiptID: null,
   VendorID: null,
   VendorName: null,
@@ -346,7 +363,8 @@ export const INIT_POST_RECEIPT = {
   RecordStatus: "I",
   Active: true,
   LoginId: 1,
-  EmployeeDetail: []
+  EmployeeDetail: [],
+  TrackingNumber: null
 }
 export interface PostHardware {
   HardwareID: number;
@@ -368,8 +386,56 @@ export const INIT_POST_HARDWARE = {
   Active: true,
   LoginId: 1
 }
+export interface PostDevice {
+  DeviceID: number | null;
+  ReceiptID: number;
+  CustomerLotNumber: string;
+  CustomerCount: number;
+  Expedite: boolean;
+  IQA: boolean;
+  LotID: number | null;
+  LotOwnerID: number | null;
+  LabelCount: number;
+  DateCode: number;
+  COO: string;
+  IsHold: boolean;
+  HoldComments: string | null;
+  RecordStatus: "I" | "U";
+  Active: boolean;
+  LoginId: number;
+}
 
+export const INIT_POST_DEVICE: PostDevice = {
+  DeviceID: null,
+  ReceiptID: 4,
+  CustomerLotNumber: "CL008",
+  CustomerCount: 50,
+  Expedite: false,
+  IQA: true,
+  LotID: 14054,
+  LotOwnerID: 1,
+  LabelCount: 50,
+  DateCode: 202304,
+  COO: "CA",
+  IsHold: true,
+  HoldComments: "Quality check",
+  RecordStatus: "I",
+  Active: true,
+  LoginId: 1
+}
 export interface HardwareType {
   hardwareTypeID: number
   hardwareType: string
+}
+export interface SignatureTypes {
+  customerTypeID: number;
+  customerTypeName: string
+}
+export interface PostMiscGoods {
+  MiscellaneousGoodsID: number | null
+  ReceiptID: number,
+  AdditionalInfo: string,
+  RecordStatus: "I" | "U"
+  Active: boolean
+  LoginId: number
 }

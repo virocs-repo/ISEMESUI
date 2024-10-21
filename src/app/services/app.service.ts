@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { HardwareType, MasterData, ShipmentCategory, ShipmentType, UserData } from './app.interface';
 import { NotificationService } from '@progress/kendo-angular-notification';
 
@@ -28,8 +28,8 @@ interface UserPreferences {
 interface SharedInfo {
   isEditMode: boolean,
   isViewMode: boolean,
-  dataItem: any
-
+  dataItem: any,
+  eventEmitter: EventEmitter<any>
 }
 
 @Injectable({
@@ -54,14 +54,16 @@ export class AppService {
       Vendor: [],
       Employee: []
     },
-    addresses: []
+    addresses: [],
+    country: [],
+    courierDetails: []
   }
   sharedData: {
     receiving: SharedInfo
     shipping: SharedInfo
   } = {
-      receiving: { isEditMode: false, isViewMode: false, dataItem: {} },
-      shipping: { isEditMode: false, isViewMode: false, dataItem: {} }
+      receiving: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
+      shipping: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() }
     }
   hardwareTypes: HardwareType[] = []
   userData: UserData = { email: '', name: '', firstName: '' }
@@ -164,103 +166,44 @@ export class AppService {
     const formattedDate = isoString.replace('T', ' ').replace('Z', '');
     return formattedDate;
   }
-  m = {
-    "CustomerType": [
-      {
-        "CustomerTypeID": 1,
-        "CustomerTypeName": "Customer"
-      },
-      {
-        "CustomerTypeID": 2,
-        "CustomerTypeName": "Vendor"
+  formatJson(obj: any): string {
+    const formattedObj: { [key: string]: any } = {};
+
+    // Recursively traverse the object
+    function traverse(obj: any) {
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          const newKey = splitCamelCase(key);
+          if (typeof obj[key] === 'object') {
+            formattedObj[newKey] = traverse(obj[key]);
+          } else {
+            formattedObj[newKey] = obj[key];
+          }
+        }
       }
-    ],
-    "ReceiptLocation": [
-      {
-        "ReceivingFacilityID": 1,
-        "ReceivingFacilityName": "Fremont CA",
-        receiptLocationID: 1,
-        receiptLocationName: "Fremont CA"
-      },
-      {
-        receiptLocationID: 3,
-        receiptLocationName: "Sanjose CA",
-        "ReceivingFacilityID": 3,
-        "ReceivingFacilityName": "Sanjose CA"
+      return formattedObj;
+    }
+
+    // Split camelCase string into separate words
+    // Split camelCase string into separate words and capitalize first letter
+    function splitCamelCase(str: string): string {
+      return str
+        .replace(/([A-Z])/g, ' $1')
+        .trim()
+        .replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.substring(1).toLowerCase());
+    }
+
+    const formattedJson = traverse(obj);
+
+    // Format output as text with design
+    let output = '';
+    for (const key in formattedJson) {
+      if (formattedJson.hasOwnProperty(key)) {
+        output += `<div><b>${key}</b>: ${formattedJson[key]}</div>`;
       }
-    ],
-    "GoodsType": [
-      {
-        "GoodsTypeID": 2,
-        "GoodsTypeName": "Device"
-      },
-      {
-        "GoodsTypeID": 1,
-        "GoodsTypeName": "Hardware"
-      },
-      {
-        "GoodsTypeID": 3,
-        "GoodsTypeName": "Miscellaneous Goods"
-      }
-    ],
-    "DeliveryMode": [
-      {
-        "DeliveryModeID": 1,
-        "DeliveryModeName": "Courier"
-      },
-      {
-        "DeliveryModeID": 3,
-        "DeliveryModeName": "Drop Off"
-      },
-      {
-        "DeliveryModeID": 2,
-        "DeliveryModeName": "Pick Up"
-      }
-    ],
-    "CourierDetails": [
-      {
-        "CourierDetailID": 7,
-        "CourierName": "Amazon Logistics"
-      },
-      {
-        "CourierDetailID": 11,
-        "CourierName": "BlueDart"
-      },
-      {
-        "CourierDetailID": 19,
-        "CourierName": "Coyote Logistics"
-      },
-      {
-        "CourierDetailID": 18,
-        "CourierName": "Deliv"
-      },
-      {
-        "CourierDetailID": 4,
-        "CourierName": "DHL"
-      }
-    ],
-    "Country": [
-      {
-        "CountryID": 89,
-        "CountryName": "Afghanistan"
-      },
-      {
-        "CountryID": 137,
-        "CountryName": "Albania"
-      },
-      {
-        "CountryID": 35,
-        "CountryName": "Algeria"
-      },
-      {
-        "CountryID": 138,
-        "CountryName": "Andorra"
-      },
-      {
-        "CountryID": 36,
-        "CountryName": "Angola"
-      }
-    ]
+    }
+
+    return output;
   }
 
 }

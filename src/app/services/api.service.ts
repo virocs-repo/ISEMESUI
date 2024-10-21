@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { CustomerOrder, OrderRequest } from 'src/app/services/app.interface';
@@ -71,8 +71,8 @@ export class ApiService {
     return this.httpClient.get(`${API}v1/ise/shipment/shipment-details?customerID=${customerID}`);
   }
   // Customer Orders
-  getInventory(customerId: number, goodsType: string, lotNumber: string) {
-    const url = `${API}v1/ise/inventory/customerorder/inventory?customerId=${customerId}&goodsType=${goodsType}&lotNumber=${lotNumber}`;
+  getInventory(customerId: number, goodsType: string, lotNumber: string,customerordType:string) {
+    const url = `${API}v1/ise/inventory/customerorder/inventory?customerId=${customerId}&goodsType=${goodsType}&lotNumber=${lotNumber}&customerOrderType=${customerordType}`;
     return this.httpClient.get(url);
   }
 
@@ -95,6 +95,31 @@ export class ApiService {
   viewEditCustomerOrder(customerOrderID: string, editdata: boolean) {
     const url = `${API}v1/ise/inventory/customerorder/vieweditorder?customerOrderID=${customerOrderID}&editdata=${editdata}`;
     return this.httpClient.get(url);
+  }
+//api/v1/ise/inventory/inventorydata/getdetails
+  getinventorydata(customerTypeID?: number, customerVendorID?: number, behalfOfCustomerID?: number, receivingFacilityID?: number) {
+
+    let params = new HttpParams();
+
+    // Conditionally add parameters only if they are not null or undefined
+    if (customerTypeID != null) {
+      params = params.set('customerTypeID', customerTypeID.toString());
+    }
+    if (customerVendorID != null) {
+      params = params.set('customerVendorID', customerVendorID.toString());
+    }
+    if (behalfOfCustomerID != null) {
+      params = params.set('behalfOfCustomerID', behalfOfCustomerID.toString());
+    }
+    if (receivingFacilityID != null) {
+      params = params.set('receivingFacilityID', receivingFacilityID.toString());
+    }
+  
+    // API call with only the non-null params
+    return this.httpClient.get(`${API}v1/ise/inventory/inventorydata/getdetails`, { params });
+  }
+  getallinventorydata() {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventorydata/getdetails`);
   }
 
   //Inventory Move
