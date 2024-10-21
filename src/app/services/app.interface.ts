@@ -171,7 +171,7 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   coo: '',
   dateCode: 0,
   isHold: false,
-  holdComments: null,
+  holdComments: '',
   createdOn: new Date().toISOString(), // Set to current time
   modifiedOn: new Date().toISOString(), // Set to current time
   active: true,

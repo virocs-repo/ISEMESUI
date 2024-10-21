@@ -54,14 +54,6 @@
               placeholder="Select" rounded="large"></kendo-combobox>
           </kendo-label>
         </div>
-        <div *ngIf="goodsTypeSelected?.goodsTypeName == 'Device'" class="k-d-flex k-align-items-center k-gap-4">
-          <kendo-label text="Lot Category" class="k-w-full">
-            <b class="required-label"></b>
-            <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
-              [textField]="'receiptLocationName'" [valueField]="'receiptLocationID'" placeholder="Select"
-              rounded="large"></kendo-combobox>
-          </kendo-label>
-        </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="PM/Receiver" class="k-w-full">
             <kendo-multiselect [data]="employees" [(ngModel)]="employeesSelected" [textField]="'EmployeeName'"
@@ -180,18 +172,19 @@
     </kendo-card-body>
   </kendo-card>
 
-  <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
+  <!-- <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
     <kendo-label text="Goods Type">
       <kendo-combobox [data]="goodsType" [(ngModel)]="goodsTypeSelected" [textField]="'goodsTypeName'"
-        [valueField]="'goodsTypeID'" placeholder="Select type" rounded="large"></kendo-combobox>
+        [valueField]="'goodsTypeID'" placeholder="Select type" rounded="large"
+        [disabled]="isDisabledGoodsType"></kendo-combobox>
     </kendo-label>
-  </div>
-  <div *ngIf="goodsTypeSelected?.goodsTypeName == 'Device'">
+  </div> -->
+  <div *ngIf="!isDisabledGoodsType">
     <div class="k-d-flex k-align-items-center k-gap-3">
       <h2>Device</h2>
       <i class="k-ml-auto"></i>
-      <button kendoButton type="button" rounded="large" themeColor="info" (click)="addDeviceRow()">Add Device
-        Row</button>
+      <button kendoButton type="button" rounded="large" themeColor="info" (click)="addDeviceRow()"
+        [disabled]="isDisabled.addDevice">Add Device Row</button>
       <button kendoButton type="button" rounded="large" themeColor="info" (click)="saveDevices()"
         [disabled]="isDisabled.addDevice">Save</button>
     </div>
@@ -240,9 +233,10 @@
         </kendo-grid-column>
         <kendo-grid-column field="expedite" title="Device">
           <ng-template kendoGridCellTemplate let-dataItem>
-            <kendo-combobox [data]="customerTypes" [(ngModel)]="customerTypeSelected"
+            <!-- <kendo-combobox [data]="customerTypes" [(ngModel)]="customerTypeSelected"
               (ngModelChange)="onChangeCustomerType()" [textField]="'customerTypeName'" [valueField]="'customerTypeID'"
-              placeholder="Select" rounded="large"></kendo-combobox>
+              placeholder="Select" rounded="large"></kendo-combobox> -->
+            <kendo-textbox [(ngModel)]="dataItem.holdComments" placeholder="Device"></kendo-textbox>
           </ng-template>
         </kendo-grid-column>
         <kendo-grid-column field="lotOwner" title="Lot Owner">
@@ -257,9 +251,10 @@
         </kendo-grid-column>
         <kendo-grid-column field="expedite" title="Lot Identifier">
           <ng-template kendoGridCellTemplate let-dataItem>
-            <kendo-combobox [data]="customerTypes" [(ngModel)]="customerTypeSelected"
+            <!-- <kendo-combobox [data]="customerTypes" [(ngModel)]="customerTypeSelected"
               (ngModelChange)="onChangeCustomerType()" [textField]="'customerTypeName'" [valueField]="'customerTypeID'"
-              placeholder="Select" rounded="large"></kendo-combobox>
+              placeholder="Select" rounded="large"></kendo-combobox> -->
+            <kendo-textbox [(ngModel)]="dataItem.iseLotNumber" placeholder="Lot Identifier"></kendo-textbox>
           </ng-template>
         </kendo-grid-column>
         <kendo-grid-column field="labelCount" title="Label Count">
@@ -310,12 +305,12 @@
     <i class="k-ml-auto"></i>
     <button kendoButton (click)="doTestEditMode()">Test Edit Mode</button>
   </div> -->
-  <div *ngIf="goodsTypeSelected?.goodsTypeName == 'Hardware'">
+  <div *ngIf="!isDisabledGoodsType">
     <div class="k-d-flex k-align-items-center k-gap-3">
       <h2>Hardware</h2>
       <i class="k-ml-auto"></i>
-      <button kendoButton type="button" rounded="large" themeColor="info" (click)="addHardwareRow()">Add Hardware
-        Row</button>
+      <button kendoButton type="button" rounded="large" themeColor="info" (click)="addHardwareRow()"
+        [disabled]="isDisabled.addHardware">Add Hardware Row</button>
       <button kendoButton type="button" rounded="large" themeColor="info" (click)="saveHardwares()"
         [disabled]="isDisabled.addHardware">Save</button>
     </div>
@@ -377,13 +372,14 @@
       </kendo-grid>
     </div>
   </div>
-  <div *ngIf="goodsTypeSelected?.goodsTypeName == 'Miscellaneous Goods'">
+  <div *ngIf="!isDisabledGoodsType">
     <div class="k-d-flex k-align-items-center k-gap-3">
       <h2>Miscellaneous Goods</h2>
       <i class="k-ml-auto"></i>
-      <button kendoButton type="button" rounded="large" themeColor="info" (click)="addMiscellaneousRow()">Add
-        Miscellaneous Row</button>
-      <button kendoButton type="button" rounded="large" themeColor="info" (click)="saveMiscellaneous()">Save</button>
+      <button kendoButton type="button" rounded="large" themeColor="info" (click)="addMiscellaneousRow()"
+        [disabled]="isDisabled.addMisc">Add Miscellaneous Row</button>
+      <button kendoButton type="button" rounded="large" themeColor="info" (click)="saveMiscellaneous()"
+        [disabled]="isDisabled.addMisc">Save</button>
     </div>
     <div class="page-body w-120-sm">
       <kendo-grid [kendoGridBinding]="gridDataMiscellaneous" [selectable]="selectableSettings" [sortable]="true"
@@ -435,10 +431,6 @@
       <kendo-dateinput format="eee dd MMMM yyyy" [value]="signatureDate" class="k-center"></kendo-dateinput>
     </kendo-label>
     <span style="margin-left: auto;"></span>
-    <!-- <button kendoButton type="button" rounded="large" themeColor="error" style="width:6rem"
-      [disabled]="isDisabled.cancelBtn">Cancel</button>
-    <button kendoButton type="button" rounded="large" themeColor="info" style="width:6rem"
-      [disabled]="isDisabled.submitBtn">Submit</button> -->
   </div>
 
   <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">

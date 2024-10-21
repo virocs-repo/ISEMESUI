@@ -31,6 +31,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   receiptLocationSelected: ReceiptLocation | undefined;
   readonly goodsType: GoodsType[] = this.appService.masterData.goodsType;
   goodsTypeSelected: GoodsType | undefined;
+  isDisabledGoodsType = false;
   readonly deliveryMode: DeliveryMode[] = this.appService.masterData.deliveryMode;
   deliveryModeSelected: DeliveryMode | undefined;
 
@@ -90,7 +91,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     addReceipt: false,
     addDevice: false,
     addHardware: false,
-    submitBtn: false,
+    addMisc: false,
     cancelBtn: false
   }
   hardware = {
@@ -129,13 +130,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
   private init() {
-    // if (!this.customerTypes.find(c => c.customerTypeName == 'Employee')) {
-    //   this.customerTypes.push({
-    //     customerTypeID: 3,
-    //     customerTypeName: 'Employee'
-    //   })
-    // }
-
     if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
       const dataItem = this.appService.sharedData.receiving.dataItem;
 
@@ -181,8 +175,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.contactPhone = dataItem.contactPhone
       this.contactPerson = dataItem.contactPerson
       this.fetchReceiptEmployees()
+      this.fetchData();
+    } else {
+      this.isDisabledGoodsType = true;
     }
-    this.fetchData();
     if (this.appService.sharedData.receiving.isViewMode) {
       this.disabledAllBtns()
     }
@@ -385,7 +381,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         return;
       }
     }
-    console.log(this.addressSelected);
     if (this.deliveryModeSelected?.deliveryModeName == 'Pick Up') {
 
       if (!this.addressSelected) {
@@ -462,8 +457,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         CustomerCount: r.customerCount,
         Expedite: r.expedite,
         IQA: r.iqa,
-        LotID: null,
-        LotOwnerID: null,
+        LotID: 1,
+        LotOwnerID: 1,
         LabelCount: r.labelCount,
         DateCode: r.dateCode,
         COO: r.coo,

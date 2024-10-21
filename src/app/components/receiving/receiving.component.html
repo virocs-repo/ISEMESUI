@@ -59,6 +59,6 @@
       (click)="canCloseDialog()"></button>
   </div>
   <div class="dialog-body k-overflow-y-auto">
-    <app-receipt (onClose)="isDialogOpen = false" (onRestart)="onClearForm()"></app-receipt>
+    <app-receipt (onClose)="closeDialog()" (onRestart)="onClearForm()"></app-receipt>
   </div>
 </kendo-dialog>
