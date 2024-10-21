@@ -5,6 +5,15 @@ import { ApiService } from 'src/app/services/api.service';
 import { Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostReceipt, ReceiptLocation, SignatureTypes } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
+enum TableType {
+  Device = 'Device',
+  Hardware = 'Hardware',
+  Misc = 'Misc'
+}
+enum ActionType {
+  Remove = 'Remove'
+}
+
 @Component({
   selector: 'app-receipt',
   templateUrl: './receipt.component.html',
@@ -12,6 +21,7 @@ import { AppService } from 'src/app/services/app.service';
 })
 export class ReceiptComponent implements OnInit, OnDestroy {
   readonly ICON = ICON;
+  readonly TableType = TableType;
   @Output() onClose = new EventEmitter<void>();
   @Output() onRestart = new EventEmitter<void>();
 
@@ -82,6 +92,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     addHardware: false,
     submitBtn: false,
     cancelBtn: false
+  }
+  hardware = {
+    isItemsRemoved: false
   }
   tracking = ''
   customVendorName: string | undefined;
@@ -494,52 +507,13 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
 
   // addHardware
-  gridDataHardware: HardwareItem[] = []
-  addHardware() {
-    const data: any = {
-      // ... this.gridDataHardware[this.hardware.rowIndex],
-      loginId: this.appService.loginId
-    }
-    // if (this.hardware.isEditMode) {
-    //   // @ts-ignore
-    //   data.recordStatus = "U";
-    // }
-    // if (this.hardware.isAddMode) {
-    //   // @ts-ignore
-    //   data.recordStatus = "I";
-    //   // @ts-ignore
-    //   data.hardwareID = null
-    // }
-    console.log(data);
-    if (data.serialNumber && data.expectedQty && data.hardwareType) {
-      this.doPostProcessHardware(data);
-    } else {
-      this.appService.errorMessage("All fields are required!")
-    }
-  }
-  private doPostProcessHardware(data: JSON_Object) {
-    const body: any = {
-      "hardwareDetails": [
-        {
-          "hardwareID": 0,
-          "receiptID": 0,
-          "inventoryID": 0,
-          "hardwareType": "string",
-          "customerID": 0,
-          "customer": "string",
-          "serialNumber": "string",
-          "expectedQty": 0,
-          "createdOn": "2024-09-02T03:38:12.178Z",
-          "modifiedOn": "2024-09-02T03:38:12.178Z",
-          "active": true,
-          ...data
-        }
-      ]
-    }
+  gridDataHardware: HardwareItem[] = [];
+  private doPostProcessHardware(HardwareDetails: PostHardware[]) {
+    const body = { HardwareDetails }
     this.apiService.postProcessHardware(body).subscribe({
       next: (v: any) => {
-        this.appService.successMessage(MESSAGES.DataSaved);
         console.log({ v });
+        this.appService.successMessage(MESSAGES.DataSaved);
         this.fetchDataHardware();
       },
       error: (err) => {
@@ -548,9 +522,15 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       }
     });
   }
+
   saveHardwares() {
-    if (!this.gridDataHardware || !this.gridDataHardware.length) {
-      this.appService.infoMessage(MESSAGES.NoChanges)
+    if (!this.gridDataHardware.length) {
+      if (this.hardware.isItemsRemoved) {
+        this.doPostProcessHardware([]);
+      } else {
+        this.appService.infoMessage(MESSAGES.NoChanges)
+      }
+      return;
     }
     const filteredRecords = this.gridDataHardware.filter(d => d.recordStatus == "I" || d.recordStatus == "U")
     if (!filteredRecords || filteredRecords.length < 1) {
@@ -582,19 +562,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       }
       HardwareDetails.push(postHardware)
     })
-    const body = { HardwareDetails }
-
-    this.apiService.postProcessHardware(body).subscribe({
-      next: (v: any) => {
-        console.log({ v });
-        this.appService.successMessage(MESSAGES.DataSaved);
-        this.fetchDataHardware();
-      },
-      error: (err) => {
-        this.appService.errorMessage(MESSAGES.DataSaveError);
-        console.log(err);
-      }
-    });
+    this.doPostProcessHardware(HardwareDetails);
   }
   saveMiscellaneous() {
     if (!this.gridDataMiscellaneous || !this.gridDataMiscellaneous.length) {
@@ -686,6 +654,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
     // { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
     // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
+    { text: 'Remove', svgIcon: ICON.trashIcon },
   ];
   rowActionMenuDevice: MenuItem[] = [
     { text: 'Receive', svgIcon: ICON.cartIcon },
@@ -693,12 +662,13 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     { text: 'Print', svgIcon: ICON.printIcon },
     { text: 'Hold', svgIcon: ICON.kpiStatusHoldIcon },
     { text: 'Edit Data', svgIcon: ICON.pencilIcon },
+    { text: 'Remove', svgIcon: ICON.trashIcon },
   ]
 
   doTestEditMode() {
-    this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridDataHardware[3], 'Device');
+    // this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridDataHardware[3], 'Device');
   }
-  onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, tableName: 'Device' | 'Hardware' | 'Misc') {
+  onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc') {
     console.log(e); console.log(dataItem);
     switch (e.item.text) {
       case 'Edit Data':
@@ -721,8 +691,46 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       case 'Void Data':
         this.doVoidData(dataItem, tableName)
         break;
+      case 'Remove':
+        this.doRemoveRow(rowIndex, tableName);
+        break;
 
       default:
+        break;
+    }
+  }
+  onOpenRowActionMenu(dateItem: any, tableType: TableType) {
+    const a = this.rowActionMenu.find(a => a.text == ActionType.Remove);
+    if (a) a.disabled = false;
+    switch (tableType) {
+      case TableType.Device:
+        if (dateItem.deviceID) {
+          if (a) a.disabled = true;
+        }
+        break;
+      case TableType.Hardware:
+        if (dateItem.hardwareID) {
+          if (a) a.disabled = true;
+        }
+        break;
+      case TableType.Misc:
+        if (dateItem.miscellaneousGoodsID) {
+          if (a) a.disabled = true;
+        }
+        break;
+    }
+  }
+  private doRemoveRow(rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc') {
+    switch (tableName) {
+      case 'Device':
+        this.gridDataDevice.splice(rowIndex, 1);
+        break;
+      case 'Hardware':
+        this.gridDataHardware.splice(rowIndex, 1);
+        this.hardware.isItemsRemoved = true
+        break;
+      case 'Misc':
+        this.gridDataMiscellaneous.splice(rowIndex, 1);
         break;
     }
   }
@@ -730,9 +738,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     switch (tableName) {
       case 'Device':
         const text = this.appService.formatJson(r);
-        console.log(text);
-        this.printPreview(text)
-
+        this.printPreview(text);
         break;
     }
   }

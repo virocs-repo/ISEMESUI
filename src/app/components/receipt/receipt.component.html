@@ -185,13 +185,6 @@
       <kendo-combobox [data]="goodsType" [(ngModel)]="goodsTypeSelected" [textField]="'goodsTypeName'"
         [valueField]="'goodsTypeID'" placeholder="Select type" rounded="large"></kendo-combobox>
     </kendo-label>
-    <span style="margin-left: auto;"></span>
-    <!-- <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
-      (click)="testAddReceipt()">Test</button> -->
-    <button kendoButton type="button" rounded="large" themeColor="primary" style="width:6rem"
-      [disabled]="isDisabled.clearReceipt" (click)="onClearForm()">Clear</button>
-    <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" (click)="addReceipt()"
-      [disabled]="isDisabled.addReceipt">Submit</button>
   </div>
   <div *ngIf="goodsTypeSelected?.goodsTypeName == 'Device'">
     <div class="k-d-flex k-align-items-center k-gap-3">
@@ -301,30 +294,15 @@
           </ng-template>
         </kendo-grid-column>
         <kendo-grid-column field="isHold" title="Hold">
-          <ng-template kendoGridCellTemplate let-dataItem>
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <div class="k-d-flex k-align-items-center">
               <input type="checkbox" name="isHold" [(ngModel)]="dataItem.isHold" kendoCheckBox>
               <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
               <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenuDevice"
-                (select)="onSelectRowActionMenu($event, dataItem, 'Device')"></kendo-contextmenu>
+                (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Device')"></kendo-contextmenu>
             </div>
           </ng-template>
         </kendo-grid-column>
-        <!-- <kendo-grid-column field="holdComments" title="Hold Comments">
-          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-            <ng-container *ngIf="rowIndex == device.rowIndex">
-              <kendo-textbox [(ngModel)]="dataItem.holdComments" placeholder="Hold Comments"></kendo-textbox>
-            </ng-container>
-            <ng-container *ngIf="rowIndex != device.rowIndex">
-              <div class="k-d-flex">
-                <span>{{dataItem.holdComments}}</span>
-                <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
-                <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
-                  (select)="onSelectRowActionMenu($event, dataItem, true)"></kendo-contextmenu>
-              </div>
-            </ng-container>
-          </ng-template>
-        </kendo-grid-column> -->
       </kendo-grid>
     </div>
   </div>
@@ -379,17 +357,19 @@
                   [textField]="'hardwareType'" [valueField]="'hardwareTypeID'" placeholder="Select"
                   rounded="large"></kendo-combobox>
 
-                <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
+                <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
+                  (click)="onOpenRowActionMenu(dataItem, TableType.Hardware)" #rowActionMenuTarget></button>
                 <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
-                  (select)="onSelectRowActionMenu($event, dataItem, 'Hardware')"></kendo-contextmenu>
+                  (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Hardware')"></kendo-contextmenu>
               </div>
             </ng-container>
             <ng-template #showValue>
               <div class="k-d-flex">
                 <span>{{dataItem.hardwareType}}</span>
-                <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
+                <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
+                  (click)="onOpenRowActionMenu(dataItem, TableType.Hardware)" #rowActionMenuTarget></button>
                 <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
-                  (select)="onSelectRowActionMenu($event, dataItem, 'Hardware')"></kendo-contextmenu>
+                  (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Hardware')"></kendo-contextmenu>
               </div>
             </ng-template>
           </ng-template>
@@ -426,9 +406,10 @@
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <div class="k-d-flex">
               <span>{{dataItem.modifiedOn}}</span>
-              <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
+              <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
+                (click)="onOpenRowActionMenu(dataItem, TableType.Misc)" #rowActionMenuTarget></button>
               <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
-                (select)="onSelectRowActionMenu($event, dataItem, 'Misc')"></kendo-contextmenu>
+                (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Misc')"></kendo-contextmenu>
             </div>
           </ng-template>
         </kendo-grid-column>
@@ -458,6 +439,16 @@
       [disabled]="isDisabled.cancelBtn">Cancel</button>
     <button kendoButton type="button" rounded="large" themeColor="info" style="width:6rem"
       [disabled]="isDisabled.submitBtn">Submit</button> -->
+  </div>
+
+  <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
+    <span style="margin-left: auto;"></span>
+    <!-- <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
+      (click)="testAddReceipt()">Test</button> -->
+    <button kendoButton type="button" rounded="large" themeColor="primary" style="width:6rem"
+      [disabled]="isDisabled.clearReceipt" (click)="onClearForm()">Clear</button>
+    <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" (click)="addReceipt()"
+      [disabled]="isDisabled.addReceipt">Submit</button>
   </div>
 </div>
 <kendo-dialog *ngIf="isDialogOpen" [minWidth]="250" [width]="'50%'" class="dialog-round">
