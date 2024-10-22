@@ -42,7 +42,7 @@
           </kendo-label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
-          <kendo-label text="Behalf of Customer" class="k-w-full">
+          <kendo-label text="Behalf of Customer" class="k-w-full" *ngIf="!isDisabledBehalfOfCusotmer">
             <kendo-combobox [data]="customers" [(ngModel)]="behalfOfCusotmerSelected" [textField]="customerTextField"
               [valueField]="customerValueField" placeholder="Select" rounded="large"
               [disabled]="isDisabledBehalfOfCusotmer"></kendo-combobox>
@@ -92,8 +92,7 @@
         <div *ngIf="deliveryModeSelected?.deliveryModeName=='Courier'" class="k-d-flex k-align-items-center k-gap-4">
           <kendo-label text="Courier Name" class="k-w-full">
             <kendo-combobox [data]="couriers" [(ngModel)]="courierSelected" [textField]="'courierName'"
-              [valueField]="'courierDetailID'" placeholder="Select" rounded="large"
-              [disabled]="isDisabledBehalfOfCusotmer"></kendo-combobox>
+              [valueField]="'courierDetailID'" placeholder="Select" rounded="large"></kendo-combobox>
           </kendo-label>
           <kendo-label text="Country From" class="k-w-full">
             <b class="required-label"></b>
@@ -182,6 +181,10 @@
   <div *ngIf="!isDisabledGoodsType">
     <div class="k-d-flex k-align-items-center k-gap-3">
       <h2>Device</h2>
+      <kendo-label text="Lot Category: "></kendo-label>
+      <kendo-combobox [data]="listItems" [(ngModel)]="lotCategorySelected" (ngModelChange)="onChangeCustomerType()"
+        [textField]="'customerTypeName'" [valueField]="'customerTypeID'" placeholder="Select" rounded="large"
+        style="width:auto"></kendo-combobox>
       <i class="k-ml-auto"></i>
       <button kendoButton type="button" rounded="large" themeColor="info" (click)="addDeviceRow()"
         [disabled]="isDisabled.addDevice">Add Device Row</button>
@@ -273,7 +276,9 @@
         <kendo-grid-column field="coo" title="COO">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
-              <kendo-textbox [(ngModel)]="dataItem.coo" placeholder="COO"></kendo-textbox>
+              <!-- <kendo-textbox [(ngModel)]="dataItem.coo" placeholder="COO"></kendo-textbox> -->
+              <kendo-combobox [data]="countries" [(ngModel)]="dataItem.countrySelected" [textField]="'countryName'"
+                [valueField]="'countryID'" placeholder="Select" rounded="large"></kendo-combobox>
             </ng-container>
             <ng-template #showValue>
               <span>{{dataItem.coo}}</span>
@@ -421,11 +426,14 @@
         name="signatureName" required>
     </kendo-label>
     <kendo-label text="Date">
-      <kendo-dateinput format="eee dd MMMM yyyy" [value]="signatureDate" class="k-center"></kendo-dateinput>
+      <kendo-dateinput format="eee dd MMMM yyyy, h:mm a" [value]="signatureDate" class="k-center"></kendo-dateinput>
     </kendo-label>
     <span style="margin-left: auto;"></span>
   </div>
-
+  <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
+    <kendo-fileselect [restrictions]="fileRestrictions" (select)="onSelect($event)"
+      (upload)="onUpload($event)"></kendo-fileselect>
+  </div>
   <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
     <span style="margin-left: auto;"></span>
     <!-- <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"

@@ -161,6 +161,7 @@ export interface DeviceItem {
   lotOwnerID: number
   iqa: boolean
   employeeSelected: Employee | undefined
+  countrySelected: Country | undefined
 }
 export const INIT_DEVICE_ITEM: DeviceItem = {
   deviceID: 0,
@@ -179,9 +180,10 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   active: true,
   lotOwner: '',
   lotOwnerID: 0,
-  iqa: true,
+  iqa: false,
   recordStatus: 'I',
-  employeeSelected: undefined
+  employeeSelected: undefined,
+  countrySelected: undefined
 };
 export interface JSON_Object {
   [key: string]: any
@@ -411,7 +413,7 @@ export const INIT_POST_DEVICE: PostDevice = {
   CustomerLotNumber: "CL008",
   CustomerCount: 50,
   Expedite: false,
-  IQA: true,
+  IQA: false,
   LotID: 14054,
   LotOwnerID: 1,
   LabelCount: 50,
