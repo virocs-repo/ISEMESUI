@@ -11,9 +11,6 @@
         <kendo-label text="Location" class="k-w-full">
           <kendo-combobox [data]="uniqueLocations" [(ngModel)]="selectedLocation" placeholder="Location" rounded="large"></kendo-combobox>
         </kendo-label>
-        <!-- <kendo-label text="Received From" class="k-w-full">
-          <kendo-combobox [data]="uniqueReceivedFrom" [(ngModel)]="selectedReceivedFrom" placeholder="Choose" rounded="large"></kendo-combobox>
-        </kendo-label> -->
         <kendo-label text="ReciviedFrom" class="k-w-full">
           <kendo-multiselect [data]="employees" [(ngModel)]="employeesSelected" [textField]="'EmployeeName'"
             [valueField]="'EmployeeID'" placeholder="Select" rounded="large"></kendo-multiselect>

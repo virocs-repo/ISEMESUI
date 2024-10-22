@@ -126,15 +126,14 @@ export class ApiService {
   getAllInventoryMoveStatus() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryMove/getallInventoryMoveStatus`);
   }
-  getInventoryMove(lotNumber: string, location: string, employeeIds: number[]) {
+
+  getInventoryMove(lotNumber: string, location: number, employeeIds: number[]) {
     const employeeIdsParam = employeeIds.map(String).join(','); // Convert number[] to string[] and join with commas
     const url = `${API}v1/ise/inventory/inventoryMove/getInventoryMoveStatus?lotNumber=${lotNumber}&location=${location}&employeeIds=${employeeIdsParam}`;
     return this.httpClient.get(url);
 }
 
-  upsertInventoryMoveStatus(data: any, options: { responseType: 'text' }): Observable<any> {
-    return this.httpClient.post(`${API}v1/ise/inventory/inventoryMove/UpsertInventoryMoveStatus`, data, { responseType: options.responseType });
-  }  
-
-
+upsertInventoryMoveStatus(data: any, options: { responseType: 'text' }): Observable<any> {
+  return this.httpClient.post(`${API}v1/ise/inventory/inventoryMove/UpsertInventoryMoveStatus`, data, { responseType: options.responseType });
+} 
 }
