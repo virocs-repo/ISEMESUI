@@ -53,7 +53,7 @@ export class ReceivingComponent {
     this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
       switch (v) {
         case 'closeDialog':
-          this.isDialogOpen = false;
+          this.closeDialog();
           break;
         default:
           break;
@@ -211,8 +211,8 @@ export class ReceivingComponent {
       this.isDialogOpen = true;
     }, 300);
   }
-  private updatePostReceiptObject(r:Receipt) {
-    const postReceipt: PostReceipt =  {
+  private updatePostReceiptObject(r: Receipt) {
+    const postReceipt: PostReceipt = {
       ReceiptID: r.receiptID,
       VendorID: null,
       VendorName: null,

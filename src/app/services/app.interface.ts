@@ -1,4 +1,4 @@
-import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, kpiStatusHoldIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, printIcon, selectBoxIcon, userIcon, windowRestoreIcon, xIcon } from "@progress/kendo-svg-icons";
+import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, kpiStatusHoldIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, printIcon, selectBoxIcon, trashIcon, userIcon, windowRestoreIcon, xIcon } from "@progress/kendo-svg-icons";
 
 export interface CustomerType {
   customerTypeID: number;
@@ -158,7 +158,9 @@ export interface DeviceItem {
   active: boolean;
   recordStatus?: "I" | "U";
   lotOwner: string
+  lotOwnerID: number
   iqa: boolean
+  employeeSelected: Employee | undefined
 }
 export const INIT_DEVICE_ITEM: DeviceItem = {
   deviceID: 0,
@@ -171,13 +173,15 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   coo: '',
   dateCode: 0,
   isHold: false,
-  holdComments: null,
+  holdComments: '',
   createdOn: new Date().toISOString(), // Set to current time
   modifiedOn: new Date().toISOString(), // Set to current time
   active: true,
   lotOwner: '',
+  lotOwnerID: 0,
   iqa: true,
-  recordStatus: 'I'
+  recordStatus: 'I',
+  employeeSelected: undefined
 };
 export interface JSON_Object {
   [key: string]: any
@@ -200,7 +204,8 @@ export const ICON = {
   gearIcon,
   logoutIcon,
   printIcon,
-  kpiStatusHoldIcon
+  kpiStatusHoldIcon,
+  trashIcon
 }
 
 export const MESSAGES = {
@@ -245,7 +250,7 @@ export interface CustomerOrderDetail {
 export interface CustomerOrder {
   CustomerOrderID: number | null;
   CustomerId: number;
-  CustomerOrderType:string;
+  CustomerOrderType: string;
   OQA: boolean | false;
   Bake: boolean | false;
   PandL: boolean | false;
@@ -425,4 +430,12 @@ export interface HardwareType {
 export interface SignatureTypes {
   customerTypeID: number;
   customerTypeName: string
+}
+export interface PostMiscGoods {
+  MiscellaneousGoodsID: number | null
+  ReceiptID: number,
+  AdditionalInfo: string,
+  RecordStatus: "I" | "U"
+  Active: boolean
+  LoginId: number
 }
