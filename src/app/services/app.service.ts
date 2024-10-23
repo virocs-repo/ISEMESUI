@@ -1,6 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { HardwareType, MasterData, ShipmentCategory, ShipmentType, UserData } from './app.interface';
 import { NotificationService } from '@progress/kendo-angular-notification';
+import * as moment from 'moment';
 
 
 interface FeatureField {
@@ -165,6 +166,10 @@ export class AppService {
     const isoString = date.toISOString();
     const formattedDate = isoString.replace('T', ' ').replace('Z', '');
     return formattedDate;
+  }
+  formattedDateTime2(inputDate: Date): string {
+    const date = moment(inputDate);
+    return date.format('YYYY-MM-DD HH:mm:ss.SSS');
   }
   formatJson(obj: any): string {
     const formattedObj: { [key: string]: any } = {};

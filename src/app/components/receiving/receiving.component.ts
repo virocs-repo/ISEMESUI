@@ -160,8 +160,8 @@ export class ReceivingComponent {
           receiptDetails: [
             {
               ...dataItem, recordStatus: "U", loginId: this.appService.loginId, active: false,
-              expectedDateTime: this.appService.formattedDateTime(dataItem.expectedDateTime),
-              signatureDate: this.appService.formattedDateTime(dataItem.signatureDate),
+              expectedDateTime: this.appService.formattedDateTime2(new Date(dataItem.expectedDateTime)),
+              signatureDate: this.appService.formattedDateTime2(new Date(dataItem.signatureDate)),
             }
           ]
         };

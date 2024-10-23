@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
+import { FileRestrictions } from '@progress/kendo-angular-upload';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt, ReceiptLocation, SignatureTypes } from 'src/app/services/app.interface';
@@ -101,6 +102,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   customVendorName: string | undefined;
   readonly hardwareTypes = this.appService.hardwareTypes;
   readonly subscription = new Subscription()
+  lotCategorySelected: undefined;
   constructor(private appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
@@ -204,8 +206,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       next: (v: any) => {
         this.gridDataDevice = v;
         // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Device')
-        this.gridDataDevice.forEach(d=>{
-          d.employeeSelected = this.employees.find(e=>e.EmployeeID == d.lotOwnerID);
+        this.gridDataDevice.forEach(d => {
+          d.employeeSelected = this.employees.find(e => e.EmployeeID == d.lotOwnerID);
+          d.countrySelected = this.countries.find(c => c.countryName == d.coo)
         })
       }
     });
@@ -302,7 +305,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       ContactPerson: this.contactPerson,
       ContactPhone: this.contactPhone,
       Email: this.email,
-      ExpectedDateTime: this.appService.formattedDateTime(this.expectedDateTime.toISOString()),
+      ExpectedDateTime: this.appService.formattedDateTime2(this.expectedDateTime),
       AddressID: 1,
       MailComments: this.deliveryComments,
       PMComments: this.comments?.trim() || null,
@@ -317,7 +320,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       SignaturePersonType: this.signatureTypeSelected?.customerTypeName || '',
       SignaturePersonID: this.signatureEmployeeSelected?.EmployeeID || 1,
       Signature: this.signatureName,
-      SignatureDate: this.appService.formattedDateTime(new Date().toISOString()),
+      SignatureDate: this.appService.formattedDateTime2(new Date()),
       RecordStatus: "I",
       Active: true,
       LoginId: this.appService.loginId,
@@ -443,7 +446,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     for (let index = 0; index < filteredRecords.length; index++) {
       const r = filteredRecords[index];
       const mandatoryFields = [
-        r.customerCount, r.labelCount, r.dateCode, r.coo,
+        r.customerCount, r.labelCount, r.dateCode, r.countrySelected,
       ]
       const isValid = !mandatoryFields.some(v => !v);
       console.log({ mandatoryFields });
@@ -463,7 +466,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         LotOwnerID: r.employeeSelected?.EmployeeID || 1,
         LabelCount: r.labelCount,
         DateCode: r.dateCode,
-        COO: r.coo,
+        COO: r.countrySelected?.countryName || '',
         IsHold: r.isHold,
         HoldComments: r.holdComments,
         RecordStatus: r.recordStatus || 'I',
@@ -597,16 +600,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   public selectedValues: string = "";
   readonly employees: Employee[] = this.appService.masterData.entityMap.Employee
   employeesSelected: Employee[] = [];
-  public listItems: Array<string> = [
-    "Baseball",
-    "Basketball",
-    "Cricket",
-    "Field Hockey",
-    "Football",
-    "Table Tennis",
-    "Tennis",
-    "Volleyball",
-  ];
+  public listItems = [];
   public gridStyle = {
     backgroundColor: 'green'
   };
@@ -899,5 +893,35 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       const hasTruthyValue = valuesToCheck.some(v => v);
       return hasTruthyValue
     }
+  }
+  fileRestrictions: FileRestrictions = {
+    allowedExtensions: [".jpg", ".png"],
+    minFileSize: 1024 // in bytes , 1024*1024 1MB
+  };
+  onSelect(event: any): void {
+    // Get selected files count
+    console.log('Selected Files:', event.files);
+  }
+
+  onUpload(event: any): void {
+    // Send selected files to API
+    const formData = new FormData();
+    event.files.forEach((file: any) => {
+      formData.append('files', file.rawFile);
+    });
+    // Call API
+    this.callApi(formData);
+  }
+
+  callApi(formData: FormData): void {
+    // Replace with your API endpoint
+    const apiUrl = 'https://example.com/api/upload';
+    fetch(apiUrl, {
+      method: 'POST',
+      body: formData
+    })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error(error));
   }
 }
