@@ -14,6 +14,7 @@ export class InventoryMoveComponent implements OnInit{
   readonly ICON = ICON
   public pageSize = 10;
   public skip = 0;
+  private originalData: any[] = []; 
  selectedRowIndex: number = -1;
  public selectedRowData: any;
    public gridDataResult: GridDataResult = { data: [], total: 0 };
@@ -42,23 +43,9 @@ export class InventoryMoveComponent implements OnInit{
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
-  
-  isDialogOpen = false;
-  openDialog() {
-    this.isDialogOpen = true;
-  }
-  closeDialog() {
-    this.isDialogOpen = false;
-    this.loadGridData();
-
-  }
-  pageChange(event: PageChangeEvent): void {
-    this.skip = event.skip;
-    this.loadGridData();
-  }
 
   constructor(private apiService: ApiService) { }
-
+  
   ngOnInit(): void {
     this.loadGridData();
   }
@@ -67,22 +54,20 @@ export class InventoryMoveComponent implements OnInit{
 
     this.apiService.getAllInventoryMoveStatus().subscribe({
       next: (v: any) => {
-        this.gridDataResult.data = v;
-        this.gridDataResult.total = v.length
+        this.originalData = v;
+        this.pageData();
         console.log(v);
       },
       error: (v: any) => { }
     });
-
-
   }
 
   pageData(): void {
-    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
+    const filteredData = this.filterData(this.originalData);
     const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
-    this.gridDataResult.data = paginatedData;
-        this.gridDataResult.total =filteredData.length ;
-  }
+    this.gridDataResult.data = filteredData;
+    this.gridDataResult.total = filteredData.length; 
+    }
 
   filterData(data: any[]): any[] {
     if (!this.searchTerm) {
@@ -99,16 +84,32 @@ export class InventoryMoveComponent implements OnInit{
     this.pageData();
   }
 
+  pageChange(event: PageChangeEvent): void {
+    this.skip = event.skip;
+    this.pageData();
+  }
+
+  isDialogOpen = false;
+  openDialog() {
+    this.isDialogOpen = true;
+  }
+  closeDialog() {
+    this.isDialogOpen = false;
+    this.loadGridData();
+
+  }
+  dataItemSelected:any;
   onCellClick(e: CellClickEvent): void {
-    console.log(e);
     if (e.type === 'contextmenu') {
       const originalEvent = e.originalEvent;
       originalEvent.preventDefault();
+      this.dataItemSelected = e.dataItem;
       this.selectedRowIndex = e.rowIndex;
       this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
     }
   }
-  onSelectRowActionMenu(e: ContextMenuSelectEvent) {
+
+  onSelectRowActionMenu(e: ContextMenuSelectEvent): void {
   }
 
   rowCallback = (context: any) => {
