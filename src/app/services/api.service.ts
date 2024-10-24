@@ -129,6 +129,10 @@ export class ApiService {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryMove/getallInventoryMoveStatus`);
   }
 
+  GetInventoryLocation() {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryMove/getInventoryLocation`);
+  }
+
   getInventoryMove(lotNumber: string, location: number, employeeIds: number[]) {
     const employeeIdsParam = employeeIds.map(String).join(','); // Convert number[] to string[] and join with commas
     const url = `${API}v1/ise/inventory/inventoryMove/getInventoryMoveStatus?lotNumber=${lotNumber}&location=${location}&employeeIds=${employeeIdsParam}`;

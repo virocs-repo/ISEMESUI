@@ -46,23 +46,18 @@ export class AddCheckInoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadGridData();
+    this.loadLocations();
     this.employees = this.appService.masterData.entityMap.Employee;
   }
 
-  extractUniqueValues(data: any[]) {
-    const locationsSet = new Set<string>();
+  extractUniqueValues(data: any[]): void {
     const lotNumberSet = new Set<string>();
   
     data.forEach(item => {
-      if (item.location) {
-        locationsSet.add(item.location);
-      }
       if (item.lotNum) {
         lotNumberSet.add(item.lotNum);
       }
     });
-  
-    this.uniqueLocations = Array.from(locationsSet);
     this.uniqueLotNumber = Array.from(lotNumberSet);
     this.filteredLotNumbers = [...this.uniqueLotNumber];
   }
@@ -77,6 +72,17 @@ export class AddCheckInoutComponent implements OnInit {
     }
   }
   
+  loadLocations(): void {
+    this.apiService.GetInventoryLocation().subscribe(
+      (data: any) => {
+        const locations = data as any[];
+        this.uniqueLocations = [...new Set(locations.map(loc => loc.location))];
+      },
+      error => {
+        console.error('Error fetching locations:', error);
+      }
+    );
+  }
 
   loadGridData(): void {
     this.apiService.getAllInventoryMoveStatus().subscribe({
@@ -91,7 +97,7 @@ export class AddCheckInoutComponent implements OnInit {
 
   add(): void {
     if (!this.selectedLotNumber || !this.selectedLocation || this.employeesSelected.length === 0) {
-      this.appService.errorMessage('All three fields (Lot Number, Location, and Employee) must be filled.');
+      this.appService.errorMessage('Please enter mandatory fields.');
       return;
     }
   
@@ -105,7 +111,7 @@ export class AddCheckInoutComponent implements OnInit {
     this.apiService.getInventoryMove(lotNumber, location, employeeIds).subscribe({
       next: (res: any) => {
         res.forEach((record: any) => {
-          record.employeeNames = employeeNames; 
+          record.employeeNames = employeeNames;
         });
         if (existingRecordIndex === -1) {
           this.combinedData = [...this.combinedData, ...res];
@@ -169,6 +175,8 @@ export class AddCheckInoutComponent implements OnInit {
         next: (response) => {
           console.log('Inventory move status updated successfully:', response);
           this.loadGridData();
+          this.clearRequest();
+          this.cancel.emit(); 
         },
         error: (err) => {
           console.error('Error updating inventory move status:', err);
