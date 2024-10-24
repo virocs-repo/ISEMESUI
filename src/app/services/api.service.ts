@@ -121,7 +121,9 @@ export class ApiService {
   getallinventorydata() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventorydata/getdetails`);
   }
-
+  getallLotsdata() {
+    return this.httpClient.get(`${API}v1/ise/inventory/customerorder/invlotnums`);
+  }
   //Inventory Move
   getAllInventoryMoveStatus() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryMove/getallInventoryMoveStatus`);

@@ -24,8 +24,9 @@ export class AddCustomerRequestComponent implements OnInit {
   deviceTypes: string[] = ['Device', 'Hardware', 'All'];  // Array to hold device types
   customerOrderTypes: string[] = ['Finished Goods', 'WIP', 'Scrap']; 
   customerOrderTypeSelected:string='Finished Goods';
-  deviceTypeSelected: string = 'Device';  // Variable to hold the selected device type
+  deviceTypeSelected: string = 'All';  // Variable to hold the selected device type
   lotNumber: string | null = null;  // Lot number
+  lotNumbers: string[] = [];
   // below code can be changed/removed
   selectedRows: any[] = []; 
   selectedcheckBoxs: Set<number> = new Set<number>();
@@ -62,7 +63,7 @@ export class AddCustomerRequestComponent implements OnInit {
 
     }
 
-   
+    this.getLotNumbers();
    
   }
   
@@ -263,6 +264,22 @@ export class AddCustomerRequestComponent implements OnInit {
 
     // Close the cell after the edit
     sender.closeCell();
+  }
+
+
+  onFilter(value: string): void {
+    // This method is automatically triggered when the user types in the textbox
+    // You can implement additional filtering logic here if needed
+    this.lotNumbers = this.lotNumbers.filter(lot => lot.toLowerCase().includes(value.toLowerCase()));
+  }
+  getLotNumbers(): void {
+    
+    this.apiService.getallLotsdata().subscribe({
+      next: (v: any) => {
+        this.lotNumbers = v;
+      },
+      error: (v: any) => { }
+    });
   }
 
   submitForm(): void {

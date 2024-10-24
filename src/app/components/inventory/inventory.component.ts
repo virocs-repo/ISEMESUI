@@ -30,7 +30,7 @@ export class InventoryComponent implements OnInit {
   customerTextField: 'CustomerName' | 'VendorName' = 'CustomerName'
   customerValueField: 'CustomerID' | 'VendorID' = 'CustomerID'
   columnData = [
-    { title: "ISE Lot#", field: 'iseLotNumber', isLink: true },
+    { title: "ISE Lot#", field: 'iseLotNumber' },
     { title: "Receipt #", field: 'receiptID', isLink: true },
     { title: "Qty", field: 'qty' },
     { title: "Expedite", field: 'expedite' },
