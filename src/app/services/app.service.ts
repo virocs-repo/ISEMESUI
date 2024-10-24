@@ -57,7 +57,9 @@ export class AppService {
     },
     addresses: [],
     country: [],
-    courierDetails: []
+    courierDetails: [],
+    lotCategory: [],
+    deviceType: [],
   }
   sharedData: {
     receiving: SharedInfo
@@ -210,5 +212,16 @@ export class AppService {
 
     return output;
   }
-
+  printSection(elementId: string) {
+    const element = document.getElementById(elementId)
+    if (element) {
+      document.body.classList.add('print-mode');
+      element.classList.add('printable-area');
+      window.print();
+      document.body.classList.remove('print-mode');
+      element.classList.remove('printable-area');
+    } else {
+      console.error("Element not found");
+    }
+  }
 }

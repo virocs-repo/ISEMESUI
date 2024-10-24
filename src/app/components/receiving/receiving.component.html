@@ -22,7 +22,7 @@
   <i class="k-ml-auto"></i>
   <button kendoButton (click)="doTestEditMode()">Test Edit Mode</button>
 </div> -->
-<div class="page-body k-m-10" *ngIf="!false">
+<div class="page-body k-m-10">
   <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings"
     [columnMenu]="columnMenuSettings" [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
     [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" class="grid-header-sm grid-header-bold"

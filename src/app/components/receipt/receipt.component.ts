@@ -1,9 +1,10 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { FileRestrictions } from '@progress/kendo-angular-upload';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt, ReceiptLocation, SignatureTypes } from 'src/app/services/app.interface';
+import { Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt, ReceiptLocation, SignatureTypes } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 enum TableType {
@@ -66,6 +67,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   countrySelected: Country | undefined;
   readonly couriers = this.appService.masterData.courierDetails
   courierSelected: CourierDetails | undefined
+  readonly lotCategories = this.appService.masterData.lotCategory;
+  lotCategorySelected: LotCategory | undefined;
+  readonly deviceTypes = this.appService.masterData.deviceType;
+  deviceTypeSelected: DeviceType | undefined;
 
   description: string = '';
 
@@ -102,8 +107,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   customVendorName: string | undefined;
   readonly hardwareTypes = this.appService.hardwareTypes;
   readonly subscription = new Subscription()
-  lotCategorySelected: undefined;
-  constructor(private appService: AppService, private apiService: ApiService) { }
+  readonly filterSettings: DropDownFilterSettings = {
+    caseSensitive: false,
+    operator: 'contains'
+  };
+
+  constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
     this.init();
@@ -140,9 +149,13 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.expectedOrNot = dataItem.isExpected ? 'Expected' : 'Unexpected';
 
       this.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.customerTypeID);
-      this.customerSelected = this.customers.find(c => c.CustomerID == dataItem.customerVendorID);
+      this.onChangeCustomerType();
+      const entityType: 'Customer' | 'Vendor' = this.customerTypeSelected?.customerTypeName || 'Customer';
+      // @ts-ignore
+      this.customerSelected = this.customers.find((c) => c[entityType + 'ID'] == dataItem.customerVendorID);
+      // @ts-ignore
+      this.behalfOfCusotmerSelected = this.customers.find(c => c[entityType + 'ID'] == dataItem.behalfID);
       this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.receivingFacilityID);
-      this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID == dataItem.behalfID);
 
       // this.employeesSelected = not coming in the respose
       this.comments = dataItem.pmComments;
@@ -289,6 +302,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.email = 'test@gmail.com'
   }
   addReceipt() {
+    const entityType: 'Customer' | 'Vendor' = this.customerTypeSelected?.customerTypeName || 'Customer';
     const data: PostReceipt = {
       ...INIT_POST_RECEIPT,
 
@@ -297,7 +311,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       VendorName: null,
       CustomerTypeID: this.customerTypeSelected?.customerTypeID || 1,
       CustomerVendorID: this.customerSelected?.CustomerID || 1,
-      BehalfID: this.behalfOfCusotmerSelected?.CustomerID || 1,
+      // @ts-ignore
+      BehalfID: this.behalfOfCusotmerSelected?.[entityType + 'ID'] || 1,
       ReceivingFacilityID: this.receiptLocationSelected?.receivingFacilityID || 1,
       DeliveryModeID: this.deliveryModeSelected?.deliveryModeID || 1,
       CourierDetailID: this.courierSelected?.courierDetailID || 1,
@@ -446,13 +461,15 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     for (let index = 0; index < filteredRecords.length; index++) {
       const r = filteredRecords[index];
       const mandatoryFields = [
-        r.customerCount, r.labelCount, r.dateCode, r.countrySelected,
+        r.customerCount, r.labelCount, r.dateCode, r.countrySelected, r.deviceTypeSelected?.deviceTypeID
       ]
       const isValid = !mandatoryFields.some(v => !v);
-      console.log({ mandatoryFields });
-      console.log({ isValid });
       if (!isValid) {
         this.appService.errorMessage("All fields are required!")
+        return;
+      }
+      if (!this.lotCategorySelected?.lotCategoryID) {
+        this.appService.errorMessage("Please select Lot Category!")
         return;
       }
       const postDevice: PostDevice = {
@@ -466,12 +483,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         LotOwnerID: r.employeeSelected?.EmployeeID || 1,
         LabelCount: r.labelCount,
         DateCode: r.dateCode,
-        COO: r.countrySelected?.countryName || '',
+        COO: r.countrySelected?.countryID || 1,
         IsHold: r.isHold,
         HoldComments: r.holdComments,
         RecordStatus: r.recordStatus || 'I',
         Active: r.active,
-        LoginId: this.appService.loginId
+        LoginId: this.appService.loginId,
+        LotCategoryID: this.lotCategorySelected?.lotCategoryID || 1,
+        DeviceTypeID: r.deviceTypeSelected?.deviceTypeID || 1
       }
 
       if (postDevice.RecordStatus == "I") {
@@ -600,7 +619,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   public selectedValues: string = "";
   readonly employees: Employee[] = this.appService.masterData.entityMap.Employee
   employeesSelected: Employee[] = [];
-  public listItems = [];
   public gridStyle = {
     backgroundColor: 'green'
   };
@@ -795,15 +813,19 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   isDisabledBehalfOfCusotmer = false
   onChangeCustomerType() {
-    console.log(this.customerTypeSelected)
-    console.log(this)
-    if (this.customerTypeSelected?.customerTypeName == 'Vendor') {
+    if (this.customerTypeSelected?.customerTypeName == 'Customer') {
       this.isDisabledBehalfOfCusotmer = true
     } else {
       this.isDisabledBehalfOfCusotmer = false
     }
     if (this.customerTypeSelected?.customerTypeName) {
-      this.initCustomersList(this.customerTypeSelected?.customerTypeName as any)
+      this.initCustomersList(this.customerTypeSelected?.customerTypeName)
+    }
+  }
+  onChangeCustomerName() {
+    if (this.customerTypeSelected?.customerTypeName == 'Customer') {
+      this.isDisabledBehalfOfCusotmer = true
+      this.behalfOfCusotmerSelected = this.customerSelected;
     }
   }
   private initCustomersList(entityType: EntityType) {
@@ -923,5 +945,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       .then(response => response.json())
       .then(data => console.log(data))
       .catch(error => console.error(error));
+  }
+  print() {
+    
   }
 }

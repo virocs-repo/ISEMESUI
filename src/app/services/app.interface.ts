@@ -2,7 +2,7 @@ import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editTool
 
 export interface CustomerType {
   customerTypeID: number;
-  customerTypeName: string;
+  customerTypeName: 'Customer' | 'Vendor';
 }
 export interface ReceiptLocation {
   receivingFacilityID: number;
@@ -53,6 +53,8 @@ export interface MasterData {
   addresses: Address[];
   country: Country[];
   courierDetails: CourierDetails[];
+  lotCategory: LotCategory[];
+  deviceType: DeviceType[];
 }
 export interface Receipt {
   receiptID: number;
@@ -161,7 +163,8 @@ export interface DeviceItem {
   lotOwnerID: number
   iqa: boolean
   employeeSelected: Employee | undefined
-  countrySelected: Country | undefined
+  countrySelected: Country | undefined,
+  deviceTypeSelected: DeviceType | undefined
 }
 export const INIT_DEVICE_ITEM: DeviceItem = {
   deviceID: 0,
@@ -183,7 +186,8 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   iqa: false,
   recordStatus: 'I',
   employeeSelected: undefined,
-  countrySelected: undefined
+  countrySelected: undefined,
+  deviceTypeSelected: undefined
 };
 export interface JSON_Object {
   [key: string]: any
@@ -399,12 +403,14 @@ export interface PostDevice {
   LotOwnerID: number | null;
   LabelCount: number;
   DateCode: number;
-  COO: string;
+  COO: number;
   IsHold: boolean;
   HoldComments: string | null;
   RecordStatus: "I" | "U";
   Active: boolean;
   LoginId: number;
+  DeviceTypeID: number
+  LotCategoryID: number
 }
 
 export const INIT_POST_DEVICE: PostDevice = {
@@ -418,12 +424,14 @@ export const INIT_POST_DEVICE: PostDevice = {
   LotOwnerID: 1,
   LabelCount: 50,
   DateCode: 202304,
-  COO: "CA",
+  COO: 1,
   IsHold: true,
   HoldComments: "Quality check",
   RecordStatus: "I",
   Active: true,
-  LoginId: 1
+  LoginId: 1,
+  DeviceTypeID: 1,
+  LotCategoryID: 1
 }
 export interface HardwareType {
   hardwareTypeID: number
@@ -440,4 +448,12 @@ export interface PostMiscGoods {
   RecordStatus: "I" | "U"
   Active: boolean
   LoginId: number
+}
+export interface LotCategory {
+  lotCategoryID: number,
+  lotCategoryName: string
+}
+export interface DeviceType {
+  deviceTypeID: number,
+  deviceTypeName: string
 }

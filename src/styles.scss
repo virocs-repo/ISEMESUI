@@ -248,3 +248,19 @@ body {
 .highlighted-row:hover {
   background-color: var(--kendo-color-primary-emphasis) !important;
 }
+
+
+.printable-area,
+.printable-area * {
+  visibility: visible !important;
+}
+
+.printable-area {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+body.print-mode * {
+  visibility: hidden;
+}
