@@ -1,8 +1,6 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { Title } from '@angular/platform-browser';
 import { GridComponent, GridDataResult } from '@progress/kendo-angular-grid';
 import { ContextMenuComponent } from '@progress/kendo-angular-menu';
-import { forkJoin } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { Employee, ICON } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
@@ -28,20 +26,21 @@ export class AddCheckInoutComponent implements OnInit {
   public pageSize = 10;
   public skip = 0;
   public combinedData: any[] = [];
+  employees: Employee[] = []
+  employeesSelected: Employee[] = [];
+  public filteredLotNumbers: Array<string> = [];
   public columnData: any[] = [
     { field: 'lotNum', title: 'Lot#/Serial#', visible: true },
     { field: 'location', title: 'Location', visible: true },
-    { field: 'person', title: 'Person', visible: true },
+    { field: 'employeeNames', title: 'Person', visible: true },
     { field: 'qty', title: 'Qty', visible: true },
     { field: 'systemUser', title: 'System User', visible: true },
     { field: 'status', title: 'Status', visible: true },
     { field: 'receivedFrom', title: 'Received From', visible: false },
     { field: 'inventoryId', title: 'Inventory ID', visible: false},
     { field: 'locationId', title: 'Location ID',visible: false},
-    { field: 'receivedFromId',title: 'ID',visible: false}
+    { field: 'receivedFromId',title: 'Received ID',visible: false}
   ];
-  employees: Employee[] = []
-  employeesSelected: Employee[] = [];
 
   constructor(private appService: AppService,private apiService: ApiService) { }
 
@@ -65,6 +64,17 @@ export class AddCheckInoutComponent implements OnInit {
   
     this.uniqueLocations = Array.from(locationsSet);
     this.uniqueLotNumber = Array.from(lotNumberSet);
+    this.filteredLotNumbers = [...this.uniqueLotNumber];
+  }
+  
+  onLotNumberFilter(value: string): void {
+    if (value) {
+      this.filteredLotNumbers = this.uniqueLotNumber.filter(
+        (lotNumber) => lotNumber.toLowerCase().includes(value.toLowerCase())
+      );
+    } else {
+      this.filteredLotNumbers = [...this.uniqueLotNumber];
+    }
   }
   
 
@@ -88,16 +98,14 @@ export class AddCheckInoutComponent implements OnInit {
     const lotNumber = this.selectedLotNumber;
     const location = this.selectedLocation;
     const employeeIds = this.employeesSelected.map(emp => emp.EmployeeID); 
+    const employeeNames = this.employeesSelected.map(emp => emp.EmployeeName).join(', ');
     const existingRecordIndex = this.combinedData.findIndex(record => record.lotNum === lotNumber);
 
   
     this.apiService.getInventoryMove(lotNumber, location, employeeIds).subscribe({
       next: (res: any) => {
         res.forEach((record: any) => {
-          const employee = this.employees.find(emp => emp.EmployeeID === record.EmployeeID);
-          if (employee) {
-            record.employeeName = employee.EmployeeName;
-          }
+          record.employeeNames = employeeNames; 
         });
         if (existingRecordIndex === -1) {
           this.combinedData = [...this.combinedData, ...res];
@@ -140,18 +148,15 @@ export class AddCheckInoutComponent implements OnInit {
       this.appService.errorMessage('Please select at least one record to check in/out.');
       return;
     }
-  
-    // Prepare update requests based on selected rows
     const updateData = {
       InvMovementDetails: selectedRows.map((record: any) => {
         const newStatus = record.status === 'Checked In' ? 'Checked Out' : 'Checked In';
-        // Update the record status for local reference (optional)
         record.status = newStatus;
   
         return {
           InventoryID: record.inventoryId,
           LocationID: record.locationId,
-          StatusID: newStatus === 'Checked In' ? 1 : 2, // Assuming 1 is Checked In and 2 is Checked Out
+          StatusID: newStatus === 'Checked In' ? 1 : 2,
           ReceivedFromID: record.receivedFromId, 
           LoginId: record.loginId
         };
