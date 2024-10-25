@@ -2,9 +2,9 @@ import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/cor
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { FileRestrictions } from '@progress/kendo-angular-upload';
-import { Subscription } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt, ReceiptLocation, SignatureTypes } from 'src/app/services/app.interface';
+import { Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt, ReceiptLocation, SignatureTypes, Vendor } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 enum TableType {
@@ -37,12 +37,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   readonly deliveryMode: DeliveryMode[] = this.appService.masterData.deliveryMode;
   deliveryModeSelected: DeliveryMode | undefined;
 
-  customers: Customer[] = this.appService.masterData.entityMap.Customer;
+  readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
   customerSelected: Customer | undefined;
+  readonly vendors: Vendor[] = this.appService.masterData.entityMap.Vendor;
+  vendorSelected: Vendor | undefined;
   behalfOfCusotmerSelected: Customer | undefined;
-  customerTextField: 'CustomerName' | 'VendorName' = 'CustomerName'
-  customerValueField: 'CustomerID' | 'VendorID' = 'CustomerID'
-
+  behalfOfVendorSelected: Vendor | undefined;
   contactPhone = '';
   contactPerson = ''
 
@@ -150,11 +150,15 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
       this.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.customerTypeID);
       this.onChangeCustomerType();
-      const entityType: 'Customer' | 'Vendor' = this.customerTypeSelected?.customerTypeName || 'Customer';
-      // @ts-ignore
-      this.customerSelected = this.customers.find((c) => c[entityType + 'ID'] == dataItem.customerVendorID);
-      // @ts-ignore
-      this.behalfOfCusotmerSelected = this.customers.find(c => c[entityType + 'ID'] == dataItem.behalfID);
+      if (this.customerTypeSelected) {
+        if (this.customerTypeSelected.customerTypeName == 'Customer') {
+          this.customerSelected = this.customers.find((c) => c.CustomerID == dataItem.customerVendorID);
+          this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID == dataItem.behalfID);
+        } else {
+          this.vendorSelected = this.vendors.find((v) => v.VendorID == dataItem.customerVendorID);
+          this.behalfOfVendorSelected = this.vendors.find(v => v.VendorID == dataItem.behalfID);
+        }
+      }
       this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.receivingFacilityID);
 
       // this.employeesSelected = not coming in the respose
@@ -234,7 +238,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
     this.apiService.getHardwaredata(dataItem.receiptID).subscribe({
       next: (v: any) => {
-        console.log(v);
         if (v) {
           v.forEach((h: any) => {
             h.hardwareTypeSelected = this.hardwareTypes.find(c => c.hardwareTypeID == h.hardwareTypeID)
@@ -253,10 +256,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       // this is for new form
       return;
     }
-    // dataItem.receiptID = 1; // for testing
     this.apiService.getMiscellaneousGoods(dataItem.receiptID).subscribe({
       next: (v: any) => {
-        console.log(v);
         this.gridDataMiscellaneous = v;
         // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Miscellaneous Goods')
       }
@@ -266,7 +267,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const dateItem = this.appService.sharedData.receiving.dataItem;
     this.apiService.getReceiptEmployees(dateItem.receiptID).subscribe({
       next: (value: any) => {
-        console.log(value);
         const ids = value.map((v: any) => v.employeeID)
         if (ids) {
           this.employeesSelected = this.employees.filter(e => ids.includes(e.EmployeeID))
@@ -302,7 +302,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.email = 'test@gmail.com'
   }
   addReceipt() {
-    const entityType: 'Customer' | 'Vendor' = this.customerTypeSelected?.customerTypeName || 'Customer';
     const data: PostReceipt = {
       ...INIT_POST_RECEIPT,
 
@@ -310,9 +309,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       VendorID: null,
       VendorName: null,
       CustomerTypeID: this.customerTypeSelected?.customerTypeID || 1,
-      CustomerVendorID: this.customerSelected?.CustomerID || 1,
-      // @ts-ignore
-      BehalfID: this.behalfOfCusotmerSelected?.[entityType + 'ID'] || 1,
+      CustomerVendorID: null,
+      BehalfID: 1,
       ReceivingFacilityID: this.receiptLocationSelected?.receivingFacilityID || 1,
       DeliveryModeID: this.deliveryModeSelected?.deliveryModeID || 1,
       CourierDetailID: this.courierSelected?.courierDetailID || 1,
@@ -342,6 +340,30 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       EmployeeDetail: this.employeesSelected,
       TrackingNumber: this.tracking
     }
+    if (this.customerTypeSelected?.customerTypeName == 'Customer') {
+      data.BehalfID = this.behalfOfCusotmerSelected?.CustomerID || 1;
+      if (this.customerSelected) {
+        // custom value by user
+        data.CustomerVendorID = this.customerSelected?.CustomerID
+        this.receipt.isValid.customer = true;
+      } else {
+        this.receipt.isValid.customer = false;
+        this.appService.errorMessage('Please select customer');
+        return;
+      }
+    } else {
+      if (this.vendorSelected) {
+        if (this.vendorSelected?.VendorID == 9999) {
+          data.VendorName = this.vendorSelected.VendorName;
+        } else {
+          data.CustomerVendorID = this.vendorSelected?.VendorID || 1;
+        }
+        data.BehalfID = this.behalfOfVendorSelected?.VendorID || 1;
+      } else {
+        this.appService.errorMessage('Please select vendor');
+        return;
+      }
+    }
     if (this.appService.sharedData.receiving.isEditMode) {
       data.RecordStatus = "U";
       const dataItem = this.appService.sharedData.receiving.dataItem;
@@ -351,17 +373,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       data.RecordStatus = "I";
       data.ReceiptID = null;
     }
-    console.log(data);
     if (!this.customerTypeSelected) {
       this.appService.errorMessage('Please select customer/vendor');
       return;
-    }
-    if (!this.customerSelected) {
-      this.receipt.isValid.customer = false;
-      this.appService.errorMessage('Please select customer');
-      return;
-    } else {
-      this.receipt.isValid.customer = true;
     }
 
     if (!this.receiptLocationSelected) {
@@ -435,13 +449,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const body = { ReceiptDetails: [postReceipt] }
     this.apiService.postProcessReceipt(body).subscribe({
       next: (v: any) => {
-        console.log({ v });
         this.appService.successMessage(MESSAGES.DataSaved);
         this.onClose.emit();
       },
       error: (err) => {
         this.appService.errorMessage(MESSAGES.DataSaveError);
-        console.log(err);
       }
     });
   }
@@ -504,11 +516,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
         this.fetchDataDevice();
-        console.log({ v });
       },
       error: (err) => {
         this.appService.errorMessage(MESSAGES.DataSaveError);
-        console.log(err);
       }
     });
   }
@@ -530,13 +540,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   private doPostProcessHardware(HardwareDetails: PostHardware[]) {
     this.apiService.postProcessHardware({ HardwareDetails }).subscribe({
       next: (v: any) => {
-        console.log({ v });
         this.appService.successMessage(MESSAGES.DataSaved);
         this.fetchDataHardware();
       },
       error: (err) => {
         this.appService.errorMessage(MESSAGES.DataSaveError);
-        console.log(err);
       }
     });
   }
@@ -556,8 +564,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       return;
     }
     const HardwareDetails: PostHardware[] = [];
-    filteredRecords.forEach((r: any) => {
-      r.loginId = this.appService.loginId
+    filteredRecords.forEach((r) => {
+      console.log(r);
+
       if (r.customerSelected) {
         r.customerID = r.customerSelected?.CustomerID;
       }
@@ -572,10 +581,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         ExpectedQty: r.expectedQty,
         RecordStatus: r.recordStatus,
         Active: r.active,
-        LoginId: r.loginId
+        LoginId: this.appService.loginId
       }
       if (postHardware.RecordStatus == "I") {
-        // @ts-ignore
         postHardware.HardwareID = null;
       }
       HardwareDetails.push(postHardware)
@@ -606,13 +614,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     })
     this.apiService.postProcessMiscellaneous({ MiscGoodsDetails }).subscribe({
       next: (v: any) => {
-        console.log({ v });
         this.appService.successMessage(MESSAGES.DataSaved);
         this.fetchDataMiscellaneous();
       },
       error: (err) => {
         this.appService.errorMessage(MESSAGES.DataSaveError);
-        console.log(err);
       }
     });
   }
@@ -686,7 +692,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     // this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridDataHardware[3], 'Device');
   }
   onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc') {
-    console.log(e); console.log(dataItem);
     switch (e.item.text) {
       case 'Edit Data':
         dataItem.recordStatus = 'U'
@@ -818,9 +823,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     } else {
       this.isDisabledBehalfOfCusotmer = false
     }
-    if (this.customerTypeSelected?.customerTypeName) {
-      this.initCustomersList(this.customerTypeSelected?.customerTypeName)
-    }
   }
   onChangeCustomerName() {
     if (this.customerTypeSelected?.customerTypeName == 'Customer') {
@@ -828,14 +830,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.behalfOfCusotmerSelected = this.customerSelected;
     }
   }
-  private initCustomersList(entityType: EntityType) {
-    // @ts-ignore
-    this.customers = this.appService.masterData.entityMap[entityType]
-    // @ts-ignore
-    this.customerTextField = entityType + 'Name';
-    // @ts-ignore
-    this.customerValueField = entityType + 'ID';
-  }
+  valueNormalizerCustomer = (text: Observable<string>) => text.pipe(map((content: string) => {
+    const customer: Customer = { CustomerID: 9999, CustomerName: content };
+    return customer;
+  }));
+  valueNormalizerVendor = (text: Observable<string>) => text.pipe(map((content: string) => {
+    const vendor: Vendor = { VendorID: 9999, VendorName: content };
+    return vendor
+  }));
   onChangeHoldComments() {
     this.gridData[0].holdComments = this.gridData[0].holdComments.trim()
     if (this.gridData[0].holdComments) {
@@ -932,21 +934,5 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       formData.append('files', file.rawFile);
     });
     // Call API
-    this.callApi(formData);
-  }
-
-  callApi(formData: FormData): void {
-    // Replace with your API endpoint
-    const apiUrl = 'https://example.com/api/upload';
-    fetch(apiUrl, {
-      method: 'POST',
-      body: formData
-    })
-      .then(response => response.json())
-      .then(data => console.log(data))
-      .catch(error => console.error(error));
-  }
-  print() {
-    
   }
 }

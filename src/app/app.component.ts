@@ -28,7 +28,6 @@ export class AppComponent implements OnInit {
     { text: 'Reports', svgIcon: ICON.clipboardTextIcon, routerLink: '/reports' },
   ];
 
-
   constructor(public authService: AuthService, public appService: AppService, private router: Router, private apiService: ApiService) { }
 
   ngOnInit(): void {
@@ -43,7 +42,6 @@ export class AppComponent implements OnInit {
   }
 
   onSelect(ev: DrawerSelectEvent): void {
-    console.log(ev);
     if (ev.item.routerLink) {
       this.router.navigate([ev.item.routerLink]);
     }
@@ -57,8 +55,7 @@ export class AppComponent implements OnInit {
         if (masterData) {
           delete masterData.customer;
         }
-        this.appService.masterData = Object.assign(this.appService.masterData, masterData)
-        console.log(this.appService.masterData);
+        this.appService.masterData = Object.assign(this.appService.masterData, masterData);
       },
       error: (v) => {
         console.error(v)
@@ -76,7 +73,6 @@ export class AppComponent implements OnInit {
     }
     this.apiService.getEntitiesName(entityType).subscribe({
       next: (value: any) => {
-        console.log(value);
         this.appService.masterData.entityMap[entityType] = value;
       },
       error(err) { }
@@ -102,7 +98,6 @@ export class AppComponent implements OnInit {
     // getHardwareTypes
     this.apiService.getHardwareTypes().subscribe({
       next: (hardwareTypes: any) => {
-        console.log({ hardwareTypes });
         this.appService.hardwareTypes = hardwareTypes;
       }
     })

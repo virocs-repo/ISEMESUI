@@ -66,15 +66,12 @@ export class ReceivingComponent {
         // this.receipts = v;
         this.gridDataResult.data = v;
         this.gridDataResult.total = v.length
-        console.log(v);
-        console.log(v[0]);
       },
       error: (v: any) => { }
     });
   }
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;
-    console.log(event);
     this.fetchdata();
   }
   rowActionMenu: MenuItem[] = [
@@ -87,8 +84,6 @@ export class ReceivingComponent {
     // this.onSelectRowActionMenuV1({ item: { text: 'Edit Data' } } as any, this.gridDataResult.data[0]);
   }
   private onSelectRowActionMenuV1(e: ContextMenuSelectEvent, dataItem: Receipt) {
-    console.log(e);
-    console.log(dataItem);
     dataItem.holdComments = dataItem.holdComments || '';
     switch (e.item.text) {
       case 'Void Data':
@@ -103,12 +98,10 @@ export class ReceivingComponent {
         }
         this.apiService.postProcessReceipt(body).subscribe({
           next: (value) => {
-            console.log(value);
             this.appService.successMessage(MESSAGES.DataSaved);
             this.fetchdata()
           },
           error: (err) => {
-            console.log(err);
             this.appService.errorMessage(MESSAGES.DataSaveError);
           },
         })
@@ -136,7 +129,6 @@ export class ReceivingComponent {
   dataItemSelected: Receipt | undefined;
   selectedRowIndex: number = -1;
   onCellClick(e: CellClickEvent): void {
-    console.log(e);
     if (e.type === 'contextmenu') {
       const originalEvent = e.originalEvent;
       originalEvent.preventDefault();
@@ -151,8 +143,6 @@ export class ReceivingComponent {
       console.error('Selected dataItem is not set');
       return;
     }
-    console.log(e);
-    console.log(dataItem);
     dataItem.holdComments = dataItem.holdComments || '';
     switch (e.item.text) {
       case 'Void Data':
@@ -171,12 +161,10 @@ export class ReceivingComponent {
         }
         this.apiService.postProcessReceipt(body).subscribe({
           next: (value) => {
-            console.log(value);
             this.appService.successMessage(MESSAGES.DataSaved);
             this.fetchdata()
           },
           error: (err) => {
-            console.log(err);
             this.appService.errorMessage(MESSAGES.DataSaveError);
           },
         })
@@ -255,12 +243,10 @@ export class ReceivingComponent {
     const body = { ReceiptDetails: [postReceipt] }
     this.apiService.postProcessReceipt(body).subscribe({
       next: (v: any) => {
-        console.log({ v });
         this.appService.successMessage(MESSAGES.DataSaved);
       },
       error: (err) => {
         this.appService.errorMessage(MESSAGES.DataSaveError);
-        console.log(err);
       }
     });
   }

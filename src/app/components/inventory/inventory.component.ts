@@ -84,8 +84,10 @@ export class InventoryComponent implements OnInit {
     custVendorID=this.customerSelected?.CustomerID;
     if(this.customerTypeSelected?.customerTypeName =='Vendor')
     {
-      custVendorID=this.customerSelected?.VendorID;
-      behalfOfCustomerID=this.behalfOfCusotmerSelected?.VendorID;
+      // need to change logic
+      // custVendorID=this.customerSelected?.VendorID;
+      // behalfOfCustomerID=this.behalfOfCusotmerSelected?.VendorID;
+      behalfOfCustomerID = 1;// temp fix
     }
     else
     {

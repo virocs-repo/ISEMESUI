@@ -36,19 +36,32 @@
                 [valueField]="'customerTypeID'" [kendoDropDownFilter]="filterSettings" placeholder="Select"
                 rounded="large"></kendo-combobox>
             </kendo-label>
-            <kendo-label text="Customer / Vendor Name" class="k-w-full">
+            <kendo-label text="Customer" class="k-w-full" *ngIf="customerTypeSelected?.customerTypeName == 'Customer'">
               <b class="required-label"></b>
-              <kendo-combobox id="customer" [data]="customers" [(ngModel)]="customerSelected" [allowCustom]="true"
-                [textField]="customerTextField" [valueField]="customerValueField" placeholder="Select" rounded="large"
+              <kendo-combobox [data]="customers" [(ngModel)]="customerSelected" [textField]="'CustomerName'"
+                [valueField]="'CustomerID'" placeholder="Select" rounded="large" [kendoDropDownFilter]="filterSettings"
+                (ngModelChange)="onChangeCustomerName()" [class.invalid]="!receipt.isValid.customer"></kendo-combobox>
+            </kendo-label>
+            <kendo-label text="Vendor Name" class="k-w-full" *ngIf="customerTypeSelected?.customerTypeName == 'Vendor'">
+              <b class="required-label"></b>
+              <kendo-combobox [data]="vendors" [(ngModel)]="vendorSelected" [allowCustom]="true"
+                [textField]="'VendorName'" [valueField]="'VendorID'" placeholder="Select" rounded="large"
                 [kendoDropDownFilter]="filterSettings" (ngModelChange)="onChangeCustomerName()"
-                [class.invalid]="!receipt.isValid.customer"></kendo-combobox>
+                [valueNormalizer]="valueNormalizerVendor"></kendo-combobox>
             </kendo-label>
           </div>
           <div class="k-d-flex k-align-items-center k-gap-4">
-            <kendo-label text="Behalf of Customer" class="k-w-full">
-              <kendo-combobox [data]="customers" [(ngModel)]="behalfOfCusotmerSelected" [textField]="customerTextField"
-                [valueField]="customerValueField" placeholder="Select" rounded="large"
-                [kendoDropDownFilter]="filterSettings" [disabled]="isDisabledBehalfOfCusotmer"></kendo-combobox>
+            <kendo-label text="Behalf of Customer" class="k-w-full"
+              *ngIf="customerTypeSelected?.customerTypeName == 'Customer'">
+              <kendo-combobox [data]="customers" [(ngModel)]="behalfOfCusotmerSelected" [textField]="'CustomerName'"
+                [valueField]="'CustomerID'" placeholder="Select" rounded="large" [kendoDropDownFilter]="filterSettings"
+                [disabled]="isDisabledBehalfOfCusotmer"></kendo-combobox>
+            </kendo-label>
+            <kendo-label text="Behalf of Customer" class="k-w-full"
+              *ngIf="customerTypeSelected?.customerTypeName == 'Vendor'">
+              <kendo-combobox [data]="vendors" [(ngModel)]="behalfOfVendorSelected" [textField]="'VendorName'"
+                [valueField]="'VendorID'" placeholder="Select" rounded="large" [kendoDropDownFilter]="filterSettings"
+                [disabled]="isDisabledBehalfOfCusotmer"></kendo-combobox>
             </kendo-label>
             <kendo-label text="Receiving Facility" class="k-w-full">
               <b class="required-label"></b>
@@ -325,8 +338,8 @@
         <kendo-grid-column field="customerName" title="Customer">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
-              <kendo-combobox [data]="customers" [(ngModel)]="dataItem.customerSelected" [textField]="customerTextField"
-                [valueField]="customerValueField" [kendoDropDownFilter]="filterSettings" placeholder="Select"
+              <kendo-combobox [data]="customers" [(ngModel)]="dataItem.customerSelected" [textField]="'CustomerName'"
+                [valueField]="'CustomerID'" [kendoDropDownFilter]="filterSettings" placeholder="Select"
                 rounded="large"></kendo-combobox>
             </ng-container>
             <ng-template #showValue>

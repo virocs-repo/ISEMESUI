@@ -18,13 +18,8 @@ export interface DeliveryMode {
 }
 export interface Customer {
   CustomerID: number;
-  CustomerName?: string;
-  VendorID?: number;
-  VendorName?: string;
-  email: string;
-  phone: string;
+  CustomerName: string;
 }
-
 export interface Vendor {
   VendorID: number;
   VendorName: string;
@@ -99,22 +94,11 @@ export interface HardwareItem {
   customerName: string;
   hardwareTypeID: number;
 
-  recordStatus?: "I" | "U";
+  recordStatus: "I" | "U";
+  customerSelected: Customer | undefined
+  hardwareTypeSelected: HardwareType | undefined
 }
 
-export interface MiscellaneousGoods {
-  miscellaneousGoodsID: number | null;
-  receiptID: number;
-  inventoryID: number;
-  customerVendorID: number;
-  customerVendor: string;
-  serialNumber: string;
-  additionalInfo: string;
-  createdOn: Date | string;
-  modifiedOn: Date | string;
-  active: boolean;
-  recordStatus?: "I" | "U";
-}
 export const INIT_HARDWARE_ITEM: HardwareItem = {
   hardwareID: 0,
   receiptID: 0,
@@ -128,7 +112,22 @@ export const INIT_HARDWARE_ITEM: HardwareItem = {
   createdOn: '',
   modifiedOn: '',
   active: true,
-  recordStatus: 'I'
+  recordStatus: 'I',
+  customerSelected: undefined,
+  hardwareTypeSelected: undefined
+}
+export interface MiscellaneousGoods {
+  miscellaneousGoodsID: number | null;
+  receiptID: number;
+  inventoryID: number;
+  customerVendorID: number;
+  customerVendor: string;
+  serialNumber: string;
+  additionalInfo: string;
+  createdOn: Date | string;
+  modifiedOn: Date | string;
+  active: boolean;
+  recordStatus?: "I" | "U";
 }
 export const INIT_MISCELLANEOUS_GOODS: MiscellaneousGoods = {
   miscellaneousGoodsID: null,
@@ -305,7 +304,7 @@ export interface PostReceipt {
   VendorID: number | null;
   VendorName: string | null;
   CustomerTypeID: number;
-  CustomerVendorID: number;
+  CustomerVendorID: number | null;
   BehalfID: number;
   ReceivingFacilityID: number;
   DeliveryModeID: number;
@@ -373,7 +372,7 @@ export const INIT_POST_RECEIPT: PostReceipt = {
   TrackingNumber: null
 }
 export interface PostHardware {
-  HardwareID: number;
+  HardwareID: number | null;
   ReceiptID: number;
   CustomerID: number;
   HardwareTypeID: number;
