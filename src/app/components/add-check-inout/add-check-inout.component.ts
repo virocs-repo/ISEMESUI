@@ -105,34 +105,38 @@ export class AddCheckInoutComponent implements OnInit {
     const location = this.selectedLocation;
     const employeeIds = this.employeesSelected.map(emp => emp.EmployeeID); 
     const employeeNames = this.employeesSelected.map(emp => emp.EmployeeName).join(', ');
-    const existingRecordIndex = this.combinedData.findIndex(record => record.lotNum === lotNumber);
-
   
     this.apiService.getInventoryMove(lotNumber, location, employeeIds).subscribe({
       next: (res: any) => {
-        res.forEach((record: any) => {
-          record.employeeNames = employeeNames;
-        });
-        if (existingRecordIndex === -1) {
-          this.combinedData = [...this.combinedData, ...res];
-        } else {
-          this.combinedData[existingRecordIndex] = { ...this.combinedData[existingRecordIndex], ...res[0] };
-        }
+        const matchingRecords = res.filter((record: any) =>
+          record.lotNum === lotNumber &&
+          record.location === location
+        );
   
-        this.gridDataResult = {
-          data: this.combinedData,
-          total: this.combinedData.length
-        };
-        this.selectedLotNumber = '';
-        this.selectedLocation = 0;
-        this.employeesSelected = [];
+        if (matchingRecords.length > 0) {
+          matchingRecords.forEach((record: any) => {
+            record.employeeNames = employeeNames;
+          });
+  
+          this.combinedData = [...this.combinedData, ...matchingRecords];
+          this.gridDataResult = {
+            data: this.combinedData,
+            total: this.combinedData.length
+          };
+  
+          this.selectedLotNumber = '';
+          this.selectedLocation = 0;
+          this.employeesSelected = [];
+        } else {
+          this.appService.errorMessage('No matching record found with the selected Lot Number and Location.');
+        }
       },
       error: (err) => {
         console.error('Error fetching data:', err);
       }
     });
   }
-  
+    
   clearRequest(): void {
     this.gridDataResult = { data: [], total: 0 };
     this.selectedLocation = 0;
