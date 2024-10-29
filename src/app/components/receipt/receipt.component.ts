@@ -226,6 +226,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.gridDataDevice.forEach(d => {
           d.employeeSelected = this.employees.find(e => e.EmployeeID == d.lotOwnerID);
           d.countrySelected = this.countries.find(c => c.countryName == d.coo)
+          d.deviceTypeSelected = this.deviceTypes.find(dt => dt.deviceTypeID == d.deviceTypeID)
         })
       }
     });
@@ -473,15 +474,23 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     for (let index = 0; index < filteredRecords.length; index++) {
       const r = filteredRecords[index];
       const mandatoryFields = [
-        r.customerCount, r.labelCount, r.dateCode, r.countrySelected, r.deviceTypeSelected?.deviceTypeID
+        r.dateCode, r.countrySelected, r.deviceTypeSelected?.deviceTypeID
       ]
       const isValid = !mandatoryFields.some(v => !v);
-      if (!isValid) {
-        this.appService.errorMessage("All fields are required!")
-        return;
-      }
       if (!this.lotCategorySelected?.lotCategoryID) {
         this.appService.errorMessage("Please select Lot Category!")
+        return;
+      }
+      if (!r.deviceTypeSelected) {
+        this.appService.errorMessage("Please select Device Type!")
+        return;
+      }
+      if (!r.dateCode) {
+        this.appService.errorMessage("Date Code is required!")
+        return;
+      }
+      if (!r.countrySelected) {
+        this.appService.errorMessage("Please select COO!")
         return;
       }
       const postDevice: PostDevice = {
@@ -492,7 +501,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         Expedite: r.expedite,
         IQA: r.iqa,
         LotID: 1,
-        LotOwnerID: r.employeeSelected?.EmployeeID || 1,
+        LotOwnerID: r.employeeSelected?.EmployeeID || this.appService.loginId,
         LabelCount: r.labelCount,
         DateCode: r.dateCode,
         COO: r.countrySelected?.countryID || 1,
@@ -511,8 +520,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
       DeviceDetails.push(postDevice)
     }
-    const body = { DeviceDetails }
-    this.apiService.postProcessDevice(body).subscribe({
+    this.apiService.postProcessDevice({ DeviceDetails }).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
         this.fetchDataDevice();

@@ -1,8 +1,9 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CellClickEvent, ColumnMenuSettings, GridDataResult, PageChangeEvent, SelectableSettings } from '@progress/kendo-angular-grid';
 import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
+import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { ICON, MESSAGES, Receipt } from 'src/app/services/app.interface';
+import { CustomerType, ICON, MESSAGES, Receipt } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -10,22 +11,38 @@ import { AppService } from 'src/app/services/app.service';
   templateUrl: './shipping.component.html',
   styleUrls: ['./shipping.component.scss']
 })
-export class ShippingComponent {
+export class ShippingComponent implements OnDestroy {
   readonly ICON = ICON;
   gridDataResult: GridDataResult = { data: [], total: 0 };
   public pageSize = 10;
   public skip = 0;
+  readonly customerTypes: CustomerType[] = this.appService.masterData.customerType;
+  readonly subscription = new Subscription();
+
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
     this.fetchdata();
+    this.subscription.add(this.appService.eventEmitter.subscribe(v => {
+      this.init()
+    }))
+  }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+  private init() {
+    this.customerTypes.length = 0;
+    this.customerTypes.push(...this.appService.masterData.customerType)
   }
   private fetchdata() {
     this.apiService.getShippingData().subscribe({
       next: (v: any) => {
         this.gridDataResult.data = v;
         this.gridDataResult.total = v.length
-        console.log(v);
+        for (let index = 0; index < this.gridDataResult.data.length; index++) {
+          const element = this.gridDataResult.data[index];
+          element.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == element.customerID)
+        }
       },
       error: (v: any) => { }
     });
@@ -56,41 +73,6 @@ export class ShippingComponent {
     console.log(event);
     this.fetchdata();
   }
-  gridData4 = [
-    {
-      lot: 'LT453454',
-      Location: 'Shelf 10',
-      Person: 'Peter',
-      Qty: 100,
-      SystemUser: 'Eswar',
-      Status: 'Checked In'
-    },
-    {
-      lot: 'LT453465',
-      Location: 'Shelf 09',
-      Person: 'John',
-      Qty: 100,
-      SystemUser: 'surya',
-      Status: 'Checked Out'
-    },
-    {
-      lot: 'LT453476',
-      Location: 'Shelf 08',
-      Person: 'Sam',
-      Qty: 100,
-      SystemUser: 'Eswar',
-      Status: 'Checked In'
-    },
-    {
-      lot: 'LT453487',
-      Location: 'Shelf 07',
-      Person: 'Peter',
-      Qty: 100,
-      SystemUser: 'surya',
-      Status: 'Checked Out'
-    },
-  ];
-
   selectableSettings: SelectableSettings = {
     checkboxOnly: true,
     mode: 'multiple'
@@ -102,11 +84,6 @@ export class ShippingComponent {
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
-  public items: any[] = [
-    { text: 'Item1', icon: 'edit' },
-    { text: 'Item2', icon: 'delete' },
-    { text: 'Item3', icon: 'copy' }
-  ];
 
   isDialogOpen = false;
   openDialog() {

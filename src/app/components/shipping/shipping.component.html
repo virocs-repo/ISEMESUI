@@ -17,12 +17,19 @@
     class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
     [rowClass]="rowCallback">
     <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-    <kendo-grid-column field="lotNum" title="Lot#"></kendo-grid-column>
-    <kendo-grid-column field="customerVendor" title="Customer/Vendor"></kendo-grid-column>
+    <kendo-grid-column field="shipmentId" title="Shipment#"></kendo-grid-column>
+    <!-- <kendo-grid-column field="customerVendor" title="Customer/Vendor">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <kendo-combobox [data]="customerTypes" [(ngModel)]="dataItem.customerTypeSelected"
+          [textField]="'customerTypeName'" [valueField]="'customerTypeID'" placeholder="Select"
+          rounded="large"></kendo-combobox>
+      </ng-template>
+    </kendo-grid-column> -->
     <kendo-grid-column field="trackingNum" title="Tracking#"></kendo-grid-column>
-    <kendo-grid-column field="customer" title="Customer"></kendo-grid-column>
-    <kendo-grid-column field="address" title="Address"></kendo-grid-column>
-    <kendo-grid-column field="goodsType" title="Goods Type"></kendo-grid-column>
+    <kendo-grid-column field="customerInfo" title="Customer"></kendo-grid-column>
+    <kendo-grid-column field="senderInfo" title="Sender"></kendo-grid-column>
+    <kendo-grid-column field="location" title="Location"></kendo-grid-column>
+    <kendo-grid-column field="currentLocation" title="Current Location"></kendo-grid-column>
   </kendo-grid>
 </div>
 

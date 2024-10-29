@@ -161,6 +161,7 @@ export interface DeviceItem {
   lotOwner: string
   lotOwnerID: number
   iqa: boolean
+  deviceTypeID: number
   employeeSelected: Employee | undefined
   countrySelected: Country | undefined,
   deviceTypeSelected: DeviceType | undefined
@@ -184,6 +185,7 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   lotOwnerID: 0,
   iqa: false,
   recordStatus: 'I',
+  deviceTypeID: 0,
   employeeSelected: undefined,
   countrySelected: undefined,
   deviceTypeSelected: undefined
@@ -455,4 +457,18 @@ export interface LotCategory {
 export interface DeviceType {
   deviceTypeID: number,
   deviceTypeName: string
+}
+export interface PostShipment {
+  ShipmentId: number | null;
+  CustomerId: number;
+  ShipmentNum: string;
+  ShipmentCategoryId: number;
+  ShipmentLocation: string;
+  CurrentLocationId: number;
+  SenderInfo: string;
+  CustomerInfo: string;
+  ShipmentDetails: string;
+  RecordStatus: 'U' | "I";
+  IsActive: boolean;
+  LoginId: number;
 }

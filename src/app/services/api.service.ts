@@ -48,6 +48,9 @@ export class ApiService {
   postProcessMiscellaneous(body: unknown) {
     return this.httpClient.post(`${API}v1/ise/inventory/processMiscellaneousGoods`, body);
   }
+  postProcessShipment(body: unknown) {
+    return this.httpClient.post(`${API}v1/ise/shipment/processShipment`, body);
+  }
 
   // Receipt
   getEntitiesName(entityType: string) {
@@ -71,7 +74,7 @@ export class ApiService {
     return this.httpClient.get(`${API}v1/ise/shipment/shipment-details?customerID=${customerID}`);
   }
   // Customer Orders
-  getInventory(customerId: number, goodsType: string, lotNumber: string,customerordType:string) {
+  getInventory(customerId: number, goodsType: string, lotNumber: string, customerordType: string) {
     const url = `${API}v1/ise/inventory/customerorder/inventory?customerId=${customerId}&goodsType=${goodsType}&lotNumber=${lotNumber}&customerOrderType=${customerordType}`;
     return this.httpClient.get(url);
   }
@@ -96,7 +99,7 @@ export class ApiService {
     const url = `${API}v1/ise/inventory/customerorder/vieweditorder?customerOrderID=${customerOrderID}&editdata=${editdata}`;
     return this.httpClient.get(url);
   }
-//api/v1/ise/inventory/inventorydata/getdetails
+  //api/v1/ise/inventory/inventorydata/getdetails
   getinventorydata(customerTypeID?: number, customerVendorID?: number, behalfOfCustomerID?: number, receivingFacilityID?: number) {
 
     let params = new HttpParams();
@@ -114,7 +117,7 @@ export class ApiService {
     if (receivingFacilityID != null) {
       params = params.set('receivingFacilityID', receivingFacilityID.toString());
     }
-  
+
     // API call with only the non-null params
     return this.httpClient.get(`${API}v1/ise/inventory/inventorydata/getdetails`, { params });
   }
@@ -137,9 +140,9 @@ export class ApiService {
     const employeeIdsParam = employeeIds.map(String).join(','); // Convert number[] to string[] and join with commas
     const url = `${API}v1/ise/inventory/inventoryMove/getInventoryMoveStatus?lotNumber=${lotNumber}&location=${location}&employeeIds=${employeeIdsParam}`;
     return this.httpClient.get(url);
-}
+  }
 
-upsertInventoryMoveStatus(data: any, options: { responseType: 'text' }): Observable<any> {
-  return this.httpClient.post(`${API}v1/ise/inventory/inventoryMove/UpsertInventoryMoveStatus`, data, { responseType: options.responseType });
-} 
+  upsertInventoryMoveStatus(data: any, options: { responseType: 'text' }): Observable<any> {
+    return this.httpClient.post(`${API}v1/ise/inventory/inventoryMove/UpsertInventoryMoveStatus`, data, { responseType: options.responseType });
+  }
 }

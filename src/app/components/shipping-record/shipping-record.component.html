@@ -4,26 +4,26 @@
       <div class="k-d-flex k-gap-3 nested-cards">
         <div class="k-d-flex k-gap-2 k-flex-col k-flex-1">
           <div class="k-d-flex k-gap-3 flex-col-sm">
-            <kendo-label text="Shipping Location" class="k-w-full">
-              <kendo-combobox [data]="listItems" [(ngModel)]="selectedValues" placeholder="Location"
-                rounded="large"></kendo-combobox>
+            <kendo-label text="Shipping No#" class="k-w-full">
+              <kendo-textbox placeholder="Enter" rounded="large" [(ngModel)]="shipmentNumber">
+              </kendo-textbox>
             </kendo-label>
             <kendo-label text="Customer" class="k-w-full">
               <b class="required-label"></b>
-              <kendo-combobox [data]="customer" [(ngModel)]="customerSelected" [textField]="'customerName'"
-                [valueField]="'customerID'" placeholder="Select" rounded="large"></kendo-combobox>
+              <kendo-combobox [data]="customers" [(ngModel)]="customerSelected" [textField]="'CustomerName'"
+                [valueField]="'CustomerID'" placeholder="Select" rounded="large"></kendo-combobox>
             </kendo-label>
           </div>
           <div class="k-d-flex k-gap-3">
             <kendo-label text="Sender Information" class="k-w-full">
-              <kendo-textbox placeholder="Enter info" rounded="large" [(ngModel)]="senderInformation">
-              </kendo-textbox>
+              <kendo-textarea [(ngModel)]="senderInformation" [rows]="4" placeholder="Enter Info"
+                rounded="large"></kendo-textarea>
             </kendo-label>
           </div>
           <div class="k-d-flex k-gap-3" class="k-w-full">
-            <kendo-label text="Shipping No#">
-              <kendo-textbox placeholder="Enter text" rounded="large" [(ngModel)]="shippingNo">
-              </kendo-textbox>
+            <kendo-label text="Shipping Comments">
+              <kendo-textarea [(ngModel)]="shipmentDetails" [rows]="4" placeholder="Enter comments"
+                rounded="large"></kendo-textarea>
             </kendo-label>
           </div>
         </div>
@@ -37,14 +37,23 @@
             </kendo-label>
             <kendo-label text="Current Location" class="k-w-full">
               <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
-                [textField]="'receiptLocationName'" [valueField]="'receiptLocationID'" placeholder="Select"
+                [textField]="'receivingFacilityName'" [valueField]="'receivingFacilityID'" placeholder="Select"
                 rounded="large"></kendo-combobox>
             </kendo-label>
           </div>
           <div class="k-d-flex k-gap-3" class="k-w-full">
-            <kendo-label text="Customer">
+            <kendo-label text="Shipment">
+              <small class="k-ml-1">(Is Shipped?)</small>
+              <br>
+              <input type="checkbox" kendoCheckBox [(ngModel)]="isShipped"
+                style="border: 1px solid black;  border-radius: 4px;">
+            </kendo-label>
+          </div>
+          <div class="k-d-flex k-gap-3" class="k-w-full">
+            <kendo-label text="Customer Information">
               <b class="required-label"></b>
-              <kendo-textarea [rows]="4" placeholder="Enter text" rounded="large"></kendo-textarea>
+              <kendo-textarea [rows]="4" placeholder="Enter info" rounded="large"
+                [(ngModel)]="customerInformation"></kendo-textarea>
             </kendo-label>
           </div>
         </div>
@@ -75,6 +84,6 @@
     <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem"
       [disabled]="isDisabled.clearBtn">Clear</button>
     <button kendoButton type="button" rounded="full" themeColor="info" class="k-w-25" [disabled]="isDisabled.shipBtn"
-      (click)="ship()">Ship</button>
+      (click)="saveShipment()">Ship</button>
   </div>
 </div>

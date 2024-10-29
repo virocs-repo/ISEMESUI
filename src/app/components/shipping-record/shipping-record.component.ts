@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { GridDataResult } from '@progress/kendo-angular-grid';
 import { ApiService } from 'src/app/services/api.service';
-import { Customer, ReceiptLocation, ShipmentCategory, ShipmentDetails } from 'src/app/services/app.interface';
+import { Customer, MESSAGES, PostShipment, ReceiptLocation, ShipmentCategory, ShipmentDetails } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -10,15 +10,18 @@ import { AppService } from 'src/app/services/app.service';
   styleUrls: ['./shipping-record.component.scss']
 })
 export class ShippingRecordComponent {
-  customer: Customer[] = []
+  shipmentNumber: string = ''
+  readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
   customerSelected: Customer | undefined;
 
-  receiptLocation: ReceiptLocation[] = []
+  readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
   receiptLocationSelected: ReceiptLocation | undefined;
   senderInformation: string = ''
-  shippingNo: string = ''
   shipmentCategories: ShipmentCategory[] = []
   shipmentCategorySelected: ShipmentCategory | undefined;
+  isShipped = false
+  customerInformation = ''
+  shipmentDetails = ''
 
   gridDataResult: GridDataResult = { data: [], total: 0 };
   customerID: number = 0;
@@ -29,14 +32,12 @@ export class ShippingRecordComponent {
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
-    this.customer = this.appService.masterData.customer;
-    this.receiptLocation = this.appService.masterData.receiptLocation;
     this.shipmentCategories = this.appService.shipmentCategories
 
     if (this.appService.sharedData.shipping.isViewMode || this.appService.sharedData.shipping.isEditMode) {
       const dataItem = this.appService.sharedData.shipping.dataItem;
       console.log({ dataItem })
-      this.customerSelected = this.customer.find(c => c.CustomerID == dataItem.customerID);
+      this.customerSelected = this.customers.find(c => c.CustomerID == dataItem.customerID);
       // this.shipmentCategorySelected = this.shipmentCategories.find(c => c.shipmentCategoryID == dataItem.shipmentTypeID);
 
       this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.receiptLocationID);
@@ -63,13 +64,6 @@ export class ShippingRecordComponent {
       error: (v: any) => { }
     });
   }
-  ship() {
-    if (!this.customerSelected) {
-      this.appService.errorMessage('Please select customer');
-      return;
-    }
-    this.appService.errorMessage('Work in progess');
-  }
   // test data
   public selectedValues: string = "";
   public listItems: Array<string> = [
@@ -93,5 +87,37 @@ export class ShippingRecordComponent {
     setColumnPosition: { expanded: true },
     autoSizeColumn: true,
     autoSizeAllColumns: true,
+  }
+  saveShipment() {
+
+    if (!this.customerSelected) {
+      this.appService.errorMessage('Please select customer');
+      return;
+    }
+    const Shipment: PostShipment[] = []
+    const s: PostShipment = {
+      ShipmentId: 1,
+      CustomerId: this.customerSelected?.CustomerID || 1,
+      ShipmentNum: this.shipmentNumber,
+      ShipmentCategoryId: this.shipmentCategorySelected?.shipmentCategoryID || 1,
+      ShipmentLocation: '',
+      CurrentLocationId: this.receiptLocationSelected?.receivingFacilityID || 1,
+      SenderInfo: this.senderInformation,
+      CustomerInfo: this.customerInformation,
+      ShipmentDetails: this.shipmentDetails,
+      RecordStatus: "I",
+      IsActive: true,
+      LoginId: this.appService.loginId,
+    }
+
+    this.apiService.postProcessShipment(s).subscribe({
+      next: (v: any) => {
+        this.appService.successMessage(MESSAGES.DataSaved);
+        // this.fetchDataDevice();
+      },
+      error: (err) => {
+        this.appService.errorMessage(MESSAGES.DataSaveError);
+      }
+    });
   }
 }

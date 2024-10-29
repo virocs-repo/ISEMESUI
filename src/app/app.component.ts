@@ -56,6 +56,7 @@ export class AppComponent implements OnInit {
           delete masterData.customer;
         }
         this.appService.masterData = Object.assign(this.appService.masterData, masterData);
+        this.appService.eventEmitter.emit({ action: 'updates', data: { m: 'masterData' } })
       },
       error: (v) => {
         console.error(v)

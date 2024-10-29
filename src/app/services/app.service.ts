@@ -72,6 +72,7 @@ export class AppService {
   userData: UserData = { email: '', name: '', firstName: '' }
   shipmentCategories: Array<ShipmentCategory> = Array();
   shipmentTypes: Array<ShipmentType> = Array();
+  eventEmitter: EventEmitter<{ action: 'updates'; data: any }> = new EventEmitter()
 
   constructor(private notificationService: NotificationService) {
     const up = localStorage.getItem('UserPreferences');
@@ -217,6 +218,10 @@ export class AppService {
     if (element) {
       document.body.classList.add('print-mode');
       element.classList.add('printable-area');
+      const dialogElement: HTMLElement | null = document.querySelector('[role="dialog"]');
+      if (dialogElement) {
+        dialogElement.style.width = '100%'
+      }
       window.print();
       document.body.classList.remove('print-mode');
       element.classList.remove('printable-area');
