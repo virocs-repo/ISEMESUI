@@ -247,6 +247,20 @@ export interface ShipmentDetails {
   shipmentType: string;
   address: string;
 }
+export interface Shipment {
+  shipmentId: number;
+  customerID: number;
+  customer: null; // or you can define a Customer interface if needed
+  trackingNum: string;
+  location: string;
+  currentLocationID: number;
+  currentLocation: string;
+  senderInfo: string;
+  customerInfo: string;
+  modifiedOn: string; // or Date if you want to enforce date format
+  customerTypeSelected: CustomerType | undefined;
+  holdComments: string;
+}
 export interface CustomerOrderDetail {
   CustomerOrderDetailID: number | null;
   InventoryID: number;
