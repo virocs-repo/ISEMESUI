@@ -72,7 +72,8 @@ export class AppService {
   userData: UserData = { email: '', name: '', firstName: '' }
   shipmentCategories: Array<ShipmentCategory> = Array();
   shipmentTypes: Array<ShipmentType> = Array();
-  eventEmitter: EventEmitter<{ action: 'updates'; data: any }> = new EventEmitter()
+  eventEmitter: EventEmitter<{ action: 'updates' | 'refreshMasterData' | 'refreshVendors'; data: any }> = new EventEmitter();
+  refreshVendors = false;
 
   constructor(private notificationService: NotificationService) {
     const up = localStorage.getItem('UserPreferences');

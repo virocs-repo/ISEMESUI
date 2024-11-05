@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { AppService } from './services/app.service';
 import { DrawerItem, DrawerSelectEvent } from '@progress/kendo-angular-layout';
 import { Router } from '@angular/router';
 import { ApiService } from './services/api.service';
 import { Address, ICON } from './services/app.interface';
+import { Subscription } from 'rxjs';
 
 interface DrawerItemExtra extends DrawerItem {
   routerLink?: string;
@@ -15,7 +16,7 @@ interface DrawerItemExtra extends DrawerItem {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'play-k16';
 
   public expanded = false;
@@ -27,6 +28,7 @@ export class AppComponent implements OnInit {
     { text: 'Customer Order/Request', svgIcon: ICON.jsIcon, routerLink: '/customer-order' },
     { text: 'Reports', svgIcon: ICON.clipboardTextIcon, routerLink: '/reports' },
   ];
+  readonly subscription = new Subscription()
 
   constructor(public authService: AuthService, public appService: AppService, private router: Router, private apiService: ApiService) { }
 
@@ -35,6 +37,24 @@ export class AppComponent implements OnInit {
     this.getAllEntityData();
     this.getAddresses();
     this.fetchHardwareTypes();
+
+    this.subscription.add(this.appService.eventEmitter.subscribe((e) => {
+      console.log(e);
+
+      switch (e.action) {
+        case 'refreshVendors':
+          if (this.appService.refreshVendors) {
+            this.appService.refreshVendors = false;
+            this.getAllEntityData();
+          }
+          break;
+        default:
+          break;
+      }
+    }))
+  }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   public toggleDrawer(): void {
@@ -69,9 +89,9 @@ export class AppComponent implements OnInit {
     this.getEntity('Employee');
   }
   private getEntity(entityType: 'Customer' | 'Vendor' | 'Employee') {
-    if (this.appService.masterData.entityMap[entityType].length > 0) {
-      return;
-    }
+    // if (this.appService.masterData.entityMap[entityType].length > 0) {
+    //   return;
+    // }
     this.apiService.getEntitiesName(entityType).subscribe({
       next: (value: any) => {
         this.appService.masterData.entityMap[entityType] = value;

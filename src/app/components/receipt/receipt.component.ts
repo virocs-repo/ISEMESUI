@@ -358,6 +358,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     } else {
       if (this.vendorSelected) {
         if (this.vendorSelected?.VendorID == 9999) {
+          // due to new entry refresh masterdata
+          this.appService.refreshVendors = true;
           data.VendorName = this.vendorSelected.VendorName;
         } else {
           data.CustomerVendorID = this.vendorSelected?.VendorID || 1;

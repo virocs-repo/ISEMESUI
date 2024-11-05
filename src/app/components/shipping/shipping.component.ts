@@ -23,8 +23,10 @@ export class ShippingComponent implements OnDestroy {
 
   ngOnInit(): void {
     this.fetchdata();
-    this.subscription.add(this.appService.eventEmitter.subscribe(v => {
-      this.init()
+    this.subscription.add(this.appService.eventEmitter.subscribe(e => {
+      if (e.action == 'updates') {
+        this.init()
+      }
     }))
   }
   ngOnDestroy(): void {

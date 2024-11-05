@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CellClickEvent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
@@ -12,14 +12,12 @@ import { Subscription } from 'rxjs';
   templateUrl: './receiving.component.html',
   styleUrls: ['./receiving.component.scss']
 })
-export class ReceivingComponent {
+export class ReceivingComponent implements OnDestroy{
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
 
   readonly ICON = ICON;
   public pageSize = 10;
   public skip = 0;
-  // public receipts: Receipt[] = [];
-  // public gridData: Receipt[] = [];
   public gridDataResult: GridDataResult = { data: [], total: 0 };
 
   isAddButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == 'Receiving Add')?.active ?? false;
@@ -43,6 +41,7 @@ export class ReceivingComponent {
   closeDialog() {
     this.isDialogOpen = false;
     this.fetchdata(); // because there might be changes from dialog
+    this.appService.eventEmitter.emit({ action: 'refreshVendors', data: { m: 'masterData' } })
   }
   readonly subscription = new Subscription()
 
@@ -60,10 +59,12 @@ export class ReceivingComponent {
       }
     }))
   }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
   private fetchdata() {
     this.apiService.getReceiptdata().subscribe({
       next: (v: any) => {
-        // this.receipts = v;
         this.gridDataResult.data = v;
         this.gridDataResult.total = v.length
       },
