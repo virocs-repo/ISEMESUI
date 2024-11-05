@@ -218,15 +218,17 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       // this is for new form
       return;
     }
-    // dataItem.receiptID = 1;// for testing
     this.apiService.getDeviceData(dataItem.receiptID).subscribe({
       next: (v: any) => {
         this.gridDataDevice = v;
         // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Device')
-        this.gridDataDevice.forEach(d => {
+        this.gridDataDevice.forEach((d, index) => {
           d.employeeSelected = this.employees.find(e => e.EmployeeID == d.lotOwnerID);
           d.countrySelected = this.countries.find(c => c.countryName == d.coo)
           d.deviceTypeSelected = this.deviceTypes.find(dt => dt.deviceTypeID == d.deviceTypeID)
+          if (index == 0) {
+            this.lotCategorySelected = this.lotCategories.find(c => c.lotCategoryID == d.lotCategoryID)
+          }
         })
       }
     });
@@ -462,6 +464,18 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   // addDevice
   public gridDataDevice: DeviceItem[] = [];
   saveDevices() {
+    if (!this.lotCategorySelected?.lotCategoryID) {
+      this.appService.errorMessage("Please select Lot Category!")
+      return;
+    }
+    const lotCategoryIDSelected = this.lotCategorySelected.lotCategoryID;
+    this.gridDataDevice.forEach(d => {
+      if (d.lotCategoryID != lotCategoryIDSelected) {
+        d.lotCategoryID = lotCategoryIDSelected;
+        d.recordStatus = "U";
+      }
+    })
+
     if (!this.gridDataDevice || !this.gridDataDevice.length) {
       this.appService.infoMessage(MESSAGES.NoChanges)
     }
@@ -477,10 +491,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         r.dateCode, r.countrySelected, r.deviceTypeSelected?.deviceTypeID
       ]
       const isValid = !mandatoryFields.some(v => !v);
-      if (!this.lotCategorySelected?.lotCategoryID) {
-        this.appService.errorMessage("Please select Lot Category!")
-        return;
-      }
       if (!r.deviceTypeSelected) {
         this.appService.errorMessage("Please select Device Type!")
         return;

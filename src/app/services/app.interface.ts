@@ -165,6 +165,7 @@ export interface DeviceItem {
   employeeSelected: Employee | undefined
   countrySelected: Country | undefined,
   deviceTypeSelected: DeviceType | undefined
+  lotCategoryID: number
 }
 export const INIT_DEVICE_ITEM: DeviceItem = {
   deviceID: 0,
@@ -188,7 +189,8 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   deviceTypeID: 0,
   employeeSelected: undefined,
   countrySelected: undefined,
-  deviceTypeSelected: undefined
+  deviceTypeSelected: undefined,
+  lotCategoryID: 0
 };
 export interface JSON_Object {
   [key: string]: any
