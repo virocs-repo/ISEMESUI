@@ -108,35 +108,57 @@ export class AddCheckInoutComponent implements OnInit {
   
     this.apiService.getInventoryMove(lotNumber, location, employeeIds).subscribe({
       next: (res: any) => {
-        const matchingRecords = res.filter((record: any) =>
-          record.lotNum === lotNumber &&
-          record.location === location
-        );
+        const matchingRecords = res.filter((record: any) => record.lotNum === lotNumber);
   
-        if (matchingRecords.length > 0) {
-          matchingRecords.forEach((record: any) => {
-            record.employeeNames = employeeNames;
+        matchingRecords.forEach((record: any) => {
+
+          if (!record.location) {
+            record.location = location;
+          }
+          if (record.status === 'Checked Out') {
+            record.location = location;
+          }
+          record.employeeNames = employeeNames;
+        });
+  
+        this.combinedData = [...this.combinedData, ...matchingRecords];
+        this.gridDataResult = {
+          data: this.combinedData,
+          total: this.combinedData.length
+        };
+  
+        this.selectedLotNumber = '';
+        this.selectedLocation = 0;
+        this.employeesSelected = [];
+  
+        const updateData = {
+          InvMovementDetails: matchingRecords.map((record: any) => ({
+            InventoryID: record.inventoryId,
+            Location: record.location,
+            StatusID: record.status === 'Checked In' ? 1 : 2,
+            ReceivedFromID: record.receivedFromId,
+            LoginId: record.loginId
+          }))
+        };
+  
+        console.log('Sending update data to API:', updateData);
+        this.apiService.upsertInventoryMoveStatus(updateData, { responseType: 'text' })
+          .subscribe({
+            next: (response) => {
+              console.log('Inventory move status updated successfully:', response);
+              this.loadGridData();
+            },
+            error: (err) => {
+              console.error('Error updating inventory move status:', err);
+            }
           });
-  
-          this.combinedData = [...this.combinedData, ...matchingRecords];
-          this.gridDataResult = {
-            data: this.combinedData,
-            total: this.combinedData.length
-          };
-  
-          this.selectedLotNumber = '';
-          this.selectedLocation = 0;
-          this.employeesSelected = [];
-        } else {
-          this.appService.errorMessage('No matching record found with the selected Lot Number and Location.');
-        }
       },
       error: (err) => {
         console.error('Error fetching data:', err);
       }
     });
   }
-    
+
   clearRequest(): void {
     this.gridDataResult = { data: [], total: 0 };
     this.selectedLocation = 0;
@@ -162,12 +184,15 @@ export class AddCheckInoutComponent implements OnInit {
       InvMovementDetails: selectedRows.map((record: any) => {
         const newStatus = record.status === 'Checked In' ? 'Checked Out' : 'Checked In';
         record.status = newStatus;
+        if (!record.location) {
+          record.location = this.selectedLocation; 
+        }
   
         return {
           InventoryID: record.inventoryId,
-          LocationID: record.locationId,
+          Location: record.location,
           StatusID: newStatus === 'Checked In' ? 1 : 2,
-          ReceivedFromID: record.receivedFromId, 
+          ReceivedFromID: record.receivedFromId,
           LoginId: record.loginId
         };
       })
