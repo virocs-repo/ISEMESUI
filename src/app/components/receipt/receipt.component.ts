@@ -1,6 +1,7 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
+import { PDFExportComponent } from '@progress/kendo-angular-pdf-export';
 import { FileRestrictions } from '@progress/kendo-angular-upload';
 import { map, Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
@@ -952,5 +953,15 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       formData.append('files', file.rawFile);
     });
     // Call API
+  }
+  // print
+  @ViewChild('pdfExport', { static: true }) pdfExportComponent!: PDFExportComponent;
+  printSection() {
+    this.pdfExportComponent.paperSize = 'A4'
+    this.pdfExportComponent.landscape = true;
+    this.pdfExportComponent.scale = 0.6;
+    this.pdfExportComponent.margin = '0.9cm';
+    this.pdfExportComponent.fileName = 'Receipt ' + new Date().toLocaleString();
+    this.pdfExportComponent.saveAs();
   }
 }

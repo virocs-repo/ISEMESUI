@@ -12,7 +12,7 @@ import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { IconsModule, SVGIconModule } from '@progress/kendo-angular-icons';
 import { ContextMenuModule, MenuModule } from '@progress/kendo-angular-menu';
 import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
-import { GridModule } from '@progress/kendo-angular-grid';
+import { GridModule, PDFService } from '@progress/kendo-angular-grid';
 import { LabelModule } from '@progress/kendo-angular-label';
 import { AutoCompleteModule, ComboBoxModule, MultiSelectModule } from '@progress/kendo-angular-dropdowns';
 import { DialogsModule } from '@progress/kendo-angular-dialog';
@@ -48,6 +48,8 @@ import { OnoffHoldComponent } from './components/onoff-hold/onoff-hold.component
 import { HoldDetailsComponent } from './components/hold-details/hold-details.component';
 import { ApiInterceptor } from './services/api.interceptor';
 import { NotificationModule } from '@progress/kendo-angular-notification';
+import { PDFExportModule } from '@progress/kendo-angular-pdf-export';
+
 
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1;
@@ -145,7 +147,8 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     SVGIconModule,
     DrawerModule,
     NotificationModule,
-    MultiSelectModule
+    MultiSelectModule,
+    PDFExportModule
   ],
   providers: [
     {
@@ -174,6 +177,7 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     MsalService,
     MsalGuard,
     MsalBroadcastService,
+    PDFService,
     { provide: HTTP_INTERCEPTORS, useClass: ApiInterceptor, multi: true }
   ],
   bootstrap: [AppComponent, MsalRedirectComponent]
