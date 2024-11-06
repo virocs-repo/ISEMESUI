@@ -58,11 +58,15 @@
     [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
     [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" (cellClick)="onCellClick($event)" class="inventory-grid" [rowClass]="rowCallback" >
    
+    
     <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <span [class.link]="c.isLink" (click)="onLinkClick(c.field, dataItem)" >{{ dataItem[c.field] }}</span>
-      </ng-template>
+
+
     </kendo-grid-column>
+
+  <ng-template kendoGridCellTemplate let-dataItem>
+
+   </ng-template>
    <!--  <kendo-grid-column [width]="120">
       <ng-template kendoGridCellTemplate let-dataItem>
         <button kendoButton (click)="onButtonClick()" [svgIcon]="eyeIcon" fillMode="flat" title="Browse"

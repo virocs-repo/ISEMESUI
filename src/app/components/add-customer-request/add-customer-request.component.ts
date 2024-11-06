@@ -27,6 +27,8 @@ export class AddCustomerRequestComponent implements OnInit {
   deviceTypeSelected: string = 'All';  // Variable to hold the selected device type
   lotNumber: string | null = null;  // Lot number
   lotNumbers: string[] = [];
+
+    allLotNumbers: string[] = []; // F
   // below code can be changed/removed
   selectedRows: any[] = []; 
   selectedcheckBoxs: Set<number> = new Set<number>();
@@ -204,7 +206,7 @@ export class AddCustomerRequestComponent implements OnInit {
 
   // Function to load data from the API based on selected filters
   onSearch(): void {
-    const customerId = this.customerSelected?.CustomerID || 1;
+    const customerId = this.customerSelected?.CustomerID || null;
     const goodsType = this.deviceTypeSelected || 'All';  // Fallback to 'All' if undefined
     const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set
     const customerordType=this.customerOrderTypeSelected;
@@ -268,15 +270,23 @@ export class AddCustomerRequestComponent implements OnInit {
 
 
   onFilter(value: string): void {
-    // This method is automatically triggered when the user types in the textbox
-    // You can implement additional filtering logic here if needed
-    this.lotNumbers = this.lotNumbers.filter(lot => lot.toLowerCase().includes(value.toLowerCase()));
-  }
+    // Check if the filter input is empty
+    if (value) {
+        // Filter the allLotNumbers list based on the input
+        this.lotNumbers = this.allLotNumbers.filter(lot =>
+            lot.toLowerCase().includes(value.toLowerCase())
+        );
+    } else {
+        // Reset to the full list when the input is cleared
+        this.lotNumbers = [...this.allLotNumbers];
+    }
+}
   getLotNumbers(): void {
     
     this.apiService.getallLotsdata().subscribe({
       next: (v: any) => {
-        this.lotNumbers = v;
+        this.allLotNumbers = v; // Store the full list
+        this.lotNumbers = [...this.allLotNumbers]; 
       },
       error: (v: any) => { }
     });

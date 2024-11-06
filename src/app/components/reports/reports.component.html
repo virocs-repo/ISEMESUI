@@ -3,11 +3,18 @@
     <div class="k-d-flex k-flex-col k-gap-2 k-ml-auto">
         <div class="k-d-flex k-gap-3">
             <kendo-label text="Customer / Vendor" class="k-w-full k-font-size-sm">
-                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
+                <kendo-combobox [data]="customerTypes" [(ngModel)]="customerTypeSelected"
+                    (ngModelChange)="onChangeCustomerType()" [textField]="'customerTypeName'" [valueField]="'customerTypeID'"
+                    placeholder="Select" rounded="large"></kendo-combobox>
+        
             </kendo-label>
             <kendo-label text="Customer" class="k-w-full k-font-size-sm">
-                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
-            </kendo-label>
+             
+              <kendo-combobox id="customer" [data]="customer" [(ngModel)]="customerSelected"
+                    [textField]="customerTextField" [valueField]="customerValueField" placeholder="Select" rounded="large"
+                    ></kendo-combobox>
+        
+          </kendo-label>
             <kendo-label text="Device" class="k-w-full k-font-size-sm">
                 <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
             </kendo-label>
@@ -32,22 +39,30 @@
     </div>
 </div>
 <div class="k-m-10" *ngIf="!false">
-    <kendo-grid [kendoGridBinding]="gridData" [selectable]="selectableSettings" [columnMenu]="columnMenuSettings"
-        [filterable]="true" [sortable]="true" [resizable]="true">
-        <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-        <kendo-grid-column field="ProductID" title="ID"> </kendo-grid-column>
-        <kendo-grid-column field="ProductName" title="Name"> </kendo-grid-column>
-        <kendo-grid-column field="Category.CategoryName" title="Category">
-        </kendo-grid-column>
-        <kendo-grid-column field="UnitPrice" title="Price">
-        </kendo-grid-column>
-        <kendo-grid-column [width]="60">
-            <ng-template kendoGridCellTemplate let-dataItem>
-                <button kendoButton [svgIcon]="ICON.moreVerticalIcon" #rowActionMenu></button>
-                <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
-            </ng-template>
-        </kendo-grid-column>
-    </kendo-grid>
+
+    <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [columnMenu]="columnMenuSettings"
+    [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
+    [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" (cellClick)="onCellClick($event)" class="inventory-grid" [rowClass]="rowCallback" >
+   
+    <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title">
+
+
+    </kendo-grid-column>
+
+  <ng-template kendoGridCellTemplate let-dataItem>
+
+   </ng-template>
+   <!--  <kendo-grid-column [width]="120">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <button kendoButton (click)="onButtonClick()" [svgIcon]="eyeIcon" fillMode="flat" title="Browse"
+          themeColor="tertiary"></button>
+        <button kendoButton (click)="onButtonClick()" [svgIcon]="pencilIcon" fillMode="flat" title="Browse"
+          themeColor="tertiary"></button>
+        <button kendoButton [svgIcon]="ICON.moreVerticalIcon" #rowActionMenu></button>
+        <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
+      </ng-template>
+    </kendo-grid-column> -->
+  </kendo-grid>
 </div>
 <div class="k-d-flex k-gap-3 k-mt-3 k-mx-10">
     <button kendoButton type="button" themeColor="error" class="k-ml-auto k-w-24">Clear</button>
