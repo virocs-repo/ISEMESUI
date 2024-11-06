@@ -139,7 +139,7 @@ export class AddCheckInoutComponent implements OnInit {
             Location: record.location,
             StatusID: record.status === 'Checked In' ? 1 : 2,
             ReceivedFromID: record.receivedFromId,
-            LoginId: record.loginId
+            LoginId: 1
           }))
         };
   
