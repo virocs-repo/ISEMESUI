@@ -1,4 +1,5 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { GridComponent, GridDataResult } from '@progress/kendo-angular-grid';
 import { ContextMenuComponent } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
@@ -35,6 +36,7 @@ export class AddCheckInoutComponent implements OnInit {
     { field: 'employeeNames', title: 'Person', visible: true },
     { field: 'qty', title: 'Qty', visible: true },
     { field: 'systemUser', title: 'System User', visible: true },
+    { field: 'goodsType', title: 'Goods Type', visible: true},
     { field: 'status', title: 'Status', visible: true },
     { field: 'receivedFrom', title: 'Received From', visible: false },
     { field: 'inventoryId', title: 'Inventory ID', visible: false},

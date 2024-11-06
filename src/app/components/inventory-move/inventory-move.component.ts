@@ -30,6 +30,7 @@ export class InventoryMoveComponent implements OnInit{
     { field: 'person', title: 'Person' },
     { field: 'qty', title: 'Qty' },
     { field: 'systemUser', title: 'System User' },
+    { field: 'goodsType', title: 'Goods Type' },
     { field: 'status', title: 'Status' },
   ];
   selectableSettings: any = {
