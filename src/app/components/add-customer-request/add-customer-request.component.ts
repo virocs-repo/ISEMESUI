@@ -21,7 +21,7 @@ export class AddCustomerRequestComponent implements OnInit {
   gridDataResult: GridDataResult = { data: [], total: 0 };
   customer: Customer[] = []
   customerSelected: Customer | undefined;
-  deviceTypes: string[] = ['Device', 'Hardware', 'All'];  // Array to hold device types
+  deviceTypes: string[] = ['Device', 'Hardware','Miscellaneous Goods','All'];  // Array to hold device types
   customerOrderTypes: string[] = ['Finished Goods', 'WIP', 'Scrap']; 
   customerOrderTypeSelected:string='Finished Goods';
   deviceTypeSelected: string = 'All';  // Variable to hold the selected device type

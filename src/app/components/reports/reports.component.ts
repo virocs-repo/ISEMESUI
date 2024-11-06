@@ -17,8 +17,14 @@ export class ReportsComponent  implements OnInit {
   public skip = 0;
   public gridDataResult: GridDataResult = { data: [], total: 0 };
   selectedRowIndex: number = -1;
-  customerTypes: CustomerType[] = []
+  customerTypes: CustomerType[] = [];
+  lotNumber: string | null = null;  // Lot number
+  lotNumbers: string[] = [];
+  allLotNumbers: string[] = [];
+  deviceTypes: string[] = ['Device', 'Hardware','Miscellaneous Goods','All']; 
+  deviceTypeSelected: string = 'All';  // Variable to hold the selected device type
   customerTypeSelected: CustomerType | undefined;
+
   customer: Customer[] = []
   customerSelected: Customer | undefined;
     customerTextField: 'CustomerName' | 'VendorName' = 'CustomerName'
@@ -58,9 +64,32 @@ export class ReportsComponent  implements OnInit {
     this.customerTypes = this.appService.masterData.customerType;
     this.customer = this.appService.masterData.entityMap.Customer;
     this.loadGridData();
+    this.getLotNumbers();
+   
 
   }
-
+  onFilter(value: string): void {
+    // Check if the filter input is empty
+    if (value) {
+        // Filter the allLotNumbers list based on the input
+        this.lotNumbers = this.allLotNumbers.filter(lot =>
+            lot.toLowerCase().includes(value.toLowerCase())
+        );
+    } else {
+        // Reset to the full list when the input is cleared
+        this.lotNumbers = [...this.allLotNumbers];
+    }
+}
+  getLotNumbers(): void {
+    
+    this.apiService.getallLotsdata().subscribe({
+      next: (v: any) => {
+        this.allLotNumbers = v; // Store the full list
+        this.lotNumbers = [...this.allLotNumbers]; 
+      },
+      error: (v: any) => { }
+    });
+  }
   onChangeCustomerType() {
     console.log(this.customerTypeSelected)
     console.log(this)

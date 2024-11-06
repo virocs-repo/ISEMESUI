@@ -15,12 +15,22 @@
                     ></kendo-combobox>
         
           </kendo-label>
-            <kendo-label text="Device" class="k-w-full k-font-size-sm">
-                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
-            </kendo-label>
-            <kendo-label text="#Lot" class="k-w-full k-font-size-sm">
-                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
-            </kendo-label>
+           <!-- Device Type ComboBox -->
+           <kendo-label text="Device Type" class="k-w-full k-font-size-sm">
+            <kendo-combobox [data]="deviceTypes" placeholder="Device" rounded="large" [(ngModel)]="deviceTypeSelected">
+            </kendo-combobox>
+           
+        </kendo-label>
+        <kendo-label text="Lot #" class="k-w-full k-font-size-sm">
+            <kendo-autocomplete
+              placeholder="#Lot Number"
+              rounded="large"
+              [(ngModel)]="lotNumber"
+              [data]="lotNumbers"
+              [filterable]="true"
+              (filterChange)="onFilter($event)">
+            </kendo-autocomplete>
+          </kendo-label>
         </div>
         <div class="k-d-flex k-gap-3">
             <kendo-label text="Status" class="k-w-full k-font-size-sm">
