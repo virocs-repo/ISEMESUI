@@ -253,10 +253,12 @@ export interface Shipment {
   shipmentId: number;
   customerID: number;
   customer: null; // or you can define a Customer interface if needed
-  trackingNum: string;
+  shipmentNum: string;
   location: string;
+  shipmentCategoryID: number;
   currentLocationID: number;
   currentLocation: string;
+  shipmentLocation: string;
   senderInfo: string;
   customerInfo: string;
   modifiedOn: string; // or Date if you want to enforce date format

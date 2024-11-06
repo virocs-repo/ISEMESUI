@@ -76,6 +76,12 @@ export class ApiService {
   getInventoryLocations() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryMove/getInventoryLocation`);
   }
+  getShipmentInventories(customerID: number) {
+    return this.httpClient.get(`${API}v1/ise/shipment/shipmentInventory?customerID=${customerID}`);
+  }
+  getShipmentLineItems(shipmentID: number) {
+    return this.httpClient.get(`${API}v1/ise/shipment/shipmentLineItem?shipmentID=${shipmentID}`);
+  }
   // Customer Orders
   getInventory(customerId: number | null, goodsType: string, lotNumber: string, customerordType: string) {
     const params = new URLSearchParams();

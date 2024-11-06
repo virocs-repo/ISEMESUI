@@ -30,14 +30,19 @@ export class ShippingRecordComponent implements OnDestroy {
     shipBtn: false,
     clearBtn: false
   }
+  isEditMode = false;
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
     this.shipmentCategories = this.appService.shipmentCategories
 
     if (this.appService.sharedData.shipping.isViewMode || this.appService.sharedData.shipping.isEditMode) {
+      this.isEditMode = true;
       const dataItem: Shipment = this.appService.sharedData.shipping.dataItem;
       console.log({ dataItem })
+      this.shipmentNumber = dataItem.shipmentNum;
+      this.shipmentCategorySelected = this.shipmentCategories.find(c => c.shipmentCategoryID == dataItem.shipmentCategoryID)
+      this.shipmentLocation = dataItem.shipmentLocation
       this.customerInformation = dataItem.customerInfo;
       this.senderInformation = dataItem.senderInfo
 
@@ -46,6 +51,7 @@ export class ShippingRecordComponent implements OnDestroy {
 
       this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.currentLocationID);
       this.customerID = dataItem.customerID;
+      this.fetchShipmentLineItems(dataItem.shipmentId);
       this.fetchData();
     }
     if (this.appService.sharedData.shipping.isViewMode) {
@@ -56,6 +62,14 @@ export class ShippingRecordComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.appService.sharedData.shipping.isEditMode = false
     this.appService.sharedData.shipping.isViewMode = false
+  }
+  private fetchShipmentLineItems(shipmentID: number) {
+    this.apiService.getShipmentLineItems(shipmentID).subscribe({
+      next: (v: any) => {
+        console.log({ v });
+        this.rebuildTable(v);
+      }
+    })
   }
   private fetchData() {
     if (!this.customerID) {
@@ -71,6 +85,24 @@ export class ShippingRecordComponent implements OnDestroy {
       },
       error: (v: any) => { }
     });
+  }
+  private rebuildTable(list: any[]) {
+    if (list) {
+      list.forEach((a: any) => {
+        a.shipmentTypeSelected = this.appService.shipmentTypes.find(s => s.shipmentTypeID == a.shipmentTypeID)
+      })
+      this.gridDataResult.data = list;
+      this.gridDataResult.total = list.length;
+    }
+  }
+  onChangeCustomer() {
+    if (this.customerSelected) {
+      this.apiService.getShipmentInventories(this.customerSelected.CustomerID).subscribe({
+        next: (v: any) => {
+          this.rebuildTable(v);
+        }
+      });
+    }
   }
   // test data
   public selectedValues: string = "";
