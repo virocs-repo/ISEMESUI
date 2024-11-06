@@ -473,7 +473,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
     const lotCategoryIDSelected = this.lotCategorySelected.lotCategoryID;
     this.gridDataDevice.forEach(d => {
-      if (d.lotCategoryID != lotCategoryIDSelected) {
+      if (d.lotCategoryID != 0 && d.lotCategoryID != lotCategoryIDSelected) {
         d.lotCategoryID = lotCategoryIDSelected;
         d.recordStatus = "U";
       }

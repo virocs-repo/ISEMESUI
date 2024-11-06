@@ -11,6 +11,7 @@ import { AppService } from 'src/app/services/app.service';
 })
 export class ShippingRecordComponent implements OnDestroy {
   shipmentNumber: string = ''
+  shipmentLocation: string = ''
   readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
   customerSelected: Customer | undefined;
 
@@ -107,7 +108,7 @@ export class ShippingRecordComponent implements OnDestroy {
       CustomerId: this.customerSelected?.CustomerID || 1,
       ShipmentNum: this.shipmentNumber,
       ShipmentCategoryId: this.shipmentCategorySelected?.shipmentCategoryID || 1,
-      ShipmentLocation: '',
+      ShipmentLocation: this.shipmentLocation,
       CurrentLocationId: this.receiptLocationSelected?.receivingFacilityID || 1,
       SenderInfo: this.senderInformation,
       CustomerInfo: this.customerInformation,

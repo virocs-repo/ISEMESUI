@@ -41,12 +41,17 @@
                 rounded="large"></kendo-combobox>
             </kendo-label>
           </div>
-          <div class="k-d-flex k-gap-3" class="k-w-full">
-            <kendo-label text="Shipment">
+
+          <div class="k-d-flex k-gap-3 flex-col-sm">
+            <kendo-label text="Shipment" class="k-w-full">
               <small class="k-ml-1">(Is Shipped?)</small>
               <br>
               <input type="checkbox" kendoCheckBox [(ngModel)]="isShipped"
                 style="border: 1px solid black;  border-radius: 4px;">
+            </kendo-label>
+            <kendo-label text="Shipment Location" class="k-w-full">
+              <kendo-textbox placeholder="Enter" rounded="large" [(ngModel)]="shipmentLocation">
+              </kendo-textbox>
             </kendo-label>
           </div>
           <div class="k-d-flex k-gap-3" class="k-w-full">

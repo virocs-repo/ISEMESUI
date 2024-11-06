@@ -73,22 +73,25 @@ export class ApiService {
   getShipmentDetails(customerID: number) {
     return this.httpClient.get(`${API}v1/ise/shipment/shipment-details?customerID=${customerID}`);
   }
+  getInventoryLocations() {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryMove/getInventoryLocation`);
+  }
   // Customer Orders
   getInventory(customerId: number | null, goodsType: string, lotNumber: string, customerordType: string) {
     const params = new URLSearchParams();
 
     // Add each parameter only if it has a value
     if (goodsType) {
-        params.append("goodsType", goodsType);
+      params.append("goodsType", goodsType);
     }
     if (lotNumber) {
-        params.append("lotNumber", lotNumber);
+      params.append("lotNumber", lotNumber);
     }
     if (customerordType) {
-        params.append("customerOrderType", customerordType);
+      params.append("customerOrderType", customerordType);
     }
     if (customerId !== null && customerId !== undefined) {
-        params.append("customerId", customerId.toString());
+      params.append("customerId", customerId.toString());
     }
 
     const url = `${API}v1/ise/inventory/customerorder/inventory?${params.toString()}`;
