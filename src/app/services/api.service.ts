@@ -156,6 +156,37 @@ export class ApiService {
   getallinventoryreportdata() {
     return this.httpClient.get(`${API}v1/ise/inventory/report/getallreport`);
   }
+  getinventoryreportdata(customerTypeID?: number, customerVendorID?: number, goodsType?: string, lotNumber?: string,fromDate?:Date ,toDate?:Date) {
+
+    let params = new HttpParams();
+
+    if (customerTypeID != null) {
+        params = params.set('customerTypeID', customerTypeID.toString());
+    }
+    if (customerVendorID != null) {
+        params = params.set('customerVendorID', customerVendorID.toString());
+    }
+    if (goodsType != null) {
+        params = params.set('goodsType', goodsType);
+    }
+    if (lotNumber != null) {
+        params = params.set('lotNumber', lotNumber);
+    }
+    if (fromDate != null) {
+        params = params.set('fromDate', this.formatDate(fromDate));
+    }
+    if (toDate != null) {
+        params = params.set('toDate', this.formatDate(toDate));
+    }
+
+    return this.httpClient.get(`${API}v1/ise/inventory/report/getallreport`, { params });
+  }
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
   //Inventory Move
   getAllInventoryMoveStatus() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryMove/getallInventoryMoveStatus`);

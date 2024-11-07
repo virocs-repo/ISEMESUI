@@ -58,6 +58,10 @@ export class ReportsComponent  implements OnInit {
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
+  format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker
+  fromDate: Date | null = null;  // Variable to store the selected 'from' date
+  toDate: Date | null = null;    // Variable to store the selected 'to' date
+
   constructor(private apiService: ApiService,public appService: AppService) { }
 
   ngOnInit(): void {
@@ -142,14 +146,28 @@ export class ReportsComponent  implements OnInit {
       'highlighted-row': context.index === this.selectedRowIndex
     };
   }
-  isDialogOpen1 = false;
-  isDialogOpen2 = false;
+  onSearch(): void {
+    this.skip = 0;
 
-  isDialogOpen = false;
-  openDialog() {
-    this.isDialogOpen = true;
-  }
-  closeDialog() {
-    this.isDialogOpen = false;
-  }
+    const custTypeID = this.customerTypeSelected?.customerTypeID ?? undefined;
+    const custVendorID = this.customerSelected?.CustomerID ?? undefined;
+    const devicetype = this.deviceTypeSelected ?? undefined;
+    const lotno = this.lotNumber ?? undefined;
+    
+    // Pass Date objects directly
+    const from_date = this.fromDate ?? undefined;
+    const to_date = this.toDate ?? undefined;
+
+    this.apiService.getinventoryreportdata(custTypeID, custVendorID, devicetype, lotno, from_date, to_date).subscribe({
+        next: (v: any) => {
+            this.gridDataResult.data = v;
+            this.gridDataResult.total = v.length;
+        },
+        error: (error: any) => {
+            console.error('Error fetching inventory report data:', error);
+        }
+    });
+}
+
+
 }

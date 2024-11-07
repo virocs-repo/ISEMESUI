@@ -31,21 +31,19 @@
               (filterChange)="onFilter($event)">
             </kendo-autocomplete>
           </kendo-label>
+          <kendo-label text="From Date" class="k-w-full k-font-size-sm">
+          
+            <kendo-datepicker [format]="format" [(value)]="fromDate" ></kendo-datepicker>
+        </kendo-label>
+        <kendo-label text="To Date" class="k-w-full k-font-size-sm">
+
+            <kendo-datepicker [format]="format" [(value)]="toDate" ></kendo-datepicker>
+        </kendo-label>
+        <div class="search-box k-ml-auto" style="padding-right: 90px;">
+            <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="onSearch()">Search</button> 
+            </div>
         </div>
-        <div class="k-d-flex k-gap-3">
-            <kendo-label text="Status" class="k-w-full k-font-size-sm">
-                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
-            </kendo-label>
-            <kendo-label text="Date Code" class="k-w-full k-font-size-sm">
-                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
-            </kendo-label>
-            <kendo-label text="From Date" class="k-w-full k-font-size-sm">
-                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
-            </kendo-label>
-            <kendo-label text="To Date" class="k-w-full k-font-size-sm">
-                <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
-            </kendo-label>
-        </div>
+        
     </div>
 </div>
 <div class="k-m-10" *ngIf="!false">
