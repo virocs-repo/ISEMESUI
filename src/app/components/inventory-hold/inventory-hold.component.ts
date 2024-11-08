@@ -1,0 +1,132 @@
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { CellClickEvent, GridDataResult, PageChangeEvent } from "@progress/kendo-angular-grid";
+import { ContextMenuComponent, ContextMenuSelectEvent } from "@progress/kendo-angular-menu";
+import { ApiService } from "src/app/services/api.service";
+import { ICON } from 'src/app/services/app.interface';
+
+@Component({
+  selector: 'app-inventory-hold',
+  templateUrl: './inventory-hold.component.html',
+  styleUrls: ['./inventory-hold.component.scss']
+})
+export class InventoryHoldComponent implements OnInit{
+  @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
+  readonly ICON = ICON
+  public pageSize = 10;
+  public skip = 0;
+  private originalData: any[] = []; 
+ selectedRowIndex: number = -1;
+ public selectedRowData: any;
+   public gridDataResult: GridDataResult = { data: [], total: 0 };
+  public gridFilter: any = {
+    logic: 'and', 
+    filters: []
+  };
+  isEditButtonEnabled: boolean=true;
+  public searchTerm: string = '';
+  public columnData: any[] = [
+    { field: 'lotNum', title: 'Lot#/Serial#' },
+    { field: 'location', title: 'Location' },
+    { field: 'person', title: 'Person' },
+    { field: 'qty', title: 'Qty' },
+    { field: 'systemUser', title: 'System User' },
+    { field: 'goodsType', title: 'Goods Type' },
+    { field: 'status', title: 'Status' },
+  ];
+  public items: any[] = [
+    { text: 'Item1', icon: 'edit' },
+    { text: 'Item2', icon: 'delete' },
+    { text: 'Item3', icon: 'copy' }
+  ];
+  selectableSettings: any = {
+    checkboxOnly: true,
+    mode: 'single',
+  }
+  columnMenuSettings: any = {
+    lock: false,
+    stick: false,
+    setColumnPosition: { expanded: true },
+    autoSizeColumn: true,
+    autoSizeAllColumns: true,
+  }
+
+  constructor(private apiService: ApiService) { }
+  
+  ngOnInit(): void {
+    this.loadGridData();
+  }
+
+  loadGridData() {
+
+    this.apiService.getAllInventoryMoveStatus().subscribe({
+      next: (v: any) => {
+        this.originalData = v;
+        this.pageData();
+        console.log(v);
+      },
+      error: (v: any) => { }
+    });
+  }
+
+  pageData(): void {
+    const filteredData = this.filterData(this.originalData);
+    const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+    this.gridDataResult.data = filteredData;
+    this.gridDataResult.total = filteredData.length; 
+    }
+
+  filterData(data: any[]): any[] {
+    if (!this.searchTerm) {
+      return data;
+    }
+    const term = this.searchTerm.toLowerCase();
+    return data.filter(item =>
+      Object.values(item).some(val => String(val).toLowerCase().includes(term))
+    );
+  }
+
+  onSearch(): void {
+    this.skip = 0;
+    this.pageData();
+  }
+
+  pageChange(event: PageChangeEvent): void {
+    this.skip = event.skip;
+    this.pageData();
+  }
+
+  isDialogOpen = false;
+  openDialog() {
+    this.isDialogOpen = true;
+  }
+  closeDialog() {
+    this.isDialogOpen = false;
+    this.loadGridData();
+
+  }
+  dataItemSelected:any;
+  onCellClick(e: CellClickEvent): void {
+    if (e.type === 'contextmenu') {
+      const originalEvent = e.originalEvent;
+      originalEvent.preventDefault();
+      this.dataItemSelected = e.dataItem;
+      this.selectedRowIndex = e.rowIndex;
+      this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
+    }
+  }
+
+  onSelectRowActionMenu(e: ContextMenuSelectEvent): void {
+  }
+
+  rowCallback = (context: any) => {
+    return {
+      'highlighted-row': context.index === this.selectedRowIndex
+    };
+  }
+}
+
+
+
+
+
+

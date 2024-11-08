@@ -49,6 +49,7 @@ import { HoldDetailsComponent } from './components/hold-details/hold-details.com
 import { ApiInterceptor } from './services/api.interceptor';
 import { NotificationModule } from '@progress/kendo-angular-notification';
 import { PDFExportModule } from '@progress/kendo-angular-pdf-export';
+import { InventoryHoldComponent } from './components/inventory-hold/inventory-hold.component';
 
 
 
@@ -117,7 +118,8 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     InventoryDetailsComponent,
     AddCustomerRequestComponent,
     OnoffHoldComponent,
-    HoldDetailsComponent
+    HoldDetailsComponent,
+    InventoryHoldComponent
   ],
   imports: [
     BrowserModule,
