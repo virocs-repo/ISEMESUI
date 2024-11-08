@@ -12,9 +12,11 @@ import { ReceiptComponent } from './components/receipt/receipt.component';
 import { authGuard } from './guards/auth.guard';
 import { LoginComponent } from './components/login/login.component';
 import { BrowserUtils } from '@azure/msal-browser';
+import { InventoryHoldComponent } from './components/inventory-hold/inventory-hold.component';
 
 const routes: Routes = [
   { path: 'receiving', component: ReceivingComponent, canActivate: [authGuard] },
+  { path: 'inventory-hold', component: InventoryHoldComponent, canActivate: [authGuard] },
   { path: 'inventory-move', component: InventoryMoveComponent, canActivate: [authGuard] },
   { path: 'shipping', component: ShippingComponent, canActivate: [authGuard] },
   { path: 'inventory', component: InventoryComponent, canActivate: [authGuard] },
