@@ -21,13 +21,10 @@
         class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
 
         <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title"></kendo-grid-column>
-        <ng-template kendoGridCellTemplate let-dataItem>
-            <button kendoButton [svgIcon]="ICON.moreVerticalIcon" #rowActionMenu></button>
-                <kendo-contextmenu showOn="click" [target]="rowActionMenu" [items]="items"></kendo-contextmenu>
-        </ng-template>
+        <ng-template kendoGridCellTemplate let-dataItem></ng-template>
     </kendo-grid>
 </div>
-<kendo-contextmenu (select)="onSelectRowActionMenu($event)" size="large"
+<kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
   #gridContextMenu></kendo-contextmenu>
 <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'68%'" class="dialog-round">
     <div class="k-d-flex k-align-items-center k-mb-3">

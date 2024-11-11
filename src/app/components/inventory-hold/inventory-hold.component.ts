@@ -33,10 +33,10 @@ export class InventoryHoldComponent implements OnInit{
     { field: 'goodsType', title: 'Goods Type' },
     { field: 'status', title: 'Status' },
   ];
-  public items: any[] = [
-    { text: 'Item1', icon: 'edit' },
-    { text: 'Item2', icon: 'delete' },
-    { text: 'Item3', icon: 'copy' }
+  public rowActionMenu: any[] = [
+    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
+    { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
+    { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon }
   ];
   selectableSettings: any = {
     checkboxOnly: true,
