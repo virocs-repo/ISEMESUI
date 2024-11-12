@@ -3,8 +3,9 @@ import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progres
 import { Customer, CustomerType, EntityType, ICON } from 'src/app/services/app.interface';
 import { eyeIcon, folderIcon, pencilIcon, SVGIcon } from '@progress/kendo-svg-icons';
 import { ApiService } from 'src/app/services/api.service';
-import { CellClickEvent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
+import { CellClickEvent, GridComponent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { AppService } from 'src/app/services/app.service';
+
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
@@ -12,10 +13,12 @@ import { AppService } from 'src/app/services/app.service';
 })
 export class ReportsComponent  implements OnInit {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
+  @ViewChild('grid', { static: false }) grid!: GridComponent; // Reference to Kendo Grid
   readonly ICON = ICON
   public pageSize = 10;
   public skip = 0;
   public gridDataResult: GridDataResult = { data: [], total: 0 };
+  public originalPageable: any;
   selectedRowIndex: number = -1;
   customerTypes: CustomerType[] = [];
   lotNumber: string | null = null;  // Lot number
@@ -168,6 +171,8 @@ export class ReportsComponent  implements OnInit {
         }
     });
 }
-
+exportToExcel(): void {
+  this.grid.saveAsExcel();
+}
 
 }

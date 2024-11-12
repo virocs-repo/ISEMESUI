@@ -48,10 +48,11 @@
 </div>
 <div class="k-m-10" *ngIf="!false">
 
-    <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [columnMenu]="columnMenuSettings"
+    <kendo-grid  #grid [kendoGridBinding]="gridDataResult.data"
+   [selectable]="selectableSettings" [columnMenu]="columnMenuSettings"
     [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
     [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" (cellClick)="onCellClick($event)" class="inventory-grid" [rowClass]="rowCallback" >
-   
+    <kendo-grid-excel fileName="InventoryReport.xlsx"></kendo-grid-excel>
     <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title">
 
 
@@ -74,5 +75,5 @@
 </div>
 <div class="k-d-flex k-gap-3 k-mt-3 k-mx-10">
     <button kendoButton type="button" themeColor="error" class="k-ml-auto k-w-24">Clear</button>
-    <button kendoButton type="button" themeColor="info" class="k-w-24">Export</button>
+    <button kendoButton type="button" themeColor="info" class="k-w-24"  (click)="exportToExcel()" >Export</button>
 </div>
