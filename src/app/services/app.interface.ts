@@ -248,6 +248,8 @@ export interface ShipmentDetails {
   shipmentTypeID: number;
   shipmentType: string;
   address: string;
+  shipmentTypeSelected?: ShipmentType
+  selected?: boolean
 }
 export interface Shipment {
   shipmentId: number;
@@ -476,17 +478,21 @@ export interface DeviceType {
   deviceTypeID: number,
   deviceTypeName: string
 }
+export interface ShipmentDetails2 {
+  ShipmentLineItemID: number | null,
+  InventoryID: number
+}
 export interface PostShipment {
-  ShipmentId: number | null;
-  CustomerId: number;
+  ShipmentID: number | null;
+  CustomerID: number;
   ShipmentNum: string;
-  ShipmentCategoryId: number;
+  ShipmentCategoryID: number;
   ShipmentLocation: string;
-  CurrentLocationId: number;
+  CurrentLocationID: number;
   SenderInfo: string;
   CustomerInfo: string;
-  ShipmentDetails: string;
+  ShipmentDetails: Array<ShipmentDetails2>;
   RecordStatus: 'U' | "I";
-  IsActive: boolean;
+  Active: boolean;
   LoginId: number;
 }

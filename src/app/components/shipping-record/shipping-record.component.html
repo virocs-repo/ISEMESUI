@@ -23,7 +23,7 @@
           </div>
           <div class="k-d-flex k-gap-3" class="k-w-full">
             <kendo-label text="Shipping Comments">
-              <kendo-textarea [(ngModel)]="shipmentDetails" [rows]="4" placeholder="Enter comments"
+              <kendo-textarea [(ngModel)]="shipmentDetailsTxt" [rows]="4" placeholder="Enter comments"
                 rounded="large"></kendo-textarea>
             </kendo-label>
           </div>
@@ -62,12 +62,15 @@
                 [(ngModel)]="customerInformation"></kendo-textarea>
             </kendo-label>
           </div>
+          <kendo-button type="button" rounded="large" themeColor="dark"
+            (click)="autoFillTestValues()">AutoFillTestValues</kendo-button>
         </div>
       </div>
     </kendo-card-body>
   </kendo-card>
   <div class="grid-container k-my-6">
     <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
+      [kendoGridSelectBy]="'inventoryID'" [(selectedKeys)]="gridSelectedKeys"
       class="bold-column-header cell-border-none">
       <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
       <kendo-grid-column field="customerLotNum" title="Customer Lot#"></kendo-grid-column>
