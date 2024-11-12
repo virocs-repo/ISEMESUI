@@ -17,7 +17,7 @@
         [pageSize]="pageSize"
         [skip]="skip" 
         [pageable]="true" 
-        (pageChange)="pageChange($event)" 
+        (pageChange)=" pageChange($event)" 
         class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
 
         <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title"></kendo-grid-column>
