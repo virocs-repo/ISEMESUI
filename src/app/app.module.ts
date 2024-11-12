@@ -50,6 +50,9 @@ import { ApiInterceptor } from './services/api.interceptor';
 import { NotificationModule } from '@progress/kendo-angular-notification';
 import { PDFExportModule } from '@progress/kendo-angular-pdf-export';
 import { InventoryHoldComponent } from './components/inventory-hold/inventory-hold.component';
+import { AddHoldComponent } from './components/add-hold/add-hold.component';
+import { AnotherShippingComponent } from './components/another-shipping/another-shipping.component';
+import { CombinedLotComponent } from './components/combined-lot/combined-lot.component';
 
 
 
@@ -119,7 +122,10 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     AddCustomerRequestComponent,
     OnoffHoldComponent,
     HoldDetailsComponent,
-    InventoryHoldComponent
+    InventoryHoldComponent,
+    AddHoldComponent,
+    AnotherShippingComponent,
+    CombinedLotComponent
   ],
   imports: [
     BrowserModule,

@@ -13,6 +13,8 @@ import { authGuard } from './guards/auth.guard';
 import { LoginComponent } from './components/login/login.component';
 import { BrowserUtils } from '@azure/msal-browser';
 import { InventoryHoldComponent } from './components/inventory-hold/inventory-hold.component';
+import { AnotherShippingComponent } from './components/another-shipping/another-shipping.component';
+import { CombinedLotComponent } from './components/combined-lot/combined-lot.component';
 
 const routes: Routes = [
   { path: 'receiving', component: ReceivingComponent, canActivate: [authGuard] },
@@ -22,6 +24,8 @@ const routes: Routes = [
   { path: 'inventory', component: InventoryComponent, canActivate: [authGuard] },
   { path: 'customer-order', component: CustomerOrderComponent, canActivate: [authGuard] },
   { path: 'reports', component: ReportsComponent, canActivate: [authGuard] },
+  { path: 'another-shipping', component: AnotherShippingComponent, canActivate: [authGuard] },
+  { path: 'combined-lot', component: CombinedLotComponent, canActivate: [authGuard] },
   { path: 'receipt', component: ReceiptComponent, canActivate: [authGuard] },
   { path: 'add-device', component: AddDeviceComponent, canActivate: [authGuard] },
   { path: 'home', component: HomeComponent, canActivate: [authGuard] },
