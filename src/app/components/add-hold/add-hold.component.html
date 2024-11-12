@@ -1,0 +1,44 @@
+<div class="k-m-3 k-overflow-y-auto" style="height: 50vh;">
+    <kendo-card-body class="card-flex">
+      <div class="k-d-flex k-align-items-end k-gap-3">
+        <kendo-label text="Lot Number" class="k-w-full">
+          <kendo-autocomplete text="Lot Number" [data]="filteredLotNumbers" [(ngModel)]="selectedLotNumber" placeholder="#Lot Number" rounded="large" (filterChange)="onLotNumberFilter($event)" [suggest]="true"></kendo-autocomplete>
+        </kendo-label>
+        <kendo-label text="Location" class="k-w-full">
+          <kendo-combobox [data]="uniqueLocations" [(ngModel)]="selectedLocation" placeholder="Location" rounded="large"></kendo-combobox>
+        </kendo-label>
+        <kendo-label text="ReciviedFrom" class="k-w-full">
+          <kendo-multiselect [data]="employees" [(ngModel)]="employeesSelected" [textField]="'EmployeeName'" [valueField]="'EmployeeID'" placeholder="Select" rounded="large"></kendo-multiselect>
+        </kendo-label>
+      </div>
+    </kendo-card-body>
+    <div class="k-my-6">
+      <kendo-grid 
+      class="k-my-3" 
+      [data]="gridData"
+      [kendoGridBinding]="gridDataResult.data" 
+      [height]="300" 
+      [pageSize]="pageSize"
+      [pageable]="true" 
+      [selectable]="{ mode: 'multiple' }" 
+      (selectionChange)="onSelectionChange($event)">
+      <kendo-grid-column >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <button kendoButton (click)="editRow(dataItem)" themeColor="info">
+            Edit
+          </button>
+        </ng-template>
+      </kendo-grid-column>
+        <kendo-grid-column *ngFor="let c of columnData" [hidden]="!c.visible" [field]="c.field" [title]="c.title"></kendo-grid-column>
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <button kendoButton [svgIcon]="ICON.moreVerticalIcon" #rowActionMenu></button>
+          <kendo-contextmenu showOn="click" [target]="rowActionMenu"></kendo-contextmenu>
+        </ng-template>
+      </kendo-grid>
+    </div>
+  
+    <div class="k-d-flex k-gap-3 k-mt-3">
+      <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem" (click)="clearRequest()">Cancel</button>
+    </div>
+  </div>
+  

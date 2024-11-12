@@ -15,6 +15,9 @@ export class InventoryHoldComponent implements OnInit{
   public pageSize = 10;
   public skip = 0;
   private originalData: any[] = []; 
+  public isEditMode: boolean = true;
+  public addCustomerMode : boolean = false; 
+  public customerOrd: any = {}; 
  selectedRowIndex: number = -1;
  public selectedRowData: any;
    public gridDataResult: GridDataResult = { data: [], total: 0 };
@@ -34,7 +37,6 @@ export class InventoryHoldComponent implements OnInit{
     { field: 'status', title: 'Status' },
   ];
   public rowActionMenu: any[] = [
-    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
     { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
     { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon }
   ];
@@ -116,17 +118,26 @@ export class InventoryHoldComponent implements OnInit{
   }
 
   onSelectRowActionMenu(e: ContextMenuSelectEvent): void {
-  }
+    const dataItem = this.dataItemSelected;
+    switch (e.item.text) {
+        case 'View Data':
+            this.isEditMode = false;
+            this.customerOrd = { ...dataItem };
+            this.openDialog();
+            break;
+        case 'Edit Data':
+            this.isEditMode = true; 
+            this.customerOrd = { ...dataItem };
+            this.openDialog();
+            break;
+        default:
+            break;
+    }
+}
 
   rowCallback = (context: any) => {
     return {
       'highlighted-row': context.index === this.selectedRowIndex
     };
   }
-}
-
-
-
-
-
-
+}  

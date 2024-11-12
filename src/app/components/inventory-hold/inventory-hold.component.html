@@ -1,5 +1,5 @@
 <div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header">
-    <h2>Checkin/Checkout</h2>
+    <h2>Hold</h2>
     <div class="search-box k-ml-auto">
         <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
         <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input" rounded="full" (input)="onSearch()"/>
@@ -17,7 +17,7 @@
         [pageSize]="pageSize"
         [skip]="skip" 
         [pageable]="true" 
-        (pageChange)="pageChange($event)" 
+        (pageChange)=" pageChange($event)" 
         class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
 
         <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title"></kendo-grid-column>
@@ -28,7 +28,9 @@
   #gridContextMenu></kendo-contextmenu>
 <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'68%'" class="dialog-round">
     <div class="k-d-flex k-align-items-center k-mb-3">
-        
+        <h2 class="k-m-0">On / Off Hold</h2>
+        <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+            (click)="closeDialog()"></button>
     </div>
-    
+    <app-add-hold [selectedRowData]="customerOrd" (cancel)="closeDialog()"></app-add-hold>
 </kendo-dialog>
