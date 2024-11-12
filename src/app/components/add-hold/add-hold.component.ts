@@ -151,6 +151,7 @@ export class AddHoldComponent implements OnInit {
     }
   }
 
+  
   clearRequest(): void {
     this.gridDataResult = { data: [], total: 0 };
     this.selectedLocation = 0;
