@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
-import { GridDataResult } from '@progress/kendo-angular-grid';
+import { GridDataResult, SelectableSettings } from '@progress/kendo-angular-grid';
 import { ApiService } from 'src/app/services/api.service';
-import { Customer, MESSAGES, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails } from 'src/app/services/app.interface';
+import { Customer, MESSAGES, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2 } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -22,7 +22,6 @@ export class ShippingRecordComponent implements OnDestroy {
   shipmentCategorySelected: ShipmentCategory | undefined;
   isShipped = false
   customerInformation = ''
-  shipmentDetails = ''
 
   gridDataResult: GridDataResult = { data: [], total: 0 };
   customerID: number = 0;
@@ -65,34 +64,34 @@ export class ShippingRecordComponent implements OnDestroy {
   }
   private fetchShipmentLineItems(shipmentID: number) {
     this.apiService.getShipmentLineItems(shipmentID).subscribe({
-      next: (v: any) => {
-        console.log({ v });
-        this.rebuildTable(v);
+      next: (shipmentDetails: ShipmentDetails[] | any) => {
+        this.rebuildTable(shipmentDetails);
       }
     })
   }
+  shipmentDetails: ShipmentDetails[] = []
+  shipmentDetailsTxt = ''
   private fetchData() {
     if (!this.customerID) {
       return;
     }
     this.apiService.getShipmentDetails(this.customerID).subscribe({
       next: (shipmentDetails: ShipmentDetails[] | any) => {
-        this.gridDataResult.data = shipmentDetails;
-        this.gridDataResult.data.forEach(v => {
-          v.shipmentTypeSelected = this.appService.shipmentTypes.find(s => s.shipmentTypeID == v.shipmentTypeID);
-        })
-        console.log({ shipmentDetails });
-      },
-      error: (v: any) => { }
+        this.rebuildTable(shipmentDetails);
+      }
     });
   }
-  private rebuildTable(list: any[]) {
-    if (list) {
-      list.forEach((a: any) => {
+  private rebuildTable(shipmentDetails: ShipmentDetails[] | any) {
+    if (shipmentDetails) {
+      shipmentDetails.forEach((a: ShipmentDetails) => {
         a.shipmentTypeSelected = this.appService.shipmentTypes.find(s => s.shipmentTypeID == a.shipmentTypeID)
+        a.selected = true;
       })
-      this.gridDataResult.data = list;
-      this.gridDataResult.total = list.length;
+      this.gridDataResult.data = shipmentDetails;
+      this.gridDataResult.total = shipmentDetails.length;
+      this.shipmentDetails = shipmentDetails;
+      this.gridSelectedKeys = this.shipmentDetails.map(d => d.inventoryID);
+      console.log({ shipmentDetails });
     }
   }
   onChangeCustomer() {
@@ -104,20 +103,8 @@ export class ShippingRecordComponent implements OnDestroy {
       });
     }
   }
-  // test data
-  public selectedValues: string = "";
-  public listItems: Array<string> = [
-    "Baseball",
-    "Basketball",
-    "Cricket",
-    "Field Hockey",
-    "Football",
-    "Table Tennis",
-    "Tennis",
-    "Volleyball",
-  ];
-
-  selectableSettings: any = {
+  selectableSettings: SelectableSettings = {
+    enabled: true,
     checkboxOnly: true,
     mode: 'multiple'
   }
@@ -128,26 +115,41 @@ export class ShippingRecordComponent implements OnDestroy {
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
+  autoFillTestValues() {
+    this.customerSelected = this.customers[0]
+    this.shipmentNumber = '123'
+    this.shipmentCategorySelected = this.shipmentCategories[0]
+    this.shipmentLocation = 'shipmentLocation'
+    this.receiptLocationSelected = this.receiptLocation[0]
+    this.senderInformation = 'senderInformation'
+    this.customerInformation = 'customerInformation'
+  }
+  gridSelectedKeys: number[] = [];
   saveShipment() {
-
     if (!this.customerSelected) {
       this.appService.errorMessage('Please select customer');
       return;
     }
     const Shipment: PostShipment[] = []
     const s: PostShipment = {
-      ShipmentId: 1,
-      CustomerId: this.customerSelected?.CustomerID || 1,
+      ShipmentID: null,
+      CustomerID: this.customerSelected?.CustomerID || 1,
       ShipmentNum: this.shipmentNumber,
-      ShipmentCategoryId: this.shipmentCategorySelected?.shipmentCategoryID || 1,
+      ShipmentCategoryID: this.shipmentCategorySelected?.shipmentCategoryID || 1,
       ShipmentLocation: this.shipmentLocation,
-      CurrentLocationId: this.receiptLocationSelected?.receivingFacilityID || 1,
+      CurrentLocationID: this.receiptLocationSelected?.receivingFacilityID || 1,
       SenderInfo: this.senderInformation,
       CustomerInfo: this.customerInformation,
-      ShipmentDetails: this.shipmentDetails,
+      ShipmentDetails: this.getSelectedShipmentDetails(),
       RecordStatus: "I",
-      IsActive: true,
+      Active: true,
       LoginId: this.appService.loginId,
+    }
+    if (this.isEditMode) {
+      const dataItem: Shipment = this.appService.sharedData.shipping.dataItem;
+      s.ShipmentID = dataItem.shipmentId
+      s.RecordStatus = "U";
+      console.log({ dataItem })
     }
 
     this.apiService.postProcessShipment(s).subscribe({
@@ -159,5 +161,14 @@ export class ShippingRecordComponent implements OnDestroy {
         this.appService.errorMessage(MESSAGES.DataSaveError);
       }
     });
+  }
+  private getSelectedShipmentDetails(): Array<ShipmentDetails2> {
+    let selectedShipmentDetails: Array<ShipmentDetails2> = [];
+    this.shipmentDetails.forEach(d => {
+      if (this.gridSelectedKeys.includes(d.inventoryID)) {
+        selectedShipmentDetails.push({ ShipmentLineItemID: d.shipmentLineItemID, InventoryID: d.inventoryID })
+      }
+    })
+    return selectedShipmentDetails;
   }
 }

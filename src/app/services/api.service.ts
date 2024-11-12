@@ -153,10 +153,10 @@ export class ApiService {
     return this.httpClient.get(`${API}v1/ise/inventory/customerorder/invlotnums`);
   }
 
-  getallinventoryreportdata() {
-    return this.httpClient.get(`${API}v1/ise/inventory/report/getallreport`);
+  getallinventoryreportdata() : Observable<any[]>{
+    return this.httpClient.get<any[]>(`${API}v1/ise/inventory/report/getallreport`);
   }
-  getinventoryreportdata(customerTypeID?: number, customerVendorID?: number, goodsType?: string, lotNumber?: string,fromDate?:Date ,toDate?:Date) {
+  getinventoryreportdata(customerTypeID?: number, customerVendorID?: number, goodsType?: string, lotNumber?: string,fromDate?:Date ,toDate?:Date): Observable<any[]> {
 
     let params = new HttpParams();
 
@@ -179,7 +179,7 @@ export class ApiService {
         params = params.set('toDate', this.formatDate(toDate));
     }
 
-    return this.httpClient.get(`${API}v1/ise/inventory/report/getallreport`, { params });
+    return this.httpClient.get<any[]>(`${API}v1/ise/inventory/report/getallreport`, { params });
   }
   private formatDate(date: Date): string {
     const year = date.getFullYear();

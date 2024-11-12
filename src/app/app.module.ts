@@ -12,7 +12,7 @@ import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { IconsModule, SVGIconModule } from '@progress/kendo-angular-icons';
 import { ContextMenuModule, MenuModule } from '@progress/kendo-angular-menu';
 import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
-import { GridModule, PDFService } from '@progress/kendo-angular-grid';
+import { ExcelModule, GridModule, PDFService } from '@progress/kendo-angular-grid';
 import { LabelModule } from '@progress/kendo-angular-label';
 import { AutoCompleteModule, ComboBoxModule, MultiSelectModule } from '@progress/kendo-angular-dropdowns';
 import { DialogsModule } from '@progress/kendo-angular-dialog';
@@ -50,6 +50,7 @@ import { ApiInterceptor } from './services/api.interceptor';
 import { NotificationModule } from '@progress/kendo-angular-notification';
 import { PDFExportModule } from '@progress/kendo-angular-pdf-export';
 import { InventoryHoldComponent } from './components/inventory-hold/inventory-hold.component';
+import { ExcelExportModule } from '@progress/kendo-angular-excel-export';
 import { AddHoldComponent } from './components/add-hold/add-hold.component';
 import { AnotherShippingComponent } from './components/another-shipping/another-shipping.component';
 import { CombinedLotComponent } from './components/combined-lot/combined-lot.component';
@@ -156,7 +157,9 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     DrawerModule,
     NotificationModule,
     MultiSelectModule,
-    PDFExportModule
+    PDFExportModule,
+    ExcelExportModule,
+    ExcelModule,
   ],
   providers: [
     {
