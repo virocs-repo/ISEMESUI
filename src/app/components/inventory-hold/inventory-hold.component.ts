@@ -135,7 +135,6 @@ export class InventoryHoldComponent implements OnInit{
     }
 }
 
-
   rowCallback = (context: any) => {
     return {
       'highlighted-row': context.index === this.selectedRowIndex
