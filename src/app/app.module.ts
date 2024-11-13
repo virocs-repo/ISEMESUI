@@ -54,6 +54,8 @@ import { ExcelExportModule } from '@progress/kendo-angular-excel-export';
 import { AddHoldComponent } from './components/add-hold/add-hold.component';
 import { AnotherShippingComponent } from './components/another-shipping/another-shipping.component';
 import { CombinedLotComponent } from './components/combined-lot/combined-lot.component';
+import { AddAnotherShippingComponent } from './components/add-another-shipping/add-another-shipping.component';
+import { AddCombinedLotComponent } from './components/add-combined-lot/add-combined-lot.component';
 
 
 
@@ -126,7 +128,9 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     InventoryHoldComponent,
     AddHoldComponent,
     AnotherShippingComponent,
-    CombinedLotComponent
+    CombinedLotComponent,
+    AddAnotherShippingComponent,
+    AddCombinedLotComponent
   ],
   imports: [
     BrowserModule,
