@@ -1,0 +1,102 @@
+<div class="shipping-record">
+    <kendo-card class="card-green card-full">
+      <kendo-card-body>
+        <div class="k-d-flex k-gap-3 nested-cards">
+          <div class="k-d-flex k-gap-2 k-flex-col k-flex-1">
+            <div class="k-d-flex k-gap-3 flex-col-sm">
+              <kendo-label text="Customer" class="k-w-full">
+                <b class="required-label"></b>
+                <kendo-combobox [data]="customers" [(ngModel)]="customerSelected" (ngModelChange)="onChangeCustomer()"
+                  [textField]="'CustomerName'" [valueField]="'CustomerID'" placeholder="Select"
+                  rounded="large"></kendo-combobox>
+              </kendo-label>
+              <kendo-label text="Shipping No#" class="k-w-full">
+                <kendo-textbox placeholder="Enter" rounded="large" [(ngModel)]="shipmentNumber">
+                </kendo-textbox>
+              </kendo-label>
+            </div>
+            <div class="k-d-flex k-gap-3">
+              <kendo-label text="Sender Information" class="k-w-full">
+                <kendo-textarea [(ngModel)]="senderInformation" [rows]="4" placeholder="Enter Info"
+                  rounded="large"></kendo-textarea>
+              </kendo-label>
+            </div>
+            <div class="k-d-flex k-gap-3" class="k-w-full">
+              <kendo-label text="Shipping Comments">
+                <kendo-textarea [(ngModel)]="shipmentDetailsTxt" [rows]="4" placeholder="Enter comments"
+                  rounded="large"></kendo-textarea>
+              </kendo-label>
+            </div>
+          </div>
+  
+          <div class="k-d-flex k-gap-2 k-flex-col k-flex-1">
+            <div class="k-d-flex k-gap-3 flex-col-sm">
+              <kendo-label text="Shipment Category" class="k-w-full">
+                <kendo-combobox [data]="shipmentCategories" [(ngModel)]="shipmentCategorySelected"
+                  [textField]="'shipmentCategoryName'" [valueField]="'shipmentCategoryID'" placeholder="Select"
+                  rounded="large"></kendo-combobox>
+              </kendo-label>
+              <kendo-label text="Current Location" class="k-w-full">
+                <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
+                  [textField]="'receivingFacilityName'" [valueField]="'receivingFacilityID'" placeholder="Select"
+                  rounded="large"></kendo-combobox>
+              </kendo-label>
+            </div>
+  
+            <div class="k-d-flex k-gap-3 flex-col-sm">
+              <kendo-label text="Shipment" class="k-w-full">
+                <small class="k-ml-1">(Is Shipped?)</small>
+                <br>
+                <input type="checkbox" kendoCheckBox [(ngModel)]="isShipped"
+                  style="border: 1px solid black;  border-radius: 4px;">
+              </kendo-label>
+              <kendo-label text="Shipment Location" class="k-w-full">
+                <kendo-textbox placeholder="Enter" rounded="large" [(ngModel)]="shipmentLocation">
+                </kendo-textbox>
+              </kendo-label>
+            </div>
+            <div class="k-d-flex k-gap-3" class="k-w-full">
+              <kendo-label text="Customer Information">
+                <b class="required-label"></b>
+                <kendo-textarea [rows]="4" placeholder="Enter info" rounded="large"
+                  [(ngModel)]="customerInformation"></kendo-textarea>
+              </kendo-label>
+            </div>
+            <kendo-button type="button" rounded="large" themeColor="dark"
+              (click)="autoFillTestValues()">AutoFillTestValues</kendo-button>
+          </div>
+        </div>
+      </kendo-card-body>
+    </kendo-card>
+    <div class="grid-container k-my-6">
+      <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
+        [kendoGridSelectBy]="'inventoryID'" [(selectedKeys)]="gridSelectedKeys"
+        class="bold-column-header cell-border-none">
+        <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+        <kendo-grid-column field="customerLotNum" title="Customer Lot#"></kendo-grid-column>
+        <kendo-grid-column *ngIf="isEditMode" field="inventoryID" title="Inventory ID"></kendo-grid-column>
+        <kendo-grid-column *ngIf="isEditMode" field="shipmentLineItemID"
+          title="Shipment Line Item ID"></kendo-grid-column>
+        <kendo-grid-column field="iseLotNum" title="ISE Lot#"></kendo-grid-column>
+        <kendo-grid-column field="goodsType" title="Device Family"></kendo-grid-column>
+        <kendo-grid-column field="partNum" title="Device"></kendo-grid-column>
+        <kendo-grid-column field="currentQty" title="Current Qty"></kendo-grid-column>
+        <kendo-grid-column field="shipmentQty" title="Shipment Qty"></kendo-grid-column>
+        <kendo-grid-column field="shipmentType" title="Shipment Type" [width]="230">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <kendo-combobox [data]="appService.shipmentTypes" [(ngModel)]="dataItem.shipmentTypeSelected"
+              [textField]="'shipmentTypeName'" [valueField]="'shipmentTypeID'" placeholder="Select"
+              rounded="large"></kendo-combobox>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="address" title="Address"></kendo-grid-column>
+        <kendo-grid-column *ngIf="isEditMode" field="additionalInfo" title="Additional Info"></kendo-grid-column>
+      </kendo-grid>
+    </div>
+    <div class="k-d-flex k-gap-3 k-mt-3">
+      <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem"
+        [disabled]="isDisabled.clearBtn">Clear</button>
+      <button kendoButton type="button" rounded="full" themeColor="info" class="k-w-25" [disabled]="isDisabled.shipBtn"
+        (click)="saveShipment()">Ship</button>
+    </div>
+  </div>
