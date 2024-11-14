@@ -5,6 +5,7 @@ import { eyeIcon, folderIcon, pencilIcon, SVGIcon } from '@progress/kendo-svg-ic
 import { ApiService } from 'src/app/services/api.service';
 import { CellClickEvent, GridComponent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { AppService } from 'src/app/services/app.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-reports',
@@ -27,7 +28,7 @@ export class ReportsComponent  implements OnInit {
   deviceTypes: string[] = ['Device', 'Hardware','Miscellaneous Goods','All']; 
   deviceTypeSelected: string = 'All';  // Variable to hold the selected device type
   customerTypeSelected: CustomerType | undefined;
-
+  allData: any[] = []; // Store all data after the search
   customer: Customer[] = []
   customerSelected: Customer | undefined;
     customerTextField: 'CustomerName' | 'VendorName' = 'CustomerName'
@@ -120,7 +121,8 @@ export class ReportsComponent  implements OnInit {
     this.apiService.getallinventoryreportdata().subscribe({
       next: (v: any) => {
         this.gridDataResult.data = v;
-        this.gridDataResult.total = v.length
+        this.gridDataResult.total = v.length;
+        this.allData = v;
 
       },
       error: (v: any) => { }
@@ -165,6 +167,7 @@ export class ReportsComponent  implements OnInit {
         next: (v: any) => {
             this.gridDataResult.data = v;
             this.gridDataResult.total = v.length;
+            this.allData = v;
         },
         error: (error: any) => {
             console.error('Error fetching inventory report data:', error);
@@ -172,7 +175,18 @@ export class ReportsComponent  implements OnInit {
     });
 }
 exportToExcel(): void {
-  this.grid.saveAsExcel();
+ // Define the worksheet with all the data
+ const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.allData);
+
+ // Create a workbook with the worksheet
+ const workbook: XLSX.WorkBook = {
+   Sheets: { 'Report Data': worksheet },
+   SheetNames: ['Report Data']
+ };
+
+ // Export the workbook as an Excel file
+ XLSX.writeFile(workbook, 'InventoryReports.xlsx');
+
 }
 
 }
