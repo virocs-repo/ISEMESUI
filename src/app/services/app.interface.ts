@@ -220,7 +220,8 @@ export const ICON = {
 export const MESSAGES = {
   DataSaved: "Data Saved!",
   DataSaveError: 'Error while saving data, try again!',
-  NoChanges: 'No changes, nothing to update or insert'
+  NoChanges: 'No changes, nothing to update or insert',
+  AllFieldsRequired: 'All the fields are required'
 }
 export interface UserData {
   name: string;
@@ -263,6 +264,7 @@ export interface Shipment {
   shipmentLocation: string;
   senderInfo: string;
   customerInfo: string;
+  isShipped: boolean;
   modifiedOn: string; // or Date if you want to enforce date format
   customerTypeSelected: CustomerType | undefined;
   holdComments: string;
@@ -491,6 +493,7 @@ export interface PostShipment {
   CurrentLocationID: number;
   SenderInfo: string;
   CustomerInfo: string;
+  IsShipped: boolean;
   ShipmentDetails: Array<ShipmentDetails2>;
   RecordStatus: 'U' | "I";
   Active: boolean;

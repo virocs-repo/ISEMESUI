@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
 import { GridDataResult, SelectableSettings } from '@progress/kendo-angular-grid';
 import { ApiService } from 'src/app/services/api.service';
 import { Customer, MESSAGES, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2 } from 'src/app/services/app.interface';
@@ -18,6 +18,7 @@ export class ShippingRecordComponent implements OnDestroy {
   readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
   receiptLocationSelected: ReceiptLocation | undefined;
   senderInformation: string = ''
+  shipmentComments: string = ''
   shipmentCategories: ShipmentCategory[] = []
   shipmentCategorySelected: ShipmentCategory | undefined;
   isShipped = false
@@ -30,6 +31,7 @@ export class ShippingRecordComponent implements OnDestroy {
     clearBtn: false
   }
   isEditMode = false;
+  @Output() onClose = new EventEmitter<void>();
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
@@ -44,6 +46,7 @@ export class ShippingRecordComponent implements OnDestroy {
       this.shipmentLocation = dataItem.shipmentLocation
       this.customerInformation = dataItem.customerInfo;
       this.senderInformation = dataItem.senderInfo
+      this.isShipped = dataItem.isShipped
 
       this.customerSelected = this.customers.find(c => c.CustomerID == dataItem.customerID);
       // this.shipmentCategorySelected = this.shipmentCategories.find(c => c.shipmentCategoryID == dataItem.shipmentTypeID);
@@ -70,7 +73,6 @@ export class ShippingRecordComponent implements OnDestroy {
     })
   }
   shipmentDetails: ShipmentDetails[] = []
-  shipmentDetailsTxt = ''
   private fetchData() {
     if (!this.customerID) {
       return;
@@ -130,6 +132,16 @@ export class ShippingRecordComponent implements OnDestroy {
       this.appService.errorMessage('Please select customer');
       return;
     }
+    const requiredFields = [
+      this.shipmentNumber, this.shipmentCategorySelected, this.shipmentLocation,
+      this.receiptLocationSelected, this.senderInformation, this.customerInformation,
+      this.shipmentComments
+    ]
+    const isValid = !requiredFields.some(v => !v);
+    if (!isValid) {
+      this.appService.errorMessage(MESSAGES.AllFieldsRequired);
+      return;
+    }
     const Shipment: PostShipment[] = []
     const s: PostShipment = {
       ShipmentID: null,
@@ -141,6 +153,7 @@ export class ShippingRecordComponent implements OnDestroy {
       SenderInfo: this.senderInformation,
       CustomerInfo: this.customerInformation,
       ShipmentDetails: this.getSelectedShipmentDetails(),
+      IsShipped: this.isShipped,
       RecordStatus: "I",
       Active: true,
       LoginId: this.appService.loginId,
@@ -155,7 +168,7 @@ export class ShippingRecordComponent implements OnDestroy {
     this.apiService.postProcessShipment(s).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
-        // this.fetchDataDevice();
+        this.onClose.emit();
       },
       error: (err) => {
         this.appService.errorMessage(MESSAGES.DataSaveError);

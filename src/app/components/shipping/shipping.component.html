@@ -46,7 +46,7 @@
       (click)="closeDialog()"></button>
   </div>
   <div class="dialog-body k-overflow-y-auto">
-    <app-shipping-record></app-shipping-record>
+    <app-shipping-record (onClose)="closeDialog()"></app-shipping-record>
   </div>
 </kendo-dialog>
 

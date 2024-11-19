@@ -3,7 +3,7 @@ import { CellClickEvent, ColumnMenuSettings, GridDataResult, PageChangeEvent, Se
 import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { CustomerType, ICON, MESSAGES, Receipt } from 'src/app/services/app.interface';
+import { CustomerType, ICON, Receipt } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -93,6 +93,7 @@ export class ShippingComponent implements OnDestroy {
   }
   closeDialog() {
     this.isDialogOpen = false;
+    this.fetchdata(); // because there might be changes from dialog
   }
 
   doTestEditMode() {
