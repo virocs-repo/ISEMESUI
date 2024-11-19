@@ -151,7 +151,7 @@ export interface DeviceItem {
   customerCount: number;
   labelCount: number;
   coo: string; // Assuming "Country of Origin"
-  dateCode: number;
+  dateCode: string;
   isHold: boolean;
   holdComments: string | null;
   createdOn: string; // Assuming ISO 8601 format
@@ -176,7 +176,7 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   customerCount: 0,
   labelCount: 0,
   coo: '',
-  dateCode: 0,
+  dateCode: '',
   isHold: false,
   holdComments: '',
   createdOn: new Date().toISOString(), // Set to current time
@@ -425,7 +425,7 @@ export interface PostDevice {
   LotID: number | null;
   LotOwnerID: number | null;
   LabelCount: number;
-  DateCode: number;
+  DateCode: string;
   COO: number;
   IsHold: boolean;
   HoldComments: string | null;
@@ -446,7 +446,7 @@ export const INIT_POST_DEVICE: PostDevice = {
   LotID: 14054,
   LotOwnerID: 1,
   LabelCount: 50,
-  DateCode: 202304,
+  DateCode: '202304',
   COO: 1,
   IsHold: true,
   HoldComments: "Quality check",
