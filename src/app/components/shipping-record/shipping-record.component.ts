@@ -46,6 +46,7 @@ export class ShippingRecordComponent implements OnDestroy {
       this.shipmentLocation = dataItem.shipmentLocation
       this.customerInformation = dataItem.customerInfo;
       this.senderInformation = dataItem.senderInfo
+      this.shipmentComments = dataItem.shippmentInfo
       this.isShipped = dataItem.isShipped
 
       this.customerSelected = this.customers.find(c => c.CustomerID == dataItem.customerID);
@@ -86,13 +87,13 @@ export class ShippingRecordComponent implements OnDestroy {
   private rebuildTable(shipmentDetails: ShipmentDetails[] | any) {
     if (shipmentDetails) {
       shipmentDetails.forEach((a: ShipmentDetails) => {
+        a.selected = a.shipmentLineItemID ? true : false;
         a.shipmentTypeSelected = this.appService.shipmentTypes.find(s => s.shipmentTypeID == a.shipmentTypeID)
-        a.selected = true;
       })
       this.gridDataResult.data = shipmentDetails;
       this.gridDataResult.total = shipmentDetails.length;
       this.shipmentDetails = shipmentDetails;
-      this.gridSelectedKeys = this.shipmentDetails.map(d => d.inventoryID);
+      this.gridSelectedKeys = this.shipmentDetails.filter(v => v.shipmentLineItemID).map(d => d.inventoryID);
       console.log({ shipmentDetails });
     }
   }
@@ -152,6 +153,7 @@ export class ShippingRecordComponent implements OnDestroy {
       CurrentLocationID: this.receiptLocationSelected?.receivingFacilityID || 1,
       SenderInfo: this.senderInformation,
       CustomerInfo: this.customerInformation,
+      ShippmentInfo: this.shipmentComments.trim(),
       ShipmentDetails: this.getSelectedShipmentDetails(),
       IsShipped: this.isShipped,
       RecordStatus: "I",

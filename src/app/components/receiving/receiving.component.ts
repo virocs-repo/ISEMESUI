@@ -33,6 +33,8 @@ export class ReceivingComponent implements OnDestroy{
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
+   range = { start: null, end: null };
+
 
   isDialogOpen = false;
   openDialog() {

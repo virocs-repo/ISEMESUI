@@ -264,6 +264,7 @@ export interface Shipment {
   shipmentLocation: string;
   senderInfo: string;
   customerInfo: string;
+  shippmentInfo: string;
   isShipped: boolean;
   modifiedOn: string; // or Date if you want to enforce date format
   customerTypeSelected: CustomerType | undefined;
@@ -353,7 +354,7 @@ export interface PostReceipt {
   SignaturePersonID: number;
   Signature: string;
   SignatureDate: Date | string;
-  RecordStatus: string;
+  RecordStatus: "I" | "U";
   Active: boolean;
   LoginId: number;
   EmployeeDetail: Employee[];
@@ -493,6 +494,7 @@ export interface PostShipment {
   CurrentLocationID: number;
   SenderInfo: string;
   CustomerInfo: string;
+  ShippmentInfo?: string;
   IsShipped: boolean;
   ShipmentDetails: Array<ShipmentDetails2>;
   RecordStatus: 'U' | "I";

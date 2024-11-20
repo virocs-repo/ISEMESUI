@@ -11,7 +11,7 @@
     <button kendoButton rounded="full" themeColor="info" class="search-btn" (click)="openDialog()">Add</button>
   </div>
 </div>
-<div class="k-m-10" *ngIf="!false">
+<div class="k-m-10">
   <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
     [pageSize]="pageSize" [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
     class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
@@ -28,6 +28,7 @@
     <kendo-grid-column field="shipmentNum" title="Shipment No."></kendo-grid-column>
     <kendo-grid-column field="customerInfo" title="Customer"></kendo-grid-column>
     <kendo-grid-column field="senderInfo" title="Sender"></kendo-grid-column>
+    <kendo-grid-column field="shippmentInfo" title="Shipment Info"></kendo-grid-column>
     <kendo-grid-column field="location" title="Location"></kendo-grid-column>
     <kendo-grid-column field="currentLocation" title="Current Location"></kendo-grid-column>
   </kendo-grid>
