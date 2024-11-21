@@ -8,13 +8,13 @@
   </div> -->
   <kendo-daterange class="k-max-w-fit">
     <kendo-label text="Start: ">
-      <kendo-dateinput #start kendoDateRangeStartInput [(ngModel)]="range.start"></kendo-dateinput>
+      <kendo-dateinput kendoDateRangeStartInput rounded="full" [(ngModel)]="range.start"></kendo-dateinput>
     </kendo-label>
     <kendo-label text="End: ">
-      <kendo-dateinput #end kendoDateRangeEndInput [(ngModel)]="range.end"></kendo-dateinput>
+      <kendo-dateinput kendoDateRangeEndInput rounded="full" [(ngModel)]="range.end"></kendo-dateinput>
     </kendo-label>
   </kendo-daterange>
-  <button kendoButton rounded="full" themeColor="success" class="k-w-1/12">Filter</button>
+  <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
   <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()"
     [disabled]="!isAddButtonEnabled">Add</button>
 </div>

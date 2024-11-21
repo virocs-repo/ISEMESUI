@@ -288,7 +288,7 @@
           <kendo-grid-column field="dateCode" title="Date Code">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
-                <kendo-numerictextbox format="##" [min]="0" [(ngModel)]="dataItem.dateCode"
+                <kendo-numerictextbox [min]="0" [(ngModel)]="dataItem.dateCode"
                   placeholder="Date Code"></kendo-numerictextbox>
               </ng-container>
               <ng-template #showValue>

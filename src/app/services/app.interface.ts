@@ -78,6 +78,7 @@ export interface Receipt {
   receivingStutus: string; // Corrected typo from "receivingStatus"
   receivingStatus: string; // Corrected typo from "receivingStatus"
   signatureDate: string;
+  active: boolean
 }
 export interface HardwareItem {
   hardwareID: number;

@@ -2,17 +2,18 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CellClickEvent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
-import { Receipt, ICON, MESSAGES, PostReceipt } from 'src/app/services/app.interface';
+import { Receipt, ICON, MESSAGES } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { ContextMenuComponent } from '@progress/kendo-angular-menu';
 import { Subscription } from 'rxjs';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-receiving',
   templateUrl: './receiving.component.html',
   styleUrls: ['./receiving.component.scss']
 })
-export class ReceivingComponent implements OnDestroy{
+export class ReceivingComponent implements OnDestroy {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
 
   readonly ICON = ICON;
@@ -33,8 +34,14 @@ export class ReceivingComponent implements OnDestroy{
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
-   range = { start: null, end: null };
-
+  private readonly today = new Date();
+  private readonly oneMonthAgo = new Date(this.today.getFullYear(), this.today.getMonth() - 1, this.today.getDate());
+  range = {
+    start: this.oneMonthAgo,
+    end: this.today
+  };
+  fromDate = '';
+  toDate = '';
 
   isDialogOpen = false;
   openDialog() {
@@ -65,7 +72,7 @@ export class ReceivingComponent implements OnDestroy{
     this.subscription.unsubscribe();
   }
   private fetchdata() {
-    this.apiService.getReceiptdata().subscribe({
+    this.apiService.getReceiptdata(this.fromDate, this.toDate).subscribe({
       next: (v: any) => {
         this.gridDataResult.data = v;
         this.gridDataResult.total = v.length
@@ -149,20 +156,7 @@ export class ReceivingComponent implements OnDestroy{
     dataItem.holdComments = dataItem.holdComments || '';
     switch (e.item.text) {
       case 'Void Data':
-        const body = {
-          receiptDetails: [
-            {
-              ...dataItem, recordStatus: "U", loginId: this.appService.loginId, active: false,
-              expectedDateTime: this.appService.formattedDateTime2(new Date(dataItem.expectedDateTime)),
-              signatureDate: this.appService.formattedDateTime2(new Date(dataItem.signatureDate)),
-            }
-          ]
-        };
-        // temp fix
-        if (body.receiptDetails[0].receivingStutus) {
-          body.receiptDetails[0].receivingStatus = body.receiptDetails[0].receivingStutus;
-        }
-        this.apiService.postProcessReceipt(body).subscribe({
+        this.apiService.voidReceipt(dataItem.receiptID, !dataItem.active).subscribe({
           next: (value) => {
             this.appService.successMessage(MESSAGES.DataSaved);
             this.fetchdata()
@@ -202,58 +196,12 @@ export class ReceivingComponent implements OnDestroy{
       this.isDialogOpen = true;
     }, 300);
   }
-  private updatePostReceiptObject(r: Receipt) {
-    const postReceipt: PostReceipt = {
-      ReceiptID: r.receiptID,
-      VendorID: null,
-      VendorName: null,
-      CustomerTypeID: 1,
-      CustomerVendorID: 31,
-      BehalfID: 33,
-      ReceivingFacilityID: 1,
-      DeliveryModeID: 3,
-      CourierDetailID: null,
-      CountryFromID: null,
-      ContactPerson: "Amith S",
-      ContactPhone: "215-634-123",
-      Email: "Amith_s@xyz.com",
-      ExpectedDateTime: "2024-08-27 09:28:39.187",
-      AddressID: 1,
-      MailComments: null,
-      PMComments: null,
-      NoOfCartons: 2,
-      IsHold: false,
-      HoldComments: null,
-      IsExpected: false,
-      IsInterim: false,
-      IsFTZ: false,
-      MailStatus: null,
-      ReceivingStatus: null,
-      SignaturePersonType: "Vendor",
-      SignaturePersonID: 1,
-      Signature: "Amithsvc",
-      SignatureDate: "2024-08-27 09:28:39.187",
-      RecordStatus: "I",
-      Active: true,
-      LoginId: 1,
-      EmployeeDetail: [],
-      TrackingNumber: null
-    }
-    return postReceipt;
-  }
-
-  private doPostProcessReceipt(postReceipt: PostReceipt) {
-    const body = { ReceiptDetails: [postReceipt] }
-    this.apiService.postProcessReceipt(body).subscribe({
-      next: (v: any) => {
-        this.appService.successMessage(MESSAGES.DataSaved);
-      },
-      error: (err) => {
-        this.appService.errorMessage(MESSAGES.DataSaveError);
-      }
-    });
-  }
   canCloseDialog() {
     this.appService.sharedData.receiving.eventEmitter.emit('canCloseDialog?')
+  }
+  search() {
+    this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
+    this.toDate = moment(this.range.end).format('MM-DD-YYYY');
+    this.fetchdata()
   }
 }

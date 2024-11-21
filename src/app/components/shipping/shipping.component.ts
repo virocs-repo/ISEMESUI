@@ -1,6 +1,7 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CellClickEvent, ColumnMenuSettings, GridDataResult, PageChangeEvent, SelectableSettings } from '@progress/kendo-angular-grid';
 import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
+import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { CustomerType, ICON, Receipt } from 'src/app/services/app.interface';
@@ -18,6 +19,14 @@ export class ShippingComponent implements OnDestroy {
   public skip = 0;
   readonly customerTypes: CustomerType[] = this.appService.masterData.customerType;
   readonly subscription = new Subscription();
+  private readonly today = new Date();
+  private readonly oneMonthAgo = new Date(this.today.getFullYear(), this.today.getMonth() - 1, this.today.getDate());
+  range = {
+    start: this.oneMonthAgo,
+    end: this.today
+  };
+  fromDate = '';
+  toDate = '';
 
   constructor(public appService: AppService, private apiService: ApiService) { }
 
@@ -146,5 +155,11 @@ export class ShippingComponent implements OnDestroy {
     return {
       'highlighted-row': context.index === this.selectedRowIndex
     };
+  }
+  
+  search() {
+    this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
+    this.toDate = moment(this.range.end).format('MM-DD-YYYY');
+    this.fetchdata()
   }
 }
