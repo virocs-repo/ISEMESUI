@@ -137,7 +137,7 @@ export class AddCheckInoutComponent implements OnInit {
           InvMovementDetails: matchingRecords.map((record: any) => ({
             InventoryID: record.inventoryId,
             Location: record.location,
-            StatusID: record.status === 'Checked In' ? 1 : 2,
+            StatusID: record.status === 'Checked In' ? 1711 : 1712,
             ReceivedFromID: employeeIds ,
             LoginId: 1
           }))
@@ -193,7 +193,7 @@ export class AddCheckInoutComponent implements OnInit {
         return {
           InventoryID: record.inventoryId,
           Location: record.location,
-          StatusID: newStatus === 'Checked In' ? 1 : 2,
+          StatusID: newStatus === 'Checked In' ? 1711 : 1712,
           ReceivedFromID: record.receivedFromId,
           LoginId: 1
         };
