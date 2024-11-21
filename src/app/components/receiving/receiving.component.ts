@@ -57,7 +57,7 @@ export class ReceivingComponent implements OnDestroy {
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
-    this.fetchdata();
+    this.search();
     this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
       switch (v) {
         case 'closeDialog':
