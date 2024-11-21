@@ -516,7 +516,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         LotID: 1,
         LotOwnerID: r.employeeSelected?.EmployeeID || this.appService.loginId,
         LabelCount: r.labelCount,
-        DateCode: r.dateCode,
+        DateCode: r.dateCode.toString(),
         COO: r.countrySelected?.countryID || 1,
         IsHold: r.isHold,
         HoldComments: r.holdComments,
@@ -716,6 +716,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     switch (e.item.text) {
       case 'Edit Data':
         dataItem.recordStatus = 'U'
+        dataItem.dateCode = parseInt(dataItem.dateCode);
         break;
       case 'Receive':
         this.rowActionMenuDevice[0].disabled = true;

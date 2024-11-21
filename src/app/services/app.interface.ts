@@ -78,6 +78,7 @@ export interface Receipt {
   receivingStutus: string; // Corrected typo from "receivingStatus"
   receivingStatus: string; // Corrected typo from "receivingStatus"
   signatureDate: string;
+  active: boolean
 }
 export interface HardwareItem {
   hardwareID: number;
@@ -151,7 +152,7 @@ export interface DeviceItem {
   customerCount: number;
   labelCount: number;
   coo: string; // Assuming "Country of Origin"
-  dateCode: number;
+  dateCode: string;
   isHold: boolean;
   holdComments: string | null;
   createdOn: string; // Assuming ISO 8601 format
@@ -176,7 +177,7 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   customerCount: 0,
   labelCount: 0,
   coo: '',
-  dateCode: 0,
+  dateCode: '',
   isHold: false,
   holdComments: '',
   createdOn: new Date().toISOString(), // Set to current time
@@ -220,7 +221,8 @@ export const ICON = {
 export const MESSAGES = {
   DataSaved: "Data Saved!",
   DataSaveError: 'Error while saving data, try again!',
-  NoChanges: 'No changes, nothing to update or insert'
+  NoChanges: 'No changes, nothing to update or insert',
+  AllFieldsRequired: 'All the fields are required'
 }
 export interface UserData {
   name: string;
@@ -263,6 +265,8 @@ export interface Shipment {
   shipmentLocation: string;
   senderInfo: string;
   customerInfo: string;
+  shippmentInfo: string;
+  isShipped: boolean;
   modifiedOn: string; // or Date if you want to enforce date format
   customerTypeSelected: CustomerType | undefined;
   holdComments: string;
@@ -351,7 +355,7 @@ export interface PostReceipt {
   SignaturePersonID: number;
   Signature: string;
   SignatureDate: Date | string;
-  RecordStatus: string;
+  RecordStatus: "I" | "U";
   Active: boolean;
   LoginId: number;
   EmployeeDetail: Employee[];
@@ -423,7 +427,7 @@ export interface PostDevice {
   LotID: number | null;
   LotOwnerID: number | null;
   LabelCount: number;
-  DateCode: number;
+  DateCode: string;
   COO: number;
   IsHold: boolean;
   HoldComments: string | null;
@@ -444,7 +448,7 @@ export const INIT_POST_DEVICE: PostDevice = {
   LotID: 14054,
   LotOwnerID: 1,
   LabelCount: 50,
-  DateCode: 202304,
+  DateCode: '202304',
   COO: 1,
   IsHold: true,
   HoldComments: "Quality check",
@@ -491,6 +495,8 @@ export interface PostShipment {
   CurrentLocationID: number;
   SenderInfo: string;
   CustomerInfo: string;
+  ShippmentInfo?: string;
+  IsShipped: boolean;
   ShipmentDetails: Array<ShipmentDetails2>;
   RecordStatus: 'U' | "I";
   Active: boolean;

@@ -141,6 +141,7 @@ export class AddCombinedLotComponent implements OnDestroy {
       SenderInfo: this.senderInformation,
       CustomerInfo: this.customerInformation,
       ShipmentDetails: this.getSelectedShipmentDetails(),
+      IsShipped: this.isShipped,
       RecordStatus: "I",
       Active: true,
       LoginId: this.appService.loginId,

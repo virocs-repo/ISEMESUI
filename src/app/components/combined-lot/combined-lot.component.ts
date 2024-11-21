@@ -16,8 +16,10 @@ export class CombinedLotComponent implements OnDestroy {
   gridDataResult: GridDataResult = { data: [], total: 0 };
   public pageSize = 10;
   public skip = 0;
-  readonly customerTypes: CustomerType[] = this.appService.masterData.customerType;
   readonly subscription = new Subscription();
+  format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker
+  fromDate: Date | null = null;  // Variable to store the selected 'from' date
+  toDate: Date | null = null;    // Variable to store the selected 'to' date
 
   constructor(public appService: AppService, private apiService: ApiService) { }
 
@@ -33,43 +35,39 @@ export class CombinedLotComponent implements OnDestroy {
     this.subscription.unsubscribe();
   }
   private init() {
-    this.customerTypes.length = 0;
-    this.customerTypes.push(...this.appService.masterData.customerType)
+   
   }
   private fetchdata() {
-    this.apiService.getShippingData().subscribe({
+    this.apiService.SearchCombinationLots().subscribe({
       next: (v: any) => {
         this.gridDataResult.data = v;
         this.gridDataResult.total = v.length
-        for (let index = 0; index < this.gridDataResult.data.length; index++) {
+        /* for (let index = 0; index < this.gridDataResult.data.length; index++) {
           const element = this.gridDataResult.data[index];
           element.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == element.customerID)
-        }
+        } */
       },
       error: (v: any) => { }
     });
-    if (this.appService.shipmentCategories.length) {
-    } else {
-      this.apiService.getShipmentCategories().subscribe({
-        next: (shipmentCategories: any) => {
-          this.appService.shipmentCategories = shipmentCategories;
-          console.log({ shipmentCategories });
-        },
-        error: (v: any) => { }
-      })
-    }
-    if (this.appService.shipmentTypes.length) {
-    } else {
-      this.apiService.getShipmentTypes().subscribe({
-        next: (shipmentTypes: any) => {
-          this.appService.shipmentTypes = shipmentTypes;
-          console.log({ shipmentTypes });
-        },
-        error: (v: any) => { }
-      })
-    }
+    
   }
+  onSearch(): void {
+ // Pass Date objects directly
+ const from_date = this.fromDate ?? undefined;
+ const to_date = this.toDate ?? undefined;
 
+ this.apiService.SearchCombinationLotswithDates(from_date, to_date).subscribe({
+     next: (v: any) => {
+         this.gridDataResult.data = v;
+         debugger;
+         this.gridDataResult.total = v.length;
+     },
+     error: (error: any) => {
+         console.error('Error fetching CombinationLots', error);
+     }
+ });
+
+  }
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;
     console.log(event);

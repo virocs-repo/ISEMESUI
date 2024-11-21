@@ -1,17 +1,28 @@
 <div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header">
   <h2>Shipping</h2>
-  <div class="search-box k-ml-auto">
+  <i class="k-ml-auto"></i>
+  <!-- <div class="search-box">
     <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
     <input kendoTextBox type="search" placeholder="Search" class="search-input" rounded="full" />
     <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
-  </div>
+  </div> -->
+
+  <kendo-daterange class="k-max-w-fit">
+    <kendo-label text="Start: ">
+      <kendo-dateinput kendoDateRangeStartInput rounded="full" [(ngModel)]="range.start"></kendo-dateinput>
+    </kendo-label>
+    <kendo-label text="End: ">
+      <kendo-dateinput kendoDateRangeEndInput rounded="full" [(ngModel)]="range.end"></kendo-dateinput>
+    </kendo-label>
+  </kendo-daterange>
+  <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
   <div class="search-box">
     <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
     <input kendoTextBox type="search" placeholder="Lot#" class="search-input" rounded="full" />
     <button kendoButton rounded="full" themeColor="info" class="search-btn" (click)="openDialog()">Add</button>
   </div>
 </div>
-<div class="k-m-10" *ngIf="!false">
+<div class="k-m-10">
   <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
     [pageSize]="pageSize" [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
     class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
@@ -28,6 +39,7 @@
     <kendo-grid-column field="shipmentNum" title="Shipment No."></kendo-grid-column>
     <kendo-grid-column field="customerInfo" title="Customer"></kendo-grid-column>
     <kendo-grid-column field="senderInfo" title="Sender"></kendo-grid-column>
+    <kendo-grid-column field="shippmentInfo" title="Shipment Info"></kendo-grid-column>
     <kendo-grid-column field="location" title="Location"></kendo-grid-column>
     <kendo-grid-column field="currentLocation" title="Current Location"></kendo-grid-column>
   </kendo-grid>
@@ -46,7 +58,7 @@
       (click)="closeDialog()"></button>
   </div>
   <div class="dialog-body k-overflow-y-auto">
-    <app-shipping-record></app-shipping-record>
+    <app-shipping-record (onClose)="closeDialog()"></app-shipping-record>
   </div>
 </kendo-dialog>
 

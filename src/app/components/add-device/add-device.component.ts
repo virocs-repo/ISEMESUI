@@ -38,7 +38,7 @@ export class AddDeviceComponent implements OnInit {
       PartNum: 1515,
       LabelCount: 151651,
       COO: 'CA',
-      DateCode: 21321,
+      DateCode: '21321',
       Hold: true,
       HoldComments: 'Count Miss'
     },
@@ -62,7 +62,7 @@ export class AddDeviceComponent implements OnInit {
       PartNum: 1515,
       LabelCount: 151651,
       COO: 'CA',
-      DateCode: 21321,
+      DateCode: '21321',
       Hold: true,
       HoldComments: 'Count Miss'
     },
@@ -74,7 +74,7 @@ export class AddDeviceComponent implements OnInit {
       PartNum: 1515,
       LabelCount: 151651,
       COO: 'CA',
-      DateCode: 21321,
+      DateCode: '21321',
       Hold: false,
       HoldComments: 'Count Miss'
     }
