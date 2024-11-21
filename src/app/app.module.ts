@@ -56,6 +56,7 @@ import { AnotherShippingComponent } from './components/another-shipping/another-
 import { CombinedLotComponent } from './components/combined-lot/combined-lot.component';
 import { AddAnotherShippingComponent } from './components/add-another-shipping/add-another-shipping.component';
 import { AddCombinedLotComponent } from './components/add-combined-lot/add-combined-lot.component';
+import { EditInventoryHoldComponent } from './components/edit-inventory-hold/edit-inventory-hold.component';
 
 
 
@@ -130,7 +131,8 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     AnotherShippingComponent,
     CombinedLotComponent,
     AddAnotherShippingComponent,
-    AddCombinedLotComponent
+    AddCombinedLotComponent,
+    EditInventoryHoldComponent
   ],
   imports: [
     BrowserModule,

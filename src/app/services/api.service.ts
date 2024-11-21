@@ -224,4 +224,12 @@ export class ApiService {
   }
     return this.httpClient.get(`${API}v1/ise/inventory/combinedlot/search`,{ params });
   }
+
+  //Inventory Hold
+  getHoldCodes(lotId: number) {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getHoldCodes?lotId=${lotId}`);
+  }
+  getAllHolds(inventoryId: number){
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getAllHolds?inventoryId=${inventoryId}`);
+  }
 }

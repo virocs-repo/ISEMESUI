@@ -16,8 +16,8 @@ export class InventoryHoldComponent implements OnInit{
   public skip = 0;
   private originalData: any[] = []; 
   public isEditMode: boolean = true;
-  public addCustomerMode : boolean = false; 
-  public customerOrd: any = {}; 
+  public addholdMode : boolean = false; 
+  public holdData: any = {}; 
  selectedRowIndex: number = -1;
  public selectedRowData: any;
    public gridDataResult: GridDataResult = { data: [], total: 0 };
@@ -122,12 +122,12 @@ export class InventoryHoldComponent implements OnInit{
     switch (e.item.text) {
         case 'View Data':
             this.isEditMode = false;
-            this.customerOrd = { ...dataItem };
+            this.holdData = { ...dataItem };
             this.openDialog();
             break;
         case 'Edit Data':
             this.isEditMode = true; 
-            this.customerOrd = { ...dataItem };
+            this.holdData = { ...dataItem };
             this.openDialog();
             break;
         default:

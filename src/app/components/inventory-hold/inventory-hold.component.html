@@ -32,5 +32,5 @@
         <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
             (click)="closeDialog()"></button>
     </div>
-    <app-add-hold [selectedRowData]="customerOrd" (cancel)="closeDialog()"></app-add-hold>
+    <app-edit-inventory-hold [selectedRowData]="holdData" (cancel)="closeDialog()"></app-edit-inventory-hold>
 </kendo-dialog>
