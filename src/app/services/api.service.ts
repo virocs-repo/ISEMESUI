@@ -205,4 +205,12 @@ export class ApiService {
   upsertInventoryMoveStatus(data: any, options: { responseType: 'text' }): Observable<any> {
     return this.httpClient.post(`${API}v1/ise/inventory/inventoryMove/UpsertInventoryMoveStatus`, data, { responseType: options.responseType });
   }
+
+  //Inventory Hold
+  getHoldCodes(lotId: number) {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getHoldCodes?lotId=${lotId}`);
+  }
+  getAllHolds(inventoryId: number){
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getAllHolds?inventoryId=${inventoryId}`);
+  }
 }
