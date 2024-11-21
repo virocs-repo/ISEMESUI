@@ -52,7 +52,7 @@ export class ApiService {
     return this.httpClient.post(`${API}v1/ise/shipment/processShipment`, body);
   }
   voidReceipt(receiptID: number, isActive: boolean) {
-    return this.httpClient.post(`${API}v1/ise/inventory/voidReceipt?receiptID=${receiptID}&active=${isActive}`, {});
+    return this.httpClient.post(`${API}v1/ise/inventory/voidReceipt?receiptID=${receiptID}`, {});
   }
 
   // Receipt
