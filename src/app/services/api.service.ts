@@ -208,4 +208,20 @@ export class ApiService {
   upsertInventoryMoveStatus(data: any, options: { responseType: 'text' }): Observable<any> {
     return this.httpClient.post(`${API}v1/ise/inventory/inventoryMove/UpsertInventoryMoveStatus`, data, { responseType: options.responseType });
   }
+
+  //CombinedLots
+  SearchCombinationLots() {
+    return this.httpClient.get(`${API}v1/ise/inventory/combinedlot/search`);
+  }
+  SearchCombinationLotswithDates(fromDate?:Date ,toDate?:Date) {
+    let params = new HttpParams();
+
+    if (fromDate != null) {
+      params = params.set('fromDate', this.formatDate(fromDate));
+  }
+  if (toDate != null) {
+      params = params.set('toDate', this.formatDate(toDate));
+  }
+    return this.httpClient.get(`${API}v1/ise/inventory/combinedlot/search`,{ params });
+  }
 }
