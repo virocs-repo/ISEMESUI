@@ -72,6 +72,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   lotCategorySelected: LotCategory | undefined;
   readonly deviceTypes = this.appService.masterData.deviceType;
   deviceTypeSelected: DeviceType | undefined;
+  readonly lotIdentifiers = [
+    { name: 'Test', id: 'Test' },
+    { name: 'Test&Rel', id: 'Test&Rel' },
+    { name: 'Rel', id: 'Rel' },
+    { name: 'Customer Lot', id: 'Customer Lot' },
+    { name: 'TBD', id: 'TBD' },
+  ]
+  lotIdentifierSelected: { name: string; id: string } | undefined;
 
   description: string = '';
 
@@ -229,6 +237,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           d.deviceTypeSelected = this.deviceTypes.find(dt => dt.deviceTypeID == d.deviceTypeID)
           if (index == 0) {
             this.lotCategorySelected = this.lotCategories.find(c => c.lotCategoryID == d.lotCategoryID)
+          }
+          if (d.lotIdentifier) {
+            d.lotIdentifierSelected = this.lotIdentifiers.find(l => l.id == d.lotIdentifier);
           }
         })
       }
@@ -513,7 +524,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         CustomerCount: r.customerCount,
         Expedite: r.expedite,
         IQA: r.iqa,
-        LotID: 1,
+        LotIdentifier: r.lotIdentifier,
         LotOwnerID: r.employeeSelected?.EmployeeID || this.appService.loginId,
         LabelCount: r.labelCount,
         DateCode: r.dateCode.toString(),
@@ -545,7 +556,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   addDeviceRow() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
-    this.gridDataDevice.splice(0, 0, { ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID, recordStatus: "I" })
+    this.gridDataDevice.splice(0, 0, {
+      ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID, recordStatus: "I",
+      lotIdentifierSelected: this.lotIdentifiers[0],
+      lotIdentifier: this.lotIdentifiers[0].id
+    })
   }
   addHardwareRow() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
@@ -966,5 +981,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.pdfExportComponent.margin = '0.9cm';
     this.pdfExportComponent.fileName = 'Receipt ' + new Date().toLocaleString();
     this.pdfExportComponent.saveAs();
+  }
+  onChangeLotIdentifier(dataItem: DeviceItem) {
+    dataItem.lotIdentifier = dataItem.lotIdentifierSelected?.id;
+    if (dataItem.recordStatus != 'I') {
+      dataItem.recordStatus = "U";
+    }
   }
 }

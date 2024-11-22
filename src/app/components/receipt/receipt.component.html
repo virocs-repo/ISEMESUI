@@ -267,12 +267,11 @@
               </ng-template>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="expedite" title="Lot Identifier">
+          <kendo-grid-column field="lotIdentifier" title="Lot Identifier">
             <ng-template kendoGridCellTemplate let-dataItem>
-              <!-- <kendo-combobox [data]="customerTypes" [(ngModel)]="customerTypeSelected"
-              (ngModelChange)="onChangeCustomerType()" [textField]="'customerTypeName'" [valueField]="'customerTypeID'"
-              placeholder="Select" rounded="large"></kendo-combobox> -->
-              <kendo-textbox [(ngModel)]="dataItem.iseLotNumber" placeholder="Lot Identifier"></kendo-textbox>
+              <kendo-combobox [data]="lotIdentifiers" [(ngModel)]="dataItem.lotIdentifierSelected" [textField]="'name'"
+                (ngModelChange)="onChangeLotIdentifier(dataItem)" [valueField]="'id'" placeholder="Select"
+                rounded="large"></kendo-combobox>
             </ng-template>
           </kendo-grid-column>
           <kendo-grid-column field="labelCount" title="Label Count">
@@ -288,8 +287,9 @@
           <kendo-grid-column field="dateCode" title="Date Code">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
-                <kendo-numerictextbox [min]="0" [(ngModel)]="dataItem.dateCode"
-                  placeholder="Date Code"></kendo-numerictextbox>
+                <kendo-textbox [(ngModel)]="dataItem.dateCode" placeholder="Date Code"></kendo-textbox>
+                <!-- <kendo-numerictextbox [min]="0" [(ngModel)]="dataItem.dateCode"
+                  placeholder="Date Code"></kendo-numerictextbox> -->
               </ng-container>
               <ng-template #showValue>
                 <span>{{dataItem.dateCode}}</span>

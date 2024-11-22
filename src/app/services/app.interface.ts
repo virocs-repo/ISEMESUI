@@ -149,6 +149,7 @@ export interface DeviceItem {
   iseLotNumber: string;
   customerLotNumber: string;
   expedite: boolean;
+  lotIdentifier: string;
   customerCount: number;
   labelCount: number;
   coo: string; // Assuming "Country of Origin"
@@ -166,7 +167,8 @@ export interface DeviceItem {
   employeeSelected: Employee | undefined
   countrySelected: Country | undefined,
   deviceTypeSelected: DeviceType | undefined
-  lotCategoryID: number
+  lotCategoryID: number,
+  lotIdentifierSelected: any | undefined
 }
 export const INIT_DEVICE_ITEM: DeviceItem = {
   deviceID: 0,
@@ -174,6 +176,7 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   iseLotNumber: '',
   customerLotNumber: '',
   expedite: false,
+  lotIdentifier: '',
   customerCount: 0,
   labelCount: 0,
   coo: '',
@@ -191,7 +194,8 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   employeeSelected: undefined,
   countrySelected: undefined,
   deviceTypeSelected: undefined,
-  lotCategoryID: 0
+  lotCategoryID: 0,
+  lotIdentifierSelected: undefined
 };
 export interface JSON_Object {
   [key: string]: any
@@ -424,7 +428,7 @@ export interface PostDevice {
   CustomerCount: number;
   Expedite: boolean;
   IQA: boolean;
-  LotID: number | null;
+  LotIdentifier: string | null;
   LotOwnerID: number | null;
   LabelCount: number;
   DateCode: string;
@@ -445,7 +449,7 @@ export const INIT_POST_DEVICE: PostDevice = {
   CustomerCount: 50,
   Expedite: false,
   IQA: false,
-  LotID: 14054,
+  LotIdentifier: "14054",
   LotOwnerID: 1,
   LabelCount: 50,
   DateCode: '202304',
