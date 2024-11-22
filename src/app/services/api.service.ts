@@ -224,6 +224,21 @@ export class ApiService {
   }
     return this.httpClient.get(`${API}v1/ise/inventory/combinedlot/search`,{ params });
   }
+  SearchComblotsWithCust_Lot(customerId?:number  | null ,lotNumber?: string) {
+    let params = new HttpParams();
+  if (customerId != null) {
+    params = params.set('customerId', customerId);
+  }
+  if (lotNumber) {
+    params.append("lotNumber", lotNumber);
+  }
+    return this.httpClient.get(`${API}v1/ise/inventory/combinedlot/customer`,{ params });
+  }
+  postCombineLots(payload: any): Observable<any> {
+    
+    return this.httpClient.post(`${API}v1/ise/inventory/combinedlot/upinsertcombolot`, payload);
+  }
+
 
   //Inventory Hold
   getHoldCodes(lotId: number) {

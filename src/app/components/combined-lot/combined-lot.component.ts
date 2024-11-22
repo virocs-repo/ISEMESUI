@@ -91,6 +91,7 @@ export class CombinedLotComponent implements OnDestroy {
   }
   closeDialog() {
     this.isDialogOpen = false;
+    this.fetchdata(); 
   }
 
   doTestEditMode() {

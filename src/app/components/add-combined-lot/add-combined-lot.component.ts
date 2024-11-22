@@ -1,5 +1,5 @@
-import { Component, OnDestroy } from '@angular/core';
-import { ColumnMenuSettings, GridDataResult, SelectableSettings } from '@progress/kendo-angular-grid';
+import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { ColumnMenuSettings, GridDataResult, PageChangeEvent, SelectableSettings, SelectionEvent } from '@progress/kendo-angular-grid';
 import { ApiService } from 'src/app/services/api.service';
 import { Customer, ICON, MESSAGES, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2 } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
@@ -14,7 +14,10 @@ export class AddCombinedLotComponent implements OnDestroy {
   shipmentLocation: string = ''
   readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
   customerSelected: Customer | undefined;
+  lotNumber: string | null = null;  // Lot number
+  lotNumbers: string[] = [];
 
+    allLotNumbers: string[] = []; // F
   readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
   receiptLocationSelected: ReceiptLocation | undefined;
   senderInformation: string = ''
@@ -24,15 +27,26 @@ export class AddCombinedLotComponent implements OnDestroy {
   customerInformation = ''
 
   gridDataResult: GridDataResult = { data: [], total: 0 };
+  public pageSize = 3;
+  public skip = 0;
   customerID: number = 0;
+  ComboComments:string='';
+  comboLotName:string='';
   isDisabled: any = {
     shipBtn: false,
     clearBtn: false
   }
   isEditMode = false;
+  dropdownData: any[] = []; // Data for the dropdown
+  selectedDropdownValue: any; // Selected value in the dropdown
+  gridSelectedKeys: any[] = []; // Tracks selected rows in the grid
+  @Output() cancel = new EventEmitter<void>();
+  isPrimaryLotValid: boolean = true; // Assume valid by default
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
+
+    this.getLotNumbers();
     this.shipmentCategories = this.appService.shipmentCategories
 
     if (this.appService.sharedData.shipping.isViewMode || this.appService.sharedData.shipping.isEditMode) {
@@ -50,7 +64,7 @@ export class AddCombinedLotComponent implements OnDestroy {
 
       this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.currentLocationID);
       this.customerID = dataItem.customerID;
-      this.fetchShipmentLineItems(dataItem.shipmentId);
+      //this.fetchShipmentLineItems(dataItem.shipmentId);
       this.fetchData();
     }
     if (this.appService.sharedData.shipping.isViewMode) {
@@ -75,11 +89,11 @@ export class AddCombinedLotComponent implements OnDestroy {
     if (!this.customerID) {
       return;
     }
-    this.apiService.getShipmentDetails(this.customerID).subscribe({
+   /*  this.apiService.getShipmentDetails(this.customerID).subscribe({
       next: (shipmentDetails: ShipmentDetails[] | any) => {
         this.rebuildTable(shipmentDetails);
       }
-    });
+    }); */
   }
   private rebuildTable(shipmentDetails: ShipmentDetails[] | any) {
     if (shipmentDetails) {
@@ -96,13 +110,115 @@ export class AddCombinedLotComponent implements OnDestroy {
   }
   onChangeCustomer() {
     if (this.customerSelected) {
-      this.apiService.getShipmentInventories(this.customerSelected.CustomerID).subscribe({
+     /*  this.apiService.getShipmentInventories(this.customerSelected.CustomerID).subscribe({
         next: (v: any) => {
-          this.rebuildTable(v);
+          
         }
-      });
+      }); */
     }
   }
+  pageChange(event: PageChangeEvent): void {
+    this.skip = event.skip;
+  
+  }
+  getLotNumbers(): void {
+  
+    this.apiService.getallLotsdata().subscribe({
+      next: (v: any) => {
+        this.allLotNumbers = v; // Store the full list
+        this.lotNumbers = [...this.allLotNumbers]; 
+      },
+      error: (v: any) => { }
+    });
+  }
+  cancelRequest(): void {
+    this.cancel.emit();  // Emit the cancel event when Cancel button is clicked
+  }
+  onFilter(value: string): void {
+    // Check if the filter input is empty
+    if (value) {
+        // Filter the allLotNumbers list based on the input
+        this.lotNumbers = this.allLotNumbers.filter(lot =>
+            lot.toLowerCase().includes(value.toLowerCase())
+        );
+    } else {
+        // Reset to the full list when the input is cleared
+        this.lotNumbers = [...this.allLotNumbers];
+    }
+}
+
+onSearch(): void {
+  const customerId = this.customerSelected?.CustomerID || null;
+  const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set
+  this.gridDataResult.data = [];
+
+  this.apiService.SearchComblotsWithCust_Lot(customerId, lotNumber).subscribe({
+    next: (res: any) => {
+      console.log(res);
+      this.gridDataResult.data = res;
+    },
+    error: (err) => {
+      this.gridDataResult.data = []
+    }
+  }); 
+}
+saveCombineLots(): void {
+  if (!this.selectedDropdownValue) {
+    this.isPrimaryLotValid = false;
+    this.appService.errorMessage('Please select a primary lot.');
+    return;
+  } else {
+    this.isPrimaryLotValid = true;
+  }
+
+  if (!this.comboLotName || this.dropdownData.length === 0) {
+    this.appService.errorMessage('Please fill all required fields.');
+    return;
+  }
+
+  // Create the JSON payload
+  const payload = {
+    comboLotID: null, // Assuming it's 0 for a new combo
+    comboName: this.comboLotName,
+    str_InventoryId: this.dropdownData.map((item) => item.inventoryID).join(','), // Convert inventory IDs to a comma-separated string
+    primary_InventoryId: this.selectedDropdownValue.inventoryID, // The selected primary inventory ID
+    userID: this.appService.loginId, // Replace with actual logged-in user ID
+    active: true,
+    comments: this.ComboComments,
+  };
+
+  console.log('Payload:', payload);
+
+  // Call the API
+  this.apiService.postCombineLots(payload).subscribe({
+    next: (response: any) => {
+      this.appService.successMessage('Combine Lots saved successfully!');
+      this.cancel.emit();
+
+    },
+    error: (error: any) => {
+      this.appService.errorMessage('Failed to save Combine Lots.');
+      
+    },
+  });
+}
+
+onSelectionChange(event: SelectionEvent): void {
+  console.log('Grid Selected Keys:', this.gridSelectedKeys);
+
+  const selectedRows = this.gridDataResult.data.filter((item) =>
+    this.gridSelectedKeys.includes(item.inventoryID)
+  );
+
+  this.dropdownData = selectedRows.map((row: any) => ({
+    iseLotNum: row.iseLotNum,
+    inventoryID: row.inventoryID,
+  }));
+
+  console.log('Updated Dropdown Data:', this.dropdownData);
+}
+
+
   selectableSettings: SelectableSettings = {
     enabled: true,
     checkboxOnly: true,
@@ -124,7 +240,7 @@ export class AddCombinedLotComponent implements OnDestroy {
     this.senderInformation = 'senderInformation'
     this.customerInformation = 'customerInformation'
   }
-  gridSelectedKeys: number[] = [];
+ 
   saveShipment() {
     if (!this.customerSelected) {
       this.appService.errorMessage('Please select customer');

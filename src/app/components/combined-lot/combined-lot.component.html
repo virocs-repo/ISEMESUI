@@ -45,13 +45,13 @@
   <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'78%'"
     class="dialog-round receipt-dialog">
     <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
-      <h2 class="k-m-0">Shipping Record</h2>
+      <h2 class="k-m-0">Combined Lot</h2>
       <small *ngIf="appService.sharedData.shipping.isViewMode">(View Mode)</small>
       <small *ngIf="appService.sharedData.shipping.isEditMode">(Edit Mode)</small>
       <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
         (click)="closeDialog()"></button>
     </div>
     <div class="dialog-body k-overflow-y-auto">
-      <app-add-combined-lot></app-add-combined-lot>
+      <app-add-combined-lot (cancel)="closeDialog()" ></app-add-combined-lot>
     </div>
   </kendo-dialog>
