@@ -117,7 +117,7 @@ export class AddCheckInoutComponent implements OnInit {
           if (!record.location) {
             record.location = location;
           }
-          if (record.status === 'Checked Out') {
+          if (record.status === 'CheckOut') {
             record.location = location;
           }
           record.employeeNames = employeeNames;
@@ -137,7 +137,7 @@ export class AddCheckInoutComponent implements OnInit {
           InvMovementDetails: matchingRecords.map((record: any) => ({
             InventoryID: record.inventoryId,
             Location: record.location,
-            StatusID: record.status === 'Checked In' ? 1711 : 1712,
+            StatusID: record.status === 'CheckIn' ? 1711 : 1712,
             ReceivedFromID: employeeIds ,
             LoginId: 1
           }))
@@ -184,7 +184,7 @@ export class AddCheckInoutComponent implements OnInit {
     }
     const updateData = {
       InvMovementDetails: selectedRows.map((record: any) => {
-        const newStatus = record.status === 'Checked In' ? 'Checked Out' : 'Checked In';
+        const newStatus = record.status === 'CheckIn' ? 'CheckOut' : 'CheckIn';
         record.status = newStatus;
         if (!record.location) {
           record.location = this.selectedLocation; 
@@ -193,7 +193,7 @@ export class AddCheckInoutComponent implements OnInit {
         return {
           InventoryID: record.inventoryId,
           Location: record.location,
-          StatusID: newStatus === 'Checked In' ? 1711 : 1712,
+          StatusID: newStatus === 'CheckIn' ? 1711 : 1712,
           ReceivedFromID: record.receivedFromId,
           LoginId: 1
         };
