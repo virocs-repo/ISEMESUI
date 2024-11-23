@@ -1,7 +1,7 @@
-import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, Output,ChangeDetectorRef  } from '@angular/core';
 import { ColumnMenuSettings, GridDataResult, PageChangeEvent, SelectableSettings, SelectionEvent } from '@progress/kendo-angular-grid';
 import { ApiService } from 'src/app/services/api.service';
-import { Customer, ICON, MESSAGES, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2 } from 'src/app/services/app.interface';
+import { CombineLot, Customer, ICON, MESSAGES, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2 } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -18,12 +18,12 @@ export class AddCombinedLotComponent implements OnDestroy {
   lotNumbers: string[] = [];
 
     allLotNumbers: string[] = []; // F
-  readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
+/*   readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
   receiptLocationSelected: ReceiptLocation | undefined;
   senderInformation: string = ''
   shipmentCategories: ShipmentCategory[] = []
   shipmentCategorySelected: ShipmentCategory | undefined;
-  isShipped = false
+  isShipped = false */
   customerInformation = ''
 
   gridDataResult: GridDataResult = { data: [], total: 0 };
@@ -42,39 +42,123 @@ export class AddCombinedLotComponent implements OnDestroy {
   gridSelectedKeys: any[] = []; // Tracks selected rows in the grid
   @Output() cancel = new EventEmitter<void>();
   isPrimaryLotValid: boolean = true; // Assume valid by default
-  constructor(public appService: AppService, private apiService: ApiService) { }
+  constructor(public appService: AppService, private apiService: ApiService,private cdr: ChangeDetectorRef ) { }
 
   ngOnInit(): void {
 
     this.getLotNumbers();
-    this.shipmentCategories = this.appService.shipmentCategories
+  
 
-    if (this.appService.sharedData.shipping.isViewMode || this.appService.sharedData.shipping.isEditMode) {
+    if (this.appService.sharedData.combolot.isViewMode || this.appService.sharedData.combolot.isEditMode) {
       this.isEditMode = true;
-      const dataItem: Shipment = this.appService.sharedData.shipping.dataItem;
-      console.log({ dataItem })
-      this.shipmentNumber = dataItem.shipmentNum;
+      const dataItem: CombineLot = this.appService.sharedData.combolot.dataItem;
+
+      console.log (dataItem.comboLotID )
+      debugger;
+      this.apiService.getViewEditComblotsWithId(dataItem.comboLotID).subscribe({
+        next: (res: any[]) => {
+          console.log(res);
+      
+          if (this.appService.sharedData.combolot.isViewMode)
+        {
+            // Find all records that match the comboLotID
+            const allresdata = res.filter((s: { comboLotID: number }) => s.comboLotID === dataItem.comboLotID);
+      
+            if (allresdata.length > 0) {
+              // Assign the matching records to the grid
+              this.gridDataResult.data = allresdata;
+      
+              // Automatically select rows where viewFlag = 1
+              this.gridSelectedKeys = allresdata
+                .filter(item => item.viewFlag === 1) // Filter items with viewFlag = 1
+                .map(item => item.inventoryID); // Map to the unique key field (inventoryID)
+                 // Populate dropdown data
+        this.dropdownData = allresdata.map((row: any) => ({
+          iseLotNum: row.iseLotNum,
+          inventoryID: row.inventoryID,
+        }));
+        // Set selectedDropdownValue based on isPrimaryAddress
+        const primaryLot = allresdata.find(item => item.isPrimaryAddress === true);
+        if (primaryLot) {
+          this.selectedDropdownValue = primaryLot.inventoryID; // Set the selected value
+        }
+
+         // Pre-fill comboName and ComboComments
+         this.comboLotName = allresdata[0].comboName || '';
+         this.ComboComments = allresdata[0].comments || '';
+         this.cdr.detectChanges();
+                
+            } 
+            else
+            {
+              console.warn('No data found for the specified comboLotID.');
+              this.gridDataResult.data = [];
+              this.gridSelectedKeys = [];
+            }
+          } 
+          
+          else
+           {
+            // If not in view mode, use the full result set
+            this.gridDataResult.data = res;
+      
+            // Automatically select rows where viewFlag = 1
+            this.gridSelectedKeys = res
+              .filter(item => item.viewFlag === 1)
+              .map(item => item.inventoryID);
+
+
+            // Populate dropdown data
+      this.dropdownData = res.map((row: any) => ({
+        iseLotNum: row.iseLotNum,
+        inventoryID: row.inventoryID,
+      }));
+
+      // Set selectedDropdownValue based on isPrimaryAddress
+      const primaryLot = res.find(item => item.isPrimaryAddress === true);
+      if (primaryLot) {
+        this.selectedDropdownValue = primaryLot.inventoryID;
+      }
+
+      // Pre-fill comboName and ComboComments
+      this.comboLotName = res[0]?.comboName || '';
+      this.ComboComments = res[0]?.comments || '';  
+      this.cdr.detectChanges();
+          }
+          
+          console.log('Selected Keys:', this.gridSelectedKeys);
+        },
+        error: (err) => {
+          console.error('Error fetching data:', err);
+          this.gridDataResult.data = [];
+          this.gridSelectedKeys = [];
+        }
+      });
+      
+      
+     
+     /*  this.shipmentNumber = dataItem.shipmentNum;
       this.shipmentCategorySelected = this.shipmentCategories.find(c => c.shipmentCategoryID == dataItem.shipmentCategoryID)
       this.shipmentLocation = dataItem.shipmentLocation
       this.customerInformation = dataItem.customerInfo;
-      this.senderInformation = dataItem.senderInfo
+      this.senderInformation = dataItem.senderInfo */
 
-      this.customerSelected = this.customers.find(c => c.CustomerID == dataItem.customerID);
+      //this.customerSelected = this.customers.find(c => c.CustomerID == dataItem.customerID);
       // this.shipmentCategorySelected = this.shipmentCategories.find(c => c.shipmentCategoryID == dataItem.shipmentTypeID);
 
-      this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.currentLocationID);
-      this.customerID = dataItem.customerID;
+     // this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.currentLocationID);
+     // this.customerID = dataItem.customerID;
       //this.fetchShipmentLineItems(dataItem.shipmentId);
-      this.fetchData();
+      //this.fetchData();
     }
-    if (this.appService.sharedData.shipping.isViewMode) {
+    if (this.appService.sharedData.combolot.isViewMode) {
       this.isDisabled.shipBtn = true;
       this.isDisabled.clearBtn = true;
     }
   }
   ngOnDestroy(): void {
-    this.appService.sharedData.shipping.isEditMode = false
-    this.appService.sharedData.shipping.isViewMode = false
+    this.appService.sharedData.combolot.isEditMode = false
+    this.appService.sharedData.combolot.isViewMode = false
   }
   private fetchShipmentLineItems(shipmentID: number) {
     this.apiService.getShipmentLineItems(shipmentID).subscribe({
@@ -231,18 +315,10 @@ onSelectionChange(event: SelectionEvent): void {
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
-  autoFillTestValues() {
-    this.customerSelected = this.customers[0]
-    this.shipmentNumber = '123'
-    this.shipmentCategorySelected = this.shipmentCategories[0]
-    this.shipmentLocation = 'shipmentLocation'
-    this.receiptLocationSelected = this.receiptLocation[0]
-    this.senderInformation = 'senderInformation'
-    this.customerInformation = 'customerInformation'
-  }
+
  
   saveShipment() {
-    if (!this.customerSelected) {
+    /* if (!this.customerSelected) {
       this.appService.errorMessage('Please select customer');
       return;
     }
@@ -263,7 +339,7 @@ onSelectionChange(event: SelectionEvent): void {
       LoginId: this.appService.loginId,
     }
     if (this.isEditMode) {
-      const dataItem: Shipment = this.appService.sharedData.shipping.dataItem;
+      const dataItem: Shipment = this.appService.sharedData.combolot.dataItem;
       s.ShipmentID = dataItem.shipmentId
       s.RecordStatus = "U";
       console.log({ dataItem })
@@ -277,7 +353,7 @@ onSelectionChange(event: SelectionEvent): void {
       error: (err) => {
         this.appService.errorMessage(MESSAGES.DataSaveError);
       }
-    });
+    }); */
   }
   private getSelectedShipmentDetails(): Array<ShipmentDetails2> {
     let selectedShipmentDetails: Array<ShipmentDetails2> = [];

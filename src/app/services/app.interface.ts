@@ -506,3 +506,22 @@ export interface PostShipment {
   Active: boolean;
   LoginId: number;
 }
+export interface CombineLot {
+  receiptID: number; // Represents the receipt ID
+  customerVendorID: number; // Customer/Vendor ID
+  behalfID: number; // Behalf ID
+  goodsType: string; // Type of goods (e.g., Device)
+  inventoryID: number; // Inventory ID
+  iseLotNum: string; // ISE Lot Number
+  customerLotNum: string; // Customer Lot Number
+  expectedQty: number; // Expected Quantity
+  expedite: boolean; // Whether the item is expedited
+  partNum: string; // Part Number
+  labelCount: number; // Label Count
+  coo: string | null; // Country of Origin (nullable)
+  dateCode: string | null; // Date Code (nullable)
+  isHold: boolean; // Whether the item is on hold
+  active: boolean; // Whether the item is active
+  comboLotID: number; // Combo Lot ID
+  viewFlag: number; // View Flag (could be an enum or status indicator)
+}

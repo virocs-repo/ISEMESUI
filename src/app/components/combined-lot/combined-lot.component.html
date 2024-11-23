@@ -28,6 +28,10 @@
       class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
       [rowClass]="rowCallback">
       <!-- <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column> -->
+      
+      customerVendorID
+      <kendo-grid-column field="receiptID" title="receipt #"></kendo-grid-column>
+      <kendo-grid-column field="customerVendorID" title="customerVendorID"  [hidden]="true" ></kendo-grid-column>
       <kendo-grid-column field="comboLotID" title="Combo Lot#"></kendo-grid-column>
       <kendo-grid-column field="comboName" title="Combo Name"></kendo-grid-column>
       <kendo-grid-column field="customer" title="Customer"></kendo-grid-column>
@@ -46,8 +50,8 @@
     class="dialog-round receipt-dialog">
     <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
       <h2 class="k-m-0">Combined Lot</h2>
-      <small *ngIf="appService.sharedData.shipping.isViewMode">(View Mode)</small>
-      <small *ngIf="appService.sharedData.shipping.isEditMode">(Edit Mode)</small>
+      <small *ngIf="appService.sharedData.combolot.isViewMode">(View Mode)</small>
+      <small *ngIf="appService.sharedData.combolot.isEditMode">(Edit Mode)</small>
       <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
         (click)="closeDialog()"></button>
     </div>

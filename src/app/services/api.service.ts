@@ -239,6 +239,10 @@ export class ApiService {
     return this.httpClient.post(`${API}v1/ise/inventory/combinedlot/upinsertcombolot`, payload);
   }
 
+  getViewEditComblotsWithId(comboLotId:number ): Observable<any[]> {
+    return this.httpClient.get<any[]>(`${API}v1/ise/inventory/combinedlot/vieweditcombolots?comboLotId=${comboLotId}`);
+  }
+
 
   //Inventory Hold
   getHoldCodes(lotId: number) {

@@ -103,7 +103,7 @@ export class CombinedLotComponent implements OnDestroy {
     { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
     { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
   ];
-  dataItemSelected!: Receipt;
+  dataItemSelected!: any;
   selectedRowIndex: number = -1;
   onCellClick(e: CellClickEvent): void {
     console.log(e);
@@ -122,16 +122,16 @@ export class CombinedLotComponent implements OnDestroy {
     dataItem.holdComments = dataItem.holdComments || '';
     switch (e.item.text) {
       case 'View Data':
-        this.appService.sharedData.shipping.dataItem = dataItem
-        this.appService.sharedData.shipping.isEditMode = false;
-        this.appService.sharedData.shipping.isViewMode = true;
+        this.appService.sharedData.combolot.dataItem = dataItem
+        this.appService.sharedData.combolot.isEditMode = false;
+        this.appService.sharedData.combolot.isViewMode = true;
         // access the same in receipt component
         this.openDialog()
         break;
       case 'Edit Data':
-        this.appService.sharedData.shipping.dataItem = dataItem
-        this.appService.sharedData.shipping.isEditMode = true;
-        this.appService.sharedData.shipping.isViewMode = false;
+        this.appService.sharedData.combolot.dataItem = dataItem
+        this.appService.sharedData.combolot.isEditMode = true;
+        this.appService.sharedData.combolot.isViewMode = false;
         // access the same in receipt component
         this.openDialog()
         break;
