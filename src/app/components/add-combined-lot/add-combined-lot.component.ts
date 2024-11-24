@@ -18,12 +18,7 @@ export class AddCombinedLotComponent implements OnDestroy {
   lotNumbers: string[] = [];
 
     allLotNumbers: string[] = []; // F
-/*   readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
-  receiptLocationSelected: ReceiptLocation | undefined;
-  senderInformation: string = ''
-  shipmentCategories: ShipmentCategory[] = []
-  shipmentCategorySelected: ShipmentCategory | undefined;
-  isShipped = false */
+
   customerInformation = ''
 
   gridDataResult: GridDataResult = { data: [], total: 0 };
@@ -48,7 +43,6 @@ export class AddCombinedLotComponent implements OnDestroy {
 
     this.getLotNumbers();
   
-debugger;
     if (this.appService.sharedData.combolot.isViewMode || this.appService.sharedData.combolot.isEditMode) {
    
       this.isEditMode = true;
@@ -143,21 +137,6 @@ debugger;
         }
       });
       
-      
-     
-     /*  this.shipmentNumber = dataItem.shipmentNum;
-      this.shipmentCategorySelected = this.shipmentCategories.find(c => c.shipmentCategoryID == dataItem.shipmentCategoryID)
-      this.shipmentLocation = dataItem.shipmentLocation
-      this.customerInformation = dataItem.customerInfo;
-      this.senderInformation = dataItem.senderInfo */
-
-      //this.customerSelected = this.customers.find(c => c.CustomerID == dataItem.customerID);
-      // this.shipmentCategorySelected = this.shipmentCategories.find(c => c.shipmentCategoryID == dataItem.shipmentTypeID);
-
-     // this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.currentLocationID);
-     // this.customerID = dataItem.customerID;
-      //this.fetchShipmentLineItems(dataItem.shipmentId);
-      //this.fetchData();
     }
     if (this.appService.sharedData.combolot.isViewMode) {
       this.isDisabled.shipBtn = true;
@@ -168,38 +147,9 @@ debugger;
     this.appService.sharedData.combolot.isEditMode = false
     this.appService.sharedData.combolot.isViewMode = false
   }
-  private fetchShipmentLineItems(shipmentID: number) {
-    this.apiService.getShipmentLineItems(shipmentID).subscribe({
-      next: (shipmentDetails: ShipmentDetails[] | any) => {
-        this.rebuildTable(shipmentDetails);
-      }
-    })
-  }
-  shipmentDetails: ShipmentDetails[] = []
-  shipmentDetailsTxt = ''
-  private fetchData() {
-    if (!this.customerID) {
-      return;
-    }
-   /*  this.apiService.getShipmentDetails(this.customerID).subscribe({
-      next: (shipmentDetails: ShipmentDetails[] | any) => {
-        this.rebuildTable(shipmentDetails);
-      }
-    }); */
-  }
-  private rebuildTable(shipmentDetails: ShipmentDetails[] | any) {
-    if (shipmentDetails) {
-      shipmentDetails.forEach((a: ShipmentDetails) => {
-        a.shipmentTypeSelected = this.appService.shipmentTypes.find(s => s.shipmentTypeID == a.shipmentTypeID)
-        a.selected = true;
-      })
-      this.gridDataResult.data = shipmentDetails;
-      this.gridDataResult.total = shipmentDetails.length;
-      this.shipmentDetails = shipmentDetails;
-      this.gridSelectedKeys = this.shipmentDetails.map(d => d.inventoryID);
-      console.log({ shipmentDetails });
-    }
-  }
+ 
+ 
+
   onChangeCustomer() {
     if (this.customerSelected) {
      /*  this.apiService.getShipmentInventories(this.customerSelected.CustomerID).subscribe({
@@ -330,52 +280,5 @@ onSelectionChange(event: SelectionEvent): void {
     autoSizeAllColumns: true,
   }
 
- 
-  saveShipment() {
-    /* if (!this.customerSelected) {
-      this.appService.errorMessage('Please select customer');
-      return;
-    }
-    const Shipment: PostShipment[] = []
-    const s: PostShipment = {
-      ShipmentID: null,
-      CustomerID: this.customerSelected?.CustomerID || 1,
-      ShipmentNum: this.shipmentNumber,
-      ShipmentCategoryID: this.shipmentCategorySelected?.shipmentCategoryID || 1,
-      ShipmentLocation: this.shipmentLocation,
-      CurrentLocationID: this.receiptLocationSelected?.receivingFacilityID || 1,
-      SenderInfo: this.senderInformation,
-      CustomerInfo: this.customerInformation,
-      ShipmentDetails: this.getSelectedShipmentDetails(),
-      IsShipped: this.isShipped,
-      RecordStatus: "I",
-      Active: true,
-      LoginId: this.appService.loginId,
-    }
-    if (this.isEditMode) {
-      const dataItem: Shipment = this.appService.sharedData.combolot.dataItem;
-      s.ShipmentID = dataItem.shipmentId
-      s.RecordStatus = "U";
-      console.log({ dataItem })
-    }
 
-    this.apiService.postProcessShipment(s).subscribe({
-      next: (v: any) => {
-        this.appService.successMessage(MESSAGES.DataSaved);
-        // this.fetchDataDevice();
-      },
-      error: (err) => {
-        this.appService.errorMessage(MESSAGES.DataSaveError);
-      }
-    }); */
-  }
-  private getSelectedShipmentDetails(): Array<ShipmentDetails2> {
-    let selectedShipmentDetails: Array<ShipmentDetails2> = [];
-    this.shipmentDetails.forEach(d => {
-      if (this.gridSelectedKeys.includes(d.inventoryID)) {
-        selectedShipmentDetails.push({ ShipmentLineItemID: d.shipmentLineItemID, InventoryID: d.inventoryID })
-      }
-    })
-    return selectedShipmentDetails;
-  }
 }
