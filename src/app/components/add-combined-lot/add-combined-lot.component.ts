@@ -85,7 +85,7 @@ export class AddCombinedLotComponent implements OnDestroy {
          // Pre-fill comboName and ComboComments
          this.comboLotName = allresdata[0].comboName || '';
          this.ComboComments = allresdata[0].comments || '';
-         this.cdr.detectChanges();
+         //this.cdr.detectChanges();
                 
             } 
             else
@@ -123,9 +123,9 @@ export class AddCombinedLotComponent implements OnDestroy {
       }
 
       // Pre-fill comboName and ComboComments
-      this.comboLotName = res[0]?.comboName || '';
-      this.ComboComments = res[0]?.comments || '';  
-      this.cdr.detectChanges();
+      this.comboLotName = primaryLot?.comboName || '';
+      this.ComboComments = primaryLot?.comments || '';  
+     // this.cdr.detectChanges();
           }
           
           console.log('Selected Keys:', this.gridSelectedKeys);
