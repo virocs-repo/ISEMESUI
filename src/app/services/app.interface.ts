@@ -525,3 +525,14 @@ export interface CombineLot {
   comboLotID: number; // Combo Lot ID
   viewFlag: number; // View Flag (could be an enum or status indicator)
 }
+
+export interface CombineLotPayload {
+  comboLotID?: number | null; // Optional, can be null for new records
+  comboName: string;
+  str_InventoryId: string;
+  primary_InventoryId: number;
+  userID: number;
+  active: boolean;
+  comments?: string; // Optional
+}
+

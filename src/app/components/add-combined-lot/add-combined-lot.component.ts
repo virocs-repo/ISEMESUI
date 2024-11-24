@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnDestroy, Output,ChangeDetectorRef  } from '@angular/core';
 import { ColumnMenuSettings, GridDataResult, PageChangeEvent, SelectableSettings, SelectionEvent } from '@progress/kendo-angular-grid';
 import { ApiService } from 'src/app/services/api.service';
-import { CombineLot, Customer, ICON, MESSAGES, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2 } from 'src/app/services/app.interface';
+import { CombineLot, CombineLotPayload, Customer, ICON, MESSAGES, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2 } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 @Component({
@@ -48,23 +48,24 @@ export class AddCombinedLotComponent implements OnDestroy {
 
     this.getLotNumbers();
   
-
+debugger;
     if (this.appService.sharedData.combolot.isViewMode || this.appService.sharedData.combolot.isEditMode) {
+   
       this.isEditMode = true;
       const dataItem: CombineLot = this.appService.sharedData.combolot.dataItem;
-
+      this.customerSelected = this.customers.find(c => c.CustomerID == dataItem.customerVendorID);
       console.log (dataItem.comboLotID )
-      debugger;
+   
       this.apiService.getViewEditComblotsWithId(dataItem.comboLotID).subscribe({
         next: (res: any[]) => {
           console.log(res);
+          // Find all records that match the comboLotID
+          const allresdata = res.filter((s: { comboLotID: number }) => s.comboLotID === dataItem.comboLotID);
       
           if (this.appService.sharedData.combolot.isViewMode)
         {
-            // Find all records that match the comboLotID
-            const allresdata = res.filter((s: { comboLotID: number }) => s.comboLotID === dataItem.comboLotID);
-      
-            if (allresdata.length > 0) {
+            if (allresdata.length > 0)
+           {
               // Assign the matching records to the grid
               this.gridDataResult.data = allresdata;
       
@@ -73,15 +74,19 @@ export class AddCombinedLotComponent implements OnDestroy {
                 .filter(item => item.viewFlag === 1) // Filter items with viewFlag = 1
                 .map(item => item.inventoryID); // Map to the unique key field (inventoryID)
                  // Populate dropdown data
-        this.dropdownData = allresdata.map((row: any) => ({
+          this.dropdownData = allresdata.map((row: any) => ({
           iseLotNum: row.iseLotNum,
           inventoryID: row.inventoryID,
         }));
-        // Set selectedDropdownValue based on isPrimaryAddress
-        const primaryLot = allresdata.find(item => item.isPrimaryAddress === true);
+        // Automatically select the primary lot in the dropdown
+        const primaryLot = allresdata.find((row: any) => row.isPrimaryAddress === true);
         if (primaryLot) {
-          this.selectedDropdownValue = primaryLot.inventoryID; // Set the selected value
+          this.selectedDropdownValue = primaryLot.inventoryID; // Select the primary lot by inventoryID
+        } else {
+          this.selectedDropdownValue = null; // Reset if no primary lot is found
         }
+    
+
 
          // Pre-fill comboName and ComboComments
          this.comboLotName = allresdata[0].comboName || '';
@@ -109,15 +114,18 @@ export class AddCombinedLotComponent implements OnDestroy {
 
 
             // Populate dropdown data
-      this.dropdownData = res.map((row: any) => ({
-        iseLotNum: row.iseLotNum,
-        inventoryID: row.inventoryID,
-      }));
+      
 
-      // Set selectedDropdownValue based on isPrimaryAddress
-      const primaryLot = res.find(item => item.isPrimaryAddress === true);
+            this.dropdownData = allresdata.map((row: any) => ({
+              iseLotNum: row.iseLotNum,
+              inventoryID: row.inventoryID,
+            }));
+      // Automatically select the primary lot in the dropdown
+      const primaryLot = allresdata.find((row: any) => row.isPrimaryAddress === true);
       if (primaryLot) {
-        this.selectedDropdownValue = primaryLot.inventoryID;
+        this.selectedDropdownValue = primaryLot.inventoryID; // Select the primary lot by inventoryID
+      } else {
+        this.selectedDropdownValue = null; // Reset if no primary lot is found
       }
 
       // Pre-fill comboName and ComboComments
@@ -261,7 +269,7 @@ saveCombineLots(): void {
   }
 
   // Create the JSON payload
-  const payload = {
+  const payload: CombineLotPayload = {
     comboLotID: null, // Assuming it's 0 for a new combo
     comboName: this.comboLotName,
     str_InventoryId: this.dropdownData.map((item) => item.inventoryID).join(','), // Convert inventory IDs to a comma-separated string
@@ -271,6 +279,12 @@ saveCombineLots(): void {
     comments: this.ComboComments,
   };
 
+  if (this.isEditMode) {
+    const dataItem: CombineLot = this.appService.sharedData.combolot.dataItem;
+    payload.comboLotID=dataItem.comboLotID;
+    payload.primary_InventoryId=this.selectedDropdownValue;
+
+  }
   console.log('Payload:', payload);
 
   // Call the API
