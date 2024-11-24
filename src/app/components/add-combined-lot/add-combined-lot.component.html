@@ -21,54 +21,18 @@
                 </kendo-autocomplete>
               </kendo-label>
     
-            <kendo-button themeColor="success"  rounded="full"  style="width: 7rem" (click)="onSearch()"  >
+            <kendo-button themeColor="success"  rounded="full"  style="width: 7rem" (click)="onSearch()"   [disabled]="isDisabled.shipBtn">
                 Search
             </kendo-button>
             </div>
            
           </div>
-  
-      <!--     <div class="k-d-flex k-gap-2 k-flex-col k-flex-1">
-            <div class="k-d-flex k-gap-3 flex-col-sm">
-              <kendo-label text="Shipment Category" class="k-w-full">
-                <kendo-combobox [data]="shipmentCategories" [(ngModel)]="shipmentCategorySelected"
-                  [textField]="'shipmentCategoryName'" [valueField]="'shipmentCategoryID'" placeholder="Select"
-                  rounded="large"></kendo-combobox>
-              </kendo-label>
-              <kendo-label text="Current Location" class="k-w-full">
-                <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
-                  [textField]="'receivingFacilityName'" [valueField]="'receivingFacilityID'" placeholder="Select"
-                  rounded="large"></kendo-combobox>
-              </kendo-label>
-            </div>
-  
-            <div class="k-d-flex k-gap-3 flex-col-sm">
-              <kendo-label text="Shipment" class="k-w-full">
-                <small class="k-ml-1">(Is Shipped?)</small>
-                <br>
-                <input type="checkbox" kendoCheckBox [(ngModel)]="isShipped"
-                  style="border: 1px solid black;  border-radius: 4px;">
-              </kendo-label>
-              <kendo-label text="Shipment Location" class="k-w-full">
-                <kendo-textbox placeholder="Enter" rounded="large" [(ngModel)]="shipmentLocation">
-                </kendo-textbox>
-              </kendo-label>
-            </div>
-            <div class="k-d-flex k-gap-3" class="k-w-full">
-              <kendo-label text="Customer Information">
-                <b class="required-label"></b>
-                <kendo-textarea [rows]="4" placeholder="Enter info" rounded="large"
-                  [(ngModel)]="customerInformation"></kendo-textarea>
-              </kendo-label>
-            </div>
-            <kendo-button type="button" rounded="large" themeColor="dark"
-              (click)="autoFillTestValues()">AutoFillTestValues</kendo-button>
-          </div> -->
+
         </div>
       </kendo-card-body>
     </kendo-card>
     <div class="grid-container k-my-6">
-      <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true" [pageSize]="pageSize" [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
+      <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true" [height]="400" 
         [kendoGridSelectBy]="'inventoryID'" [(selectedKeys)]="gridSelectedKeys" (selectionChange)="onSelectionChange($event)"
         class="bold-column-header cell-border-none">
         <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
@@ -87,7 +51,7 @@
         <kendo-grid-column field="dateCode" title="dateCode"></kendo-grid-column>
         <kendo-grid-column field="isHold" title="isHold"></kendo-grid-column>
     
-        <kendo-grid-column field="active" title="active"></kendo-grid-column>
+        <kendo-grid-column field="active" title="active" ></kendo-grid-column>
       </kendo-grid>
     </div>
 
