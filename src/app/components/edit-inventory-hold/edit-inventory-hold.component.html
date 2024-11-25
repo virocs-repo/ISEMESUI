@@ -55,7 +55,12 @@
           <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
               (click)="closeDialog()"></button>
       </div>
-      <app-add-hold (cancel)="closeDialog()"></app-add-hold>
+      <app-add-hold [lotNumber]="selectedLotNumber.toString()" 
+      [location]="selectedLocation.toString()" 
+      [noOfHolds]="numberOfHolds.toString()"
+      [holdTypes]="holdTypes"
+      [inventoryId]="selectedRowData?.inventoryId"
+        (cancel)="closeDialog()"></app-add-hold>
   </kendo-dialog>
 </div>
   

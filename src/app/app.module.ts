@@ -57,6 +57,7 @@ import { CombinedLotComponent } from './components/combined-lot/combined-lot.com
 import { AddAnotherShippingComponent } from './components/add-another-shipping/add-another-shipping.component';
 import { AddCombinedLotComponent } from './components/add-combined-lot/add-combined-lot.component';
 import { EditInventoryHoldComponent } from './components/edit-inventory-hold/edit-inventory-hold.component';
+import { TreeViewModule } from '@progress/kendo-angular-treeview';
 
 
 
@@ -166,6 +167,8 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     PDFExportModule,
     ExcelExportModule,
     ExcelModule,
+    TreeViewModule,
+
   ],
   providers: [
     {
