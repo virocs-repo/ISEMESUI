@@ -1,8 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { CellClickEvent, GridComponent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
-import { Employee, ICON } from 'src/app/services/app.interface';
+import { ICON } from 'src/app/services/app.interface';
 import { ContextMenuComponent } from '@progress/kendo-angular-menu';
-import { AppService } from 'src/app/services/app.service';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -15,6 +14,7 @@ export class EditInventoryHoldComponent implements OnInit {
   @Output() cancel = new EventEmitter<void>();
   @ViewChild('grid', { static: true }) grid!: GridComponent; 
   @Input() selectedRowData: any;
+  @Input() holdTypes: string[] = ['Receiving', 'Engineering', 'QA', 'Production'];
   private originalData: any[] = []; 
   gridDataResult: GridDataResult = { data: [], total: 0 };
   readonly ICON = ICON;
@@ -86,16 +86,16 @@ export class EditInventoryHoldComponent implements OnInit {
     this.gridDataResult.data = filteredData;
     this.gridDataResult.total = filteredData.length; 
     this.numberOfHolds = filteredData.length;
+  }
+  filterData(data: any[]): any[] {
+    if (!this.searchTerm) {
+      return data;
     }
-    filterData(data: any[]): any[] {
-      if (!this.searchTerm) {
-        return data;
-      }
-      const term = this.searchTerm.toLowerCase();
-      return data.filter(item =>
-        Object.values(item).some(val => String(val).toLowerCase().includes(term))
-      );
-    }
+    const term = this.searchTerm.toLowerCase();
+    return data.filter(item =>
+      Object.values(item).some(val => String(val).toLowerCase().includes(term))
+    );
+  }
 
   dataItemSelected:any;
   onCellClick(e: CellClickEvent): void {
@@ -109,18 +109,17 @@ export class EditInventoryHoldComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-  if (this.selectedRowData) {
-    const inventoryId = this.selectedRowData?.inventoryId;
-    if (inventoryId) {
-      this.loadHoldData(inventoryId);
+    if (this.selectedRowData) {
+      const inventoryId = this.selectedRowData?.inventoryId;
+      if (inventoryId) {
+        this.loadHoldData(inventoryId);
+      }
     }
-  }
-  if (changes['selectedRowData'] && this.selectedRowData) {
-    // Extract Lot Number and Location when data changes
-    this.selectedLotNumber = this.selectedRowData.lotNum || '';
-    this.selectedLocation = this.selectedRowData.location || '';
-    this.filterGridData(); // Optionally filter grid data if required
-  }
+    if (changes['selectedRowData'] && this.selectedRowData) {
+      this.selectedLotNumber = this.selectedRowData.lotNum || '';
+      this.selectedLocation = this.selectedRowData.location || '';
+      this.filterGridData();
+    }
   }
 
   loadHoldData(inventoryId: number): void {
@@ -131,8 +130,8 @@ export class EditInventoryHoldComponent implements OnInit {
         console.log(data);
       },
       error: (v: any) => { }
-      });
-    }
+    });
+  }
 
   editRow(dataItem: any): void {
     this.isEditMode = true;
@@ -143,6 +142,9 @@ export class EditInventoryHoldComponent implements OnInit {
     if (dataItem.lotNum) {
       this.loadHoldData(dataItem.lotNum);
     }
+    if (dataItem.inventoryId) {
+      this.loadHoldData(dataItem.inventoryId);
+    }
   }
 
   onSelectionChange(event: any): void {
@@ -152,7 +154,6 @@ export class EditInventoryHoldComponent implements OnInit {
     }
   }
 
-  
   clearRequest(): void {
     this.gridDataResult = { data: [], total: 0 };
     this.selectedLocation = 0;
@@ -162,11 +163,13 @@ export class EditInventoryHoldComponent implements OnInit {
     this.isEditMode = false; 
     this.selectedRowData = null;
   }
+
   rowCallback  = (context: any) => {
     return {
       'highlighted-row': context.index === this.selectedRowIndex
     };
   }
+
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;
     this.pageData();
