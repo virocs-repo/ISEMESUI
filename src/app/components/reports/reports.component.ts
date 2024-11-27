@@ -16,7 +16,7 @@ export class ReportsComponent  implements OnInit {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
   @ViewChild('grid', { static: false }) grid!: GridComponent; // Reference to Kendo Grid
   readonly ICON = ICON
-  public pageSize = 10;
+  public pageSize = 25;
   public skip = 0;
   public gridDataResult: GridDataResult = { data: [], total: 0 };
   public originalPageable: any;
@@ -130,8 +130,9 @@ export class ReportsComponent  implements OnInit {
   }
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;
+    this.pageSize = event.take; 
     console.log(event);
-    this.loadGridData();
+    //this.loadGridData();
   }
   onCellClick(e: CellClickEvent): void {
     console.log(e);

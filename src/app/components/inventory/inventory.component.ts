@@ -44,6 +44,9 @@ export class InventoryComponent implements OnInit {
     { title: "Status", field: 'status' },
     // { title: "Hold", field: 'Status' }
   ]
+
+
+  
   rowActionMenu: MenuItem[] = [
      { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
   ];
@@ -129,8 +132,9 @@ export class InventoryComponent implements OnInit {
   }
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;
+    this.pageSize = event.take; 
     console.log(event);
-    this.loadGridData();
+   // this.loadGridData();
   }
 
   onLinkClick(field: string, dataItem: any) 
