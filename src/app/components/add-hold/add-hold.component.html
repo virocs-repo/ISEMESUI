@@ -1,66 +1,105 @@
 <div class="k-m-3 k-overflow-y-auto" style="height: 70vh;">
   <kendo-card-body class="card-flex">
-    <fieldset>
       <legend><b>Lot Info</b></legend>
-      <div class="k-d-flex k-align-items-center k-gap-3">
-        <label class="k-label">Lot/ Mail/FGT Pull #:</label>
-        <span>{{ lotNumber || '...' }}</span>
-        <label class="k-label">Customer:</label>
-        <span>{{ customer || '...' }}</span>
-        <label class="k-label">Device:</label>
-        <span>{{ device || '...' }}</span>
-      </div>
-    </fieldset>
-    
+      <kendo-card-body class="card-flex" style="background-color:lightgrey">
+        <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
+            <div class="field-container">
+              <kendo-label [for]="'lotNumber'" class="label-text">Lot/ Mail/ FGI Pull #:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
+              <span class="value-text">{{ lotNumber }}</span>
+            </div>
+            <div class="field-container">
+              <kendo-label [for]="'location'" class="label-text">Location:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</kendo-label>
+              <span class="value-text">{{ location }}</span>
+            </div>
+            <div class="field-container">
+              <kendo-label [for]="'noOfHolds'" class="label-text">No Of Holds:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</kendo-label>
+              <span class="value-text">{{ noOfHolds  }}</span>
+            </div>
+          </div>          
+    </kendo-card-body> 
 
     <fieldset class="k-mt-3">
       <legend><b>Hold Details</b></legend>
-      <div class="k-d-flex k-flex-wrap k-gap-3">
-        <kendo-checkbox [(ngModel)]="isHold" label="Hold"></kendo-checkbox>
-        <kendo-label text="Hold Type">
-          <kendo-dropdownlist
-            [(ngModel)]="selectedHoldType"
-            placeholder="Select Hold Type"
-            required>
-          </kendo-dropdownlist>
-        </kendo-label>
-      </div>
-      <div class="k-d-flex k-flex-wrap k-gap-3">
-        <label class="k-label">Hold Code:</label>
-        <div>
-          <kendo-radiobutton
-            *ngFor="let code of holdCodes"
-            [value]="code.value"
-            [(ngModel)]="selectedHoldCode">
-            {{ code.label }}
-          </kendo-radiobutton>
+      <div class="k-d-flex k-flex-column k-gap-3">
+        <div class="k-d-flex k-align-items-center k-gap-3">
+          <label class="k-label k-mb-0" style="min-width: 150px;">Hold:</label>
+          <kendo-checkbox [(ngModel)]="isHold" label="Hold"></kendo-checkbox>
+        </div>
+
+        <div class="k-d-flex k-flex-wrap k-gap-3">
+          <label class="k-label" style="min-width: 150px;">Hold Type:<b class="required-label"></b></label>
+          <div>
+            <kendo-combobox
+              [(ngModel)]="selectedHoldType"
+              [data]="holdTypes"
+              placeholder="Select Hold Type">
+            </kendo-combobox>
+          </div>
+        </div>
+
+        <div class="k-d-flex k-align-items-center k-gap-3">
+          <label class="k-label k-mb-0" style="min-width: 150px;">Hold Code:<b class="required-label"></b></label>
+          <div>
+            <kendo-treeview
+              [nodes]="treeNodes"
+              [textField]="['groupName', 'holdCode']"
+              kendoTreeViewExpandable
+              kendoTreeViewHierarchyBinding
+              kendoTreeViewSelectable
+              childrenField="holdGroupDetails"
+              (selectionChange)="onSelectionChange($event)">
+            </kendo-treeview>
+          </div>
+        </div>
+
+        <div class="k-d-flex k-align-items-center k-gap-3">
+          <label class="k-label k-mb-0" style="min-width: 150px;">Reason:<b class="required-label"></b></label>
+          <kendo-textarea
+            [(ngModel)]="reason"
+            style="flex: 1;">
+          </kendo-textarea>
+        </div>
+
+        <div class="k-d-flex k-align-items-center k-gap-3">
+          <label class="k-label k-mb-0" style="min-width: 150px;">Hold Comments:<b class="required-label"></b></label>
+          <kendo-textarea
+            [(ngModel)]="holdComments"
+            style="flex: 1;">
+          </kendo-textarea>
+        </div>
+
+        <div class="k-d-flex k-align-items-center k-gap-3">
+          <label class="k-label k-mb-0" style="min-width: 150px;">Off Hold Comments:<b class="required-label"></b></label>
+          <kendo-textarea
+            [(ngModel)]="offHoldComments"
+            [disabled]="isHold"
+            style="flex: 1;">
+          </kendo-textarea>
+        </div>
+
+        <div class="k-d-flex k-align-items-center k-gap-3">
+          <kendo-label class="k-mb-0" [for]="'lotNumber'" style="min-width: 150px;">Hold By:</kendo-label>
+          <span class="value-text">{{ lotNumber }}</span>
+        </div>
+    
+        <div class="k-d-flex k-align-items-center k-gap-3">
+          <kendo-label class="k-mb-0" [for]="'location'" style="min-width: 150px;">Hold Time:</kendo-label>
+          <span class="value-text">{{ location }}</span>
+        </div>
+    
+        <div class="k-d-flex k-align-items-center k-gap-3">
+          <kendo-label class="k-mb-0" [for]="'noOfHolds'" style="min-width: 150px;">Off Hold By:</kendo-label>
+          <span class="value-text">{{ noOfHolds }}</span>
+        </div>
+    
+        <div class="k-d-flex k-align-items-center k-gap-3">
+          <kendo-label class="k-mb-0" [for]="'lotNumber'" style="min-width: 150px;">Off Hold Time:</kendo-label>
+          <span class="value-text">{{ lotNumber }}</span>
         </div>
       </div>
-      <div class="k-d-flex k-flex-column k-gap-2">
-        <kendo-label text="Hold Comments">
-          <textarea class="k-textarea" [(ngModel)]="holdComments" required></textarea>
-        </kendo-label>
-        <kendo-label text="Reason">
-          <textarea class="k-textarea" [(ngModel)]="reason"></textarea>
-        </kendo-label>
-        <kendo-label text="Off Hold Comments">
-          <textarea class="k-textarea" [(ngModel)]="offHoldComments"></textarea>
-        </kendo-label>
-      </div>
-      <div class="k-d-flex k-align-items-center k-gap-3">
-        <label class="k-label">Hold By:</label>
-        <span>{{ holdBy || '...' }}</span>
-        <label class="k-label">Hold Time:</label>
-        <span>{{ holdTime || '...' }}</span>
-        <label class="k-label">Off Hold By:</label>
-        <span>{{ offHoldBy || '...' }}</span>
-        <label class="k-label">Off Hold Time:</label>
-        <span>{{ offHoldTime || '...' }}</span>
-      </div>
     </fieldset>
-  </kendo-card-body>
-  <div class="k-d-flex k-gap-3 k-mt-3">
-    <button kendoButton type="button" rounded="full" themeColor="info" class="k-w-25" (click)="save()">Save</button>
-    <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem" (click)="cancel()">Cancel</button>
-  </div>
-</div>
+    <div class="k-d-flex k-gap-3 k-mt-3">
+      <button kendoButton type="button" rounded="full" themeColor="info" class="k-w-25" (click)="save()">Save</button>
+      <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem" (click)="resetForm()">Cancel</button>
+    </div>
+    

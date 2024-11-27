@@ -1,81 +1,100 @@
-import { Component } from '@angular/core';
+import { Component,EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ApiService } from 'src/app/services/api.service';
+import { AppService } from 'src/app/services/app.service';
 
 @Component({
   selector: 'app-add-hold',
   templateUrl: './add-hold.component.html',
   styleUrls: ['./add-hold.component.scss']
 })
-
-export class AddHoldComponent {
-  // Variables for Lot Info
-  lotNumber: string = 'L11240068';
-  customer: string = 'Marvell Semiconductor Inc.';
-  device: string = 'Device12';
-
-  // Variables for Hold Details
-  isHold: boolean = false;
-  holdTypes: string[] = ['Receiving', 'Engineering', 'QA'];
+export class AddHoldComponent implements OnInit {
+  @Input() lotNumber: string = '';
+  @Input() location: string = '';
+  @Input() noOfHolds: string = '';
+  @Input() holdTypes: string[] = [];
+  @Input() inventoryId: number =0;
+  @Output() cancel = new EventEmitter<void>();
+  @Input() mode: 'add' | 'edit' = 'add';
+  isHold: boolean = true;
   selectedHoldType: string = '';
-
-  holdCodes = [
-    { value: 'customerService', label: 'Customer Service' },
-    { value: 'engineering', label: 'Engineering' },
-    { value: 'qa', label: 'QA' }
-  ];
   selectedHoldCode: string = '';
-
   holdComments: string = '';
   reason: string = '';
   offHoldComments: string = '';
+  treeNodes: any[] = [];
+  selectedIds: any[] = [];
 
-  // Variables for Hold Time and By
-  holdBy: string = '...';
-  holdTime: string = '...';
-  offHoldBy: string = '...';
-  offHoldTime: string = '...';
+  constructor(private appService: AppService,private apiService: ApiService) {}
 
-  /**
-   * Save method: Simulates form submission
-   */
+  ngOnInit(): void {
+    this.fetchHoldCodes();
+  
+    if (this.mode === 'edit') {
+      this.isHold = true;
+      this.selectedHoldType = this.holdTypes[0] || '';
+      this.holdComments = this.holdComments;
+      this.reason = this.reason;
+      this.offHoldComments = '';
+    } else {
+      this.isHold = true;
+      this.selectedHoldType = '';
+      this.holdComments = '';
+      this.reason = '';
+      this.offHoldComments = '';
+    }
+  }
+
+  fetchHoldCodes(): void {
+    this.apiService.getHoldCodes(this.inventoryId).subscribe(
+      (response: any) => {
+        console.log('API Response:', response);
+        this.treeNodes = response;
+      },
+      (error) => {
+        console.error('Failed to fetch hold codes:', error);
+        alert('Failed to load hold codes. Please try again.');
+      }
+    );
+  }
+  onSelectionChange(event: any): void {
+    const selectedNode = event.dataItem;
+    if (selectedNode) {
+      const id = selectedNode.holdCodeId;
+      this.reason = selectedNode.holdCode;
+      this.selectedIds.push(id);
+      console.log('Selected Node ID:', id);
+    }
+  }
+
   save(): void {
     if (!this.holdComments || !this.selectedHoldType) {
-      alert('Please fill in the required fields (Hold Comments and Hold Type).');
+      this.appService.errorMessage('Please fill in the required fields.');
       return;
     }
-
-    const formData = {
-      lotNumber: this.lotNumber,
-      customer: this.customer,
-      device: this.device,
-      isHold: this.isHold,
-      selectedHoldType: this.selectedHoldType,
-      selectedHoldCode: this.selectedHoldCode,
-      holdComments: this.holdComments,
-      reason: this.reason,
-      offHoldComments: this.offHoldComments,
-      holdBy: this.holdBy,
-      holdTime: this.holdTime,
-      offHoldBy: this.offHoldBy,
-      offHoldTime: this.offHoldTime
+    const payload = {
+      InventoryXHoldId: null, 
+      InventoryId: this.inventoryId, 
+      Reason: this.reason || '',
+      HoldComments: this.holdComments,
+      HoldType: this.selectedHoldType,
+      HoldGroupId: 0, 
+      HoldCodeId: this.selectedIds[0] || null,
+      OffHoldComments: this.isHold ? null : this.offHoldComments,
+      UserId: 1
     };
+  
+    this.apiService.upsertInventoryHold(payload, { responseType: 'text' }).subscribe(
+      (response: any) => {
+        console.log('API Response:', response);
+        this.appService.successMessage('Hold details have been saved successfully!');
+      },
+      (error) => {
+        console.error('API Error:', error);
+        this.appService.errorMessage('Failed to save hold details. Please try again later.');
+      }
+    );
+  }  
 
-    console.log('Form Submitted:', formData);
-    alert('Hold details have been saved successfully!');
-  }
-
-  /**
-   * Cancel method: Resets the form or redirects the user
-   */
-  cancel(): void {
-    const confirmation = confirm('Are you sure you want to cancel? Unsaved changes will be lost.');
-    if (confirmation) {
-      this.resetForm();
-    }
-  }
-
-  /**
-   * Reset form to initial values
-   */
   resetForm(): void {
     this.isHold = false;
     this.selectedHoldType = '';
@@ -83,11 +102,6 @@ export class AddHoldComponent {
     this.holdComments = '';
     this.reason = '';
     this.offHoldComments = '';
-    this.holdBy = '...';
-    this.holdTime = '...';
-    this.offHoldBy = '...';
-    this.offHoldTime = '...';
-
-    console.log('Form has been reset.');
+    this.cancel.emit();
   }
 }
