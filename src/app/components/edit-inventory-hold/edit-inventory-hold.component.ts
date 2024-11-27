@@ -75,9 +75,15 @@ export class EditInventoryHoldComponent implements OnInit {
   }
 
   isDialogOpen = false;
-  openDialog() {
+  openDialog(mode: 'add' | 'edit', selectedRecord: any = null): void {
     this.isDialogOpen = true;
+    if (mode === 'edit') {
+      this.selectedRowData = selectedRecord;
+    } else {
+      this.selectedRowData = null;
+    }
   }
+  
   closeDialog() {
     this.isDialogOpen = false;
   }
