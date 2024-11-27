@@ -14,6 +14,7 @@ export class AddHoldComponent implements OnInit {
   @Input() holdTypes: string[] = [];
   @Input() inventoryId: number =0;
   @Output() cancel = new EventEmitter<void>();
+  @Input() mode: 'add' | 'edit' = 'add';
   isHold: boolean = true;
   selectedHoldType: string = '';
   selectedHoldCode: string = '';
@@ -27,6 +28,20 @@ export class AddHoldComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchHoldCodes();
+  
+    if (this.mode === 'edit') {
+      this.isHold = true;
+      this.selectedHoldType = this.holdTypes[0] || '';
+      this.holdComments = this.holdComments;
+      this.reason = this.reason;
+      this.offHoldComments = '';
+    } else {
+      this.isHold = true;
+      this.selectedHoldType = '';
+      this.holdComments = '';
+      this.reason = '';
+      this.offHoldComments = '';
+    }
   }
 
   fetchHoldCodes(): void {
