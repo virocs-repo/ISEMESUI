@@ -84,9 +84,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   description: string = '';
 
   isHoldCheckboxEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
-    featureField?.find(o => o.featureFieldName == 'HoldCheckbox')?.active ?? false;
+    featureField?.find(o => o.featureFieldName == 'HoldCheckbox')?.active ?? true;
   isHoldCommentEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
-    featureField?.find(o => o.featureFieldName == "HoldComments")?.active ?? false;
+    featureField?.find(o => o.featureFieldName == "HoldComments")?.active ?? true;
 
   gridData = [
     {
@@ -432,7 +432,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         return;
       }
     }
-    if (this.deliveryModeSelected?.deliveryModeName == 'Pick Up') {
+    if (this.deliveryModeSelected?.deliveryModeName == 'Pickup') {
 
       if (!this.addressSelected) {
         this.receipt.isValid.address = false;
@@ -956,7 +956,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
   }
   fileRestrictions: FileRestrictions = {
-    allowedExtensions: [".jpg", ".png"],
+    allowedExtensions: [".jpg", ".png", ".jpeg"],
     minFileSize: 1024 // in bytes , 1024*1024 1MB
   };
   onSelect(event: any): void {

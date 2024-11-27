@@ -14,7 +14,7 @@ export interface GoodsType {
 }
 export interface DeliveryMode {
   deliveryModeID: number;
-  deliveryModeName: string;
+  deliveryModeName: "Courier" | "Customer Drop-Off" | "Pickup"
 }
 export interface Customer {
   CustomerID: number;

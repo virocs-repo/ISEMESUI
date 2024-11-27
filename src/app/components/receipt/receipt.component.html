@@ -99,7 +99,7 @@
                   [class.invalid]="!receipt.isValid.deliveryMode"></kendo-combobox>
               </kendo-label>
               <kendo-label
-                *ngIf="deliveryModeSelected?.deliveryModeName=='Drop Off' || deliveryModeSelected?.deliveryModeName=='Pick Up'"
+                *ngIf="deliveryModeSelected?.deliveryModeName=='Customer Drop-Off' || deliveryModeSelected?.deliveryModeName=='Pickup'"
                 text="Phone" class="k-w-full">
                 <b class="required-label"></b>
                 <kendo-textbox [(ngModel)]="contactPhone" placeholder="Enter phone" rounded="large"
@@ -133,7 +133,7 @@
               </kendo-label>
 
               <kendo-label
-                *ngIf="deliveryModeSelected?.deliveryModeName=='Drop Off' || deliveryModeSelected?.deliveryModeName=='Pick Up'"
+                *ngIf="deliveryModeSelected?.deliveryModeName=='Customer Drop-Off' || deliveryModeSelected?.deliveryModeName=='Pickup'"
                 text="Contact Person" class="k-w-full">
                 <b class="required-label"></b>
                 <kendo-textbox [(ngModel)]="contactPerson" placeholder="Enter contact person" rounded="large"
@@ -142,11 +142,11 @@
             </div>
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label
-                *ngIf="deliveryModeSelected?.deliveryModeName=='Drop Off' || deliveryModeSelected?.deliveryModeName=='Pick Up'"
+                *ngIf="deliveryModeSelected?.deliveryModeName=='Customer Drop-Off' || deliveryModeSelected?.deliveryModeName=='Pickup'"
                 text="Email" class="k-w-full">
                 <kendo-textbox [(ngModel)]="email" placeholder="Enter your email" rounded="large"></kendo-textbox>
               </kendo-label>
-              <kendo-label *ngIf="deliveryModeSelected?.deliveryModeName=='Pick Up'" text="Address"
+              <kendo-label *ngIf="deliveryModeSelected?.deliveryModeName=='Pickup'" text="Address"
                 class="k-relative k-w-full">
                 <b class="required-label"></b>
                 <!-- <kendo-autocomplete [data]="areaList" [(ngModel)]="address" placeholder="Enter details"
@@ -450,7 +450,7 @@
           [valueField]="'EmployeeID'" [kendoDropDownFilter]="filterSettings" placeholder="Select"
           rounded="large"></kendo-combobox>
       </kendo-label>
-      <kendo-label text="Signature" *ngIf="signatureTypeSelected?.customerTypeName == 'Customer'">
+      <kendo-label text="Signature">
         <input type="text" placeholder="Name" class="k-w-full" kendoTextBox [(ngModel)]="signatureName"
           name="signatureName" required>
       </kendo-label>

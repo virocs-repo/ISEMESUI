@@ -21,8 +21,8 @@ export class ReceivingComponent implements OnDestroy {
   public skip = 0;
   public gridDataResult: GridDataResult = { data: [], total: 0 };
 
-  isAddButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == 'Receiving Add')?.active ?? false;
-  isEditButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Edit")?.active ?? false;
+  isAddButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == 'Receiving Add')?.active ?? true;
+  isEditButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Edit")?.active ?? true;
   selectableSettings: any = {
     checkboxOnly: true,
     mode: 'single',
