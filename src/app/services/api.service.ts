@@ -254,5 +254,19 @@ export class ApiService {
   upsertInventoryHold(request: any, options: { responseType: 'text' }): Observable<any> {
     return this.httpClient.post(`${API}v1/ise/inventory/inventoryHold/UpsertHold`, request, options);
   }
-  
+  getOtherShippingData(customerId: number|null, employeeId: number|null, statusId: number|null, fromDate: Date|null, toDate: Date|null) {
+    const url = `${API}v1/ise/otherinventory/getOtherInventoryShipments?customerId=${customerId}&employeeId=${employeeId}&statusId=${statusId}&fromDate=${fromDate?.toDateString()}&toDate=${toDate?.toDateString()}`;
+    return this.httpClient.get(url);
+  }
+  getOtherInventoryStatuses() {
+  debugger;
+    const url = `${API}v1/ise/otherinventory/getOtherInventoryStatus`;
+    return this.httpClient.get(url);
+  }
+  getOtherInventoryShipment(otherInventoryId:number) {
+    debugger;
+      const url = `${API}v1/ise/otherinventory/getOtherInventoryShipment?otherInventoryId=${otherInventoryId}`;
+      return this.httpClient.get(url);
+    }
+
 }

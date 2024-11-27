@@ -535,4 +535,8 @@ export interface CombineLotPayload {
   active: boolean;
   comments?: string; // Optional
 }
+export interface KeyValueData {
+  Id: number;
+  Name: string;
+}
 
