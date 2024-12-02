@@ -1,69 +1,63 @@
 <div class="k-m-3 k-overflow-y-auto" style="height: 50vh;">
   <kendo-card-body class="card-flex" style="background-color:lightgrey">
-      <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
-          <div class="field-container">
-            <kendo-label [for]="'lotNumber'" class="label-text">Lot/ Mail/ FGI Pull #:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
-            <span class="value-text">{{ selectedLotNumber }}</span>
-          </div>
-          <div class="field-container">
-            <kendo-label [for]="'location'" class="label-text">Location:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</kendo-label>
-            <span class="value-text">{{ selectedLocation }}</span>
-          </div>
-          <div class="field-container">
-            <kendo-label [for]="'noOfHolds'" class="label-text">No Of Holds:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</kendo-label>
-            <span class="value-text">{{ numberOfHolds  }}</span>
-          </div>
-          <button 
-            kendoButton 
-            rounded="full" 
-            themeColor="info" 
-            style="padding: 0.3rem 1.2rem" 
-            (click)="openDialog('add')">Add
-          </button>
-        </div>          
+    <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
+      <div class="field-container">
+        <kendo-label [for]="'lotNumber'" class="label-text">Lot/ Mail/ FGI Pull #:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
+        <span class="value-text">{{ selectedLotNumber }}</span>
+      </div>
+      <div class="field-container">
+        <kendo-label [for]="'location'" class="label-text">Location:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
+        <span class="value-text">{{ selectedLocation }}</span>
+      </div>
+      <div class="field-container">
+        <kendo-label [for]="'noOfHolds'" class="label-text">No Of Holds:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
+        <span class="value-text">{{ numberOfHolds }}</span>
+      </div>
+      <button 
+        kendoButton 
+        rounded="full" 
+        themeColor="info" 
+        style="padding: 0.3rem 1.2rem" 
+        (click)="openDialog()">Add
+      </button>
+    </div>
   </kendo-card-body>
   <div class="k-my-6">
-      <kendo-grid 
+    <kendo-grid 
       [kendoGridBinding]="gridDataResult.data"  
       [selectable]="selectableSettings" 
-      
       [resizable]="true" 
       [pageSize]="pageSize"
       [skip]="skip" 
       [pageable]="true" 
-      (pageChange)=" pageChange($event)" 
-      class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
-      <kendo-grid-column >
-          <ng-template kendoGridCellTemplate let-dataItem>
-            <button kendoButton (click)="openDialog('edit', dataItem)" themeColor="info">
-              Edit
-            </button>
-          </ng-template>
-        </kendo-grid-column>
-
+      (pageChange)="pageChange($event)" 
+      class="grid-header-sm grid-header-bold" 
+      (cellClick)="onCellClick($event)" 
+      [rowClass]="rowCallback">
+      <kendo-grid-column>
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <button kendoButton (click)="openDialog()" themeColor="info">Edit</button>
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title"></kendo-grid-column>
-      <ng-template kendoGridCellTemplate let-dataItem></ng-template>
-  </kendo-grid>  
+    </kendo-grid>
   </div>
-
   <div class="k-d-flex k-gap-3 k-mt-3">
     <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem" (click)="clearRequest()">Cancel</button>
   </div>
-  <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'58%'" class="dialog-round">
+  <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'58%'">
     <div class="k-d-flex k-align-items-center k-mb-6">
         <h2 class="k-m-0">Hold Details</h2>
         <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
             (click)="closeDialog()"></button>
     </div>
     <app-add-hold
-[mode]="selectedRowData ? 'edit' : 'add'"
-[lotNumber]="selectedLotNumber.toString()" 
-[location]="selectedLocation.toString()" 
-[noOfHolds]="numberOfHolds.toString()"
-[holdTypes]="holdTypes"
-[inventoryId]="selectedRowData?.inventoryId"
-(cancel)="closeDialog()">
-</app-add-hold>
-
-</kendo-dialog>
+      [mode]="selectedRowData ? 'edit' : 'add'"
+      [lotNumber]="selectedLotNumber.toString()" 
+      [location]="selectedLocation.toString()" 
+      [noOfHolds]="numberOfHolds.toString()"
+      [inventoryId]="selectedRowData?.inventoryId"
+      (cancel)="closeDialog()">
+    </app-add-hold>
+  </kendo-dialog>
 </div>
