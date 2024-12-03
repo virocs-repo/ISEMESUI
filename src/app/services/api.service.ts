@@ -224,6 +224,25 @@ export class ApiService {
   }
     return this.httpClient.get(`${API}v1/ise/inventory/combinedlot/search`,{ params });
   }
+  SearchComblotsWithCust_Lot(customerId?:number  | null ,lotNumber?: string) {
+    let params = new HttpParams();
+  if (customerId != null) {
+    params = params.set('customerId', customerId);
+  }
+  if (lotNumber) {
+    params.append("lotNumber", lotNumber);
+  }
+    return this.httpClient.get(`${API}v1/ise/inventory/combinedlot/customer`,{ params });
+  }
+  postCombineLots(payload: any): Observable<any> {
+    
+    return this.httpClient.post(`${API}v1/ise/inventory/combinedlot/upinsertcombolot`, payload);
+  }
+
+  getViewEditComblotsWithId(comboLotId:number ): Observable<any[]> {
+    return this.httpClient.get<any[]>(`${API}v1/ise/inventory/combinedlot/vieweditcombolots?comboLotId=${comboLotId}`);
+  }
+
 
   //Inventory Hold
   getHoldCodes(inventoryId: number):Observable<any[]> {
@@ -238,4 +257,19 @@ export class ApiService {
   getHoldDetails(inventoryId: number){
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getHoldDetails?inventoryId=${inventoryId}`);
   }
+
+  getOtherShippingData(customerId: number|null, employeeId: number|null, statusId: number|null, fromDate: Date|null, toDate: Date|null) {
+    const url = `${API}v1/ise/otherinventory/getOtherInventoryShipments?customerId=${customerId}&employeeId=${employeeId}&statusId=${statusId}&fromDate=${fromDate?.toDateString()}&toDate=${toDate?.toDateString()}`;
+    return this.httpClient.get(url);
+  }
+  getOtherInventoryStatuses() {
+  debugger;
+    const url = `${API}v1/ise/otherinventory/getOtherInventoryStatus`;
+    return this.httpClient.get(url);
+  }
+  getOtherInventoryShipment(otherInventoryId:number) {
+    debugger;
+      const url = `${API}v1/ise/otherinventory/getOtherInventoryShipment?otherInventoryId=${otherInventoryId}`;
+      return this.httpClient.get(url);
+    }
 }

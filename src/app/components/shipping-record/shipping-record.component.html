@@ -101,7 +101,7 @@
   </div>
   <div class="k-d-flex k-gap-3 k-mt-3">
     <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem"
-      [disabled]="isDisabled.clearBtn">Clear</button>
+      [disabled]="isDisabled.clearBtn" (click)="clearForm()">Clear</button>
     <button kendoButton type="button" rounded="full" themeColor="info" class="k-w-25" [disabled]="isDisabled.shipBtn"
       (click)="saveShipment()">Ship</button>
   </div>

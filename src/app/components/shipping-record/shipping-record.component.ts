@@ -186,4 +186,15 @@ export class ShippingRecordComponent implements OnDestroy {
     })
     return selectedShipmentDetails;
   }
+  clearForm() {
+    this.customerSelected = undefined;
+    this.shipmentNumber = '';
+    this.senderInformation = ''
+    this.shipmentComments = ''
+    this.shipmentCategorySelected = undefined
+    this.isShipped = false;
+    this.receiptLocationSelected = undefined;
+    this.shipmentLocation = '';
+    this.customerInformation = ''
+  }
 }

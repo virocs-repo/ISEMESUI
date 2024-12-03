@@ -14,7 +14,7 @@ export interface GoodsType {
 }
 export interface DeliveryMode {
   deliveryModeID: number;
-  deliveryModeName: string;
+  deliveryModeName: "Courier" | "Customer Drop-Off" | "Pickup"
 }
 export interface Customer {
   CustomerID: number;
@@ -506,3 +506,37 @@ export interface PostShipment {
   Active: boolean;
   LoginId: number;
 }
+export interface CombineLot {
+  receiptID: number; // Represents the receipt ID
+  customerVendorID: number; // Customer/Vendor ID
+  behalfID: number; // Behalf ID
+  goodsType: string; // Type of goods (e.g., Device)
+  inventoryID: number; // Inventory ID
+  iseLotNum: string; // ISE Lot Number
+  customerLotNum: string; // Customer Lot Number
+  expectedQty: number; // Expected Quantity
+  expedite: boolean; // Whether the item is expedited
+  partNum: string; // Part Number
+  labelCount: number; // Label Count
+  coo: string | null; // Country of Origin (nullable)
+  dateCode: string | null; // Date Code (nullable)
+  isHold: boolean; // Whether the item is on hold
+  active: boolean; // Whether the item is active
+  comboLotID: number; // Combo Lot ID
+  viewFlag: number; // View Flag (could be an enum or status indicator)
+}
+
+export interface CombineLotPayload {
+  comboLotID?: number | null; // Optional, can be null for new records
+  comboName: string;
+  str_InventoryId: string;
+  primary_InventoryId: number;
+  userID: number;
+  active: boolean;
+  comments?: string; // Optional
+}
+export interface KeyValueData {
+  Id: number;
+  Name: string;
+}
+

@@ -1,44 +1,79 @@
 <div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header">
-    <h2>Another Shipping</h2>
-    <div class="search-box k-ml-auto">
-      <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
-      <input kendoTextBox type="search" placeholder="Search" class="search-input" rounded="full" />
-      <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
-    </div>
-    <div class="search-box">
-      <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
-      <input kendoTextBox type="search" placeholder="Lot#" class="search-input" rounded="full" />
-      <button kendoButton rounded="full" themeColor="info" class="search-btn" (click)="openDialog()">Add</button>
-    </div>
-  </div>
-  <div class="k-m-10" *ngIf="!false">
-    <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
-      [pageSize]="pageSize" [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
-      class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
-      [rowClass]="rowCallback">
-      <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-      <kendo-grid-column field="shipmentId" title="Shipment#"></kendo-grid-column>
-      <kendo-grid-column field="shipmentNum" title="Shipment No."></kendo-grid-column>
-      <kendo-grid-column field="customerInfo" title="Customer"></kendo-grid-column>
-      <kendo-grid-column field="senderInfo" title="Sender"></kendo-grid-column>
-      <kendo-grid-column field="location" title="Location"></kendo-grid-column>
-      <kendo-grid-column field="currentLocation" title="Current Location"></kendo-grid-column>
-    </kendo-grid>
-  </div>
+  <h2>Combined Lot</h2>
+  <div class="k-d-flex k-gap-3 k-ml-auto">
+  <kendo-label text="Customer" class="k-w-full k-font-size-sm">
+    <kendo-combobox id="customer" [data]="customers" [(ngModel)]="customerSelected"
+          [textField]="'CustomerName'" [valueField]="'CustomerID'" placeholder="Select" rounded="large"
+          ></kendo-combobox>
+</kendo-label>
+<kendo-label text="Employee" class="k-w-full k-font-size-sm">
+  <kendo-combobox id="employee" [data]="employees" [(ngModel)]="employeeSelected"
+        [textField]="'EmployeeName'" [valueField]="'EmployeeID'" placeholder="Select" rounded="large"
+        ></kendo-combobox>
+</kendo-label>
+<kendo-label text="Status" class="k-w-full k-font-size-sm">
+<kendo-combobox id="status" [data]="statuses" [(ngModel)]="statusSelected"
+      [textField]="'name'" [valueField]="'id'" placeholder="Select" rounded="large"
+      ></kendo-combobox>
+</kendo-label>
+<kendo-label text="From Date" class="k-w-full k-font-size-sm">
+<kendo-datepicker [format]="format" [(value)]="fromDate" ></kendo-datepicker>
+</kendo-label>
+<kendo-label text="To Date" class="k-w-full k-font-size-sm">
+<kendo-datepicker [format]="format" [(value)]="toDate" ></kendo-datepicker>
+</kendo-label>
+  <!-- <div class="k-d-flex k-flex-col k-gap-2 k-ml-auto">
+    <div class="k-d-flex k-gap-3">
+      <kendo-label text="From Date" class="k-w-full k-font-size-sm">
+      <kendo-datepicker [format]="format" [(value)]="fromDate" ></kendo-datepicker>
+    </kendo-label>
+
+    <kendo-label text="To Date" class="k-w-full k-font-size-sm">
+      <kendo-datepicker [format]="format" [(value)]="toDate" ></kendo-datepicker>
+    </kendo-label>
   
-  <kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
-    #gridContextMenu></kendo-contextmenu>
-  
-  <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'78%'"
-    class="dialog-round receipt-dialog">
-    <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
-      <h2 class="k-m-0">Shipping Record</h2>
-      <small *ngIf="appService.sharedData.shipping.isViewMode">(View Mode)</small>
-      <small *ngIf="appService.sharedData.shipping.isEditMode">(Edit Mode)</small>
-      <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
-        (click)="closeDialog()"></button>
-    </div>
-    <div class="dialog-body k-overflow-y-auto">
-      <app-add-another-shipping></app-add-another-shipping>
-    </div>
-  </kendo-dialog>
+      </div>
+  </div> -->
+  <div>
+    <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="fetchdata()">Search</button>
+  </div>
+  <div>
+    <button kendoButton rounded="full" themeColor="info" class="search-btn" (click)="openDialog()">Add</button>
+  </div>
+</div>
+</div>
+<div class="k-m-10" *ngIf="!false">
+  <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
+    [pageSize]="pageSize" [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
+    class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
+    [rowClass]="rowCallback">
+    <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+    <kendo-grid-column field="shipmentId" title="Shipment#"></kendo-grid-column>
+    <kendo-grid-column field="customerID" title="Customer#"></kendo-grid-column>
+    <kendo-grid-column field="customerType" title="Customer Type"></kendo-grid-column>
+    <kendo-grid-column field="customer" title="Customer"></kendo-grid-column>
+    <kendo-grid-column field="shipmentNum" title="Shipment#"></kendo-grid-column>
+    <kendo-grid-column field="shipmentLocation" title="Shipment Location"></kendo-grid-column>
+    <kendo-grid-column field="shipmentMethod" title="Shipment Method"></kendo-grid-column>
+    <kendo-grid-column field="shipmentCategory" title="Shipment Category"></kendo-grid-column>
+    <kendo-grid-column field="currentLocation" title="Current Location"></kendo-grid-column>
+    <kendo-grid-column field="status" title="Status"></kendo-grid-column>
+  </kendo-grid>
+</div>
+
+<kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
+  #gridContextMenu></kendo-contextmenu>
+
+<kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'78%'"
+  class="dialog-round receipt-dialog">
+  <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
+    <h2 class="k-m-0">Shipping Record</h2>
+    <small *ngIf="appService.sharedData.shipping.isViewMode">(View Mode)</small>
+    <small *ngIf="appService.sharedData.shipping.isEditMode">(Edit Mode)</small>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+      (click)="closeDialog()"></button>
+  </div>
+  <div class="dialog-body k-overflow-y-auto">
+    <app-add-another-shipping></app-add-another-shipping>
+  </div>
+</kendo-dialog>
