@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { CellClickEvent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { ICON } from 'src/app/services/app.interface';
 import { ApiService } from 'src/app/services/api.service';
@@ -11,13 +11,14 @@ import { ApiService } from 'src/app/services/api.service';
 export class EditInventoryHoldComponent implements OnInit {
   @Output() cancel = new EventEmitter<void>();
   @Input() selectedRowData: any;
-  
+  selectedRowDat:any;
   gridDataResult: GridDataResult = { data: [], total: 0 };
   readonly ICON = ICON;
   public selectedLocation: number = 0;
   public selectedLotNumber: string = '';
   public pageSize = 10;
   public skip = 0;
+  public gridData: any[] = [];
   public numberOfHolds: number = 0;
   public columnData = [
     { field: 'holdType', title: 'Hold Type' },
@@ -35,13 +36,22 @@ export class EditInventoryHoldComponent implements OnInit {
     checkboxOnly: true,
     mode: 'single',
   }
-
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
     if (this.selectedRowData) {
       this.loadHoldData(this.selectedRowData.inventoryId);
     }
+  }
+  openEditDialog(dataItem: any): void {
+    this.apiService.getHoldDetails(dataItem.inventoryId).subscribe({
+      next: (data) => {
+        console.log('Fetched data:', data); // Debugging line
+        this.selectedRowDat = data; // Single row data from API
+        this.isDialogOpen = true; // Open the dialog
+      },
+      error: (err) => console.error('Failed to fetch hold details:', err)
+    });
   }
 
   openDialog(): void {
@@ -51,7 +61,31 @@ export class EditInventoryHoldComponent implements OnInit {
   closeDialog(): void {
     this.isDialogOpen = false;
   }
-
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.selectedRowData) {
+      const inventoryId = this.selectedRowData?.inventoryId;
+      if (inventoryId) {
+        this.loadHoldData(inventoryId);
+      }
+    }
+    if (changes['selectedRowData'] && this.selectedRowData) {
+      this.selectedLotNumber = this.selectedRowData.lotNum || '';
+      this.selectedLocation = this.selectedRowData.location || '';
+      this.filterGridData();
+    }
+  }
+  filterGridData(): void {
+    if (this.selectedLotNumber && this.selectedLocation) {
+      this.gridDataResult.data = this.gridData.filter(item =>
+        item.lotNum === this.selectedLotNumber && item.location === this.selectedLocation
+      );
+      this.gridDataResult.total = this.gridDataResult.data.length;
+    } else {
+      this.gridDataResult.data = [...this.gridData];
+      this.gridDataResult.total = this.gridData.length;
+    }
+    this.numberOfHolds = this.gridDataResult.data.length; 
+  }
   clearRequest(): void {
     this.gridDataResult = { data: [], total: 0 };
     this.selectedLocation = 0;
@@ -72,11 +106,6 @@ export class EditInventoryHoldComponent implements OnInit {
 
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;
-  }
-
-  onCellClick(e: CellClickEvent): void {
-    this.selectedRowData = e.dataItem;
-    this.openDialog();
   }
 
   rowCallback = (context: any) => ({

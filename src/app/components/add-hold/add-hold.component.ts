@@ -14,7 +14,7 @@ export class AddHoldComponent implements OnInit {
   @Input() inventoryId: number = 0;
   @Output() cancel = new EventEmitter<void>();
   @Input() mode: 'add' | 'edit' = 'add';
-
+  @Input() selectedGridData: any;
   holdTypes: string[] = [];
   isHold: boolean = true;
   selectedHoldType: string = '';
@@ -23,15 +23,36 @@ export class AddHoldComponent implements OnInit {
   offHoldComments: string = '';
   treeNodes: any[] = [];
   selectedIds: any[] = [];
+  holdBy: string | null = null; 
+  holdTime: string | null = null; 
+  offHoldBy: string | null = null;
+  offHoldTime: string | null = null;
 
   constructor(private appService: AppService, private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.fetchHoldCodes();
     if (this.mode === 'edit') {
-      this.isHold = true;
-    } else {
+      this.populateFields();
+    }
+    else{
       this.resetForm();
+    }
+  }
+  
+
+  populateFields(): void {
+    if (this.selectedGridData) {
+      this.selectedHoldType = this.selectedGridData[0].holdType || '';
+      this.holdComments = this.selectedGridData[0].holdComments || '';
+      this.reason = this.selectedGridData[0].reason || '';
+      this.offHoldComments = this.selectedGridData[0].offHoldComments || '';
+      this.isHold = false;
+      this.holdBy = this.selectedGridData[0].holdBy || null;
+      this.holdTime = this.selectedGridData[0].holdTime || null;
+      this.offHoldBy = this.selectedGridData[0].offHoldBy || null;
+      this.offHoldTime = this.selectedGridData[0].offHoldTime || null;
+      this.selectedGridData.InventoryXHoldId
     }
   }
 
@@ -40,10 +61,13 @@ export class AddHoldComponent implements OnInit {
       (response: any) => {
         this.treeNodes = response;
         this.holdTypes = Array.from(new Set(this.treeNodes.map((node: any) => node.groupName)));
+          if (this.mode === 'edit' && this.selectedHoldType && !this.holdTypes.includes(this.selectedHoldType)) {
+          this.holdTypes.push(this.selectedHoldType);
+        }
       },
       (error) => this.appService.errorMessage('Failed to load hold codes.')
     );
-  }
+  }  
 
   onSelectionChange(event: any): void {
     const selectedNode = event.dataItem;
@@ -59,7 +83,7 @@ export class AddHoldComponent implements OnInit {
       return;
     }
     const payload = {
-      InventoryXHoldId: null,
+      InventoryXHoldId: this.selectedGridData.InventoryXHoldId || null,
       InventoryId: this.inventoryId,
       Reason: this.reason,
       HoldComments: this.holdComments,

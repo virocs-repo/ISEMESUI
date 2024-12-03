@@ -32,11 +32,10 @@
       [pageable]="true" 
       (pageChange)="pageChange($event)" 
       class="grid-header-sm grid-header-bold" 
-      (cellClick)="onCellClick($event)" 
       [rowClass]="rowCallback">
       <kendo-grid-column>
         <ng-template kendoGridCellTemplate let-dataItem>
-          <button kendoButton (click)="openDialog()" themeColor="info">Edit</button>
+          <button kendoButton (click)="openEditDialog(dataItem)" themeColor="info">Edit</button>
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title"></kendo-grid-column>
@@ -52,11 +51,12 @@
             (click)="closeDialog()"></button>
     </div>
     <app-add-hold
-      [mode]="selectedRowData ? 'edit' : 'add'"
-      [lotNumber]="selectedLotNumber.toString()" 
-      [location]="selectedLocation.toString()" 
-      [noOfHolds]="numberOfHolds.toString()"
-      [inventoryId]="selectedRowData?.inventoryId"
+      [mode]="selectedRowData?'edit':'add'"
+      [lotNumber]="selectedRowData?.lotNum || ''"
+      [location]="selectedRowData?.location || ''"
+      [noOfHolds]="gridDataResult.total.toString()"
+      [inventoryId]="selectedRowData?.inventoryId || 0"
+      [selectedGridData]="selectedRowDat"
       (cancel)="closeDialog()">
     </app-add-hold>
   </kendo-dialog>
