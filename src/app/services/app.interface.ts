@@ -509,6 +509,7 @@ export interface PostShipment {
 export interface CombineLot {
   receiptID: number; // Represents the receipt ID
   customerVendorID: number; // Customer/Vendor ID
+  customer: string; // Type of goods (e.g., Device)
   behalfID: number; // Behalf ID
   goodsType: string; // Type of goods (e.g., Device)
   inventoryID: number; // Inventory ID
