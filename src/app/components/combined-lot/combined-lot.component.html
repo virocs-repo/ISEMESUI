@@ -16,10 +16,16 @@
         
  
     <div>
-      <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="onSearch()">Search</button>
+      <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="onSearch()">Search</button>
     </div>
+
+    <!-- <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
+    <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()"
+      [disabled]="!isAddButtonEnabled">Add</button> -->
+
+    
     <div>
-      <button kendoButton rounded="full" themeColor="info" class="search-btn" (click)="openDialog()">Add</button>
+      <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
     </div>
   </div>
   <div class="k-m-10" *ngIf="!false">

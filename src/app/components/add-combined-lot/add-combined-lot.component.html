@@ -21,9 +21,16 @@
                 </kendo-autocomplete>
               </kendo-label>
     
-            <kendo-button themeColor="success"  rounded="full"  style="width: 7rem" (click)="onSearch()"   [disabled]="isDisabled.shipBtn">
+            
+
+            <div class="search-box k-ml-auto" style="padding-top: 20px;">
+             
+
+              <kendo-button themeColor="success"  rounded="full" class="k-w-25" (click)="onSearch()"   [disabled]="isDisabled.shipBtn">
                 Search
             </kendo-button>
+              </div>
+        
             </div>
            
           </div>
