@@ -48,7 +48,7 @@ export class AddHoldComponent implements OnInit {
       this.holdComments = this.selectedGridData[0].holdComments || '';
       this.reason = this.selectedGridData[0].reason || '';
       this.offHoldComments = this.selectedGridData[0].offHoldComments || '';
-      this.isHold = false;
+      this.isHold = true;
       this.inventoryXHoldId = this.selectedGridData[0].inventoryXHoldId;
       this.holdBy = this.selectedGridData[0].holdBy || null;
       this.holdTime = this.selectedGridData[0].holdTime || null;
@@ -94,7 +94,10 @@ export class AddHoldComponent implements OnInit {
       UserId: 1
     };
     this.apiService.upsertInventoryHold(payload, { responseType: 'text' }).subscribe(
-      () => this.appService.successMessage('Hold details have been saved successfully!'),
+      () => {
+        this.appService.successMessage('Hold details have been saved successfully!');
+        this.cancel.emit();
+      },
       () => this.appService.errorMessage('Failed to save hold details.')
     );
   }
