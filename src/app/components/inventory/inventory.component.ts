@@ -14,7 +14,7 @@ import { AppService } from 'src/app/services/app.service';
 export class InventoryComponent implements OnInit {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
   readonly ICON = ICON
-  public pageSize = 10;
+  public pageSize = 25;
   public skip = 0;
  public receipts: Receipt[] = [];
   // public gridData: Receipt[] = [];
@@ -46,7 +46,9 @@ export class InventoryComponent implements OnInit {
   ]
 
 
-  
+  format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker
+  fromDate: Date | null = null;  // Variable to store the selected 'from' date
+  toDate: Date | null = null;    // Variable to store the selected 'to' date
   rowActionMenu: MenuItem[] = [
      { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
   ];
@@ -85,6 +87,9 @@ export class InventoryComponent implements OnInit {
 
     custTypeID=this.customerTypeSelected?.customerTypeID;
     custVendorID=this.customerSelected?.CustomerID;
+     // Pass Date objects directly
+     const from_date = this.fromDate ?? undefined;
+     const to_date = this.toDate ?? undefined;
     if(this.customerTypeSelected?.customerTypeName =='Vendor')
     {
       // need to change logic
@@ -98,7 +103,7 @@ export class InventoryComponent implements OnInit {
       behalfOfCustomerID=this.behalfOfCusotmerSelected?.CustomerID;
     }
     receivingFacilityID = this.receiptLocationSelected?.receivingFacilityID;
-    this.apiService.getinventorydata(custTypeID,custVendorID,behalfOfCustomerID,receivingFacilityID).subscribe({
+    this.apiService.getinventorydata(custVendorID,from_date,to_date).subscribe({
       next: (v: any) => {
         this.gridDataResult.data = v;
         this.gridDataResult.total = v.length

@@ -155,7 +155,7 @@ export class ReportsComponent  implements OnInit {
   onSearch(): void {
     this.skip = 0;
 
-    const custTypeID = this.customerTypeSelected?.customerTypeID ?? undefined;
+    const custTypeID = this.customerTypeSelected?.customerTypeID ?? 1;
     const custVendorID = this.customerSelected?.CustomerID ?? undefined;
     const devicetype = this.deviceTypeSelected ?? undefined;
     const lotno = this.lotNumber ?? undefined;

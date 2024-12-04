@@ -128,22 +128,19 @@ export class ApiService {
     return this.httpClient.get(url);
   }
   //api/v1/ise/inventory/inventorydata/getdetails
-  getinventorydata(customerTypeID?: number, customerVendorID?: number, behalfOfCustomerID?: number, receivingFacilityID?: number) {
+  getinventorydata(customerVendorID?: number,  fromDate?: Date, toDate?: Date) {
 
     let params = new HttpParams();
 
-    // Conditionally add parameters only if they are not null or undefined
-    if (customerTypeID != null) {
-      params = params.set('customerTypeID', customerTypeID.toString());
-    }
+    
     if (customerVendorID != null) {
       params = params.set('customerVendorID', customerVendorID.toString());
     }
-    if (behalfOfCustomerID != null) {
-      params = params.set('behalfOfCustomerID', behalfOfCustomerID.toString());
+    if (fromDate != null) {
+      params = params.set('fromDate', this.formatDate(fromDate));
     }
-    if (receivingFacilityID != null) {
-      params = params.set('receivingFacilityID', receivingFacilityID.toString());
+    if (toDate != null) {
+      params = params.set('toDate', this.formatDate(toDate));
     }
 
     // API call with only the non-null params

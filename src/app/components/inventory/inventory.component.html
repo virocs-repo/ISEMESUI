@@ -22,12 +22,12 @@
       <button kendoButton rounded="full" themeColor="success" class="search-btn" >Search</button> 
       </div> -->
 
-      <kendo-label text="Customer / Vendor" class="k-w-full k-font-size-sm">
+<!--       <kendo-label text="Customer / Vendor" class="k-w-full k-font-size-sm">
         <kendo-combobox [data]="customerTypes" [(ngModel)]="customerTypeSelected"
             (ngModelChange)="onChangeCustomerType()" [textField]="'customerTypeName'" [valueField]="'customerTypeID'"
             placeholder="Select" rounded="large"></kendo-combobox>
 
-    </kendo-label>
+    </kendo-label> -->
     <kendo-label text="Customer" class="k-w-full k-font-size-sm">
      
       <kendo-combobox id="customer" [data]="customer" [(ngModel)]="customerSelected"
@@ -35,21 +35,35 @@
             ></kendo-combobox>
 
   </kendo-label>
-  <kendo-label text="Behalf of Customer" class="k-w-full k-font-size-sm">
+  <kendo-label text="From Date" class="k-w-full k-font-size-sm">
+          
+    <kendo-datepicker [format]="format" [(value)]="fromDate" ></kendo-datepicker>
+</kendo-label>
+<kendo-label text="To Date" class="k-w-full k-font-size-sm">
+
+    <kendo-datepicker [format]="format" [(value)]="toDate" ></kendo-datepicker>
+</kendo-label>
+  <!-- <kendo-label text="Behalf of Customer" class="k-w-full k-font-size-sm">
    <kendo-combobox [data]="customer" [(ngModel)]="behalfOfCusotmerSelected" [textField]="customerTextField"
             [valueField]="customerValueField" placeholder="Select" rounded="large"
            ></kendo-combobox>
 
-  </kendo-label>
-  <kendo-label text="Receiving Location" class="k-w-full k-font-size-sm">
+  </kendo-label> -->
+ <!--  <kendo-label text="Receiving Location" class="k-w-full k-font-size-sm">
     <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
             [textField]="'receivingFacilityName'" [valueField]="'receivingFacilityID'" [allowCustom]="true"
             placeholder="Select" rounded="large"></kendo-combobox>
-  </kendo-label>
-  <div class="search-box k-ml-auto" style="padding-right: 90px;">
-    <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="onSearch()">Search</button> 
-    </div>
+  </kendo-label> -->
+    <div class="search-box k-ml-auto" style="padding-right: 90px;">
+      <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="onSearch()">Search</button> 
+      </div>
+
   </div>
+
+ <!--  <div class="search-box k-w-full k-ml-auto">
+
+    <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
+  </div> -->
 
 </div>
 <div class="k-m-10" *ngIf="!false">
