@@ -46,9 +46,9 @@ export class EditInventoryHoldComponent implements OnInit {
   openEditDialog(dataItem: any): void {
     this.apiService.getHoldDetails(dataItem.inventoryId).subscribe({
       next: (data) => {
-        console.log('Fetched data:', data); // Debugging line
-        this.selectedRowDat = data; // Single row data from API
-        this.isDialogOpen = true; // Open the dialog
+        console.log('Fetched data:', data); 
+        this.selectedRowDat = data; 
+        this.isDialogOpen = true; 
       },
       error: (err) => console.error('Failed to fetch hold details:', err)
     });
