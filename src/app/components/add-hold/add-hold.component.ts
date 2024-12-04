@@ -27,6 +27,7 @@ export class AddHoldComponent implements OnInit {
   holdTime: string | null = null; 
   offHoldBy: string | null = null;
   offHoldTime: string | null = null;
+  inventoryXHoldId: number| null = null;
 
   constructor(private appService: AppService, private apiService: ApiService) {}
 
@@ -48,11 +49,11 @@ export class AddHoldComponent implements OnInit {
       this.reason = this.selectedGridData[0].reason || '';
       this.offHoldComments = this.selectedGridData[0].offHoldComments || '';
       this.isHold = false;
+      this.inventoryXHoldId = this.selectedGridData[0].inventoryXHoldId;
       this.holdBy = this.selectedGridData[0].holdBy || null;
       this.holdTime = this.selectedGridData[0].holdTime || null;
       this.offHoldBy = this.selectedGridData[0].offHoldBy || null;
       this.offHoldTime = this.selectedGridData[0].offHoldTime || null;
-      this.selectedGridData.InventoryXHoldId
     }
   }
 
@@ -72,10 +73,10 @@ export class AddHoldComponent implements OnInit {
   onSelectionChange(event: any): void {
     const selectedNode = event.dataItem;
     if (selectedNode) {
-      this.reason = selectedNode.holdCode;
-      this.selectedIds.push(selectedNode.holdCodeId);
+      this.reason = selectedNode.holdCode || selectedNode.groupName;
+      this.selectedIds = [selectedNode.holdCodeId];
     }
-  }
+  }  
 
   save(): void {
     if (!this.holdComments || !this.selectedHoldType) {
@@ -83,7 +84,7 @@ export class AddHoldComponent implements OnInit {
       return;
     }
     const payload = {
-      InventoryXHoldId: this.selectedGridData.InventoryXHoldId || null,
+      InventoryXHoldId: this.inventoryXHoldId || null,
       InventoryId: this.inventoryId,
       Reason: this.reason,
       HoldComments: this.holdComments,
