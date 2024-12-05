@@ -435,8 +435,7 @@
     </div>
 
     <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
-      <kendo-fileselect [restrictions]="fileRestrictions" (select)="onSelect($event)"
-        (upload)="onUpload($event)"></kendo-fileselect>
+      <kendo-fileselect (select)="onSelect($event)" (upload)="onUpload($event)"></kendo-fileselect>
     </div>
     <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-4 k-mt-3">
       <kendo-label text="Customer / Employee">

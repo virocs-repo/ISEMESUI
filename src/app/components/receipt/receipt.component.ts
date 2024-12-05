@@ -328,7 +328,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       BehalfID: 1,
       ReceivingFacilityID: this.receiptLocationSelected?.receivingFacilityID || 1,
       DeliveryModeID: this.deliveryModeSelected?.deliveryModeID || 1,
-      CourierDetailID: this.courierSelected?.courierDetailID || 1,
+      CourierDetailID: this.courierSelected?.courierDetailID || null,
       CountryFromID: this.countrySelected?.countryID || 1,
       ContactPerson: this.contactPerson,
       ContactPhone: this.contactPhone,
