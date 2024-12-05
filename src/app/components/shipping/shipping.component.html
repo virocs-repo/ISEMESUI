@@ -7,20 +7,14 @@
     <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
   </div> -->
 
-  <kendo-daterange class="k-max-w-fit">
-    <kendo-label text="Start: ">
-      <kendo-dateinput kendoDateRangeStartInput rounded="full" [(ngModel)]="range.start"></kendo-dateinput>
-    </kendo-label>
-    <kendo-label text="End: ">
-      <kendo-dateinput kendoDateRangeEndInput rounded="full" [(ngModel)]="range.end"></kendo-dateinput>
-    </kendo-label>
-  </kendo-daterange>
+  <kendo-label text="Receipt Start Date" class="k-font-size-sm">
+    <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
+  </kendo-label>
+  <kendo-label text="Receipt End Date" class="k-font-size-sm">
+    <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
+  </kendo-label>
   <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
-  <div class="search-box">
-    <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
-    <input kendoTextBox type="search" placeholder="Lot#" class="search-input" rounded="full" />
-    <button kendoButton rounded="full" themeColor="info" class="search-btn" (click)="openDialog()">Add</button>
-  </div>
+  <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
 </div>
 <div class="k-m-10">
   <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
@@ -40,7 +34,7 @@
     <kendo-grid-column field="customerInfo" title="Customer"></kendo-grid-column>
     <kendo-grid-column field="senderInfo" title="Sender"></kendo-grid-column>
     <kendo-grid-column field="shippmentInfo" title="Shipment Info"></kendo-grid-column>
-    <kendo-grid-column field="location" title="Location"></kendo-grid-column>
+    <!-- <kendo-grid-column field="location" title="Location"></kendo-grid-column> -->
     <kendo-grid-column field="currentLocation" title="Current Location"></kendo-grid-column>
   </kendo-grid>
 </div>

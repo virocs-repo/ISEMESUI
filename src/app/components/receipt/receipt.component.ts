@@ -636,6 +636,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.appService.infoMessage(MESSAGES.NoChanges);
       return;
     }
+    const isEmpty = filteredRecords.find(r => !r.additionalInfo);
+    if (isEmpty) {
+      this.appService.errorMessage("Please enter Additional Info");
+      return;
+    }
     const MiscGoodsDetails: PostMiscGoods[] = []
     filteredRecords.forEach((r) => {
       const postMiscGoods: PostMiscGoods = {
@@ -875,6 +880,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const vendor: Vendor = { VendorID: 9999, VendorName: content };
     return vendor
   }));
+  onChangeIsHold() {
+    const index = 0;
+    if (this.gridData[index].isHold) {
+      // do nothing
+    } else {
+      this.gridData[index].holdComments = '';
+    }
+  }
   onChangeHoldComments() {
     this.gridData[0].holdComments = this.gridData[0].holdComments.trim()
     if (this.gridData[0].holdComments) {

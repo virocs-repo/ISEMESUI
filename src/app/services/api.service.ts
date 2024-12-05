@@ -18,8 +18,15 @@ export class ApiService {
   getMasterData() {
     return this.httpClient.get(`${API}v1/ise/inventory/masterdata`);
   }
-  getReceiptdata(fromDate: string = '', toDate: string = '') {
-    return this.httpClient.get(`${API}v1/ise/inventory/receiptdata?fromDate=${fromDate}&toDate=${toDate}`);
+  getReceiptdata(fromDate?: Date | null, toDate?: Date | null) {
+    let params = new HttpParams();
+    if (fromDate) {
+      params = params.set('fromDate', this.formatDate(fromDate));
+    }
+    if (toDate) {
+      params = params.set('toDate', this.formatDate(toDate));
+    }
+    return this.httpClient.get(`${API}v1/ise/inventory/receiptdata`, { params });
   }
   getDeviceData(receiptId: string) {
     return this.httpClient.get(`${API}v1/ise/inventory/devicedata?receiptId=${receiptId}`);
@@ -64,8 +71,15 @@ export class ApiService {
   }
 
   // Shipping
-  getShippingData() {
-    return this.httpClient.get(`${API}v1/ise/shipment/shipmentdata`);
+  getShippingData(fromDate?: Date | null, toDate?: Date | null) {
+    let params = new HttpParams();
+    if (fromDate) {
+      params = params.set('fromDate', this.formatDate(fromDate));
+    }
+    if (toDate) {
+      params = params.set('toDate', this.formatDate(toDate));
+    }
+    return this.httpClient.get(`${API}v1/ise/shipment/shipmentdata`, { params });
   }
   getShipmentCategories() {
     return this.httpClient.get(`${API}v1/ise/shipment/shipmentcategory`);
@@ -128,11 +142,11 @@ export class ApiService {
     return this.httpClient.get(url);
   }
   //api/v1/ise/inventory/inventorydata/getdetails
-  getinventorydata(customerVendorID?: number,  fromDate?: Date, toDate?: Date) {
+  getinventorydata(customerVendorID?: number, fromDate?: Date, toDate?: Date) {
 
     let params = new HttpParams();
 
-    
+
     if (customerVendorID != null) {
       params = params.set('customerVendorID', customerVendorID.toString());
     }
@@ -210,63 +224,63 @@ export class ApiService {
   SearchCombinationLots() {
     return this.httpClient.get(`${API}v1/ise/inventory/combinedlot/search`);
   }
-  SearchCombinationLotswithDates(fromDate?:Date ,toDate?:Date) {
+  SearchCombinationLotswithDates(fromDate?: Date, toDate?: Date) {
     let params = new HttpParams();
 
     if (fromDate != null) {
       params = params.set('fromDate', this.formatDate(fromDate));
-  }
-  if (toDate != null) {
+    }
+    if (toDate != null) {
       params = params.set('toDate', this.formatDate(toDate));
+    }
+    return this.httpClient.get(`${API}v1/ise/inventory/combinedlot/search`, { params });
   }
-    return this.httpClient.get(`${API}v1/ise/inventory/combinedlot/search`,{ params });
-  }
-  SearchComblotsWithCust_Lot(customerId?:number  | null ,lotNumber?: string) {
+  SearchComblotsWithCust_Lot(customerId?: number | null, lotNumber?: string) {
     let params = new HttpParams();
-  if (customerId != null) {
-    params = params.set('customerId', customerId);
-  }
-  if (lotNumber) {
-    params.append("lotNumber", lotNumber);
-  }
-    return this.httpClient.get(`${API}v1/ise/inventory/combinedlot/customer`,{ params });
+    if (customerId != null) {
+      params = params.set('customerId', customerId);
+    }
+    if (lotNumber) {
+      params.append("lotNumber", lotNumber);
+    }
+    return this.httpClient.get(`${API}v1/ise/inventory/combinedlot/customer`, { params });
   }
   postCombineLots(payload: any): Observable<any> {
-    
+
     return this.httpClient.post(`${API}v1/ise/inventory/combinedlot/upinsertcombolot`, payload);
   }
 
-  getViewEditComblotsWithId(comboLotId:number ): Observable<any[]> {
+  getViewEditComblotsWithId(comboLotId: number): Observable<any[]> {
     return this.httpClient.get<any[]>(`${API}v1/ise/inventory/combinedlot/vieweditcombolots?comboLotId=${comboLotId}`);
   }
 
 
   //Inventory Hold
-  getHoldCodes(inventoryId: number):Observable<any[]> {
+  getHoldCodes(inventoryId: number): Observable<any[]> {
     return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getHold?inventoryId=${inventoryId}`);
   }
-  getAllHolds(inventoryId: number){
+  getAllHolds(inventoryId: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getAllHolds?inventoryId=${inventoryId}`);
   }
   upsertInventoryHold(request: any, options: { responseType: 'text' }): Observable<any> {
     return this.httpClient.post(`${API}v1/ise/inventory/inventoryHold/UpsertHold`, request, options);
   }
-  getHoldDetails(inventoryId: number){
+  getHoldDetails(inventoryId: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getHoldDetails?inventoryId=${inventoryId}`);
   }
 
-  getOtherShippingData(customerId: number|null, employeeId: number|null, statusId: number|null, fromDate: Date|null, toDate: Date|null) {
+  getOtherShippingData(customerId: number | null, employeeId: number | null, statusId: number | null, fromDate: Date | null, toDate: Date | null) {
     const url = `${API}v1/ise/otherinventory/getOtherInventoryShipments?customerId=${customerId}&employeeId=${employeeId}&statusId=${statusId}&fromDate=${fromDate?.toDateString()}&toDate=${toDate?.toDateString()}`;
     return this.httpClient.get(url);
   }
   getOtherInventoryStatuses() {
-  debugger;
+    debugger;
     const url = `${API}v1/ise/otherinventory/getOtherInventoryStatus`;
     return this.httpClient.get(url);
   }
-  getOtherInventoryShipment(otherInventoryId:number) {
+  getOtherInventoryShipment(otherInventoryId: number) {
     debugger;
-      const url = `${API}v1/ise/otherinventory/getOtherInventoryShipment?otherInventoryId=${otherInventoryId}`;
-      return this.httpClient.get(url);
-    }
+    const url = `${API}v1/ise/otherinventory/getOtherInventoryShipment?otherInventoryId=${otherInventoryId}`;
+    return this.httpClient.get(url);
+  }
 }

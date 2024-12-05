@@ -40,8 +40,11 @@ export class ReceivingComponent implements OnDestroy {
     start: this.oneMonthAgo,
     end: this.today
   };
-  fromDate = '';
-  toDate = '';
+  // fromDate = '';
+  // toDate = '';
+  format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker
+  fromDate: Date | null = null;  // Variable to store the selected 'from' date
+  toDate: Date | null = null;    // Variable to store the selected 'to' date
 
   isDialogOpen = false;
   openDialog() {
@@ -200,8 +203,8 @@ export class ReceivingComponent implements OnDestroy {
     this.appService.sharedData.receiving.eventEmitter.emit('canCloseDialog?')
   }
   search() {
-    this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
-    this.toDate = moment(this.range.end).format('MM-DD-YYYY');
+    // this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
+    // this.toDate = moment(this.range.end).format('MM-DD-YYYY');
     this.fetchdata()
   }
 }

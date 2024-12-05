@@ -264,3 +264,9 @@ body {
 body.print-mode * {
   visibility: hidden;
 }
+
+.minimal-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

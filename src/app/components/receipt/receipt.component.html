@@ -181,7 +181,7 @@
             <kendo-grid-column field="isHold" title="Hold" [width]="60" class="center">
               <ng-template kendoGridCellTemplate let-dataItem>
                 <input type="checkbox" [(ngModel)]="dataItem.isHold" [disabled]="dataItem.isHoldCheckboxEnabled"
-                  kendoCheckBox>
+                  kendoCheckBox (ngModelChange)="onChangeIsHold()">
               </ng-template>
             </kendo-grid-column>
             <kendo-grid-column field="holdComments" title="Hold Comments">
@@ -419,8 +419,7 @@
               </ng-template>
             </ng-template>
           </kendo-grid-column>
-          <!-- <kendo-grid-column field="customerVendor" title="Customer Vendor"></kendo-grid-column> -->
-          <kendo-grid-column field="modifiedOn" title="Modified On">
+          <!-- <kendo-grid-column field="modifiedOn" title="Modified On">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <div class="k-d-flex">
                 <span>{{dataItem.modifiedOn}}</span>
@@ -430,7 +429,7 @@
                   (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Misc')"></kendo-contextmenu>
               </div>
             </ng-template>
-          </kendo-grid-column>
+          </kendo-grid-column> -->
         </kendo-grid>
       </div>
     </div>
@@ -450,10 +449,6 @@
           [valueField]="'EmployeeID'" [kendoDropDownFilter]="filterSettings" placeholder="Select"
           rounded="large"></kendo-combobox>
       </kendo-label>
-      <kendo-label text="Signature">
-        <input type="text" placeholder="Name" class="k-w-full" kendoTextBox [(ngModel)]="signatureName"
-          name="signatureName" required>
-      </kendo-label>
       <kendo-label text="Date & Time">
         <kendo-dateinput format="eee dd MMMM yyyy, h:mm a" [value]="signatureDate" class="k-center"></kendo-dateinput>
       </kendo-label>
@@ -462,9 +457,15 @@
 
   </kendo-pdf-export>
   <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
+    <kendo-label text="Signature">
+      <kendo-textarea [(ngModel)]="signatureName" [rows]="3" placeholder="Name" name="signatureName" required
+        rounded="large"></kendo-textarea>
+      <!-- <input type="text" placeholder="Name" class="k-w-full" kendoTextBox [(ngModel)]="signatureName"
+        name="signatureName" required> -->
+    </kendo-label>
+    <span style="margin-left: auto;"></span>
     <button kendoButton type="button" rounded="large" themeColor="dark" style="width:6rem"
       (click)="printSection()">Print</button>
-    <span style="margin-left: auto;"></span>
     <!-- <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
       (click)="testAddReceipt()">Test</button> -->
     <button kendoButton type="button" rounded="large" themeColor="primary" style="width:6rem"

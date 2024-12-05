@@ -79,13 +79,21 @@
       [kendoGridSelectBy]="'inventoryID'" [(selectedKeys)]="gridSelectedKeys"
       class="bold-column-header cell-border-none">
       <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-      <kendo-grid-column field="customerLotNum" title="Customer Lot#"></kendo-grid-column>
+      <kendo-grid-column field="customerLotNum" title="Customer Lot#">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.customerLotNum">{{dataItem.customerLotNum}}</a>
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column *ngIf="isEditMode" field="inventoryID" title="Inventory ID"></kendo-grid-column>
       <kendo-grid-column *ngIf="isEditMode" field="shipmentLineItemID"
         title="Shipment Line Item ID"></kendo-grid-column>
       <kendo-grid-column field="iseLotNum" title="ISE Lot#"></kendo-grid-column>
       <kendo-grid-column field="goodsType" title="Device Family"></kendo-grid-column>
-      <kendo-grid-column field="partNum" title="Device"></kendo-grid-column>
+      <kendo-grid-column field="partNum" title="Device">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.partNum">{{dataItem.partNum}}</a>
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column field="currentQty" title="Current Qty"></kendo-grid-column>
       <kendo-grid-column field="shipmentQty" title="Shipment Qty"></kendo-grid-column>
       <kendo-grid-column field="shipmentType" title="Shipment Type" [width]="230">
@@ -95,7 +103,11 @@
             rounded="large"></kendo-combobox>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="address" title="Address"></kendo-grid-column>
+      <kendo-grid-column field="address" title="Address">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.address">{{dataItem.address}}</a>
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column *ngIf="isEditMode" field="additionalInfo" title="Additional Info"></kendo-grid-column>
     </kendo-grid>
   </div>
