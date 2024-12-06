@@ -601,18 +601,13 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
     }
     const HardwareDetails: PostHardware[] = [];
     filteredRecords.forEach((r) => {
-      console.log(r);
-
-      if (r.customerSelected) {
-        r.customerID = r.customerSelected?.CustomerID;
-      }
       if (r.hardwareTypeSelected) {
         r.hardwareTypeID = r.hardwareTypeSelected?.hardwareTypeID
       }
       const postHardware: PostHardware = {
         HardwareID: r.hardwareID,
         ReceiptID: r.receiptID,
-        CustomerID: r.customerID,
+        CustomerHardwareID: r.customerHardwareID,
         HardwareTypeID: r.hardwareTypeID || 10,
         ExpectedQty: r.expectedQty,
         RecordStatus: r.recordStatus,

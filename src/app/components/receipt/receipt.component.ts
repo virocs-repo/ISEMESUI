@@ -43,7 +43,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   readonly vendors: Vendor[] = this.appService.masterData.entityMap.Vendor;
   vendorSelected: Vendor | undefined;
   behalfOfCusotmerSelected: Customer | undefined;
-  behalfOfVendorSelected: Vendor | undefined;
+  // behalfOfVendorSelected: Vendor | undefined;
   contactPhone = '';
   contactPerson = ''
 
@@ -162,11 +162,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       if (this.customerTypeSelected) {
         if (this.customerTypeSelected.customerTypeName == 'Customer') {
           this.customerSelected = this.customers.find((c) => c.CustomerID == dataItem.customerVendorID);
-          this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID == dataItem.behalfID);
         } else {
           this.vendorSelected = this.vendors.find((v) => v.VendorID == dataItem.customerVendorID);
-          this.behalfOfVendorSelected = this.vendors.find(v => v.VendorID == dataItem.behalfID);
+          // this.behalfOfVendorSelected = this.vendors.find(v => v.VendorID == dataItem.behalfID);
         }
+        this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID == dataItem.behalfID);
       }
       this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.receivingFacilityID);
 
@@ -375,7 +375,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         } else {
           data.CustomerVendorID = this.vendorSelected?.VendorID || 1;
         }
-        data.BehalfID = this.behalfOfVendorSelected?.VendorID || 1;
+        data.BehalfID = this.behalfOfCusotmerSelected?.CustomerID || 1;
       } else {
         this.appService.errorMessage('Please select vendor');
         return;
@@ -579,8 +579,18 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.appService.successMessage(MESSAGES.DataSaved);
         this.fetchDataHardware();
       },
-      error: (err) => {
-        this.appService.errorMessage(MESSAGES.DataSaveError);
+      error: (e) => {
+        let m = MESSAGES.DataSaveError;
+        if (e && e.error) {
+          const err = e.error;
+          if (err instanceof String) {
+            m = err.split('\n')[0]
+          } else if (err.errors) {
+            let v: any = Object.values(err.errors)
+            m = v.map((i: string[]) => i[0]).join('\n')
+          }
+        }
+        this.appService.errorMessage(m);
       }
     });
   }
@@ -599,20 +609,31 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.appService.infoMessage(MESSAGES.NoChanges);
       return;
     }
+
+    var isEmpty = filteredRecords.find(r => !r.customerHardwareID);
+    if (isEmpty) {
+      this.appService.errorMessage("Please enter Customer Hardware ID");
+      return;
+    }
+    var isEmpty = filteredRecords.find(r => !r.expectedQty);
+    if (isEmpty) {
+      this.appService.errorMessage("Please enter expected quantity");
+      return;
+    }
+    var isEmpty = filteredRecords.find(r => !r.hardwareTypeSelected);
+    if (isEmpty) {
+      this.appService.errorMessage("Please enter hardware type");
+      return;
+    }
     const HardwareDetails: PostHardware[] = [];
     filteredRecords.forEach((r) => {
-      console.log(r);
-
-      if (r.customerSelected) {
-        r.customerID = r.customerSelected?.CustomerID;
-      }
       if (r.hardwareTypeSelected) {
         r.hardwareTypeID = r.hardwareTypeSelected?.hardwareTypeID
       }
       const postHardware: PostHardware = {
         HardwareID: r.hardwareID,
         ReceiptID: r.receiptID,
-        CustomerID: r.customerID,
+        CustomerHardwareID: r.customerHardwareID,
         HardwareTypeID: r.hardwareTypeID || 10,
         ExpectedQty: r.expectedQty,
         RecordStatus: r.recordStatus,
@@ -713,7 +734,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     autoSizeAllColumns: true,
   }
   rowActionMenu: MenuItem[] = [
-    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
+    // { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
     { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
     // { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
     // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }

@@ -85,7 +85,7 @@ export interface HardwareItem {
   receiptID: number;
   inventoryID: number;
   hardwareType: string;
-  customerID: number;
+  customerHardwareID: number | null;
   serialNumber: string;
   expectedQty: number;
   createdOn: string; // Assuming ISO 8601 format (e.g., "2024-08-28T03:20:22.767")
@@ -106,7 +106,7 @@ export const INIT_HARDWARE_ITEM: HardwareItem = {
   inventoryID: 0,
   hardwareType: '',
   hardwareTypeID: 0,
-  customerID: 0,
+  customerHardwareID: null,
   customerName: '',
   serialNumber: '',
   expectedQty: 0,
@@ -403,20 +403,20 @@ export const INIT_POST_RECEIPT: PostReceipt = {
 }
 export interface PostHardware {
   HardwareID: number | null;
-  ReceiptID: number;
-  CustomerID: number;
-  HardwareTypeID: number;
+  ReceiptID: number | null;
+  CustomerHardwareID: number | null;
+  HardwareTypeID: number | null;
   ExpectedQty: number;
   RecordStatus: "I" | "U";
   Active: boolean;
   LoginId: number;
 }
-export const INIT_POST_HARDWARE = {
-  HardwareID: 5,
-  ReceiptID: 4,
-  CustomerID: 6,
-  HardwareTypeID: 10,
-  ExpectedQty: 1,
+export const INIT_POST_HARDWARE: PostHardware = {
+  HardwareID: null,
+  ReceiptID: null,
+  CustomerHardwareID: null,
+  HardwareTypeID: null,
+  ExpectedQty: 0,
   RecordStatus: "I",
   Active: true,
   LoginId: 1
