@@ -7,10 +7,10 @@
     <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
   </div> -->
 
-  <kendo-label text="Receipt Start Date" class="k-font-size-sm">
+  <kendo-label text="Shipping Date" class="k-font-size-sm">
     <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
   </kendo-label>
-  <kendo-label text="Receipt End Date" class="k-font-size-sm">
+  <kendo-label text="Shipping End Date" class="k-font-size-sm">
     <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
   </kendo-label>
   <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
