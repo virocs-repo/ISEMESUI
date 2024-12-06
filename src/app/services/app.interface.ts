@@ -151,9 +151,9 @@ export interface DeviceItem {
   expedite: boolean;
   lotIdentifier: string;
   customerCount: number;
-  labelCount: number;
-  coo: string; // Assuming "Country of Origin"
-  dateCode: string;
+  labelCount: number | null;
+  coo: string | null; // Assuming "Country of Origin"
+  dateCode: string | null;
   isHold: boolean;
   holdComments: string | null;
   createdOn: string; // Assuming ISO 8601 format
@@ -178,7 +178,7 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   expedite: false,
   lotIdentifier: '',
   customerCount: 0,
-  labelCount: 0,
+  labelCount: null,
   coo: '',
   dateCode: '',
   isHold: false,
@@ -430,9 +430,9 @@ export interface PostDevice {
   IQA: boolean;
   LotIdentifier: string | null;
   LotOwnerID: number | null;
-  LabelCount: number;
+  LabelCount: number | null;
   DateCode: string;
-  COO: number;
+  COO: number | null;
   IsHold: boolean;
   HoldComments: string | null;
   RecordStatus: "I" | "U";
@@ -451,9 +451,9 @@ export const INIT_POST_DEVICE: PostDevice = {
   IQA: false,
   LotIdentifier: "14054",
   LotOwnerID: 1,
-  LabelCount: 50,
-  DateCode: '202304',
-  COO: 1,
+  LabelCount: null,
+  DateCode: '',
+  COO: null,
   IsHold: true,
   HoldComments: "Quality check",
   RecordStatus: "I",

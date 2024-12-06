@@ -509,14 +509,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.appService.errorMessage("Please select Device Type!")
         return;
       }
-      if (!r.dateCode) {
-        this.appService.errorMessage("Date Code is required!")
-        return;
-      }
-      if (!r.countrySelected) {
-        this.appService.errorMessage("Please select COO!")
-        return;
-      }
+      // if (!r.dateCode) {
+      //   this.appService.errorMessage("Date Code is required!")
+      //   return;
+      // }
+      // if (!r.countrySelected) {
+      //   this.appService.errorMessage("Please select COO!")
+      //   return;
+      // }
       const postDevice: PostDevice = {
         DeviceID: r.deviceID,
         ReceiptID: r.receiptID,
@@ -527,8 +527,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         LotIdentifier: r.lotIdentifier,
         LotOwnerID: r.employeeSelected?.EmployeeID || this.appService.loginId,
         LabelCount: r.labelCount,
-        DateCode: r.dateCode.toString(),
-        COO: r.countrySelected?.countryID || 1,
+        DateCode: r.dateCode?.toString() || '',
+        COO: r.countrySelected?.countryID || null,
         IsHold: r.isHold,
         HoldComments: r.holdComments,
         RecordStatus: r.recordStatus || 'I',

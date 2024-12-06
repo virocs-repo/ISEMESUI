@@ -1,4 +1,4 @@
-<div class="k-m-4" id="addReceiptForm">
+<div class="k-m-4" id="addReceiptForm" [ngClass]="{'k-pointer-events-none':isDisabled.addReceipt}">
   <kendo-pdf-export #pdfExport>
     <div>
       <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-4 k-pb-3">
@@ -275,7 +275,7 @@
           </kendo-grid-column>
           <kendo-grid-column field="labelCount" title="Label Count">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
+              <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.labelCount" placeholder="Label Count"></kendo-textbox>
               </ng-container>
               <ng-template #showValue>
@@ -285,7 +285,7 @@
           </kendo-grid-column>
           <kendo-grid-column field="dateCode" title="Date Code">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
+              <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.dateCode" placeholder="Date Code"></kendo-textbox>
                 <!-- <kendo-numerictextbox [min]="0" [(ngModel)]="dataItem.dateCode"
                   placeholder="Date Code"></kendo-numerictextbox> -->
@@ -297,7 +297,7 @@
           </kendo-grid-column>
           <kendo-grid-column field="coo" title="COO">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
+              <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
                 <!-- <kendo-textbox [(ngModel)]="dataItem.coo" placeholder="COO"></kendo-textbox> -->
                 <kendo-combobox [data]="countries" [(ngModel)]="dataItem.countrySelected" [textField]="'countryName'"
                   [valueField]="'countryID'" [kendoDropDownFilter]="filterSettings" placeholder="Select"
@@ -312,10 +312,12 @@
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <div class="k-d-flex k-align-items-center">
                 <input type="checkbox" name="isHold" [(ngModel)]="dataItem.isHold" kendoCheckBox>
-                <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
-                  (click)="onOpenRowActionMenu(dataItem, TableType.Device)" #rowActionMenuTarget></button>
-                <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenuDevice"
-                  (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Device')"></kendo-contextmenu>
+                <i *ngIf="dataItem.recordStatus != 'I'">
+                  <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
+                    (click)="onOpenRowActionMenu(dataItem, TableType.Device)" #rowActionMenuTarget></button>
+                  <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenuDevice"
+                    (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Device')"></kendo-contextmenu>
+                </i>
               </div>
             </ng-template>
           </kendo-grid-column>
@@ -457,8 +459,10 @@
   </kendo-pdf-export>
   <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
     <kendo-label text="Signature">
-      <kendo-textarea [(ngModel)]="signatureName" [rows]="3" placeholder="Name" name="signatureName" required
-        rounded="large"></kendo-textarea>
+      <!-- <kendo-textarea [(ngModel)]="signatureName" [rows]="3" placeholder="Name" name="signatureName" required
+        rounded="large"></kendo-textarea> -->
+      <kendo-signature #signature [(value)]="signatureName" [smooth]="true" [maximizable]="false"
+        [hideLine]="true"></kendo-signature>
       <!-- <input type="text" placeholder="Name" class="k-w-full" kendoTextBox [(ngModel)]="signatureName"
         name="signatureName" required> -->
     </kendo-label>
