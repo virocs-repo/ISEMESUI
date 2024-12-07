@@ -77,6 +77,7 @@ export interface Receipt {
   mailStatus: string;
   receivingStutus: string; // Corrected typo from "receivingStatus"
   receivingStatus: string; // Corrected typo from "receivingStatus"
+  signaturebase64Data: string;
   signatureDate: string;
   active: boolean
 }
@@ -358,6 +359,7 @@ export interface PostReceipt {
   SignaturePersonType: string;
   SignaturePersonID: number;
   Signature: string;
+  Signaturebase64Data: string;
   SignatureDate: Date | string;
   RecordStatus: "I" | "U";
   Active: boolean;
@@ -393,7 +395,8 @@ export const INIT_POST_RECEIPT: PostReceipt = {
   ReceivingStatus: null,
   SignaturePersonType: "Vendor",
   SignaturePersonID: 1,
-  Signature: "Amithsvc",
+  Signature: "",
+  Signaturebase64Data: "",
   SignatureDate: "2024-08-27 09:28:39.187",
   RecordStatus: "I",
   Active: true,

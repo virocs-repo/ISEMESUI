@@ -63,11 +63,17 @@ export class ApiService {
   }
 
   // Receipt
+  getDevicesByCustomer(customerId: number) {
+    return this.httpClient.get(`${API}v1/ise/inventory/deviceTypeByCustomer?customerId=${customerId}`);
+  }
   getEntitiesName(entityType: string) {
     return this.httpClient.get(`${API}v1/ise/inventory/entity/${entityType}`);
   }
   getAddresses() {
     return this.httpClient.get(`${API}v1/ise/inventory/address`);
+  }
+  generateLineItem() {
+    return this.httpClient.get(`${API}v1/ise/inventory/lineItem`);
   }
 
   // Shipping

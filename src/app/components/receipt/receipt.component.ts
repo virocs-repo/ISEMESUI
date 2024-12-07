@@ -48,6 +48,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   contactPerson = ''
 
   signatureName = ''
+  Signaturebase64Data = ''
   readonly signatureTypes: SignatureTypes[] = [
     { customerTypeID: 1, customerTypeName: 'Customer' }, { customerTypeID: 3, customerTypeName: 'Employee' },
   ]
@@ -70,7 +71,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   courierSelected: CourierDetails | undefined
   readonly lotCategories = this.appService.masterData.lotCategory;
   lotCategorySelected: LotCategory | undefined;
-  readonly deviceTypes = this.appService.masterData.deviceType;
+  // readonly deviceTypes = this.appService.masterData.deviceType;
+  readonly deviceTypes: DeviceType[] = [];
   deviceTypeSelected: DeviceType | undefined;
   readonly lotIdentifiers = [
     { name: 'Test', id: 'Test' },
@@ -193,6 +195,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.signatureTypeSelected = this.signatureTypes.find(c => c.customerTypeName == dataItem.signaturePersonType);
       this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeID == dataItem.signaturePersonID)
       this.signatureName = dataItem.signature
+      this.Signaturebase64Data = dataItem.Signaturebase64Data
       if (dataItem.signatureDate) {
         this.signatureDate = new Date(dataItem.signatureDate);
       }
@@ -217,9 +220,32 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
   }
   private fetchData() {
+    this.fetchDevicesByCustomer();
     this.fetchDataDevice();
     this.fetchDataHardware();
     this.fetchDataMiscellaneous();
+  }
+
+  private fetchDevicesByCustomer() {
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    if (!dataItem.behalfID) {
+      // this is for new form
+      return;
+    }
+    this.apiService.getDevicesByCustomer(dataItem.behalfID).subscribe({
+      next: (v: any) => {
+        console.log({ v });
+        this.deviceTypes.length = 0;
+        this.deviceTypes.push(...v);
+
+        this.gridDataDevice.forEach((d) => {
+          d.deviceTypeSelected = this.deviceTypes.find(dt => dt.deviceTypeID == d.deviceTypeID)
+        });
+      },
+      error: (e: any) => {
+        console.log({ e });
+      }
+    })
   }
   private fetchDataDevice() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
@@ -348,6 +374,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       SignaturePersonType: this.signatureTypeSelected?.customerTypeName || '',
       SignaturePersonID: this.signatureEmployeeSelected?.EmployeeID || 1,
       Signature: this.signatureName,
+      Signaturebase64Data: this.Signaturebase64Data,
       SignatureDate: this.appService.formattedDateTime2(new Date()),
       RecordStatus: "I",
       Active: true,
@@ -518,6 +545,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       //   return;
       // }
       const postDevice: PostDevice = {
+        // @ts-ignore
+        IseLotNumber: r.iseLotNumber,
         DeviceID: r.deviceID,
         ReceiptID: r.receiptID,
         CustomerLotNumber: r.customerLotNumber,
@@ -556,10 +585,25 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   addDeviceRow() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
+    const trackingNumer = Date.now();
+    this.generateLineItem(trackingNumer);
     this.gridDataDevice.splice(0, 0, {
       ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID, recordStatus: "I",
       lotIdentifierSelected: this.lotIdentifiers[0],
-      lotIdentifier: this.lotIdentifiers[0].id
+      lotIdentifier: this.lotIdentifiers[0].id,
+      iseLotNumber: trackingNumer + ''
+    })
+  }
+  private generateLineItem(trackingNumer: number) {
+    this.apiService.generateLineItem().subscribe({
+      next: (v: any) => {
+        console.log({ v });
+        this.gridDataDevice.forEach(d => {
+          if (d.iseLotNumber == trackingNumer.toString()) {
+            d.iseLotNumber = v.data;
+          }
+        })
+      }
     })
   }
   addHardwareRow() {
@@ -891,6 +935,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     if (this.customerTypeSelected?.customerTypeName == 'Customer') {
       this.isDisabledBehalfOfCusotmer = true
       this.behalfOfCusotmerSelected = this.customerSelected;
+    }
+  }
+  onChangeBehalfOfCusotmer() {
+    if (this.appService.sharedData.receiving.dataItem) {
+      this.appService.sharedData.receiving.dataItem.behalfID = this.behalfOfCusotmerSelected?.CustomerID;
+      this.fetchDevicesByCustomer();
     }
   }
   valueNormalizerCustomer = (text: Observable<string>) => text.pipe(map((content: string) => {
