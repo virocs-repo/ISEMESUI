@@ -111,4 +111,10 @@ export class EditInventoryHoldComponent implements OnInit {
   rowCallback = (context: any) => ({
     'highlighted-row': context.dataItem === this.selectedRowData
   });
+  onDataUpdated(): void {
+    if (this.selectedRowData?.inventoryId) {
+      this.loadHoldData(this.selectedRowData.inventoryId);
+    }
+  }
+  
 }

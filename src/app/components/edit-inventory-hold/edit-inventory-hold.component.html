@@ -57,7 +57,8 @@
       [noOfHolds]="gridDataResult.total.toString()"
       [inventoryId]="selectedRowData?.inventoryId || 0"
       [selectedGridData]="selectedRowDat"
-      (cancel)="closeDialog()">
+      (cancel)="closeDialog()"
+      (dataUpdated)="onDataUpdated()">
     </app-add-hold>
   </kendo-dialog>
 </div>

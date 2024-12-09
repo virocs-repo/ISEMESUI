@@ -8,6 +8,7 @@ import { AppService } from 'src/app/services/app.service';
   styleUrls: ['./add-hold.component.scss']
 })
 export class AddHoldComponent implements OnInit {
+  @Output() dataUpdated = new EventEmitter<void>();
   @Input() lotNumber: string = '';
   @Input() location: string = '';
   @Input() noOfHolds: string = '';
@@ -38,7 +39,7 @@ export class AddHoldComponent implements OnInit {
     if (this.mode === 'edit') {
       this.populateFields();
     }
-    else{
+    else if (this.mode === 'add') {
       this.resetForm();
     }
   }
@@ -116,6 +117,7 @@ export class AddHoldComponent implements OnInit {
     this.apiService.upsertInventoryHold(payload, { responseType: 'text' }).subscribe(
       () => {
         this.appService.successMessage('Hold details have been saved successfully!');
+        this.dataUpdated.emit();
         this.cancel.emit();
       },
       () => this.appService.errorMessage('Failed to save hold details.')
