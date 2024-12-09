@@ -245,6 +245,9 @@ export class ApiService {
   getAllSearchHold() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getAllSearchHold`);
   }
+  getHoldType(inventoryId: number):Observable<any[]> {
+    return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getHoldType?inventoryId=${inventoryId}`);
+  }
   getHoldCodes(inventoryId: number):Observable<any[]> {
     return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getHold?inventoryId=${inventoryId}`);
   }
