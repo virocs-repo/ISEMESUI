@@ -25,8 +25,11 @@ export class ShippingComponent implements OnDestroy {
     start: this.oneMonthAgo,
     end: this.today
   };
-  fromDate = '';
-  toDate = '';
+  format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker
+  fromDate: Date | null = null;  // Variable to store the selected 'from' date
+  toDate: Date | null = null;    // Variable to store the selected 'to' date
+  // fromDate = '';
+  // toDate = '';
 
   constructor(public appService: AppService, private apiService: ApiService) { }
 
@@ -46,7 +49,7 @@ export class ShippingComponent implements OnDestroy {
     this.customerTypes.push(...this.appService.masterData.customerType)
   }
   private fetchdata() {
-    this.apiService.getShippingData().subscribe({
+    this.apiService.getShippingData(this.fromDate, this.toDate).subscribe({
       next: (v: any) => {
         this.gridDataResult.data = v;
         this.gridDataResult.total = v.length
@@ -156,10 +159,10 @@ export class ShippingComponent implements OnDestroy {
       'highlighted-row': context.index === this.selectedRowIndex
     };
   }
-  
+
   search() {
-    this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
-    this.toDate = moment(this.range.end).format('MM-DD-YYYY');
+    // this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
+    // this.toDate = moment(this.range.end).format('MM-DD-YYYY');
     this.fetchdata()
   }
 }

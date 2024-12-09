@@ -77,6 +77,7 @@ export interface Receipt {
   mailStatus: string;
   receivingStutus: string; // Corrected typo from "receivingStatus"
   receivingStatus: string; // Corrected typo from "receivingStatus"
+  signaturebase64Data: string;
   signatureDate: string;
   active: boolean
 }
@@ -85,7 +86,7 @@ export interface HardwareItem {
   receiptID: number;
   inventoryID: number;
   hardwareType: string;
-  customerID: number;
+  customerHardwareID: number | null;
   serialNumber: string;
   expectedQty: number;
   createdOn: string; // Assuming ISO 8601 format (e.g., "2024-08-28T03:20:22.767")
@@ -106,7 +107,7 @@ export const INIT_HARDWARE_ITEM: HardwareItem = {
   inventoryID: 0,
   hardwareType: '',
   hardwareTypeID: 0,
-  customerID: 0,
+  customerHardwareID: null,
   customerName: '',
   serialNumber: '',
   expectedQty: 0,
@@ -151,9 +152,9 @@ export interface DeviceItem {
   expedite: boolean;
   lotIdentifier: string;
   customerCount: number;
-  labelCount: number;
-  coo: string; // Assuming "Country of Origin"
-  dateCode: string;
+  labelCount: number | null;
+  coo: string | null; // Assuming "Country of Origin"
+  dateCode: string | null;
   isHold: boolean;
   holdComments: string | null;
   createdOn: string; // Assuming ISO 8601 format
@@ -178,7 +179,7 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   expedite: false,
   lotIdentifier: '',
   customerCount: 0,
-  labelCount: 0,
+  labelCount: null,
   coo: '',
   dateCode: '',
   isHold: false,
@@ -358,6 +359,7 @@ export interface PostReceipt {
   SignaturePersonType: string;
   SignaturePersonID: number;
   Signature: string;
+  Signaturebase64Data: string;
   SignatureDate: Date | string;
   RecordStatus: "I" | "U";
   Active: boolean;
@@ -393,7 +395,8 @@ export const INIT_POST_RECEIPT: PostReceipt = {
   ReceivingStatus: null,
   SignaturePersonType: "Vendor",
   SignaturePersonID: 1,
-  Signature: "Amithsvc",
+  Signature: "",
+  Signaturebase64Data: "",
   SignatureDate: "2024-08-27 09:28:39.187",
   RecordStatus: "I",
   Active: true,
@@ -403,20 +406,20 @@ export const INIT_POST_RECEIPT: PostReceipt = {
 }
 export interface PostHardware {
   HardwareID: number | null;
-  ReceiptID: number;
-  CustomerID: number;
-  HardwareTypeID: number;
+  ReceiptID: number | null;
+  CustomerHardwareID: number | null;
+  HardwareTypeID: number | null;
   ExpectedQty: number;
   RecordStatus: "I" | "U";
   Active: boolean;
   LoginId: number;
 }
-export const INIT_POST_HARDWARE = {
-  HardwareID: 5,
-  ReceiptID: 4,
-  CustomerID: 6,
-  HardwareTypeID: 10,
-  ExpectedQty: 1,
+export const INIT_POST_HARDWARE: PostHardware = {
+  HardwareID: null,
+  ReceiptID: null,
+  CustomerHardwareID: null,
+  HardwareTypeID: null,
+  ExpectedQty: 0,
   RecordStatus: "I",
   Active: true,
   LoginId: 1
@@ -430,9 +433,9 @@ export interface PostDevice {
   IQA: boolean;
   LotIdentifier: string | null;
   LotOwnerID: number | null;
-  LabelCount: number;
+  LabelCount: number | null;
   DateCode: string;
-  COO: number;
+  COO: number | null;
   IsHold: boolean;
   HoldComments: string | null;
   RecordStatus: "I" | "U";
@@ -451,9 +454,9 @@ export const INIT_POST_DEVICE: PostDevice = {
   IQA: false,
   LotIdentifier: "14054",
   LotOwnerID: 1,
-  LabelCount: 50,
-  DateCode: '202304',
-  COO: 1,
+  LabelCount: null,
+  DateCode: '',
+  COO: null,
   IsHold: true,
   HoldComments: "Quality check",
   RecordStatus: "I",
@@ -509,6 +512,7 @@ export interface PostShipment {
 export interface CombineLot {
   receiptID: number; // Represents the receipt ID
   customerVendorID: number; // Customer/Vendor ID
+  customer: string; // Type of goods (e.g., Device)
   behalfID: number; // Behalf ID
   goodsType: string; // Type of goods (e.g., Device)
   inventoryID: number; // Inventory ID

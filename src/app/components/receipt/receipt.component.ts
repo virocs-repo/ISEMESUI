@@ -43,11 +43,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   readonly vendors: Vendor[] = this.appService.masterData.entityMap.Vendor;
   vendorSelected: Vendor | undefined;
   behalfOfCusotmerSelected: Customer | undefined;
-  behalfOfVendorSelected: Vendor | undefined;
+  // behalfOfVendorSelected: Vendor | undefined;
   contactPhone = '';
   contactPerson = ''
 
   signatureName = ''
+  Signaturebase64Data = ''
   readonly signatureTypes: SignatureTypes[] = [
     { customerTypeID: 1, customerTypeName: 'Customer' }, { customerTypeID: 3, customerTypeName: 'Employee' },
   ]
@@ -70,7 +71,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   courierSelected: CourierDetails | undefined
   readonly lotCategories = this.appService.masterData.lotCategory;
   lotCategorySelected: LotCategory | undefined;
-  readonly deviceTypes = this.appService.masterData.deviceType;
+  // readonly deviceTypes = this.appService.masterData.deviceType;
+  readonly deviceTypes: DeviceType[] = [];
   deviceTypeSelected: DeviceType | undefined;
   readonly lotIdentifiers = [
     { name: 'Test', id: 'Test' },
@@ -162,11 +164,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       if (this.customerTypeSelected) {
         if (this.customerTypeSelected.customerTypeName == 'Customer') {
           this.customerSelected = this.customers.find((c) => c.CustomerID == dataItem.customerVendorID);
-          this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID == dataItem.behalfID);
         } else {
           this.vendorSelected = this.vendors.find((v) => v.VendorID == dataItem.customerVendorID);
-          this.behalfOfVendorSelected = this.vendors.find(v => v.VendorID == dataItem.behalfID);
+          // this.behalfOfVendorSelected = this.vendors.find(v => v.VendorID == dataItem.behalfID);
         }
+        this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID == dataItem.behalfID);
       }
       this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.receivingFacilityID);
 
@@ -193,6 +195,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.signatureTypeSelected = this.signatureTypes.find(c => c.customerTypeName == dataItem.signaturePersonType);
       this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeID == dataItem.signaturePersonID)
       this.signatureName = dataItem.signature
+      this.Signaturebase64Data = dataItem.Signaturebase64Data
       if (dataItem.signatureDate) {
         this.signatureDate = new Date(dataItem.signatureDate);
       }
@@ -217,9 +220,32 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
   }
   private fetchData() {
+    this.fetchDevicesByCustomer();
     this.fetchDataDevice();
     this.fetchDataHardware();
     this.fetchDataMiscellaneous();
+  }
+
+  private fetchDevicesByCustomer() {
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    if (!dataItem.behalfID) {
+      // this is for new form
+      return;
+    }
+    this.apiService.getDevicesByCustomer(dataItem.behalfID).subscribe({
+      next: (v: any) => {
+        console.log({ v });
+        this.deviceTypes.length = 0;
+        this.deviceTypes.push(...v);
+
+        this.gridDataDevice.forEach((d) => {
+          d.deviceTypeSelected = this.deviceTypes.find(dt => dt.deviceTypeID == d.deviceTypeID)
+        });
+      },
+      error: (e: any) => {
+        console.log({ e });
+      }
+    })
   }
   private fetchDataDevice() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
@@ -328,7 +354,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       BehalfID: 1,
       ReceivingFacilityID: this.receiptLocationSelected?.receivingFacilityID || 1,
       DeliveryModeID: this.deliveryModeSelected?.deliveryModeID || 1,
-      CourierDetailID: this.courierSelected?.courierDetailID || 1,
+      CourierDetailID: this.courierSelected?.courierDetailID || null,
       CountryFromID: this.countrySelected?.countryID || 1,
       ContactPerson: this.contactPerson,
       ContactPhone: this.contactPhone,
@@ -348,6 +374,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       SignaturePersonType: this.signatureTypeSelected?.customerTypeName || '',
       SignaturePersonID: this.signatureEmployeeSelected?.EmployeeID || 1,
       Signature: this.signatureName,
+      Signaturebase64Data: this.Signaturebase64Data,
       SignatureDate: this.appService.formattedDateTime2(new Date()),
       RecordStatus: "I",
       Active: true,
@@ -375,7 +402,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         } else {
           data.CustomerVendorID = this.vendorSelected?.VendorID || 1;
         }
-        data.BehalfID = this.behalfOfVendorSelected?.VendorID || 1;
+        data.BehalfID = this.behalfOfCusotmerSelected?.CustomerID || 1;
       } else {
         this.appService.errorMessage('Please select vendor');
         return;
@@ -509,15 +536,17 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.appService.errorMessage("Please select Device Type!")
         return;
       }
-      if (!r.dateCode) {
-        this.appService.errorMessage("Date Code is required!")
-        return;
-      }
-      if (!r.countrySelected) {
-        this.appService.errorMessage("Please select COO!")
-        return;
-      }
+      // if (!r.dateCode) {
+      //   this.appService.errorMessage("Date Code is required!")
+      //   return;
+      // }
+      // if (!r.countrySelected) {
+      //   this.appService.errorMessage("Please select COO!")
+      //   return;
+      // }
       const postDevice: PostDevice = {
+        // @ts-ignore
+        IseLotNumber: r.iseLotNumber,
         DeviceID: r.deviceID,
         ReceiptID: r.receiptID,
         CustomerLotNumber: r.customerLotNumber,
@@ -527,8 +556,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         LotIdentifier: r.lotIdentifier,
         LotOwnerID: r.employeeSelected?.EmployeeID || this.appService.loginId,
         LabelCount: r.labelCount,
-        DateCode: r.dateCode.toString(),
-        COO: r.countrySelected?.countryID || 1,
+        DateCode: r.dateCode?.toString() || '',
+        COO: r.countrySelected?.countryID || null,
         IsHold: r.isHold,
         HoldComments: r.holdComments,
         RecordStatus: r.recordStatus || 'I',
@@ -556,10 +585,25 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   addDeviceRow() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
+    const trackingNumer = Date.now();
+    this.generateLineItem(trackingNumer);
     this.gridDataDevice.splice(0, 0, {
       ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID, recordStatus: "I",
       lotIdentifierSelected: this.lotIdentifiers[0],
-      lotIdentifier: this.lotIdentifiers[0].id
+      lotIdentifier: this.lotIdentifiers[0].id,
+      iseLotNumber: trackingNumer + ''
+    })
+  }
+  private generateLineItem(trackingNumer: number) {
+    this.apiService.generateLineItem().subscribe({
+      next: (v: any) => {
+        console.log({ v });
+        this.gridDataDevice.forEach(d => {
+          if (d.iseLotNumber == trackingNumer.toString()) {
+            d.iseLotNumber = v.data;
+          }
+        })
+      }
     })
   }
   addHardwareRow() {
@@ -579,8 +623,18 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.appService.successMessage(MESSAGES.DataSaved);
         this.fetchDataHardware();
       },
-      error: (err) => {
-        this.appService.errorMessage(MESSAGES.DataSaveError);
+      error: (e) => {
+        let m = MESSAGES.DataSaveError;
+        if (e && e.error) {
+          const err = e.error;
+          if (err instanceof String) {
+            m = err.split('\n')[0]
+          } else if (err.errors) {
+            let v: any = Object.values(err.errors)
+            m = v.map((i: string[]) => i[0]).join('\n')
+          }
+        }
+        this.appService.errorMessage(m);
       }
     });
   }
@@ -599,20 +653,31 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.appService.infoMessage(MESSAGES.NoChanges);
       return;
     }
+
+    var isEmpty = filteredRecords.find(r => !r.customerHardwareID);
+    if (isEmpty) {
+      this.appService.errorMessage("Please enter Customer Hardware ID");
+      return;
+    }
+    var isEmpty = filteredRecords.find(r => !r.expectedQty);
+    if (isEmpty) {
+      this.appService.errorMessage("Please enter expected quantity");
+      return;
+    }
+    var isEmpty = filteredRecords.find(r => !r.hardwareTypeSelected);
+    if (isEmpty) {
+      this.appService.errorMessage("Please enter hardware type");
+      return;
+    }
     const HardwareDetails: PostHardware[] = [];
     filteredRecords.forEach((r) => {
-      console.log(r);
-
-      if (r.customerSelected) {
-        r.customerID = r.customerSelected?.CustomerID;
-      }
       if (r.hardwareTypeSelected) {
         r.hardwareTypeID = r.hardwareTypeSelected?.hardwareTypeID
       }
       const postHardware: PostHardware = {
         HardwareID: r.hardwareID,
         ReceiptID: r.receiptID,
-        CustomerID: r.customerID,
+        CustomerHardwareID: r.customerHardwareID,
         HardwareTypeID: r.hardwareTypeID || 10,
         ExpectedQty: r.expectedQty,
         RecordStatus: r.recordStatus,
@@ -634,6 +699,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const filteredRecords = this.gridDataMiscellaneous.filter(d => d.recordStatus == "I" || d.recordStatus == "U")
     if (!filteredRecords || filteredRecords.length < 1) {
       this.appService.infoMessage(MESSAGES.NoChanges);
+      return;
+    }
+    const isEmpty = filteredRecords.find(r => !r.additionalInfo);
+    if (isEmpty) {
+      this.appService.errorMessage("Please enter Additional Info");
       return;
     }
     const MiscGoodsDetails: PostMiscGoods[] = []
@@ -708,7 +778,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     autoSizeAllColumns: true,
   }
   rowActionMenu: MenuItem[] = [
-    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
+    // { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
     { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
     // { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
     // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
@@ -867,6 +937,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.behalfOfCusotmerSelected = this.customerSelected;
     }
   }
+  onChangeBehalfOfCusotmer() {
+    if (this.appService.sharedData.receiving.dataItem) {
+      this.appService.sharedData.receiving.dataItem.behalfID = this.behalfOfCusotmerSelected?.CustomerID;
+      this.fetchDevicesByCustomer();
+    }
+  }
   valueNormalizerCustomer = (text: Observable<string>) => text.pipe(map((content: string) => {
     const customer: Customer = { CustomerID: 9999, CustomerName: content };
     return customer;
@@ -875,6 +951,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const vendor: Vendor = { VendorID: 9999, VendorName: content };
     return vendor
   }));
+  onChangeIsHold() {
+    const index = 0;
+    if (this.gridData[index].isHold) {
+      // do nothing
+    } else {
+      this.gridData[index].holdComments = '';
+    }
+  }
   onChangeHoldComments() {
     this.gridData[0].holdComments = this.gridData[0].holdComments.trim()
     if (this.gridData[0].holdComments) {
