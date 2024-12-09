@@ -207,7 +207,7 @@ export class ApiService {
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
-  //Inventory Move
+  //Inventory CheckInCheckOut
   getAllInventoryMoveStatus() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryMove/getallInventoryMoveStatus`);
   }
@@ -262,7 +262,13 @@ export class ApiService {
 
 
   //Inventory Hold
-  getHoldCodes(inventoryId: number): Observable<any[]> {
+  getAllSearchHold() {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getAllSearchHold`);
+  }
+  getHoldType(inventoryId: number):Observable<any[]> {
+    return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getHoldType?inventoryId=${inventoryId}`);
+  }
+  getHoldCodes(inventoryId: number):Observable<any[]> {
     return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getHold?inventoryId=${inventoryId}`);
   }
   getAllHolds(inventoryId: number) {

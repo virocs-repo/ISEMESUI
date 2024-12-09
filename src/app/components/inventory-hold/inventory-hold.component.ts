@@ -43,7 +43,7 @@ export class InventoryHoldComponent implements OnInit {
   }
 
   loadGridData(): void {
-    this.apiService.getAllInventoryMoveStatus().subscribe({
+    this.apiService.getAllSearchHold().subscribe({
       next: (data: any) => {
         this.originalData = data;
         this.pageData();

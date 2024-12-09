@@ -28,11 +28,13 @@ export class AddHoldComponent implements OnInit {
   offHoldBy: string | null = null;
   offHoldTime: string | null = null;
   inventoryXHoldId: number| null = null;
+  groupName: string | null =null;
 
   constructor(private appService: AppService, private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.fetchHoldCodes();
+    this.fetchHoldTypes();
     if (this.mode === 'edit') {
       this.populateFields();
     }
@@ -44,16 +46,16 @@ export class AddHoldComponent implements OnInit {
 
   populateFields(): void {
     if (this.selectedGridData) {
-      this.selectedHoldType = this.selectedGridData[0].holdType || '';
-      this.holdComments = this.selectedGridData[0].holdComments || '';
-      this.reason = this.selectedGridData[0].reason || '';
-      this.offHoldComments = this.selectedGridData[0].offHoldComments || '';
+      this.selectedHoldType = this.selectedGridData[0]?.holdType || '';
+      this.holdComments = this.selectedGridData[0]?.holdComments || '';
+      this.reason = this.selectedGridData[0]?.reason || '';
+      this.offHoldComments = this.selectedGridData[0]?.offHoldComments || '';
       this.isHold = true;
-      this.inventoryXHoldId = this.selectedGridData[0].inventoryXHoldId;
-      this.holdBy = this.selectedGridData[0].holdBy || null;
-      this.holdTime = this.selectedGridData[0].holdTime || null;
-      this.offHoldBy = this.selectedGridData[0].offHoldBy || null;
-      this.offHoldTime = this.selectedGridData[0].offHoldTime || null;
+      this.inventoryXHoldId = this.selectedGridData[0]?.inventoryXHoldId;
+      this.holdBy = this.selectedGridData[0]?.holdBy || null;
+      this.holdTime = this.selectedGridData[0]?.holdTime || null;
+      this.offHoldBy = this.selectedGridData[0]?.offHoldBy || null;
+      this.offHoldTime = this.selectedGridData[0]?.offHoldTime || null;
     }
   }
 
@@ -61,14 +63,28 @@ export class AddHoldComponent implements OnInit {
     this.apiService.getHoldCodes(this.inventoryId).subscribe(
       (response: any) => {
         this.treeNodes = response;
-        this.holdTypes = Array.from(new Set(this.treeNodes.map((node: any) => node.groupName)));
           if (this.mode === 'edit' && this.selectedHoldType && !this.holdTypes.includes(this.selectedHoldType)) {
           this.holdTypes.push(this.selectedHoldType);
         }
       },
       (error) => this.appService.errorMessage('Failed to load hold codes.')
     );
-  }  
+  }
+
+  fetchHoldTypes(): void {
+    this.apiService.getHoldType(this.inventoryId).subscribe(
+      (response: any) => {
+          this.holdTypes = response.map((item: any) => item.holdType);
+          
+          // Automatically select the first hold type or match a specific condition
+          if (this.mode === 'edit' && this.selectedGridData?.length > 0) {
+            this.selectedHoldType = this.selectedGridData[0].holdType || '';
+          }
+        },
+      () => this.appService.errorMessage('Failed to fetch hold codes.')
+    );
+  }
+  
 
   onSelectionChange(event: any): void {
     const selectedNode = event.dataItem;
@@ -83,12 +99,16 @@ export class AddHoldComponent implements OnInit {
       this.appService.errorMessage('Please fill in the required fields.');
       return;
     }
+    // Safely extract groupName from the first item in treeNodes array
+    const groupName = this.treeNodes?.[0]?.groupName || null;
+  
     const payload = {
       InventoryXHoldId: this.inventoryXHoldId || null,
       InventoryId: this.inventoryId,
       Reason: this.reason,
       HoldComments: this.holdComments,
       HoldType: this.selectedHoldType,
+      GroupName: groupName, // Use extracted groupName
       HoldCodeId: this.selectedIds[0] || null,
       OffHoldComments: this.isHold ? null : this.offHoldComments,
       UserId: 1
@@ -100,7 +120,7 @@ export class AddHoldComponent implements OnInit {
       },
       () => this.appService.errorMessage('Failed to save hold details.')
     );
-  }
+  }  
 
   resetForm(): void {
     this.isHold = false;
