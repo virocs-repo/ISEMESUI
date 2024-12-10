@@ -247,7 +247,7 @@ export class ApiService {
       params = params.set('customerId', customerId);
     }
     if (lotNumber) {
-      params.append("lotNumber", lotNumber);
+      params = params.set('lotNumber', lotNumber);
     }
     return this.httpClient.get(`${API}v1/ise/inventory/combinedlot/customer`, { params });
   }

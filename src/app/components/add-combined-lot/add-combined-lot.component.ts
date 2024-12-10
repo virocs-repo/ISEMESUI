@@ -49,7 +49,7 @@ export class AddCombinedLotComponent implements OnDestroy {
       const dataItem: CombineLot = this.appService.sharedData.combolot.dataItem;
 
       this.customerSelected = this.customers.find(c => c.CustomerName == dataItem.customer);
-      debugger;
+ 
       console.log (dataItem.comboLotID )
    
       this.apiService.getViewEditComblotsWithId(dataItem.comboLotID).subscribe({
@@ -138,7 +138,7 @@ export class AddCombinedLotComponent implements OnDestroy {
           this.gridSelectedKeys = [];
         }
       });
-      this.isDisabled.shipBtn = true;
+     
     }
     if (this.appService.sharedData.combolot.isViewMode) {
       this.isDisabled.shipBtn = true;
@@ -265,6 +265,7 @@ onSelectionChange(event: SelectionEvent): void {
     inventoryID: row.inventoryID,
   }));
 
+  this.isDisabled.shipBtn =false;
   console.log('Updated Dropdown Data:', this.dropdownData);
 }
 
