@@ -29,11 +29,11 @@ export class AddHoldComponent implements OnInit {
   offHoldBy: string | null = null;
   offHoldTime: string | null = null;
   inventoryXHoldId: number| null = null;
-  groupName: string | null =null;
 
   constructor(private appService: AppService, private apiService: ApiService) {}
 
   ngOnInit(): void {
+    this.updateHoldTime();
     this.fetchHoldCodes();
     this.fetchHoldTypes();
     if (this.mode === 'edit') {
@@ -41,9 +41,14 @@ export class AddHoldComponent implements OnInit {
     }
     else if (this.mode === 'add') {
       this.resetForm();
+      this.isHold = true;
     }
   }
-  
+
+  updateHoldTime(): void {
+    const currentDate = new Date();
+    this.holdTime = currentDate.toLocaleTimeString();
+  }
 
   populateFields(): void {
     if (this.selectedGridData) {
@@ -51,7 +56,7 @@ export class AddHoldComponent implements OnInit {
       this.holdComments = this.selectedGridData[0]?.holdComments || '';
       this.reason = this.selectedGridData[0]?.reason || '';
       this.offHoldComments = this.selectedGridData[0]?.offHoldComments || '';
-      this.isHold = true;
+      this.isHold = !this.offHoldComments;
       this.inventoryXHoldId = this.selectedGridData[0]?.inventoryXHoldId;
       this.holdBy = this.selectedGridData[0]?.holdBy || null;
       this.holdTime = this.selectedGridData[0]?.holdTime || null;
@@ -76,8 +81,6 @@ export class AddHoldComponent implements OnInit {
     this.apiService.getHoldType(this.inventoryId).subscribe(
       (response: any) => {
           this.holdTypes = response.map((item: any) => item.holdType);
-          
-          // Automatically select the first hold type or match a specific condition
           if (this.mode === 'edit' && this.selectedGridData?.length > 0) {
             this.selectedHoldType = this.selectedGridData[0].holdType || '';
           }
@@ -85,7 +88,6 @@ export class AddHoldComponent implements OnInit {
       () => this.appService.errorMessage('Failed to fetch hold codes.')
     );
   }
-  
 
   onSelectionChange(event: any): void {
     const selectedNode = event.dataItem;
@@ -100,16 +102,14 @@ export class AddHoldComponent implements OnInit {
       this.appService.errorMessage('Please fill in the required fields.');
       return;
     }
-    // Safely extract groupName from the first item in treeNodes array
     const groupName = this.treeNodes?.[0]?.groupName || null;
-  
     const payload = {
       InventoryXHoldId: this.inventoryXHoldId || null,
       InventoryId: this.inventoryId,
       Reason: this.reason,
       HoldComments: this.holdComments,
       HoldType: this.selectedHoldType,
-      GroupName: groupName, // Use extracted groupName
+      GroupName: groupName,
       HoldCodeId: this.selectedIds[0] || null,
       OffHoldComments: this.isHold ? null : this.offHoldComments,
       UserId: 1
@@ -125,7 +125,7 @@ export class AddHoldComponent implements OnInit {
   }  
 
   resetForm(): void {
-    this.isHold = false;
+    this.isHold = true;
     this.selectedHoldType = '';
     this.holdComments = '';
     this.reason = '';
