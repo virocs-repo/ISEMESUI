@@ -37,6 +37,7 @@ interface SharedInfo {
   providedIn: 'root'
 })
 export class AppService {
+  isLoading = false
   isDrawerExpanded: boolean = false;
   userPreferences: UserPreferences | null = null;
   accessToken = '';
