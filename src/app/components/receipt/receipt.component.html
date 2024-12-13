@@ -311,7 +311,7 @@
           <kendo-grid-column field="isHold" title="Hold">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <div class="k-d-flex k-align-items-center">
-                <input type="checkbox" name="isHold" [(ngModel)]="dataItem.isHold" kendoCheckBox>
+                <input type="checkbox" name="isHold" [(ngModel)]="dataItem.isHold"(ngModelChange)="onHoldChange(dataItem)" kendoCheckBox>
                 <i *ngIf="dataItem.recordStatus != 'I'">
                   <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
                     (click)="onOpenRowActionMenu(dataItem, TableType.Device)" #rowActionMenuTarget></button>
@@ -483,4 +483,12 @@
       size="small" (click)="isDialogOpen = !isDialogOpen"></button>
   </div>
   <app-add-device></app-add-device>
+</kendo-dialog>
+<!--  For Hold popup   -->
+<kendo-dialog *ngIf="isDialogOpen"  [width]="'68%'" class="dialog-round">
+  <div class="k-d-flex k-align-items-center k-mb-3">
+      <h2 class="k-m-0">On / Off Hold</h2>
+      <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon"(click)="closeDialog()"></button>
+  </div>
+  <app-edit-inventory-hold [selectedRowData]="holdData" (cancel)="closeDialog()"></app-edit-inventory-hold>
 </kendo-dialog>

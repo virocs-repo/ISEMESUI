@@ -1072,4 +1072,13 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       dataItem.recordStatus = "U";
     }
   }
+  // For hold dailog box
+  public holdData: any = {};
+  onHoldChange(dataItem: any): void {
+    if (dataItem.isHold) {
+      this.holdData = { ...dataItem };
+      this.openDialog(); 
+    }
+  }
+  
 }
