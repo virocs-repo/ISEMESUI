@@ -198,7 +198,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.signatureTypeSelected = this.signatureTypes.find(c => c.customerTypeName == dataItem.signaturePersonType);
       this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeID == dataItem.signaturePersonID)
       this.signatureName = dataItem.signature
-      this.Signaturebase64Data = dataItem.Signaturebase64Data
+      this.Signaturebase64Data = dataItem.signaturebase64Data
       if (dataItem.signatureDate) {
         this.signatureDate = new Date(dataItem.signatureDate);
       }
