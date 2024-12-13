@@ -436,8 +436,10 @@
       </div>
     </div>
 
-    <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
-      <kendo-fileselect (select)="onSelect($event)" (upload)="onUpload($event)"></kendo-fileselect>
+    <div *ngIf="!isDisabledGoodsType" class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
+      <kendo-fileselect #upFiles (select)="onSelect($event)" (upload)="onUpload($event)"></kendo-fileselect>
+      <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
+        (click)="uploadFiles(upFiles)">Upload</button>
     </div>
     <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-4 k-mt-3">
       <kendo-label text="Customer / Employee">

@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { CustomerOrder, OrderRequest } from 'src/app/services/app.interface';
@@ -74,6 +74,18 @@ export class ApiService {
   }
   generateLineItem() {
     return this.httpClient.get(`${API}v1/ise/inventory/lineItem`);
+  }
+
+  uploadFile(file: File, inputFilename: string, receiptNumber: string) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('inputfilename', inputFilename);
+    formData.append('reciptnumber', receiptNumber);
+
+    const headers = new HttpHeaders({ 'Content-Type': 'multipart/form-data', 'Accept': '*/*' });
+
+    return this.httpClient.post(`${API}v1/ise/inventory/upload?inputfilename=${inputFilename}&reciptnumber=${receiptNumber}`,
+      formData, { headers});
   }
 
   // Shipping
@@ -265,10 +277,10 @@ export class ApiService {
   getAllSearchHold() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getAllSearchHold`);
   }
-  getHoldType(inventoryId: number):Observable<any[]> {
+  getHoldType(inventoryId: number): Observable<any[]> {
     return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getHoldType?inventoryId=${inventoryId}`);
   }
-  getHoldCodes(inventoryId: number):Observable<any[]> {
+  getHoldCodes(inventoryId: number): Observable<any[]> {
     return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getHold?inventoryId=${inventoryId}`);
   }
   getAllHolds(inventoryId: number) {

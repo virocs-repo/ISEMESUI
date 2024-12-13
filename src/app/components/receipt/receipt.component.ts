@@ -1065,6 +1065,29 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     });
     // Call API
   }
+  uploadFiles(upFiles: any) {
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    if (!dataItem.receiptID) {
+      // this is for new form
+      return;
+    }
+    const files = upFiles.fileList.files;
+    if (files && files.length) {
+      const file = files[0][0].rawFile;
+
+      const inputFilename = file.name.replace(/\.[^/.]+$/, ''); // Remove file extension
+      const receiptNumber = dataItem.receiptID; // You can generate or get this value dynamically
+
+      this.apiService.uploadFile(file, inputFilename, receiptNumber).subscribe({
+        next: (v: any) => {
+          console.log(v);
+        },
+        error: (v: any) => {
+          this.appService.errorMessage('Error while uploading file')
+        }
+      });
+    }
+  }
   // print
   @ViewChild('pdfExport', { static: true }) pdfExportComponent!: PDFExportComponent;
   printSection() {
