@@ -1,4 +1,4 @@
-<div class="k-m-3 k-overflow-y-auto" style="height: 70vh;">
+<div class="k-m-3 k-overflow-y-auto" style="height: 62vh;">
   <kendo-card-body class="card-flex">
       <legend><b>Lot Info</b></legend>
       <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
@@ -14,6 +14,14 @@
             <div class="field-container">
               <kendo-label [for]="'noOfHolds'" class="label-text">No Of Holds:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</kendo-label>
               <span class="value-text">{{ noOfHolds  }}</span>
+            </div>
+            <div class="field-container">
+              <kendo-label [for]="'noOfHolds'" class="label-text">Customer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
+              <span class="value-text">{{ noOfHolds }}</span>
+            </div>
+            <div class="field-container">
+              <kendo-label [for]="'noOfHolds'" class="label-text">Device:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
+              <span class="value-text">{{ noOfHolds }}</span>
             </div>
           </div>          
     </kendo-card-body> 
@@ -82,27 +90,21 @@
 
         <div class="k-d-flex k-align-items-center k-gap-3">
           <kendo-label class="k-mb-0" style="min-width: 150px;">Hold By:</kendo-label>
-          <span class="value-text">{{ holdBy || '......' }}</span>
-        </div>
-    
-        <div class="k-d-flex k-align-items-center k-gap-3">
+          <span class="value-text">{{ holdBy || '......' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <kendo-label class="k-mb-0" style="min-width: 150px;">Hold Time:</kendo-label>
           <span class="value-text">{{ holdTime || '......' }}</span>
         </div>
     
         <div class="k-d-flex k-align-items-center k-gap-3">
           <kendo-label class="k-mb-0" style="min-width: 150px;">Off Hold By:</kendo-label>
-          <span class="value-text">{{ offHoldBy || '......' }}</span>
-        </div>
-    
-        <div class="k-d-flex k-align-items-center k-gap-3">
+          <span class="value-text">{{ holdBy || '......' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <kendo-label class="k-mb-0" style="min-width: 150px;">Off Hold Time:</kendo-label>
           <span class="value-text">{{ offHoldTime || '......' }}</span>
         </div>
       </div>
     </fieldset>
     <div class="k-d-flex k-gap-3 k-mt-3">
-      <button kendoButton type="button" rounded="full" themeColor="info" class="k-w-25" (click)="save()">Save</button>
-      <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem" (click)="resetForm()">Cancel</button>
+      <button kendoButton type="button" rounded="full" themeColor="info" class="k-ml-auto" style="width:6rem" (click)="save()">Save</button>
+      <button kendoButton type="button" rounded="full" themeColor="error" style="width:6rem" (click)="resetForm()">Cancel</button>
     </div>
     

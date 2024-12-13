@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { CellClickEvent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { ICON } from 'src/app/services/app.interface';
 import { ApiService } from 'src/app/services/api.service';
 
@@ -56,6 +56,7 @@ export class EditInventoryHoldComponent implements OnInit {
 
   openDialog(): void {
     this.isDialogOpen = true;
+    this.selectedRowDat = null;
   }
 
   closeDialog(): void {
