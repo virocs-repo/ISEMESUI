@@ -40,11 +40,11 @@ export class EditInventoryHoldComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.selectedRowData) {
-      this.loadHoldData(this.selectedRowData.inventoryId);
+      this.loadHoldData(this.selectedRowData.inventoryID);
     }
   }
   openEditDialog(dataItem: any): void {
-    this.apiService.getHoldDetails(dataItem.inventoryId).subscribe({
+    this.apiService.getHoldDetails(dataItem.inventoryXHoldId).subscribe({
       next: (data) => {
         console.log('Fetched data:', data); 
         this.selectedRowDat = data; 
@@ -64,13 +64,13 @@ export class EditInventoryHoldComponent implements OnInit {
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (this.selectedRowData) {
-      const inventoryId = this.selectedRowData?.inventoryId;
+      const inventoryId = this.selectedRowData?.inventoryID;
       if (inventoryId) {
         this.loadHoldData(inventoryId);
       }
     }
     if (changes['selectedRowData'] && this.selectedRowData) {
-      this.selectedLotNumber = this.selectedRowData.lotNum || '';
+      this.selectedLotNumber = this.selectedRowData.iseLotNumber || '';
       this.selectedLocation = this.selectedRowData.location || '';
       this.filterGridData();
     }
@@ -113,8 +113,8 @@ export class EditInventoryHoldComponent implements OnInit {
     'highlighted-row': context.dataItem === this.selectedRowData
   });
   onDataUpdated(): void {
-    if (this.selectedRowData?.inventoryId) {
-      this.loadHoldData(this.selectedRowData.inventoryId);
+    if (this.selectedRowData?.inventoryID) {
+      this.loadHoldData(this.selectedRowData.inventoryID);
     }
   }
   
