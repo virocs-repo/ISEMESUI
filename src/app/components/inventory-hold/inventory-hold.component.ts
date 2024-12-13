@@ -19,7 +19,7 @@ export class InventoryHoldComponent implements OnInit {
   public searchTerm: string = '';
   public gridDataResult: GridDataResult = { data: [], total: 0 };
   public columnData: any[] = [
-    { field: 'lotNum', title: 'Lot#/Serial#' },
+    { field: 'iseLotNumber', title: 'Lot#/Serial#' },
     { field: 'location', title: 'Location' },
     { field: 'person', title: 'Person' },
     { field: 'qty', title: 'Qty' },

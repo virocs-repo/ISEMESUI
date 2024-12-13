@@ -22,7 +22,7 @@
     </kendo-grid>
 </div>
 <kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" #gridContextMenu></kendo-contextmenu>
-<kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [width]="'68%'" class="dialog-round">
+<kendo-dialog *ngIf="isDialogOpen"  [width]="'68%'" class="dialog-round">
     <div class="k-d-flex k-align-items-center k-mb-3">
         <h2 class="k-m-0">On / Off Hold</h2>
         <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon"(click)="closeDialog()"></button>

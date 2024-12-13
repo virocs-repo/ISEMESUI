@@ -289,8 +289,8 @@ export class ApiService {
   upsertInventoryHold(request: any, options: { responseType: 'text' }): Observable<any> {
     return this.httpClient.post(`${API}v1/ise/inventory/inventoryHold/UpsertHold`, request, options);
   }
-  getHoldDetails(inventoryId: number) {
-    return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getHoldDetails?inventoryId=${inventoryId}`);
+  getHoldDetails(inventoryXHoldId: number) {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getHoldDetails?inventoryXHoldId=${inventoryXHoldId}`);
   }
 
   getOtherShippingData(customerId: number | null, employeeId: number | null, statusId: number | null, fromDate: Date | null, toDate: Date | null) {

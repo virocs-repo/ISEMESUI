@@ -60,10 +60,10 @@
     </div>
     <app-add-hold
       [mode]="selectedRowData?'edit':'add'"
-      [lotNumber]="selectedRowData?.lotNum || ''"
+      [lotNumber]="selectedRowData?.iseLotNumber || ''"
       [location]="selectedRowData?.location || ''"
       [noOfHolds]="gridDataResult.total.toString()"
-      [inventoryId]="selectedRowData?.inventoryId || 0"
+      [inventoryId]="selectedRowData?.inventoryID || 0"
       [selectedGridData]="selectedRowDat"
       (cancel)="closeDialog()"
       (dataUpdated)="onDataUpdated()">
