@@ -18,7 +18,7 @@ enum ActionType {
 }
 const CUSTOMER_DROP_OFF = 'Customer Drop-Off'
 const PICKUP = 'Pickup'
-export const COURIER = 'Courier'
+const COURIER = 'Courier'
 
 @Component({
   selector: 'app-receipt',
