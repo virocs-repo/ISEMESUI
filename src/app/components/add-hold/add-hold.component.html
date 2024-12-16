@@ -2,7 +2,8 @@
   <kendo-card-body class="card-flex">
       <legend><b>Lot Info</b></legend>
       <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
-        <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
+        <div class="k-d-flex k-flex-column k-gap-3">
+          <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
             <div class="field-container">
               <kendo-label [for]="'lotNumber'" class="label-text">Lot/ Mail/ FGI Pull #:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
               <span class="value-text">{{ lotNumber }}</span>
@@ -13,17 +14,26 @@
             </div>
             <div class="field-container">
               <kendo-label [for]="'noOfHolds'" class="label-text">No Of Holds:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</kendo-label>
-              <span class="value-text">{{ noOfHolds  }}</span>
-            </div>
-            <div class="field-container">
-              <kendo-label [for]="'noOfHolds'" class="label-text">Customer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
               <span class="value-text">{{ noOfHolds }}</span>
             </div>
+          </div>
+        
+          <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
             <div class="field-container">
-              <kendo-label [for]="'noOfHolds'" class="label-text">Device:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
-              <span class="value-text">{{ noOfHolds }}</span>
+              <kendo-label [for]="'customerName'" class="label-text">Customer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
+              <span class="value-text">{{ customerName }}</span>
             </div>
-          </div>          
+            <div class="field-container">
+              <kendo-label [for]="'device'" class="label-text">Device:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
+              <span class="value-text">{{ device }}</span>
+            </div>
+            <div class="field-container">
+              <kendo-label [for]="''" class="label-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
+              <span class="value-text"><nav></nav> </span>
+            </div>
+          </div>
+        </div>
+                 
     </kendo-card-body> 
 
     <fieldset class="k-mt-3">
@@ -70,10 +80,23 @@
           </kendo-textarea>
         </div>
 
+        <div class="k-d-flex k-flex-wrap k-gap-3">
+          <label class="k-label" style="min-width: 150px;">Hold Comments:<b class="required-label"></b></label>
+          <div>
+            <kendo-combobox
+              [(ngModel)]="selectedHoldComment"
+              [data]="holdComment"
+              placeholder="Select Hold Comments"
+              [disabled]="!isHold"
+              style="width: 400px;">
+            </kendo-combobox>
+          </div>
+        </div>
+
         <div class="k-d-flex k-align-items-center k-gap-3">
           <label class="k-label k-mb-0" style="min-width: 150px;">Hold Comments:<b class="required-label"></b></label>
           <kendo-textarea
-            [(ngModel)]="holdComments"
+            [(ngModel)]="selectedHoldComment"
             style="flex: 1;"
             [disabled]="!isHold">
           </kendo-textarea>

@@ -1,33 +1,32 @@
 <div class="k-m-3 k-overflow-y-auto" style="height: 50vh;">
   <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
-    <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
-      <div class="field-container">
-        <kendo-label [for]="'lotNumber'" class="label-text">Lot/ Mail/ FGI Pull #:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
-        <span class="value-text">{{ selectedLotNumber }}</span>
+    <div class="k-d-flex k-flex-column k-gap-3">
+      <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
+        <div class="field-container">
+          <kendo-label [for]="'lotNumber'" class="label-text">Lot/ Mail/ FGI Pull #:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
+          <span class="value-text">{{ selectedLotNumber }}</span>
+        </div>
+        <div class="field-container">
+          <kendo-label [for]="'location'" class="label-text">Location:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</kendo-label>
+          <span class="value-text">{{ selectedLocation }}</span>
+        </div>
+        <div class="field-container">
+          <kendo-label [for]="'noOfHolds'" class="label-text">No Of Holds:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</kendo-label>
+          <span class="value-text">{{ numberOfHolds }}</span>
+        </div>
       </div>
-      <div class="field-container">
-        <kendo-label [for]="'location'" class="label-text">Location:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
-        <span class="value-text">{{ selectedLocation }}</span>
+    
+      <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
+        <div class="field-container">
+          <kendo-label [for]="'customerName'" class="label-text">Customer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
+          <span class="value-text">{{ customerName }}</span>
+        </div>
+        <div class="field-container">
+          <kendo-label [for]="'device'" class="label-text">Device:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
+          <span class="value-text">{{ device }}</span>
+        </div>
+        <button kendoButton rounded="full" themeColor="info" style="padding: 0.3rem 1.2rem" (click)="openDialog()">Add</button>
       </div>
-      <div class="field-container">
-        <kendo-label [for]="'noOfHolds'" class="label-text">No Of Holds:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
-        <span class="value-text">{{ numberOfHolds }}</span>
-      </div>
-      <div class="field-container">
-        <kendo-label [for]="'noOfHolds'" class="label-text">Customer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
-        <span class="value-text">{{ numberOfHolds }}</span>
-      </div>
-      <div class="field-container">
-        <kendo-label [for]="'noOfHolds'" class="label-text">Device:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
-        <span class="value-text">{{ numberOfHolds }}</span>
-      </div>
-      <button 
-        kendoButton 
-        rounded="full" 
-        themeColor="info" 
-        style="padding: 0.3rem 1.2rem" 
-        (click)="openDialog()">Add
-      </button>
     </div>
   </kendo-card-body>
   <div class="k-my-6">
@@ -63,6 +62,8 @@
       [lotNumber]="selectedRowData?.iseLotNumber || ''"
       [location]="selectedRowData?.location || ''"
       [noOfHolds]="gridDataResult.total.toString()"
+      [customerName]="customerName"
+      [device]="device"
       [inventoryId]="selectedRowData?.inventoryID || 0"
       [selectedGridData]="selectedRowDat"
       (cancel)="closeDialog()"
