@@ -20,6 +20,8 @@ export class EditInventoryHoldComponent implements OnInit {
   public skip = 0;
   public gridData: any[] = [];
   public numberOfHolds: number = 0;
+  customerName: string = '';
+  device: string = '';
   public columnData = [
     { field: 'holdType', title: 'Hold Type' },
     { field: 'holdCode', title: 'Hold Code' },
@@ -39,6 +41,7 @@ export class EditInventoryHoldComponent implements OnInit {
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
+    this.getInventoryDetails(this.selectedRowData.inventoryID);
     if (this.selectedRowData) {
       this.loadHoldData(this.selectedRowData.inventoryID);
     }
@@ -51,6 +54,18 @@ export class EditInventoryHoldComponent implements OnInit {
         this.isDialogOpen = true; 
       },
       error: (err) => console.error('Failed to fetch hold details:', err)
+    });
+  }
+
+  getInventoryDetails(inventoryID: number): void {
+    this.apiService.getCustomerDetails(inventoryID).subscribe({
+      next: (data: any) => {
+        this.customerName = data[0].customerName;
+        this.device = data[0].device;
+      },
+      error: (err) => {
+        console.error('Error fetching inventory details', err);
+      }
     });
   }
 

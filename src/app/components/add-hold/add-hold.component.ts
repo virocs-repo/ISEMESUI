@@ -12,13 +12,17 @@ export class AddHoldComponent implements OnInit {
   @Input() lotNumber: string = '';
   @Input() location: string = '';
   @Input() noOfHolds: string = '';
+  @Input() customerName: string = '';
+  @Input() device: string = '';
   @Input() inventoryId: number = 0;
   @Output() cancel = new EventEmitter<void>();
   @Input() mode: 'add' | 'edit' = 'add';
   @Input() selectedGridData: any;
   holdTypes: string[] = [];
+  holdComment: string[] = [];
   isHold: boolean = true;
   selectedHoldType: string = '';
+  selectedHoldComment: string = '';
   holdComments: string = '';
   reason: string = '';
   offHoldComments: string = '';
@@ -36,6 +40,7 @@ export class AddHoldComponent implements OnInit {
     this.updateHoldTime();
     this.fetchHoldCodes();
     this.fetchHoldTypes();
+    this.fetchHoldComments();
     if (this.mode === 'edit') {
       this.populateFields();
     }
@@ -89,6 +94,18 @@ export class AddHoldComponent implements OnInit {
     );
   }
 
+  fetchHoldComments(): void {
+    this.apiService.getHoldComments().subscribe(
+      (response: any) => {
+          this.holdComment = response.map((item: any) => item.holdComments);
+          if (this.mode === 'edit' && this.selectedGridData?.length > 0) {
+            this.selectedHoldComment = this.selectedGridData[0].holdComment || '';
+          }
+        },
+      () => this.appService.errorMessage('Failed to fetch hold codes.')
+    );
+  }
+
   onSelectionChange(event: any): void {
     const selectedNode = event.dataItem;
     if (selectedNode) {
@@ -98,7 +115,7 @@ export class AddHoldComponent implements OnInit {
   }  
 
   save(): void {
-    if (!this.holdComments || !this.selectedHoldType) {
+    if (!this.selectedHoldComment || !this.selectedHoldType) {
       this.appService.errorMessage('Please fill in the required fields.');
       return;
     }
@@ -107,7 +124,7 @@ export class AddHoldComponent implements OnInit {
       InventoryXHoldId: this.inventoryXHoldId || null,
       InventoryId: this.inventoryId,
       Reason: this.reason,
-      HoldComments: this.holdComments,
+      HoldComments: this.selectedHoldComment,
       HoldType: this.selectedHoldType,
       GroupName: groupName,
       HoldCodeId: this.selectedIds[0] || null,

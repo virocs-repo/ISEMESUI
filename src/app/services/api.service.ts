@@ -280,6 +280,13 @@ export class ApiService {
   getHoldDetails(inventoryXHoldId: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getHoldDetails?inventoryXHoldId=${inventoryXHoldId}`);
   }
+  getHoldComments() {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getHoldComments`);
+  }
+  getCustomerDetails(inventoryID: number){
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getCustomerDetails?inventoryID=${inventoryID}`);
+  }
+
 
   getOtherShippingData(customerId: number | null, employeeId: number | null, statusId: number | null, fromDate: Date | null, toDate: Date | null) {
     const url = `${API}v1/ise/otherinventory/getOtherInventoryShipments?customerId=${customerId}&employeeId=${employeeId}&statusId=${statusId}&fromDate=${fromDate?.toDateString()}&toDate=${toDate?.toDateString()}`;
