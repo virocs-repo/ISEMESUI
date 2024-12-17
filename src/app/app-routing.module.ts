@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { AddDeviceComponent } from './components/add-device/add-device.component';
-import { InventoryMoveComponent } from './components/inventory-move/inventory-move.component';
+import { InventorycheckinCheckoutComponent } from './components/inventory-checkinCheckout/inventory-checkinCheckout.component';
 import { ShippingComponent } from './components/shipping/shipping.component';
 import { ReceivingComponent } from './components/receiving/receiving.component';
 import { InventoryComponent } from './components/inventory/inventory.component';
@@ -19,7 +19,7 @@ import { CombinedLotComponent } from './components/combined-lot/combined-lot.com
 const routes: Routes = [
   { path: 'receiving', component: ReceivingComponent, canActivate: [authGuard] },
   { path: 'inventory-hold', component: InventoryHoldComponent, canActivate: [authGuard] },
-  { path: 'inventory-move', component: InventoryMoveComponent, canActivate: [authGuard] },
+  { path: 'inventory-checkinCheckout', component: InventorycheckinCheckoutComponent, canActivate: [authGuard] },
   { path: 'shipping', component: ShippingComponent, canActivate: [authGuard] },
   { path: 'inventory', component: InventoryComponent, canActivate: [authGuard] },
   { path: 'customer-order', component: CustomerOrderComponent, canActivate: [authGuard] },

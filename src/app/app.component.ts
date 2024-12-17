@@ -22,7 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
   public expanded = false;
   public items: Array<DrawerItemExtra> = [
     { text: 'Receiving', svgIcon: ICON.selectBoxIcon, routerLink: '/receiving', selected: true },
-    { text: 'Inventory Move', svgIcon: ICON.cartIcon, routerLink: '/inventory-move' },
+    { text: 'Inventory Checkin/Checkout', svgIcon: ICON.cartIcon, routerLink: '/inventory-checkinCheckout' },
     { text: 'Shipping', svgIcon: ICON.exportIcon, routerLink: '/shipping' },
     { text: 'Inventory', svgIcon: ICON.windowRestoreIcon, routerLink: '/inventory' },
     { text: 'Customer Order/Request', svgIcon: ICON.jsIcon, routerLink: '/customer-order' },

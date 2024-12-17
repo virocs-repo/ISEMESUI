@@ -34,7 +34,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { ReceivingComponent } from './components/receiving/receiving.component';
 import { ReceiptComponent } from './components/receipt/receipt.component';
 import { AddDeviceComponent } from './components/add-device/add-device.component';
-import { InventoryMoveComponent } from './components/inventory-move/inventory-move.component';
+import { InventorycheckinCheckoutComponent } from './components/inventory-checkinCheckout/inventory-checkinCheckout.component';
 import { ShippingComponent } from './components/shipping/shipping.component';
 import { InventoryComponent } from './components/inventory/inventory.component';
 import { CustomerOrderComponent } from './components/customer-order/customer-order.component';
@@ -115,7 +115,7 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     ReceivingComponent,
     ReceiptComponent,
     AddDeviceComponent,
-    InventoryMoveComponent,
+    InventorycheckinCheckoutComponent,
     ShippingComponent,
     InventoryComponent,
     CustomerOrderComponent,
