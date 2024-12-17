@@ -222,6 +222,7 @@ export class ApiService {
   upsertInventoryCheckinCheckoutStatus(data: any, options: { responseType: 'text' }): Observable<any> {
     return this.httpClient.post(`${API}v1/ise/inventory/inventoryCheckinCheckout/UpsertInventoryCheckinCheckoutStatus`, data, { responseType: options.responseType });
   }
+  
   getInventoryCheckinCheckoutLocations() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryCheckinCheckout/getInventoryCheckinCheckoutLocation`);
   }
