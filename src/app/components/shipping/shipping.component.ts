@@ -40,9 +40,43 @@ export class ShippingComponent implements OnDestroy {
         this.init()
       }
     }))
+    this.initRoleBasedUI()
   }
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
+  }
+  isAddButtonEnabled = true;
+  private initRoleBasedUI() {
+    const appMenu = this.appService.userPreferences?.roles.appMenus.find(am => am.menuTitle == "Shipping Menu")
+    if (appMenu) {
+      this.appService.userPreferences?.roles.appFeatures.forEach(af => {
+        switch (af.featureName) {
+          case "Shipping Add":
+            this.isAddButtonEnabled = af.active
+            break;
+          case "Shipping Edit":
+            var ed = this.rowActionMenu.find(r => r.text == 'Edit Data');
+            if (ed) {
+              ed.disabled = !af.active;
+            }
+            break;
+          case "Shipping View":
+            var ed = this.rowActionMenu.find(r => r.text == 'View Data');
+            if (ed) {
+              ed.disabled = !af.active;
+            }
+            break;
+          case "Shipping Void":
+            var ed = this.rowActionMenu.find(r => r.text == 'Void Data');
+            if (ed) {
+              ed.disabled = !af.active;
+            }
+            break;
+          default:
+            break;
+        }
+      })
+    }
   }
   private init() {
     this.customerTypes.length = 0;

@@ -14,7 +14,8 @@
     <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
   </kendo-label>
   <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
-  <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
+  <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()"
+    [disabled]="!isAddButtonEnabled">Add</button>
 </div>
 <div class="k-m-10">
   <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"

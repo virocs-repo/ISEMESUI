@@ -148,11 +148,49 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           break;
       }
     }))
+    this.initRoleBasedUI()
   }
   ngOnDestroy(): void {
     this.appService.sharedData.receiving.isEditMode = false
     this.appService.sharedData.receiving.isViewMode = false;
     this.subscription.unsubscribe();
+  }
+  isVisibleHoldComments = true;
+  isDisableHoldComments = false;
+  isVisibleFTZ = true;
+  isDisableFTZ = false;
+  isVisibleInterim = true;
+  isDisableInterim = false;
+  private initRoleBasedUI() {
+    const appMenu = this.appService.userPreferences?.roles.appMenus.find(am => am.menuTitle == "Hold Menu")
+    if (appMenu) {
+      this.appService.userPreferences?.roles.appFeatures.forEach(af => {
+        switch (af.featureName) {
+          case "Hold Edit":
+            this.isVisibleHoldComments = af.active;
+            break;
+          case "Hold View":
+            this.isDisableHoldComments = !af.active
+            break;
+          default:
+            break;
+        }
+      });
+      this.appService.userPreferences?.roles.appFeatureFields.forEach(af => {
+        switch (af.featureFieldName) {
+          case "ISFTZ":
+            this.isVisibleFTZ = af.active;
+            this.isDisableFTZ = !af.isWriteOnly;
+            break;
+          case "ISInterim":
+            this.isVisibleInterim = af.active
+            this.isDisableInterim = !af.isWriteOnly;
+            break;
+          default:
+            break;
+        }
+      });
+    }
   }
   private init() {
     if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
@@ -1109,8 +1147,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   onHoldChange(dataItem: any): void {
     if (dataItem.isHold) {
       this.holdData = { ...dataItem };
-      this.openDialog(); 
+      this.openDialog();
     }
   }
-  
+
 }

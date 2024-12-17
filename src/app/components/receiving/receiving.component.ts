@@ -21,7 +21,7 @@ export class ReceivingComponent implements OnDestroy {
   public skip = 0;
   public gridDataResult: GridDataResult = { data: [], total: 0 };
 
-  isAddButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == 'Receiving Add')?.active ?? true;
+  isAddButtonEnabled: boolean = true;
   isEditButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Edit")?.active ?? true;
   selectableSettings: any = {
     checkboxOnly: true,
@@ -69,10 +69,44 @@ export class ReceivingComponent implements OnDestroy {
         default:
           break;
       }
-    }))
+    }));
+
+    this.initRoleBasedUI();
   }
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
+  }
+  private initRoleBasedUI() {
+    const appMenu = this.appService.userPreferences?.roles.appMenus.find(am => am.menuTitle == 'Receiving Menu')
+    if (appMenu) {
+      this.appService.userPreferences?.roles.appFeatures.forEach(af => {
+        switch (af.featureName) {
+          case "Receiving Add":
+            this.isAddButtonEnabled = af.active;
+            break;
+          case "Receiving Edit":
+            var ed = this.rowActionMenu.find(r => r.text == 'Edit Data');
+            if (ed) {
+              ed.disabled = !af.active;
+            }
+            break;
+          case "Receiving View":
+            var ed = this.rowActionMenu.find(r => r.text == 'View Data');
+            if (ed) {
+              ed.disabled = !af.active;
+            }
+            break;
+          case "Receiving Void":
+            var ed = this.rowActionMenu.find(r => r.text == 'Void Data');
+            if (ed) {
+              ed.disabled = !af.active;
+            }
+            break;
+          default:
+            break;
+        }
+      })
+    }
   }
   private fetchdata() {
     this.apiService.getReceiptdata(this.fromDate, this.toDate).subscribe({
