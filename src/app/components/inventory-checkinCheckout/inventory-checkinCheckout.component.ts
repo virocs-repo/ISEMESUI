@@ -53,7 +53,7 @@ export class InventorycheckinCheckoutComponent implements OnInit{
 
   loadGridData() {
 
-    this.apiService.getAllInventoryMoveStatus().subscribe({
+    this.apiService.getAllInventoryCheckinCheckoutStatus().subscribe({
       next: (v: any) => {
         this.originalData = v;
         this.pageData();
