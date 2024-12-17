@@ -46,6 +46,8 @@ export class AddCombinedLotComponent implements OnDestroy {
     if (this.appService.sharedData.combolot.isViewMode || this.appService.sharedData.combolot.isEditMode) {
    
       this.isEditMode = true;
+      this.isDisabled.shipBtn = true;
+    
       const dataItem: CombineLot = this.appService.sharedData.combolot.dataItem;
 
       this.customerSelected = this.customers.find(c => c.CustomerName == dataItem.customer);
