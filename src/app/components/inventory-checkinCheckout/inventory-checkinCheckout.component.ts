@@ -5,11 +5,11 @@ import { ApiService } from 'src/app/services/api.service';
 import { ICON } from 'src/app/services/app.interface';
 
 @Component({
-  selector: 'app-inventory-move',
-  templateUrl: './inventory-move.component.html',
-  styleUrls: ['./inventory-move.component.scss']
+  selector: 'app-inventory-checkinCheckout',
+  templateUrl: './inventory-checkinCheckout.component.html',
+  styleUrls: ['./inventory-checkinCheckout.component.scss']
 })
-export class InventoryMoveComponent implements OnInit{
+export class InventorycheckinCheckoutComponent implements OnInit{
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
   readonly ICON = ICON
   public pageSize = 10;
