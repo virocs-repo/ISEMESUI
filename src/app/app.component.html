@@ -1,11 +1,20 @@
-<ng-container *ngIf="authService.isLoggedIn">
-    <app-header></app-header>
+<ng-container *ngIf="authService.isLoggedIn" class="loader-area">
+  <app-header></app-header>
+
+  <div class="k-loading-panel" *ngIf="appService.isLoading">
+    <div class="k-loading-panel-mask"></div>
+    <div class="k-loading-panel-wrapper">
+      <kendo-loader type="infinite-spinner" themeColor="primary" size="large">
+      </kendo-loader>
+      <div class="k-loading-panel-text">Loading...</div>
+    </div>
+  </div>
 </ng-container>
 
 <kendo-drawer-container>
-    <kendo-drawer #drawer [items]="items" mode="overlay" [(expanded)]="appService.isDrawerExpanded"
-        (select)="onSelect($event)"></kendo-drawer>
-    <kendo-drawer-content>
-        <router-outlet></router-outlet>
-    </kendo-drawer-content>
+  <kendo-drawer #drawer [items]="items" mode="overlay" [(expanded)]="appService.isDrawerExpanded"
+    (select)="onSelect($event)"></kendo-drawer>
+  <kendo-drawer-content>
+    <router-outlet></router-outlet>
+  </kendo-drawer-content>
 </kendo-drawer-container>

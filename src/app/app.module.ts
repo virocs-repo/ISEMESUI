@@ -58,7 +58,7 @@ import { AddAnotherShippingComponent } from './components/add-another-shipping/a
 import { AddCombinedLotComponent } from './components/add-combined-lot/add-combined-lot.component';
 import { EditInventoryHoldComponent } from './components/edit-inventory-hold/edit-inventory-hold.component';
 import { TreeViewModule } from '@progress/kendo-angular-treeview';
-
+import { IndicatorsModule } from '@progress/kendo-angular-indicators';
 
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1;
@@ -168,6 +168,7 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     ExcelExportModule,
     ExcelModule,
     TreeViewModule,
+    IndicatorsModule,
 
   ],
   providers: [

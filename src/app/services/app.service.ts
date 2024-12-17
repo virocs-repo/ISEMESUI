@@ -18,8 +18,41 @@ interface MainMenuItem {
   feature: Array<Feature>
   loginId: number;
 }
+interface AppMenu {
+  appMenuID: number;
+  menuTitle: 'Receiving Menu' | "Hold Menu" |"Shipping Menu";
+  navigationUrl: string;
+  description: string;
+  appFeatureID: number;
+  parentID: number;
+  appMenuIndex: number;
+  sequenceNumber: number;
+  active: boolean;
+}
+interface AppFeature {
+  appMenuId: number;
+  appFeatureId: number;
+  featureID: number;
+  featureName: "Receiving Add" | "Receiving Edit" | "Receiving View" | "Receiving Void" |
+  "Hold Edit" | "Hold View" |
+  "Shipping Add" | "Shipping Edit" | "Shipping View" | "Shipping Void"
+  active: boolean;
+}
+interface AppFeatureField {
+  appFeatureID: number;
+  featureFieldId: number;
+  featureName: string | null;
+  featureFieldName: string;
+  active: boolean;
+  isReadOnly: boolean;
+  isWriteOnly: boolean;
+}
+
 interface UserPreferences {
   roles: {
+    appMenus: Array<AppMenu>
+    appFeatures: Array<AppFeature>
+    appFeatureFields: Array<AppFeatureField>
     mainMenuItem: Array<MainMenuItem>
   },
   token: string
@@ -37,6 +70,7 @@ interface SharedInfo {
   providedIn: 'root'
 })
 export class AppService {
+  isLoading = false
   isDrawerExpanded: boolean = false;
   userPreferences: UserPreferences | null = null;
   accessToken = '';
@@ -64,7 +98,7 @@ export class AppService {
   sharedData: {
     receiving: SharedInfo
     shipping: SharedInfo
-    combolot:SharedInfo
+    combolot: SharedInfo
   } = {
       receiving: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
       shipping: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },

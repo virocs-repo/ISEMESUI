@@ -16,6 +16,9 @@ enum TableType {
 enum ActionType {
   Remove = 'Remove'
 }
+const CUSTOMER_DROP_OFF = 'Customer Drop-Off'
+const PICKUP = 'Pickup'
+const COURIER = 'Courier'
 
 @Component({
   selector: 'app-receipt',
@@ -145,11 +148,49 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           break;
       }
     }))
+    this.initRoleBasedUI()
   }
   ngOnDestroy(): void {
     this.appService.sharedData.receiving.isEditMode = false
     this.appService.sharedData.receiving.isViewMode = false;
     this.subscription.unsubscribe();
+  }
+  isVisibleHoldComments = true;
+  isDisableHoldComments = false;
+  isVisibleFTZ = true;
+  isDisableFTZ = false;
+  isVisibleInterim = true;
+  isDisableInterim = false;
+  private initRoleBasedUI() {
+    const appMenu = this.appService.userPreferences?.roles.appMenus.find(am => am.menuTitle == "Hold Menu")
+    if (appMenu) {
+      this.appService.userPreferences?.roles.appFeatures.forEach(af => {
+        switch (af.featureName) {
+          case "Hold Edit":
+            this.isVisibleHoldComments = af.active;
+            break;
+          case "Hold View":
+            this.isDisableHoldComments = !af.active
+            break;
+          default:
+            break;
+        }
+      });
+      this.appService.userPreferences?.roles.appFeatureFields.forEach(af => {
+        switch (af.featureFieldName) {
+          case "ISFTZ":
+            this.isVisibleFTZ = af.active;
+            this.isDisableFTZ = !af.isWriteOnly;
+            break;
+          case "ISInterim":
+            this.isVisibleInterim = af.active
+            this.isDisableInterim = !af.isWriteOnly;
+            break;
+          default:
+            break;
+        }
+      });
+    }
   }
   private init() {
     if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
@@ -195,7 +236,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.signatureTypeSelected = this.signatureTypes.find(c => c.customerTypeName == dataItem.signaturePersonType);
       this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeID == dataItem.signaturePersonID)
       this.signatureName = dataItem.signature
-      this.Signaturebase64Data = dataItem.Signaturebase64Data
+      this.Signaturebase64Data = dataItem.signaturebase64Data
       if (dataItem.signatureDate) {
         this.signatureDate = new Date(dataItem.signatureDate);
       }
@@ -226,18 +267,22 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.fetchDataMiscellaneous();
   }
 
+  currentBehalfID: any;
   private fetchDevicesByCustomer() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
     if (!dataItem.behalfID) {
       // this is for new form
       return;
     }
+    if (this.currentBehalfID == dataItem.behalfID) {
+      return;
+    }
+    this.currentBehalfID = dataItem.behalfID;
     this.apiService.getDevicesByCustomer(dataItem.behalfID).subscribe({
       next: (v: any) => {
         console.log({ v });
         this.deviceTypes.length = 0;
         this.deviceTypes.push(...v);
-
         this.gridDataDevice.forEach((d) => {
           d.deviceTypeSelected = this.deviceTypes.find(dt => dt.deviceTypeID == d.deviceTypeID)
         });
@@ -437,7 +482,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     } else {
       this.receipt.isValid.contactPhone = true;
     }
-    if (['Drop Off', 'Pick Up'].includes(this.deliveryModeSelected?.deliveryModeName)) {
+    if ([CUSTOMER_DROP_OFF, PICKUP].includes(this.deliveryModeSelected?.deliveryModeName)) {
       if (!this.contactPhone) {
         this.receipt.isValid.contactPhone = false;
         this.appService.errorMessage('Please enter contact phone');
@@ -459,7 +504,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         return;
       }
     }
-    if (this.deliveryModeSelected?.deliveryModeName == 'Pickup') {
+    if (this.deliveryModeSelected?.deliveryModeName == PICKUP) {
 
       if (!this.addressSelected) {
         this.receipt.isValid.address = false;
@@ -469,7 +514,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.receipt.isValid.address = true;
       }
     }
-    if (this.deliveryModeSelected?.deliveryModeName == 'Courier') {
+    if (this.deliveryModeSelected?.deliveryModeName == COURIER) {
       if (this.tracking) {
         this.receipt.isValid.tracking = true
       } else {
@@ -585,24 +630,21 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   addDeviceRow() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
-    const trackingNumer = Date.now();
-    this.generateLineItem(trackingNumer);
-    this.gridDataDevice.splice(0, 0, {
-      ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID, recordStatus: "I",
-      lotIdentifierSelected: this.lotIdentifiers[0],
-      lotIdentifier: this.lotIdentifiers[0].id,
-      iseLotNumber: trackingNumer + ''
-    })
-  }
-  private generateLineItem(trackingNumer: number) {
+    this.appService.isLoading = true;
     this.apiService.generateLineItem().subscribe({
       next: (v: any) => {
+        this.appService.isLoading = false;
         console.log({ v });
-        this.gridDataDevice.forEach(d => {
-          if (d.iseLotNumber == trackingNumer.toString()) {
-            d.iseLotNumber = v.data;
-          }
-        })
+        this.gridDataDevice.splice(0, 0, {
+          ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID, recordStatus: "I",
+          lotIdentifierSelected: this.lotIdentifiers[0],
+          lotIdentifier: this.lotIdentifiers[0].id,
+          iseLotNumber: v.data + ''
+        });
+      },
+      error: (e: any) => {
+        this.appService.isLoading = false;
+        this.appService.errorMessage('Unable to add new device row');
       }
     })
   }
@@ -778,6 +820,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     autoSizeAllColumns: true,
   }
   rowActionMenu: MenuItem[] = [
+    { text: 'Receive', svgIcon: ICON.cartIcon },
+    { text: 'Undo Receive', svgIcon: ICON.cartIcon, disabled: true },
     // { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
     { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
     // { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
@@ -804,8 +848,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         dataItem.dateCode = parseInt(dataItem.dateCode);
         break;
       case 'Receive':
-        this.rowActionMenuDevice[0].disabled = true;
-        this.rowActionMenuDevice[1].disabled = false;
+        dataItem.recordStatus = 'U'
+        dataItem.dateCode = parseInt(dataItem.dateCode);
+        // this.rowActionMenuDevice[0].disabled = true;
+        // this.rowActionMenuDevice[1].disabled = false;
         break;
       case 'Undo Receive':
         this.rowActionMenuDevice[0].disabled = false;
@@ -936,6 +982,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.isDisabledBehalfOfCusotmer = true
       this.behalfOfCusotmerSelected = this.customerSelected;
     }
+    this.onChangeBehalfOfCusotmer();
   }
   onChangeBehalfOfCusotmer() {
     if (this.appService.sharedData.receiving.dataItem) {
@@ -1056,6 +1103,29 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     });
     // Call API
   }
+  uploadFiles(upFiles: any) {
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    if (!dataItem.receiptID) {
+      // this is for new form
+      return;
+    }
+    const files = upFiles.fileList.files;
+    if (files && files.length) {
+      const file = files[0][0].rawFile;
+
+      const inputFilename = file.name.replace(/\.[^/.]+$/, ''); // Remove file extension
+      const receiptNumber = dataItem.receiptID; // You can generate or get this value dynamically
+
+      this.apiService.uploadFile(file, inputFilename, receiptNumber).subscribe({
+        next: (v: any) => {
+          console.log(v);
+        },
+        error: (v: any) => {
+          this.appService.errorMessage('Error while uploading file')
+        }
+      });
+    }
+  }
   // print
   @ViewChild('pdfExport', { static: true }) pdfExportComponent!: PDFExportComponent;
   printSection() {
@@ -1077,8 +1147,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   onHoldChange(dataItem: any): void {
     if (dataItem.isHold) {
       this.holdData = { ...dataItem };
-      this.openDialog(); 
+      this.openDialog();
     }
   }
-  
+
 }

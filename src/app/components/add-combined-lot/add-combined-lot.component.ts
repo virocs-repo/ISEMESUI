@@ -46,10 +46,12 @@ export class AddCombinedLotComponent implements OnDestroy {
     if (this.appService.sharedData.combolot.isViewMode || this.appService.sharedData.combolot.isEditMode) {
    
       this.isEditMode = true;
+      this.isDisabled.shipBtn = true;
+    
       const dataItem: CombineLot = this.appService.sharedData.combolot.dataItem;
 
       this.customerSelected = this.customers.find(c => c.CustomerName == dataItem.customer);
-      debugger;
+ 
       console.log (dataItem.comboLotID )
    
       this.apiService.getViewEditComblotsWithId(dataItem.comboLotID).subscribe({
@@ -70,10 +72,15 @@ export class AddCombinedLotComponent implements OnDestroy {
                 .filter(item => item.viewFlag === 1) // Filter items with viewFlag = 1
                 .map(item => item.inventoryID); // Map to the unique key field (inventoryID)
                  // Populate dropdown data
-          this.dropdownData = allresdata.map((row: any) => ({
-          iseLotNum: row.iseLotNum,
-          inventoryID: row.inventoryID,
-        }));
+                 this.dropdownData = allresdata
+                 .filter((row: any) => row.AddressId > 0) // Filter rows with AddressId > 0
+                 .map((row: any) => ({
+                   iseLotNum: row.iseLotNum,
+                   inventoryID: row.inventoryID,
+                 }));
+               
+         
+
         // Automatically select the primary lot in the dropdown
         const primaryLot = allresdata.find((row: any) => row.isPrimaryAddress === true);
         if (primaryLot) {
@@ -138,7 +145,7 @@ export class AddCombinedLotComponent implements OnDestroy {
           this.gridSelectedKeys = [];
         }
       });
-      this.isDisabled.shipBtn = true;
+     
     }
     if (this.appService.sharedData.combolot.isViewMode) {
       this.isDisabled.shipBtn = true;
@@ -195,6 +202,12 @@ onSearch(): void {
   const customerId = this.customerSelected?.CustomerID || null;
   const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set
   this.gridDataResult.data = [];
+
+  if (!this.customerSelected) {
+
+    this.appService.errorMessage('Please select a customer.');
+    return;
+  }
 
   this.apiService.SearchComblotsWithCust_Lot(customerId, lotNumber).subscribe({
     next: (res: any) => {
@@ -265,6 +278,7 @@ onSelectionChange(event: SelectionEvent): void {
     inventoryID: row.inventoryID,
   }));
 
+  this.isDisabled.shipBtn =false;
   console.log('Updated Dropdown Data:', this.dropdownData);
 }
 

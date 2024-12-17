@@ -2,7 +2,6 @@
   <kendo-pdf-export #pdfExport>
     <div>
       <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-4 k-pb-3">
-        <!-- <h2>Receipt</h2> -->
         <i class="k-ml-auto d-none-sm"></i>
         <div>
           <!-- <kendo-radiobutton #Expected value="Expected" [(ngModel)]="expectedOrNot"></kendo-radiobutton> -->
@@ -15,14 +14,13 @@
           <kendo-label class="k-radio-label" [for]="Unexpected" text="Unexpected"></kendo-label>
         </div>
         |
-        <div class="k-d-flex k-align-items-center">
-          <input type="checkbox" name="FTZ" id="FTZ" [(ngModel)]="isFTZ" kendoCheckBox>
-          <!-- <kendo-label class="k-radio-label" for="FTZ" text="FTZ"></kendo-label> -->
+        <div class="k-d-flex k-align-items-center" *ngIf="isVisibleFTZ">
+          <input type="checkbox" name="FTZ" id="FTZ" [(ngModel)]="isFTZ" [disabled]="isDisableFTZ" kendoCheckBox>
           <label for="FTZ" kendoLabel> FTZ</label>
         </div>
         <div class="k-d-flex k-align-items-center k-gap-4">
           <input type="checkbox" name="IsInterim" id="IsInterim" [(ngModel)]="isInterim"
-            (click)="isDialogOpen =!isDialogOpen" kendoCheckBox>
+            (click)="isDialogOpen =!isDialogOpen" [disabled]="isDisableInterim" kendoCheckBox>
           <label for="IsInterim" kendoLabel> Is Interim</label>
         </div>
       </div>
@@ -57,8 +55,9 @@
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label text="Behalf of Customer" class="k-w-full">
                 <kendo-combobox [data]="customers" [(ngModel)]="behalfOfCusotmerSelected" [textField]="'CustomerName'"
-                  [valueField]="'CustomerID'" placeholder="Select" rounded="large" (ngModelChange)="onChangeBehalfOfCusotmer()"
-                  [kendoDropDownFilter]="filterSettings" [disabled]="isDisabledBehalfOfCusotmer"></kendo-combobox>
+                  [valueField]="'CustomerID'" placeholder="Select" rounded="large"
+                  (ngModelChange)="onChangeBehalfOfCusotmer()" [kendoDropDownFilter]="filterSettings"
+                  [disabled]="isDisabledBehalfOfCusotmer"></kendo-combobox>
               </kendo-label>
               <!-- <kendo-label text="Behalf of Customer" class="k-w-full"
                 *ngIf="customerTypeSelected?.customerTypeName == 'Vendor'">
@@ -168,7 +167,8 @@
         </kendo-card>
       </div>
 
-      <kendo-card class="card-green card-full k-mt-4">
+      <kendo-card class="card-green card-full k-mt-4" *ngIf="isVisibleHoldComments"
+        [ngClass]="{'k-pointer-events-none':isDisableHoldComments}">
         <kendo-card-body class="card-flex">
           <kendo-grid [kendoGridBinding]="gridData" class="bold-column-header cartons">
             <kendo-grid-column field="noOfCartons" title="No of Cartons" [width]="200">
@@ -311,7 +311,8 @@
           <kendo-grid-column field="isHold" title="Hold">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <div class="k-d-flex k-align-items-center">
-                <input type="checkbox" name="isHold" [(ngModel)]="dataItem.isHold"(ngModelChange)="onHoldChange(dataItem)" kendoCheckBox>
+                <input type="checkbox" name="isHold" [(ngModel)]="dataItem.isHold"
+                  (ngModelChange)="onHoldChange(dataItem)" kendoCheckBox>
                 <i *ngIf="dataItem.recordStatus != 'I'">
                   <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
                     (click)="onOpenRowActionMenu(dataItem, TableType.Device)" #rowActionMenuTarget></button>
@@ -436,8 +437,10 @@
       </div>
     </div>
 
-    <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
-      <kendo-fileselect (select)="onSelect($event)" (upload)="onUpload($event)"></kendo-fileselect>
+    <div *ngIf="!isDisabledGoodsType" class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
+      <kendo-fileselect #upFiles (select)="onSelect($event)" (upload)="onUpload($event)"></kendo-fileselect>
+      <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
+        (click)="uploadFiles(upFiles)">Upload</button>
     </div>
     <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-4 k-mt-3">
       <kendo-label text="Customer / Employee">
@@ -450,7 +453,7 @@
           [valueField]="'EmployeeID'" [kendoDropDownFilter]="filterSettings" placeholder="Select"
           rounded="large"></kendo-combobox>
       </kendo-label>
-      <kendo-label text="Date & Time" *ngIf="signatureName">
+      <kendo-label text="Date & Time" *ngIf="Signaturebase64Data">
         <kendo-dateinput format="eee dd MMMM yyyy, h:mm a" [value]="signatureDate" class="k-center"></kendo-dateinput>
       </kendo-label>
       <span style="margin-left: auto;"></span>
@@ -485,10 +488,11 @@
   <app-add-device></app-add-device>
 </kendo-dialog>
 <!--  For Hold popup   -->
-<kendo-dialog *ngIf="isDialogOpen"  [width]="'68%'" class="dialog-round">
+<kendo-dialog *ngIf="isDialogOpen" [width]="'68%'" class="dialog-round">
   <div class="k-d-flex k-align-items-center k-mb-3">
-      <h2 class="k-m-0">On / Off Hold</h2>
-      <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon"(click)="closeDialog()"></button>
+    <h2 class="k-m-0">On / Off Hold</h2>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon"
+      (click)="closeDialog()"></button>
   </div>
   <app-edit-inventory-hold [selectedRowData]="holdData" (cancel)="closeDialog()"></app-edit-inventory-hold>
 </kendo-dialog>
