@@ -96,9 +96,6 @@ export class ApiService {
   getShipmentDetails(customerID: number) {
     return this.httpClient.get(`${API}v1/ise/shipment/shipment-details?customerID=${customerID}`);
   }
-  getInventoryLocations() {
-    return this.httpClient.get(`${API}v1/ise/inventory/inventoryMove/getInventoryLocation`);
-  }
   getShipmentInventories(customerID: number) {
     return this.httpClient.get(`${API}v1/ise/shipment/shipmentInventory?customerID=${customerID}`);
   }
@@ -208,22 +205,25 @@ export class ApiService {
     return `${year}-${month}-${day}`;
   }
   //Inventory CheckInCheckOut
-  getAllInventoryMoveStatus() {
-    return this.httpClient.get(`${API}v1/ise/inventory/inventoryMove/getallInventoryMoveStatus`);
+  getAllInventoryCheckinCheckoutStatus() {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryCheckinCheckout/getallInventoryCheckinCheckoutStatus`);
   }
 
-  GetInventoryLocation() {
-    return this.httpClient.get(`${API}v1/ise/inventory/inventoryMove/getInventoryLocation`);
+  GetInventoryCheckinCheckoutLocation() {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryCheckinCheckout/getInventoryCheckinCheckoutLocation`);
   }
 
-  getInventoryMove(lotNumber: string, location: number, employeeIds: number[]) {
+  getInventoryCheckinCheckout(lotNumber: string, location: number, employeeIds: number[]) {
     const employeeIdsParam = employeeIds.map(String).join(','); // Convert number[] to string[] and join with commas
-    const url = `${API}v1/ise/inventory/inventoryMove/getInventoryMoveStatus?lotNumber=${lotNumber}&location=${location}&employeeIds=${employeeIdsParam}`;
+    const url = `${API}v1/ise/inventory/inventoryCheckinCheckout/getInventoryCheckinCheckoutStatus?lotNumber=${lotNumber}&location=${location}&employeeIds=${employeeIdsParam}`;
     return this.httpClient.get(url);
   }
 
-  upsertInventoryMoveStatus(data: any, options: { responseType: 'text' }): Observable<any> {
-    return this.httpClient.post(`${API}v1/ise/inventory/inventoryMove/UpsertInventoryMoveStatus`, data, { responseType: options.responseType });
+  upsertInventoryCheckinCheckoutStatus(data: any, options: { responseType: 'text' }): Observable<any> {
+    return this.httpClient.post(`${API}v1/ise/inventory/inventoryCheckinCheckout/UpsertInventoryCheckinCheckoutStatus`, data, { responseType: options.responseType });
+  }
+  getInventoryCheckinCheckoutLocations() {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryCheckinCheckout/getInventoryCheckinCheckoutLocation`);
   }
 
   //CombinedLots

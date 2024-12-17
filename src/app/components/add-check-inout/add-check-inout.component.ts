@@ -75,7 +75,7 @@ export class AddCheckInoutComponent implements OnInit {
   }
   
   loadLocations(): void {
-    this.apiService.GetInventoryLocation().subscribe(
+    this.apiService.GetInventoryCheckinCheckoutLocation().subscribe(
       (data: any) => {
         const locations = data as any[];
         this.uniqueLocations = [...new Set(locations.map(loc => loc.location))];
@@ -87,7 +87,7 @@ export class AddCheckInoutComponent implements OnInit {
   }
 
   loadGridData(): void {
-    this.apiService.getAllInventoryMoveStatus().subscribe({
+    this.apiService.getAllInventoryCheckinCheckoutStatus().subscribe({
       next: (data: any) => {
         this.extractUniqueValues(data);
       },
@@ -108,7 +108,7 @@ export class AddCheckInoutComponent implements OnInit {
     const employeeIds = this.employeesSelected.map(emp => emp.EmployeeID); 
     const employeeNames = this.employeesSelected.map(emp => emp.EmployeeName).join(', ');
   
-    this.apiService.getInventoryMove(lotNumber, location, employeeIds).subscribe({
+    this.apiService.getInventoryCheckinCheckout(lotNumber, location, employeeIds).subscribe({
       next: (res: any) => {
         const matchingRecords = res.filter((record: any) => record.lotNum === lotNumber);
   
@@ -144,7 +144,7 @@ export class AddCheckInoutComponent implements OnInit {
         };
   
         console.log('Sending update data to API:', updateData);
-        this.apiService.upsertInventoryMoveStatus(updateData, { responseType: 'text' })
+        this.apiService.upsertInventoryCheckinCheckoutStatus(updateData, { responseType: 'text' })
           .subscribe({
             next: (response) => {
               console.log('Inventory move status updated successfully:', response);
@@ -201,7 +201,7 @@ export class AddCheckInoutComponent implements OnInit {
     };
   
     console.log('Sending update data to API:', updateData);
-    this.apiService.upsertInventoryMoveStatus(updateData, { responseType: 'text' })
+    this.apiService.upsertInventoryCheckinCheckoutStatus(updateData, { responseType: 'text' })
       .subscribe({
         next: (response) => {
           console.log('Inventory move status updated successfully:', response);
