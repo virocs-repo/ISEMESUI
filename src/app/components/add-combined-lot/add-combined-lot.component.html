@@ -44,21 +44,27 @@
         class="bold-column-header cell-border-none">
         <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
         <kendo-grid-column field="receiptID" title="receiptID#"></kendo-grid-column>
-        <kendo-grid-column field="goodsType" title="goodsType"></kendo-grid-column>
+        <!-- <kendo-grid-column field="goodsType" title="goodsType"></kendo-grid-column> -->
         <kendo-grid-column  field="inventoryID"
           title="inventoryID"></kendo-grid-column>
         <kendo-grid-column field="iseLotNum" title="ISE Lot#"></kendo-grid-column>
         <kendo-grid-column field="customerLotNum" title="customerLotNum"></kendo-grid-column>
         <kendo-grid-column field="expectedQty" title="expectedQty"></kendo-grid-column>
-        <kendo-grid-column field="expedite" title="expedite"></kendo-grid-column>
-        <kendo-grid-column field="partNum" title="partNum"></kendo-grid-column>
+     <!--    <kendo-grid-column field="expedite" title="expedite"></kendo-grid-column>
+        <kendo-grid-column field="partNum" title="partNum"></kendo-grid-column> -->
     
         <kendo-grid-column field="labelCount" title="labelCount"></kendo-grid-column>
         <kendo-grid-column field="coo" title="coo"></kendo-grid-column>
-        <kendo-grid-column field="dateCode" title="dateCode"></kendo-grid-column>
-        <kendo-grid-column field="isHold" title="isHold"></kendo-grid-column>
+      <!--   <kendo-grid-column field="dateCode" title="dateCode"></kendo-grid-column>
+        <kendo-grid-column field="isHold" title="isHold"></kendo-grid-column> 
     
-        <kendo-grid-column field="active" title="active" ></kendo-grid-column>
+        <kendo-grid-column field="active" title="active" ></kendo-grid-column>-->
+
+        <kendo-grid-column field="runningCount" title="RunningCount"></kendo-grid-column>
+    
+        <kendo-grid-column field="address1" title="Address" ></kendo-grid-column>
+
+
       </kendo-grid>
     </div>
 
@@ -67,7 +73,7 @@
         <kendo-card-body class="card-flex">
           <div class="k-d-flex k-align-items-center k-gap-4">
             <div>
-              <kendo-label text="Select Primary Lot">
+              <kendo-label text="Select Primary Lot Shipping Address">
               <kendo-combobox
               
                 [data]="dropdownData"

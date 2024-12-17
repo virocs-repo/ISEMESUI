@@ -70,10 +70,15 @@ export class AddCombinedLotComponent implements OnDestroy {
                 .filter(item => item.viewFlag === 1) // Filter items with viewFlag = 1
                 .map(item => item.inventoryID); // Map to the unique key field (inventoryID)
                  // Populate dropdown data
-          this.dropdownData = allresdata.map((row: any) => ({
-          iseLotNum: row.iseLotNum,
-          inventoryID: row.inventoryID,
-        }));
+                 this.dropdownData = allresdata
+                 .filter((row: any) => row.AddressId > 0) // Filter rows with AddressId > 0
+                 .map((row: any) => ({
+                   iseLotNum: row.iseLotNum,
+                   inventoryID: row.inventoryID,
+                 }));
+               
+         
+
         // Automatically select the primary lot in the dropdown
         const primaryLot = allresdata.find((row: any) => row.isPrimaryAddress === true);
         if (primaryLot) {
@@ -195,6 +200,12 @@ onSearch(): void {
   const customerId = this.customerSelected?.CustomerID || null;
   const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set
   this.gridDataResult.data = [];
+
+  if (!this.customerSelected) {
+
+    this.appService.errorMessage('Please select a customer.');
+    return;
+  }
 
   this.apiService.SearchComblotsWithCust_Lot(customerId, lotNumber).subscribe({
     next: (res: any) => {
