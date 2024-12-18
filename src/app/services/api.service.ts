@@ -272,6 +272,22 @@ export class ApiService {
   getViewEditComblotsWithId(comboLotId: number): Observable<any[]> {
     return this.httpClient.get<any[]>(`${API}v1/ise/inventory/combinedlot/vieweditcombolots?comboLotId=${comboLotId}`);
   }
+  //invnmove
+  SearchInventoryMove() {
+    return this.httpClient.get(`${API}v1/ise/inventory/move/search`);
+  }
+
+  SearchInventoryMovewithDates(fromDate?: Date, toDate?: Date) {
+    let params = new HttpParams();
+
+    if (fromDate != null) {
+      params = params.set('fromDate', this.formatDate(fromDate));
+    }
+    if (toDate != null) {
+      params = params.set('toDate', this.formatDate(toDate));
+    }
+    return this.httpClient.get(`${API}v1/ise/inventory/move/search`, { params });
+  }
 
 
   //Inventory Hold

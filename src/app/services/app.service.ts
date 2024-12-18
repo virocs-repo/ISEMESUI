@@ -99,10 +99,12 @@ export class AppService {
     receiving: SharedInfo
     shipping: SharedInfo
     combolot: SharedInfo
+    Invmove: SharedInfo
   } = {
       receiving: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
       shipping: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
-      combolot: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() }
+      combolot: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
+      Invmove:{ isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() }
     }
   hardwareTypes: HardwareType[] = []
   userData: UserData = { email: '', name: '', firstName: '' }

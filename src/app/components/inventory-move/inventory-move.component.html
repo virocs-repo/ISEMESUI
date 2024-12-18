@@ -1,0 +1,70 @@
+<div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header">
+    <h2>Inventory move</h2>
+
+    <div class="k-d-flex k-flex-col k-gap-2 k-ml-auto">
+      <div class="k-d-flex k-gap-3">
+        <kendo-label text="From Date" class="k-w-full k-font-size-s">
+        <kendo-datepicker [format]="format" [(value)]="fromDate" ></kendo-datepicker>
+      </kendo-label>
+
+      <kendo-label text="To Date" class="k-w-full k-font-size-s">
+        <kendo-datepicker [format]="format" [(value)]="toDate" ></kendo-datepicker>
+      </kendo-label>
+    
+        </div>
+    </div>
+        
+ 
+    <div>
+      <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="onSearch()">Search</button>
+    </div>
+
+    <!-- <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
+    <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()"
+      [disabled]="!isAddButtonEnabled">Add</button> -->
+
+    
+    <div>
+      <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
+    </div>
+  </div>
+  <div class="k-m-10" *ngIf="!false">
+    <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
+      [pageSize]="pageSize" [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
+      class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
+      [rowClass]="rowCallback">
+      <!-- <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column> -->
+      
+   
+<!--       <kendo-grid-column field="receiptID" title="receipt #"></kendo-grid-column>
+      <kendo-grid-column field="customerVendorID" title="customerVendorID"  [hidden]="true" ></kendo-grid-column> -->
+      <kendo-grid-column field="inventoryID" title="inventoryID"></kendo-grid-column>
+      <kendo-grid-column field="lotNum" title="lotNum"></kendo-grid-column>
+      <kendo-grid-column field="qty" title="qty"></kendo-grid-column>
+      <kendo-grid-column field="checkInOutQty" title="checkInOutQty"></kendo-grid-column>
+      <kendo-grid-column field="area" title="area"></kendo-grid-column>
+      <kendo-grid-column field="wipLocation" title="wipLocation"></kendo-grid-column>
+      <kendo-grid-column field="customerName" title="customerName"></kendo-grid-column>
+      <kendo-grid-column field="receivedFromOrCheckOut" title="receivedFromOrCheckOut"></kendo-grid-column>
+      <kendo-grid-column field="checkInOutTime" title="checkInOutTime"></kendo-grid-column>
+      <kendo-grid-column field="systemCheckInOutPerson" title="systemCheckInOutPerson"></kendo-grid-column>
+      <kendo-grid-column field="currentLocation" title="currentLocation"></kendo-grid-column>
+    </kendo-grid>
+  </div>
+  
+  <kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
+    #gridContextMenu></kendo-contextmenu>
+  
+  <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'78%'"
+    class="dialog-round receipt-dialog">
+    <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
+      <h2 class="k-m-0">Add Inventory Move</h2>
+      <small *ngIf="appService.sharedData.Invmove.isViewMode">(View Mode)</small>
+      <small *ngIf="appService.sharedData.Invmove.isEditMode">(Edit Mode)</small>
+      <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+        (click)="closeDialog()"></button>
+    </div>
+    <div class="dialog-body k-overflow-y-auto">
+      <app-add-inventory-move (cancel)="closeDialog()" ></app-add-inventory-move>
+    </div>
+  </kendo-dialog>

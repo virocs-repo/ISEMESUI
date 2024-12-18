@@ -59,6 +59,8 @@ import { AddCombinedLotComponent } from './components/add-combined-lot/add-combi
 import { EditInventoryHoldComponent } from './components/edit-inventory-hold/edit-inventory-hold.component';
 import { TreeViewModule } from '@progress/kendo-angular-treeview';
 import { IndicatorsModule } from '@progress/kendo-angular-indicators';
+import { InventoryMoveComponent } from './components/inventory-move/inventory-move.component';
+import { AddInventoryMoveComponent } from './components/add-inventory-move/add-inventory-move.component';
 
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1;
@@ -133,7 +135,9 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     CombinedLotComponent,
     AddAnotherShippingComponent,
     AddCombinedLotComponent,
-    EditInventoryHoldComponent
+    EditInventoryHoldComponent,
+    InventoryMoveComponent,
+    AddInventoryMoveComponent
   ],
   imports: [
     BrowserModule,

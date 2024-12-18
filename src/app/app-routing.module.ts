@@ -15,6 +15,7 @@ import { BrowserUtils } from '@azure/msal-browser';
 import { InventoryHoldComponent } from './components/inventory-hold/inventory-hold.component';
 import { AnotherShippingComponent } from './components/another-shipping/another-shipping.component';
 import { CombinedLotComponent } from './components/combined-lot/combined-lot.component';
+import { InventoryMoveComponent } from './components/inventory-move/inventory-move.component';
 
 const routes: Routes = [
   { path: 'receiving', component: ReceivingComponent, canActivate: [authGuard] },
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: 'reports', component: ReportsComponent, canActivate: [authGuard] },
   { path: 'another-shipping', component: AnotherShippingComponent, canActivate: [authGuard] },
   { path: 'combined-lot', component: CombinedLotComponent, canActivate: [authGuard] },
+  { path: 'inventory-move', component: InventoryMoveComponent, canActivate: [authGuard] },
   { path: 'receipt', component: ReceiptComponent, canActivate: [authGuard] },
   { path: 'add-device', component: AddDeviceComponent, canActivate: [authGuard] },
   { path: 'home', component: HomeComponent, canActivate: [authGuard] },

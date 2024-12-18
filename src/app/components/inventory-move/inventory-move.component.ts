@@ -1,17 +1,17 @@
+
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CellClickEvent, ColumnMenuSettings, GridDataResult, PageChangeEvent, SelectableSettings } from '@progress/kendo-angular-grid';
 import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { CustomerType, ICON, Receipt } from 'src/app/services/app.interface';
+import {  ICON } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
-
 @Component({
-  selector: 'app-combined-lot',
-  templateUrl: './combined-lot.component.html',
-  styleUrls: ['./combined-lot.component.scss']
+  selector: 'app-inventory-move',
+  templateUrl: './inventory-move.component.html',
+  styleUrls: ['./inventory-move.component.scss']
 })
-export class CombinedLotComponent implements OnDestroy {
+export class InventoryMoveComponent implements OnDestroy {
   readonly ICON = ICON;
   gridDataResult: GridDataResult = { data: [], total: 0 };
   public pageSize = 10;
@@ -38,7 +38,7 @@ export class CombinedLotComponent implements OnDestroy {
    
   }
   private fetchdata() {
-    this.apiService.SearchCombinationLots().subscribe({
+    this.apiService.SearchInventoryMove().subscribe({
       next: (v: any) => {
         this.gridDataResult.data = v;
         this.gridDataResult.total = v.length
@@ -56,7 +56,7 @@ export class CombinedLotComponent implements OnDestroy {
  const from_date = this.fromDate ?? undefined;
  const to_date = this.toDate ?? undefined;
 
- this.apiService.SearchCombinationLotswithDates(from_date, to_date).subscribe({
+ this.apiService.SearchInventoryMovewithDates(from_date, to_date).subscribe({
      next: (v: any) => {
          this.gridDataResult.data = v;
          this.gridDataResult.total = v.length;
@@ -118,19 +118,19 @@ export class CombinedLotComponent implements OnDestroy {
     const dataItem = this.dataItemSelected;
     console.log(e);
     console.log(dataItem);
-    dataItem.holdComments = dataItem.holdComments || '';
+    
     switch (e.item.text) {
       case 'View Data':
-        this.appService.sharedData.combolot.dataItem = dataItem
-        this.appService.sharedData.combolot.isEditMode = false;
-        this.appService.sharedData.combolot.isViewMode = true;
+        this.appService.sharedData.Invmove.dataItem = dataItem
+        this.appService.sharedData.Invmove.isEditMode = false;
+        this.appService.sharedData.Invmove.isViewMode = true;
         // access the same in receipt component
         this.openDialog()
         break;
       case 'Edit Data':
-        this.appService.sharedData.combolot.dataItem = dataItem
-        this.appService.sharedData.combolot.isEditMode = true;
-        this.appService.sharedData.combolot.isViewMode = false;
+        this.appService.sharedData.Invmove.dataItem = dataItem
+        this.appService.sharedData.Invmove.isEditMode = true;
+        this.appService.sharedData.Invmove.isViewMode = false;
         // access the same in receipt component
         this.openDialog()
         break;
