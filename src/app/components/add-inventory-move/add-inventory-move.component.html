@@ -12,110 +12,54 @@
                   [(ngModel)]="lotNumber"
                   [data]="lotNumbers"
                   [filterable]="true"
-                  (filterChange)="onFilter($event)">
+                  (filterChange)="onFilter($event)"  (valueChange)="onLotNumberChange($event)">
                 </kendo-autocomplete>
               </kendo-label> 
               <kendo-label text="Current Location">
-                <b class="required-label"></b>
-                <kendo-combobox [data]="customers" [(ngModel)]="customerSelected" (ngModelChange)="onChangeCustomer()"
-                  [textField]="'CustomerName'" [valueField]="'CustomerID'" placeholder="Select"
-                  rounded="large"></kendo-combobox>
+                <kendo-textbox
+                  [value]="currentLocation"
+                  [readonly]="true"
+                  rounded="large">
+                </kendo-textbox>
               </kendo-label>
-              <kendo-label text="New Location">
-                <b class="required-label"></b>
-                <kendo-combobox [data]="customers" [(ngModel)]="customerSelected" (ngModelChange)="onChangeCustomer()"
-                  [textField]="'CustomerName'" [valueField]="'CustomerID'" placeholder="Select"
-                  rounded="large"></kendo-combobox>
-              </kendo-label>
+              
               <kendo-label text="Receiving Facility" >
                 <b class="required-label"></b>
                 <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
                   [textField]="'receivingFacilityName'" [valueField]="'receivingFacilityID'" [allowCustom]="true"
-                  placeholder="Select" rounded="large"></kendo-combobox>
+                  placeholder="Select" rounded="large" (valueChange)="onReceivingFacilityChange($event)"></kendo-combobox>
               </kendo-label>
-            
-
-            <div class="search-box k-ml-auto" style="padding-top: 20px;">
              
-
-              <kendo-button themeColor="success"  rounded="full" class="k-w-25" (click)="onSearch()"   [disabled]="isDisabled.shipBtn">
-                Search
-            </kendo-button>
-              </div>
+              <kendo-label text="New Location">
+                <b class="required-label"></b>
+                <kendo-combobox 
+                  [data]="newLocations" 
+                  [(ngModel)]="newLocationSelected" 
+                  (ngModelChange)="onChangeNewLocations()"
+                  [textField]="'area_Name'" 
+                  [valueField]="'area_FacilityId'" 
+                  placeholder="Select" 
+                  rounded="large">
+                </kendo-combobox>
+              </kendo-label>
+              
+             
         
             </div>
            
+           
           </div>
-
+          <div class="k-d-flex k-gap-3 k-mt-3">
+            <!--   <button kendoButton type="button" rounded="large" themeColor="error" class="k-ml-auto" style="width:6rem"
+              (click)="cancelRequest()">Cancel</button> -->
+              <button kendoButton type="button" rounded="full" themeColor="info" class="k-w-25" [disabled]="isDisabled.shipBtn"
+                (click)="saveInventorymove()">move</button>
+            </div>
         </div>
       </kendo-card-body>
     </kendo-card>
-    <div class="grid-container k-my-6">
-      <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true" [height]="400" 
-        [kendoGridSelectBy]="'inventoryID'" [(selectedKeys)]="gridSelectedKeys" (selectionChange)="onSelectionChange($event)"
-        class="bold-column-header cell-border-none">
-        <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-        <kendo-grid-column field="receiptID" title="receiptID#"></kendo-grid-column>
-        <!-- <kendo-grid-column field="goodsType" title="goodsType"></kendo-grid-column> -->
-        <kendo-grid-column  field="inventoryID"
-          title="inventoryID"></kendo-grid-column>
-        <kendo-grid-column field="iseLotNum" title="ISE Lot#"></kendo-grid-column>
-        <kendo-grid-column field="customerLotNum" title="customerLotNum"></kendo-grid-column>
-        <kendo-grid-column field="expectedQty" title="expectedQty"></kendo-grid-column>
-     <!--    <kendo-grid-column field="expedite" title="expedite"></kendo-grid-column>
-        <kendo-grid-column field="partNum" title="partNum"></kendo-grid-column> -->
+ 
+
     
-        <kendo-grid-column field="labelCount" title="labelCount"></kendo-grid-column>
-        <kendo-grid-column field="coo" title="coo"></kendo-grid-column>
-      <!--   <kendo-grid-column field="dateCode" title="dateCode"></kendo-grid-column>
-        <kendo-grid-column field="isHold" title="isHold"></kendo-grid-column> 
-    
-        <kendo-grid-column field="active" title="active" ></kendo-grid-column>-->
-
-        <kendo-grid-column field="runningCount" title="RunningCount"></kendo-grid-column>
-    
-        <kendo-grid-column field="address1" title="Address" ></kendo-grid-column>
-
-
-      </kendo-grid>
-    </div>
-
-    <div>
-      <kendo-card  class="card-blue card-full">
-        <kendo-card-body class="card-flex">
-          <div class="k-d-flex k-align-items-center k-gap-4">
-            <div>
-              <kendo-label text="Select Primary Lot Shipping Address">
-              <kendo-combobox
-              
-                [data]="dropdownData"
-                [textField]="'iseLotNum'"
-                [valueField]="'inventoryID'"
-                [(ngModel)]="selectedDropdownValue"
-                [placeholder]="dropdownData.length > 0 ? 'Select Lot' : 'No lots available'"
-              >
-              </kendo-combobox>
-              </kendo-label>
-      
-            </div>
-            <kendo-label text="Combo LotName">
-              <b class="required-label"></b>
-              
-              <kendo-textarea [rows]="2" placeholder="Enter Name" rounded="large"
-                [(ngModel)]="comboLotName"></kendo-textarea>
-            </kendo-label>
-            <kendo-label text="Combo Lot Comments" >
-              <kendo-textarea [(ngModel)]="ComboComments" [rows]="2" placeholder="Enter comments"
-                rounded="large"></kendo-textarea>
-            </kendo-label>
-          </div>
-        </kendo-card-body>
-      </kendo-card>
-    </div>
-    <div class="k-d-flex k-gap-3 k-mt-3">
-      <button kendoButton type="button" rounded="large" themeColor="error" class="k-ml-auto" style="width:6rem"
-      (click)="cancelRequest()">Cancel</button>
-      <button kendoButton type="button" rounded="full" themeColor="info" class="k-w-25" [disabled]="isDisabled.shipBtn"
-        (click)="saveCombineLots()">Save</button>
-    </div>
+   
   </div>

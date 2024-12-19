@@ -11,15 +11,18 @@ import { AppService } from 'src/app/services/app.service';
 export class AddInventoryMoveComponent implements OnDestroy {
   shipmentNumber: string = ''
   shipmentLocation: string = ''
-  readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
+  
   readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
   receiptLocationSelected: ReceiptLocation | undefined;
-  customerSelected: Customer | undefined;
   lotNumber: string | null = null;  // Lot number
   lotNumbers: string[] = [];
+  inventoryID:number  = 0;
+  currentLocation:string  = '';
 
     allLotNumbers: string[] = []; // F
-
+// Data for New Location dropdown
+newLocations: any[] = [];
+newLocationSelected: any;
   customerInformation = ''
 
   gridDataResult: GridDataResult = { data: [], total: 0 };
@@ -47,110 +50,66 @@ export class AddInventoryMoveComponent implements OnDestroy {
     if (this.appService.sharedData.Invmove.isViewMode || this.appService.sharedData.Invmove.isEditMode) {
    
       this.isEditMode = true;
-      this.isDisabled.shipBtn = true;
+      
     
-      const dataItem: CombineLot = this.appService.sharedData.Invmove.dataItem;
+      const dataItem = this.appService.sharedData.Invmove.dataItem;
+      this.lotNumber=dataItem.lotNum;
+      this.inventoryID=dataItem.inventoryID;
+      //console.log(dataItem);
+      const lotno=dataItem.lotNum;
 
-      this.customerSelected = this.customers.find(c => c.CustomerName == dataItem.customer);
- 
-  
-   
-      this.apiService.getViewEditComblotsWithId(dataItem.comboLotID).subscribe({
-        next: (res: any[]) => {
+      this.apiService.SearchInventoryMovewith_Lot(lotno).subscribe({
+        next: (res: any) => {
           console.log(res);
-          // Find all records that match the comboLotID
-          const allresdata = res.filter((s: { comboLotID: number }) => s.comboLotID === dataItem.comboLotID);
+          this.currentLocation = res.currentLocation;
+          const area_FID= res.area_FacilityID;
       
-          if (this.appService.sharedData.Invmove.isViewMode)
-        {
-            if (allresdata.length > 0)
-           {
-              // Assign the matching records to the grid
-              this.gridDataResult.data = allresdata;
+          // Set the selected receipt location based on facilityID
+          this.receiptLocationSelected = this.receiptLocation.find(
+            (location) => location.receivingFacilityID === res.facilityID
+          );
       
-              // Automatically select rows where viewFlag = 1
-              this.gridSelectedKeys = allresdata
-                .filter(item => item.viewFlag === 1) // Filter items with viewFlag = 1
-                .map(item => item.inventoryID); // Map to the unique key field (inventoryID)
-                 // Populate dropdown data
-                 this.dropdownData = allresdata
-                 .filter((row: any) => row.AddressId > 0) // Filter rows with AddressId > 0
-                 .map((row: any) => ({
-                   iseLotNum: row.iseLotNum,
-                   inventoryID: row.inventoryID,
-                 }));
-               
-         
-
-        // Automatically select the primary lot in the dropdown
-        const primaryLot = allresdata.find((row: any) => row.isPrimaryAddress === true);
-        if (primaryLot) {
-          this.selectedDropdownValue = primaryLot.inventoryID; // Select the primary lot by inventoryID
-        } else {
-          this.selectedDropdownValue = null; // Reset if no primary lot is found
-        }
-    
-
-
-         // Pre-fill comboName and ComboComments
-         this.comboLotName = allresdata[0].comboName || '';
-         this.ComboComments = allresdata[0].comments || '';
-         //this.cdr.detectChanges();
-                
-            } 
-            else
-            {
-              console.warn('No data found for the specified comboLotID.');
-              this.gridDataResult.data = [];
-              this.gridSelectedKeys = [];
+          const faciltyId = this.receiptLocationSelected?.receivingFacilityID;
+      
+          // Fetch new locations based on the selected facility
+          this.apiService.SearchInventoryMovewith_Facilty(faciltyId).subscribe({
+            next: (res: any) => {
+              console.log(res);
+      
+              // Update the new locations dropdown
+              this.newLocations = res || [];
+      
+              // Match newLocationSelected to the record in newLocations with area_FacilityID
+              this.newLocationSelected = this.newLocations.find(
+                (location) => location.area_FacilityId === area_FID
+              )?.area_FacilityId || null;
+              
+      
+              console.log('Selected New Location:', this.newLocationSelected);
+            },
+            error: (err) => {
+              console.error('Error fetching new locations:', err);
             }
-          } 
-          
-          else
-           {
-            // If not in view mode, use the full result set
-            this.gridDataResult.data = res;
-      
-            // Automatically select rows where viewFlag = 1
-            this.gridSelectedKeys = res
-              .filter(item => item.viewFlag === 1)
-              .map(item => item.inventoryID);
-
-
-            // Populate dropdown data
-      
-
-            this.dropdownData = allresdata.map((row: any) => ({
-              iseLotNum: row.iseLotNum,
-              inventoryID: row.inventoryID,
-            }));
-      // Automatically select the primary lot in the dropdown
-      const primaryLot = allresdata.find((row: any) => row.isPrimaryAddress === true);
-      if (primaryLot) {
-        this.selectedDropdownValue = primaryLot.inventoryID; // Select the primary lot by inventoryID
-      } else {
-        this.selectedDropdownValue = null; // Reset if no primary lot is found
-      }
-
-      // Pre-fill comboName and ComboComments
-      this.comboLotName = primaryLot?.comboName || '';
-      this.ComboComments = primaryLot?.comments || '';  
-     // this.cdr.detectChanges();
-          }
-          
-          console.log('Selected Keys:', this.gridSelectedKeys);
+          });
         },
         error: (err) => {
-          console.error('Error fetching data:', err);
           this.gridDataResult.data = [];
-          this.gridSelectedKeys = [];
+          console.error('Error fetching lot info:', err);
         }
       });
+      
+      
+
+
      
     }
     if (this.appService.sharedData.Invmove.isViewMode) {
       this.isDisabled.shipBtn = true;
-      this.isDisabled.clearBtn = true;
+      
+    }
+    if (this.appService.sharedData.Invmove.isEditMode) {
+      this.isDisabled.shipBtn = false;
+      
     }
   }
   ngOnDestroy(): void {
@@ -159,16 +118,6 @@ export class AddInventoryMoveComponent implements OnDestroy {
   }
  
  
-
-  onChangeCustomer() {
-    if (this.customerSelected) {
-     /*  this.apiService.getShipmentInventories(this.customerSelected.CustomerID).subscribe({
-        next: (v: any) => {
-          
-        }
-      }); */
-    }
-  }
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;
   
@@ -198,70 +147,91 @@ export class AddInventoryMoveComponent implements OnDestroy {
         this.lotNumbers = [...this.allLotNumbers];
     }
 }
+onLotNumberChange(selectedLot: string): void {
 
-onSearch(): void {
-  const customerId = this.customerSelected?.CustomerID || null;
-  const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set
-  this.gridDataResult.data = [];
-
-  if (!this.customerSelected) {
-
-    this.appService.errorMessage('Please select a customer.');
-    return;
-  }
-
-  this.apiService.SearchComblotsWithCust_Lot(customerId, lotNumber).subscribe({
-    next: (res: any) => {
-      console.log(res);
-      this.gridDataResult.data = res;
-    },
-    error: (err) => {
-      this.gridDataResult.data = []
-    }
-  }); 
-}
-saveCombineLots(): void {
-  if (!this.selectedDropdownValue) {
-    this.isPrimaryLotValid = false;
-    this.appService.errorMessage('Please select a primary lot.');
-    return;
+  if (selectedLot) {
+    // Replace the API URL with your backend endpoint
+    this.apiService.SearchInventoryMovewith_Lot(selectedLot).subscribe({
+      next: (res: any) => {
+        console.log(res);
+        this.currentLocation = res.currentLocation;
+        this.inventoryID=res.inventoryID;
+      },
+      error: (err) => {
+        this.gridDataResult.data = []
+      }
+    }); 
   } else {
-    this.isPrimaryLotValid = true;
+    this.currentLocation = ''; // Clear the current location if no lot is selected
   }
+}
 
-  if (!this.comboLotName || this.dropdownData.length === 0) {
-    this.appService.errorMessage('Please fill all required fields.');
+onReceivingFacilityChange(selectedFacilityId: any): void {
+
+  if (selectedFacilityId) {
+    this.apiService.SearchInventoryMovewith_Facilty(selectedFacilityId.receivingFacilityID).subscribe({
+      next: (res: any) => {
+        console.log(res);
+        this.newLocations = res || [];
+          this.newLocationSelected = null; // Reset the selected new location
+      },
+      error: (err) => {
+        
+      }
+    }); 
+   
+  } else {
+    this.newLocations = []; // Clear the dropdown if no facility is selected
+    this.newLocationSelected = null;
+  }
+}
+
+// Handle New Location selection logic if needed
+onChangeNewLocations(): void {
+  console.log('New Location selected:', this.newLocationSelected);
+  // Additional logic for new location selection
+}
+
+
+
+
+saveInventorymove(): void {
+
+
+  if (!this.newLocationSelected) {
+    this.appService.errorMessage('Please select new location');
     return;
+  } 
+  if (!this.receiptLocationSelected) {
+    this.appService.errorMessage('Please select receiptLocation');
+    return;
+  } 
+  const ivnid=this.inventoryID;
+
+  console.log(this.newLocationSelected);
+  console.log(this.receiptLocationSelected);
+  let areaFacId: any | undefined;
+  if (this.appService.sharedData.Invmove.isEditMode)
+  {
+     areaFacId =this.newLocationSelected;
+  }
+  else
+  {
+     areaFacId =this.newLocationSelected.area_FacilityId;
   }
 
-  // Create the JSON payload
-  const payload: CombineLotPayload = {
-    comboLotID: null, // Assuming it's 0 for a new combo
-    comboName: this.comboLotName,
-    str_InventoryId: this.dropdownData.map((item) => item.inventoryID).join(','), // Convert inventory IDs to a comma-separated string
-    primary_InventoryId: this.selectedDropdownValue.inventoryID, // The selected primary inventory ID
-    userID: this.appService.loginId, // Replace with actual logged-in user ID
-    active: true,
-    comments: this.ComboComments,
-  };
 
-  if (this.isEditMode) {
-    const dataItem: CombineLot = this.appService.sharedData.Invmove.dataItem;
-    payload.comboLotID=dataItem.comboLotID;
-    payload.primary_InventoryId=this.selectedDropdownValue;
-
-  }
-  console.log('Payload:', payload);
+ const receivingFacID= this.receiptLocationSelected.receivingFacilityID;
 
   // Call the API
-  this.apiService.postCombineLots(payload).subscribe({
+  this.apiService.postInventoryMovewith_Facilty(ivnid,areaFacId,receivingFacID).subscribe({
     next: (response: any) => {
-      this.appService.successMessage('Combine Lots saved successfully!');
+      this.appService.successMessage('Inventory move saved successfully!');
       this.cancel.emit();
 
     },
     error: (error: any) => {
-      this.appService.errorMessage('Failed to save Combine Lots.');
+      this.appService.errorMessage('Failed to save Inventory move.');
       
     },
   });

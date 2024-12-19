@@ -289,6 +289,27 @@ export class ApiService {
     return this.httpClient.get(`${API}v1/ise/inventory/move/search`, { params });
   }
 
+  SearchInventoryMovewith_Lot( lotNumber?: string) {
+    let params = new HttpParams();
+    if (lotNumber) {
+      params = params.set('lotNumber', lotNumber);
+    }
+    return this.httpClient.get(`${API}v1/ise/inventory/move/lotinfo`, { params });
+  }
+  SearchInventoryMovewith_Facilty( facilityId: any) {
+    let params = new HttpParams();
+    if (facilityId) {
+      params = params.set('facilityId', facilityId);
+    }
+    return this.httpClient.get(`${API}v1/ise/inventory/move/facility`, { params });
+  }
+
+  postInventoryMovewith_Facilty( invId: number,area_FacilityId: number,receivingFacilityID: number) {
+    const url = `${API}v1/ise/inventory/move?inventoryId=${invId}&areaFacilityId=${area_FacilityId}&facilityId=${receivingFacilityID}`;
+    return this.httpClient.post(url, null);
+  }
+
+
 
   //Inventory Hold
   getAllSearchHold() {
