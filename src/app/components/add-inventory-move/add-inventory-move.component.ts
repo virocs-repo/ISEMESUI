@@ -211,13 +211,16 @@ saveInventorymove(): void {
   console.log(this.newLocationSelected);
   console.log(this.receiptLocationSelected);
   let areaFacId: any | undefined;
-  if (this.appService.sharedData.Invmove.isEditMode)
-  {
-     areaFacId =this.newLocationSelected;
-  }
-  else
-  {
-     areaFacId =this.newLocationSelected.area_FacilityId;
+  debugger;
+  if (typeof this.newLocationSelected === 'number') {
+    // Case 1: newLocationSelected is a number
+    areaFacId = this.newLocationSelected;
+  } else if (typeof this.newLocationSelected === 'object' && this.newLocationSelected !== null) {
+    // Case 2: newLocationSelected is an object with area_FacilityId property
+    areaFacId = this.newLocationSelected.area_FacilityId;
+  } else {
+    // Case 3: Invalid or missing data
+    console.error('Invalid newLocationSelected value:', this.newLocationSelected);
   }
 
 
