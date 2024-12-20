@@ -19,7 +19,7 @@ export class CustomerOrderComponent implements OnInit {
   public addCustomerMode : boolean = false; 
   
   readonly ICON = ICON
-  public pageSize = 10;
+  public pageSize = 25;
   public skip = 0;
  selectedRowIndex: number = -1;
  private originalData: any[] = []; 

@@ -18,7 +18,7 @@ export class AddInventoryMoveComponent implements OnDestroy {
   lotNumbers: string[] = [];
   inventoryID:number  = 0;
   currentLocation:string  = '';
-
+  public searchTerm: string = '';
     allLotNumbers: string[] = []; // F
 // Data for New Location dropdown
 newLocations: any[] = [];
@@ -146,6 +146,16 @@ newLocationSelected: any;
         // Reset to the full list when the input is cleared
         this.lotNumbers = [...this.allLotNumbers];
     }
+}
+
+filterData(data: any[]): any[] {
+  if (!this.searchTerm) {
+    return data;
+  }
+  const term = this.searchTerm.toLowerCase();
+  return data.filter(item =>
+    Object.values(item).some(val => String(val).toLowerCase().includes(term))
+  );
 }
 onLotNumberChange(selectedLot: string): void {
 

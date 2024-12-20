@@ -27,7 +27,7 @@
                 <b class="required-label"></b>
                 <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
                   [textField]="'receivingFacilityName'" [valueField]="'receivingFacilityID'" [allowCustom]="true"
-                  placeholder="Select" rounded="large" (valueChange)="onReceivingFacilityChange($event)"></kendo-combobox>
+                  placeholder="Select" rounded="large" (valueChange)="onReceivingFacilityChange($event)" [disabled]="isDisabled.shipBtn"></kendo-combobox>
               </kendo-label>
              
               <kendo-label text="New Location">
@@ -39,7 +39,7 @@
                   [textField]="'area_Name'" 
                   [valueField]="'area_FacilityId'" 
                   placeholder="Select" 
-                  rounded="large">
+                  rounded="large" [disabled]="isDisabled.shipBtn" >
                 </kendo-combobox>
               </kendo-label>
               

@@ -14,7 +14,7 @@ import { AppService } from 'src/app/services/app.service';
 export class CombinedLotComponent implements OnDestroy {
   readonly ICON = ICON;
   gridDataResult: GridDataResult = { data: [], total: 0 };
-  public pageSize = 10;
+  public pageSize = 25;
   public skip = 0;
   readonly subscription = new Subscription();
   format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker

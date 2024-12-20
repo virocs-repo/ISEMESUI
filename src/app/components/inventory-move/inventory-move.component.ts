@@ -14,13 +14,14 @@ import { AppService } from 'src/app/services/app.service';
 export class InventoryMoveComponent implements OnDestroy {
   readonly ICON = ICON;
   gridDataResult: GridDataResult = { data: [], total: 0 };
-  public pageSize = 10;
+  private originalData: any[] = []; 
+  public pageSize = 25;
   public skip = 0;
   readonly subscription = new Subscription();
   format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker
   fromDate: Date | null = null;  // Variable to store the selected 'from' date
   toDate: Date | null = null;    // Variable to store the selected 'to' date
-
+  public searchTerm: string = '';
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
@@ -40,12 +41,11 @@ export class InventoryMoveComponent implements OnDestroy {
   private fetchdata() {
     this.apiService.SearchInventoryMove().subscribe({
       next: (v: any) => {
-        this.gridDataResult.data = v;
-        this.gridDataResult.total = v.length
-        /* for (let index = 0; index < this.gridDataResult.data.length; index++) {
-          const element = this.gridDataResult.data[index];
-          element.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == element.customerID)
-        } */
+        /* this.gridDataResult.data = v;
+        this.gridDataResult.total = v.length */
+        this.originalData = v;
+        this.pageData();
+        
       },
       error: (v: any) => { }
     });
@@ -58,8 +58,10 @@ export class InventoryMoveComponent implements OnDestroy {
 
  this.apiService.SearchInventoryMovewithDates(from_date, to_date).subscribe({
      next: (v: any) => {
-         this.gridDataResult.data = v;
-         this.gridDataResult.total = v.length;
+/*          this.gridDataResult.data = v;
+         this.gridDataResult.total = v.length; */
+         this.originalData = v;
+         this.pageData();
      },
      error: (error: any) => {
          console.error('Error fetching CombinationLots', error);
@@ -67,6 +69,38 @@ export class InventoryMoveComponent implements OnDestroy {
  });
 
   }
+
+  onSearchMaster(): void {
+    this.skip = 0;  // Reset pagination when searching
+    this.pageData();  // Apply search and pagination
+  }
+
+  pageData(): void {
+    /*    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
+   
+       // Paginate the data
+       const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+       this.gridDataResult.data = paginatedData;
+           this.gridDataResult.total =filteredData.length ; */
+   
+           const filteredData = this.filterData(this.originalData);
+       const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+       this.gridDataResult.data = filteredData;
+       this.gridDataResult.total = filteredData.length; 
+   
+      
+   
+      
+     } 
+     filterData(data: any[]): any[] {
+       if (!this.searchTerm) {
+         return data;
+       }
+       const term = this.searchTerm.toLowerCase();
+       return data.filter(item =>
+         Object.values(item).some(val => String(val).toLowerCase().includes(term))
+       );
+     }
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;
     console.log(event);
