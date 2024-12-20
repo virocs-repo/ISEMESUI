@@ -19,3 +19,54 @@
     opacity: 0.7;
   }
 }
+
+/* Wrapper for the dropdown menu */
+.kendo-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+  z-index: 10; /* Ensure the dropdown wrapper has a higher z-index */
+}
+
+/* Submenu styles */
+.submenu {
+  display: none;
+  position: absolute;
+  top: 100%; /* Position below the parent button */
+  left: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000; /* Ensure submenu appears above other elements */
+  padding: 8px 0;
+}
+
+/* Show submenu on hover */
+.kendo-dropdown-wrapper:hover .submenu {
+  display: block;
+}
+
+/* Submenu button styles */
+.submenu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+.submenu button:hover {
+  background-color: #f5f5f5;
+}
+
+/* Align dropdown icon in parent button */
+.parent-menu-button .menu-icon {
+  margin-left: 8px;
+}
+
+/* Ensure parent containers do not restrict overflow */
+.k-appbar {
+  overflow: visible; /* Ensure submenu is not clipped */
+  z-index: 5; /* Ensure appbar is below the submenu */
+}
