@@ -33,6 +33,9 @@
     <kendo-grid 
       [kendoGridBinding]="gridDataResult.data"  
       [selectable]="selectableSettings" 
+      [columnMenu]="columnMenuSettings"
+      [filterable]="true" 
+      [sortable]="true"
       [resizable]="true" 
       [pageSize]="pageSize"
       [skip]="skip" 
