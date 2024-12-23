@@ -169,18 +169,12 @@ export class AddCheckInoutComponent implements OnInit {
       this.appService.errorMessage('No record available to check in/out.');
       return;
     }
-    if (this.selectedLocation !== record.location) {
-      this.appService.errorMessage('Selected location does not match the record data.');
-      return;
-    }
+
     if (this.selectedQty !== record.qty) {
       this.appService.errorMessage('Selected quantity does not match the record data.');
       return;
     }  
-    if (this.selectedReceivedFrom && this.selectedReceivedFrom !== record.receivedFrom) {
-      this.appService.errorMessage('Selected "Received From" does not match the record data.');
-      return;
-    }
+
     const newStatus = record.status === 'CheckIn' ? 'CheckOut' : 'CheckIn';
     record.status = newStatus;
   
