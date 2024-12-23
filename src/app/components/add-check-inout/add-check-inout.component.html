@@ -1,31 +1,38 @@
-<div class="k-m-3 k-overflow-y-auto" style="height: 50vh;">
+<div class="k-m-3 k-overflow-y-auto" style="height: auto;">
   <kendo-card-body class="card-flex">
     <div class="k-d-flex k-align-items-end k-gap-3">
       <kendo-label text="Lot Number" class="k-w-full">
         <b class="required-label"></b>
-        <kendo-autocomplete text="Lot Number" [data]="filteredLotNumbers" [(ngModel)]="selectedLotNumber" placeholder="#Lot Number" rounded="large" (filterChange)="onLotNumberFilter($event)" [suggest]="true"></kendo-autocomplete>
-      </kendo-label>
-      <kendo-label text="Location" class="k-w-full">
+        <kendo-autocomplete text="Lot Number" [data]="filteredLotNumbers" [(ngModel)]="selectedLotNumber" placeholder="#Lot Number" rounded="large" (filterChange)="onLotNumberFilter($event)" [suggest]="true" (valueChange)="onLotNumberSelected($event)" ></kendo-autocomplete>
+            </kendo-label>
+      <kendo-label *ngIf="status === 'CheckOut'" text="Location" class="k-w-full">
         <b class="required-label"></b>
         <kendo-combobox [data]="uniqueLocations" [(ngModel)]="selectedLocation" placeholder="Location" rounded="large"></kendo-combobox>
       </kendo-label>
-      <kendo-label text="ReciviedFrom" class="k-w-full">
+      <kendo-label *ngIf="status === 'CheckOut'" text="Qty" class="k-w-full">
+        <b class="required-label"></b>
+        <input type="number" [(ngModel)]="selectedQty" placeholder="Qty" class="k-input k-textbox" />
+      </kendo-label>
+      <kendo-label *ngIf="status === 'CheckOut'" text="Received From" class="k-w-full">
         <b class="required-label"></b>
         <kendo-multiselect [data]="employees" [(ngModel)]="employeesSelected" [textField]="'EmployeeName'" [valueField]="'EmployeeID'" placeholder="Select" rounded="large"></kendo-multiselect>
       </kendo-label>
-      <button kendoButton rounded="full" themeColor="info" style="width:7rem" (click)="add()">Add</button>
+      <kendo-label *ngIf="status === 'CheckIn'" text="CheckOut To" class="k-w-full">
+        <b class="required-label"></b>
+        <kendo-multiselect [data]="employees" [(ngModel)]="employeesSelected" [textField]="'EmployeeName'" [valueField]="'EmployeeID'" placeholder="Select" rounded="large"></kendo-multiselect>
+      </kendo-label>    
+      <kendo-label *ngIf="status === 'CheckIn'" text="Return to Customer" class="k-w-full">
+        <b class="required-label"></b>
+        <div>
+        <kendo-checkbox [checkedState]="true" [(ngModel)]="returnToCustomer" rounded="large"></kendo-checkbox></div>
+      </kendo-label>
     </div>
   </kendo-card-body>
-  <div class="k-my-6">
+  <div class="k-my-6" *ngIf="selectedLotNumber">
     <kendo-grid 
     class="k-my-3" 
     [kendoGridBinding]="gridDataResult.data" 
-    [height]="300" 
-    [pageSize]="pageSize"
-    [pageable]="true" 
-    [selectable]="{ mode: 'multiple' }" 
-    (selectionChange)="onSelectionChange($event)">
-    <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+    >
       <kendo-grid-column *ngFor="let c of columnData" [hidden]="!c.visible" [field]="c.field" [title]="c.title"></kendo-grid-column>
       <ng-template kendoGridCellTemplate let-dataItem>
         <button kendoButton [svgIcon]="ICON.moreVerticalIcon" #rowActionMenu></button>
@@ -35,7 +42,7 @@
   </div>
 
   <div class="k-d-flex k-gap-3 k-mt-3">
-    <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem" (click)="clearRequest()">Clear</button>
-    <button kendoButton type="button" rounded="full" themeColor="info" (click)="onCheckInOut()">Check in / Check out</button>
+    <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem">Print</button>
+    <button kendoButton type="button" rounded="full" themeColor="info" (click)="onCheckInOut()">{{ checkInOutLabel }}</button>
   </div>
 </div>

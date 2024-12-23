@@ -16,6 +16,9 @@ export class InventorycheckinCheckoutComponent implements OnInit{
   public skip = 0;
   private originalData: any[] = []; 
  selectedRowIndex: number = -1;
+ format: string = 'yyyy-MM-dd'; 
+  fromDate: Date | null = null;
+  toDate: Date | null = null;
  public selectedRowData: any;
    public gridDataResult: GridDataResult = { data: [], total: 0 };
   public gridFilter: any = {
@@ -26,12 +29,16 @@ export class InventorycheckinCheckoutComponent implements OnInit{
   public searchTerm: string = '';
   public columnData: any[] = [
     { field: 'lotNum', title: 'Lot#/Serial#' },
-    { field: 'location', title: 'Location' },
-    { field: 'person', title: 'Person' },
     { field: 'qty', title: 'Qty' },
-    { field: 'systemUser', title: 'System User' },
-    { field: 'goodsType', title: 'Goods Type' },
-    { field: 'status', title: 'Status' },
+    { field: 'checkinCheckOutQTY', title: 'Checkin/CheckOut QTY' },
+    { field: 'area', title: 'Area' },
+    { field: 'wipLocation', title: 'WIP Location' },
+    { field: 'customerName', title: 'Customer Name' },
+    { field: 'device', title: 'Device' },
+    { field: 'receivedFromCheckOut', title: 'Received From/CheckOut' },
+    { field: 'checkInOutTime', title: 'CheckIn/Out Time' },
+    { field: 'systemCheckInOutPerson', title: 'System CheckIn/Out Person' },
+    { field: 'currentLocation', title: 'Current Location' }
   ];
   selectableSettings: any = {
     checkboxOnly: true,

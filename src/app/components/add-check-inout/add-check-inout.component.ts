@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { Title } from '@angular/platform-browser';
 import { GridComponent, GridDataResult } from '@progress/kendo-angular-grid';
 import { ContextMenuComponent } from '@progress/kendo-angular-menu';
+import { printIcon } from '@progress/kendo-svg-icons';
 import { ApiService } from 'src/app/services/api.service';
 import { Employee, ICON } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
@@ -16,8 +16,11 @@ export class AddCheckInoutComponent implements OnInit {
   @Output() cancel = new EventEmitter<void>();
   @ViewChild('grid', { static: true }) grid!: GridComponent; 
   gridDataResult: GridDataResult = { data: [], total: 0 };
+  public icons = { printIcon: printIcon };
   readonly ICON = ICON;
-  
+  public status: 'CheckIn' | 'CheckOut' | null = null;
+  public selectedQty: number | null = null;
+  public returnToCustomer: boolean = false;
   public selectedLocation: number= 0;
   public selectedReceivedFrom: string = '';
   public selectedLotNumber: string = '';
@@ -34,7 +37,7 @@ export class AddCheckInoutComponent implements OnInit {
     { field: 'lotNum', title: 'Lot#/Serial#', visible: true },
     { field: 'location', title: 'Location', visible: true },
     { field: 'employeeNames', title: 'Person', visible: true },
-    { field: 'qty', title: 'Qty', visible: true },
+    { field: 'qty', title: 'Qty', visible: false },
     { field: 'systemUser', title: 'System User', visible: true },
     { field: 'goodsType', title: 'Goods Type', visible: true},
     { field: 'status', title: 'Status', visible: true },
@@ -97,69 +100,60 @@ export class AddCheckInoutComponent implements OnInit {
     });
   }
 
-  add(): void {
-    if (!this.selectedLotNumber || !this.selectedLocation || this.employeesSelected.length === 0) {
-      this.appService.errorMessage('Please enter mandatory fields.');
+  onLotNumberSelected(selectedLot: string): void {
+    if (!selectedLot) {
+      this.clearRequest(); // Clears the grid and other form inputs
       return;
     }
   
-    const lotNumber = this.selectedLotNumber;
-    const location = this.selectedLocation;
-    const employeeIds = this.employeesSelected.map(emp => emp.EmployeeID); 
-    const employeeNames = this.employeesSelected.map(emp => emp.EmployeeName).join(', ');
+    // Fetching status for the selected lot number
+    this.apiService.getLotStatus(selectedLot).subscribe({
+      next: (response: any) => {
+        this.status = response[0]?.inventoryStatus;
+        if (this.status === 'CheckIn') {
+          this.selectedLocation = response.location || '';
+          this.selectedQty = response.qty || null;
+          this.employeesSelected = response.receivedFrom || [];
+        } else if (this.status === 'CheckOut') {
+          this.returnToCustomer = false;
+          this.employeesSelected = response.receivedFrom || [];
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching lot status:', err);
+      }
+    });
   
-    this.apiService.getInventoryCheckinCheckout(lotNumber, location, employeeIds).subscribe({
+    // Fetching inventory data for the selected lot number
+    this.apiService.getInventoryCheckinCheckout(selectedLot).subscribe({
       next: (res: any) => {
-        const matchingRecords = res.filter((record: any) => record.lotNum === lotNumber);
+        const uniqueRecords = this.getUniqueRecords(res);
   
-        matchingRecords.forEach((record: any) => {
-
-          if (!record.location) {
-            record.location = location;
-          }
-          if (record.status === 'CheckOut') {
-            record.location = location;
-          }
-          record.employeeNames = employeeNames;
-        });
-  
-        this.combinedData = [...this.combinedData, ...matchingRecords];
+        // Set the unique data to the combined data and update the grid
+        this.combinedData = [...uniqueRecords];
         this.gridDataResult = {
           data: this.combinedData,
           total: this.combinedData.length
         };
-  
-        this.selectedLotNumber = '';
-        this.selectedLocation = 0;
-        this.employeesSelected = [];
-  
-        const updateData = {
-          InvMovementDetails: matchingRecords.map((record: any) => ({
-            InventoryID: record.inventoryId,
-            Location: record.location,
-            StatusID: record.status === 'CheckIn' ? 1711 : 1712,
-            ReceivedFromID: employeeIds ,
-            LoginId: 1
-          }))
-        };
-  
-        console.log('Sending update data to API:', updateData);
-        this.apiService.upsertInventoryCheckinCheckoutStatus(updateData, { responseType: 'text' })
-          .subscribe({
-            next: (response) => {
-              console.log('Inventory move status updated successfully:', response);
-              this.loadGridData();
-            },
-            error: (err) => {
-              console.error('Error updating inventory move status:', err);
-            }
-          });
       },
       error: (err) => {
-        console.error('Error fetching data:', err);
+        console.error('Error fetching inventory check-in/out data:', err);
       }
     });
   }
+
+  getUniqueRecords(records: any[]): any[] {
+    const uniqueMap = new Map();
+  
+    records.forEach((record) => {
+      const key = `${record.lotNum}-${record.location}`;
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, record);
+      }
+    });
+  
+    return Array.from(uniqueMap.values());
+  }  
 
   clearRequest(): void {
     this.gridDataResult = { data: [], total: 0 };
@@ -169,35 +163,35 @@ export class AddCheckInoutComponent implements OnInit {
     this.cancel.emit();
   }  
 
-  public selectedRecords: any[] = [];
-
-  onSelectionChange(event: any): void {
-    this.selectedRecords = event.selectedRows.map((row: { dataItem: any; }) => row.dataItem);
-  }
-
   onCheckInOut(): void {
-    const selectedRows = this.selectedRecords;
-  
-    if (selectedRows.length === 0) {
-      this.appService.errorMessage('Please select at least one record to check in/out.');
+    const record = this.gridDataResult.data[0];
+    if (!record) {
+      this.appService.errorMessage('No record available to check in/out.');
       return;
     }
-    const updateData = {
-      InvMovementDetails: selectedRows.map((record: any) => {
-        const newStatus = record.status === 'CheckIn' ? 'CheckOut' : 'CheckIn';
-        record.status = newStatus;
-        if (!record.location) {
-          record.location = this.selectedLocation; 
-        }
+    if (this.selectedLocation !== record.location) {
+      this.appService.errorMessage('Selected location does not match the record data.');
+      return;
+    }
+    if (this.selectedQty !== record.qty) {
+      this.appService.errorMessage('Selected quantity does not match the record data.');
+      return;
+    }  
+    if (this.selectedReceivedFrom && this.selectedReceivedFrom !== record.receivedFrom) {
+      this.appService.errorMessage('Selected "Received From" does not match the record data.');
+      return;
+    }
+    const newStatus = record.status === 'CheckIn' ? 'CheckOut' : 'CheckIn';
+    record.status = newStatus;
   
-        return {
-          InventoryID: record.inventoryId,
-          Location: record.location,
-          StatusID: newStatus === 'CheckIn' ? 1711 : 1712,
-          ReceivedFromID: record.receivedFromId,
-          LoginId: 1
-        };
-      })
+    const updateData = {
+      InvMovementDetails: [{
+        InventoryID: record.inventoryId,
+        Location: record.location,
+        StatusID: newStatus === 'CheckIn' ? 1711 : 1712,
+        ReceivedFromID: record.receivedFromId,
+        LoginId: 1
+      }]
     };
   
     console.log('Sending update data to API:', updateData);
@@ -205,14 +199,19 @@ export class AddCheckInoutComponent implements OnInit {
       .subscribe({
         next: (response) => {
           console.log('Inventory move status updated successfully:', response);
-          this.loadGridData();
-          this.clearRequest();
           this.cancel.emit(); 
         },
         error: (err) => {
           console.error('Error updating inventory move status:', err);
         }
       });
+  }
+  get checkInOutLabel(): string {
+    const record = this.gridDataResult.data[0]; 
+    if (!record) {
+      return 'Check in / Check out'; 
+    }
+    return record.status === 'CheckIn' ? 'Check Out' : 'Check In';
   }
   
 }

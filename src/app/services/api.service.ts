@@ -225,9 +225,8 @@ export class ApiService {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryCheckinCheckout/getInventoryCheckinCheckoutLocation`);
   }
 
-  getInventoryCheckinCheckout(lotNumber: string, location: number, employeeIds: number[]) {
-    const employeeIdsParam = employeeIds.map(String).join(','); // Convert number[] to string[] and join with commas
-    const url = `${API}v1/ise/inventory/inventoryCheckinCheckout/getInventoryCheckinCheckoutStatus?lotNumber=${lotNumber}&location=${location}&employeeIds=${employeeIdsParam}`;
+  getInventoryCheckinCheckout(lotNumber: string) {
+    const url = `${API}v1/ise/inventory/inventoryCheckinCheckout/getInventoryCheckinCheckoutStatus?lotNumber=${lotNumber}`;
     return this.httpClient.get(url);
   }
 
@@ -237,6 +236,10 @@ export class ApiService {
   
   getInventoryCheckinCheckoutLocations() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryCheckinCheckout/getInventoryCheckinCheckoutLocation`);
+  }
+  getLotStatus(lotNumber: string){
+    const url = `${API}v1/ise/inventory/inventoryCheckinCheckout/getCheckinCheckoutStatus?lotNumber=${lotNumber}`;
+    return this.httpClient.get(url);
   }
 
   //CombinedLots

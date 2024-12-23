@@ -69,6 +69,14 @@ export class EditInventoryHoldComponent implements OnInit {
     });
   }
 
+  columnMenuSettings: any = {
+    lock: false,
+    stick: false,
+    setColumnPosition: { expanded: true },
+    autoSizeColumn: true,
+    autoSizeAllColumns: true,
+  }
+
   openDialog(): void {
     this.isDialogOpen = true;
     this.selectedRowDat = null;
