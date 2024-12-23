@@ -206,7 +206,7 @@
         <kendo-label text="Lot Category: "></kendo-label>
         <kendo-combobox [data]="lotCategories" [(ngModel)]="lotCategorySelected" [textField]="'lotCategoryName'"
           [valueField]="'lotCategoryID'" [kendoDropDownFilter]="filterSettings" placeholder="Select" rounded="large"
-          style="width:auto"></kendo-combobox>
+          style="min-width: 300px; width: auto; max-width: 100%;"></kendo-combobox>
         <i class="k-ml-auto"></i>
         <button kendoButton type="button" rounded="large" themeColor="info" (click)="addDeviceRow()"
           [disabled]="isDisabled.addDevice">Add Device Row</button>
