@@ -442,6 +442,8 @@
       <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
         (click)="uploadFiles(upFiles)">Upload</button>
     </div>
+    <kendo-card class="card-blue card-full k-mt-4" *ngIf="gridDataHardware.length > 0 || gridDataMiscellaneous.length > 0 || gridDataDevice.length > 0">
+      <kendo-card-body class="card-flex">
     <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-4 k-mt-3">
       <kendo-label text="Customer / Employee">
         <kendo-combobox [data]="signatureTypes" [(ngModel)]="signatureTypeSelected" [textField]="'customerTypeName'"
@@ -456,19 +458,23 @@
       <kendo-label text="Date & Time" *ngIf="Signaturebase64Data">
         <kendo-dateinput format="eee dd MMMM yyyy, h:mm a" [value]="signatureDate" class="k-center"></kendo-dateinput>
       </kendo-label>
+
+      <kendo-label text="Signature">
+        <!-- <kendo-textarea [(ngModel)]="signatureName" [rows]="3" placeholder="Name" name="signatureName" required
+          rounded="large"></kendo-textarea> -->
+        <kendo-signature #signature [(value)]="Signaturebase64Data" [smooth]="true" [maximizable]="false"
+          [hideLine]="true"></kendo-signature>
+        <!-- <input type="text" placeholder="Name" class="k-w-full" kendoTextBox [(ngModel)]="signatureName"
+          name="signatureName" required> -->
+      </kendo-label>
       <span style="margin-left: auto;"></span>
     </div>
+  </kendo-card-body>
+</kendo-card>
 
   </kendo-pdf-export>
   <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
-    <kendo-label text="Signature">
-      <!-- <kendo-textarea [(ngModel)]="signatureName" [rows]="3" placeholder="Name" name="signatureName" required
-        rounded="large"></kendo-textarea> -->
-      <kendo-signature #signature [(value)]="Signaturebase64Data" [smooth]="true" [maximizable]="false"
-        [hideLine]="true"></kendo-signature>
-      <!-- <input type="text" placeholder="Name" class="k-w-full" kendoTextBox [(ngModel)]="signatureName"
-        name="signatureName" required> -->
-    </kendo-label>
+
     <span style="margin-left: auto;"></span>
     <!-- <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
     (click)="testAddReceipt()">Test</button> -->
