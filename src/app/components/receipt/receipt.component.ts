@@ -1151,4 +1151,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
   }
 
+  onCountUIChange(value: any): string {
+
+    // Return the UI value without leading zeros
+    return value.replace(/^0+/, '');
+  }
+
 }
