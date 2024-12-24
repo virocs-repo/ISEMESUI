@@ -544,3 +544,37 @@ export interface KeyValueData {
   Name: string;
 }
 
+// Roles
+export interface AppMenu {
+  appMenuID: number;
+  menuTitle: 'Receiving Menu' | "Hold Menu" | "Shipping Menu";
+  navigationUrl: string;
+  description: string;
+  appFeatureID: number;
+  parentID: number;
+  appMenuIndex: number;
+  sequenceNumber: number;
+  active: boolean;
+  // custom
+  appFeatures: AppFeature[];
+}
+export interface AppFeature {
+  appMenuId: number;
+  appFeatureId: number;
+  featureID: number;
+  featureName: "Receiving Add" | "Receiving Edit" | "Receiving View" | "Receiving Void" |
+  "Hold Edit" | "Hold View" |
+  "Shipping Add" | "Shipping Edit" | "Shipping View" | "Shipping Void"
+  active: boolean;
+  // custom
+  appFeatureFields: AppFeatureField[]
+}
+export interface AppFeatureField {
+  appFeatureID: number;
+  featureFieldId: number;
+  featureName: string | null;
+  featureFieldName: string;
+  active: boolean;
+  isReadOnly: boolean;
+  isWriteOnly: boolean;
+}

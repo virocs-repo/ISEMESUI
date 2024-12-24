@@ -45,13 +45,26 @@
     (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
     <kendo-grid-column field="receiptID" title="Receipt ID"></kendo-grid-column>
     <kendo-grid-column field="customerType" title="Receive From"></kendo-grid-column>
-    <kendo-grid-column field="customerVendor" title="Customer / Vendor"></kendo-grid-column>
-    <kendo-grid-column field="receivedOnBehalf" title="Received on Behalf"></kendo-grid-column>
+    <kendo-grid-column field="customerVendor" title="Customer / Vendor">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.customerVendor">{{dataItem.customerVendor}}</a>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="receivedOnBehalf" title="Received on Behalf">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.receivedOnBehalf">{{dataItem.receivedOnBehalf}}</a>
+      </ng-template>
+    </kendo-grid-column>
     <kendo-grid-column field="receivingFacility" title="Receiving Facility"></kendo-grid-column>
-    <kendo-grid-column field="deliveryMode" title="Delivery Method"></kendo-grid-column>
+    <kendo-grid-column field="deliveryMode" title="Delivery Method">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.deliveryMode">{{dataItem.deliveryMode}}</a>
+      </ng-template>
+    </kendo-grid-column>
     <kendo-grid-column field="mailStatus" title="Mail Status"></kendo-grid-column>
     <kendo-grid-column field="receivingStatus" title="Receiving Status"></kendo-grid-column>
     <kendo-grid-column field="receiptType" title="Receipt Type"></kendo-grid-column>
+    <kendo-grid-column field="trackingNumber" title="Tracking/AWB#"></kendo-grid-column>
     <kendo-grid-column field="active" title="Active" filter="boolean">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="k-d-flex">
