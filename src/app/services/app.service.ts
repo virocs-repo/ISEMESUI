@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { HardwareType, MasterData, ShipmentCategory, ShipmentType, UserData } from './app.interface';
+import { AppFeature, AppFeatureField, AppMenu, HardwareType, MasterData, ShipmentCategory, ShipmentType, UserData } from './app.interface';
 import { NotificationService } from '@progress/kendo-angular-notification';
 import * as moment from 'moment';
 
@@ -17,35 +17,6 @@ interface MainMenuItem {
   navigationUrl: string
   feature: Array<Feature>
   loginId: number;
-}
-interface AppMenu {
-  appMenuID: number;
-  menuTitle: 'Receiving Menu' | "Hold Menu" |"Shipping Menu";
-  navigationUrl: string;
-  description: string;
-  appFeatureID: number;
-  parentID: number;
-  appMenuIndex: number;
-  sequenceNumber: number;
-  active: boolean;
-}
-interface AppFeature {
-  appMenuId: number;
-  appFeatureId: number;
-  featureID: number;
-  featureName: "Receiving Add" | "Receiving Edit" | "Receiving View" | "Receiving Void" |
-  "Hold Edit" | "Hold View" |
-  "Shipping Add" | "Shipping Edit" | "Shipping View" | "Shipping Void"
-  active: boolean;
-}
-interface AppFeatureField {
-  appFeatureID: number;
-  featureFieldId: number;
-  featureName: string | null;
-  featureFieldName: string;
-  active: boolean;
-  isReadOnly: boolean;
-  isWriteOnly: boolean;
 }
 
 interface UserPreferences {
@@ -104,7 +75,7 @@ export class AppService {
       receiving: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
       shipping: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
       combolot: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
-      Invmove:{ isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() }
+      Invmove: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() }
     }
   hardwareTypes: HardwareType[] = []
   userData: UserData = { email: '', name: '', firstName: '' }
@@ -154,6 +125,16 @@ export class AppService {
     this.initPreferences()
   }
   private initPreferences() {
+    const roles = this.userPreferences?.roles;
+    // common logic, no need to map it on every component
+    if (roles) {
+      roles.appMenus.forEach(am => {
+        am.appFeatures = roles.appFeatures.filter(af => am.appMenuID == af.appMenuId);
+        am.appFeatures.forEach(af => {
+          af.appFeatureFields = roles.appFeatureFields.filter(aff => aff.appFeatureID == af.appFeatureId)
+        })
+      })
+    }
     console.log(this.userPreferences);
     if (this.userPreferences?.token) {
       this.accessToken = this.userPreferences.token;

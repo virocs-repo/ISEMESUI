@@ -5,7 +5,7 @@ import { PDFExportComponent } from '@progress/kendo-angular-pdf-export';
 import { FileRestrictions } from '@progress/kendo-angular-upload';
 import { map, Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt, ReceiptLocation, SignatureTypes, Vendor } from 'src/app/services/app.interface';
+import { Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt, ReceiptLocation, SignatureTypes, Vendor } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
 enum TableType {
@@ -162,36 +162,48 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   isVisibleInterim = true;
   isDisableInterim = false;
   private initRoleBasedUI() {
-    const appMenu = this.appService.userPreferences?.roles.appMenus.find(am => am.menuTitle == "Hold Menu")
-    if (appMenu) {
-      this.appService.userPreferences?.roles.appFeatures.forEach(af => {
-        switch (af.featureName) {
-          case "Hold Edit":
-            this.isVisibleHoldComments = af.active;
-            break;
-          case "Hold View":
-            this.isDisableHoldComments = !af.active
-            break;
-          default:
-            break;
-        }
-      });
-      this.appService.userPreferences?.roles.appFeatureFields.forEach(af => {
-        switch (af.featureFieldName) {
-          case "ISFTZ":
-            this.isVisibleFTZ = af.active;
-            this.isDisableFTZ = !af.isWriteOnly;
-            break;
-          case "ISInterim":
-            this.isVisibleInterim = af.active
-            this.isDisableInterim = !af.isWriteOnly;
-            break;
-          default:
-            break;
-        }
-      });
+    const appMenu = this.appService.userPreferences?.roles.appMenus.find(am => am.menuTitle == "Receiving Menu");
+    if (!appMenu) {
+      console.error('No appMenus found');
+      return;
+    }
+    if (this.appService.sharedData.receiving.isEditMode) {
+      // edit mode
+      const appFeatureFields = appMenu.appFeatures.find(af => af.featureName == "Receiving Edit")?.appFeatureFields
+      if (appFeatureFields) {
+        this.initInputFields(appFeatureFields);
+      }
+    } else if (this.appService.sharedData.receiving.isViewMode) {
+      // view mode
+      // in view mode all the field are disabled
+    } else {
+      // add mode
+      const appFeatureFields = appMenu.appFeatures.find(af => af.featureName == "Receiving Add")?.appFeatureFields
+      if (appFeatureFields) {
+        this.initInputFields(appFeatureFields);
+      }
     }
   }
+  private initInputFields(appFeatureFields: AppFeatureField[]) {
+    appFeatureFields.forEach(aff => {
+      switch (aff.featureFieldName) {
+        case "ISFTZ":
+          this.isVisibleFTZ = aff.active;
+          this.isDisableFTZ = !aff.isWriteOnly;
+          break;
+        case "ISInterim":
+          this.isVisibleInterim = aff.active
+          this.isDisableInterim = !aff.isWriteOnly;
+          break;
+        case "ReceiptHold":
+          this.isDisableHoldComments = !aff.isWriteOnly
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
   private init() {
     if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
       const dataItem = this.appService.sharedData.receiving.dataItem;
