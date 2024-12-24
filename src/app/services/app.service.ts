@@ -127,14 +127,14 @@ export class AppService {
   private initPreferences() {
     const roles = this.userPreferences?.roles;
     // common logic, no need to map it on every component
-    if (roles) {
+ /*    if (roles) {
       roles.appMenus.forEach(am => {
         am.appFeatures = roles.appFeatures.filter(af => am.appMenuID == af.appMenuId);
         am.appFeatures.forEach(af => {
           af.appFeatureFields = roles.appFeatureFields.filter(aff => aff.appFeatureID == af.appFeatureId)
         })
       })
-    }
+    } */
     console.log(this.userPreferences);
     if (this.userPreferences?.token) {
       this.accessToken = this.userPreferences.token;
