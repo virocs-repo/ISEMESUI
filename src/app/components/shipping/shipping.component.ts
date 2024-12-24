@@ -15,7 +15,7 @@ import { AppService } from 'src/app/services/app.service';
 export class ShippingComponent implements OnDestroy {
   readonly ICON = ICON;
   gridDataResult: GridDataResult = { data: [], total: 0 };
-  public pageSize = 10;
+  public pageSize = 25;
   public skip = 0;
   readonly customerTypes: CustomerType[] = this.appService.masterData.customerType;
   readonly subscription = new Subscription();

@@ -65,17 +65,44 @@
    
 <!--       <kendo-grid-column field="receiptID" title="receipt #"></kendo-grid-column>
       <kendo-grid-column field="customerVendorID" title="customerVendorID"  [hidden]="true" ></kendo-grid-column> -->
-      <kendo-grid-column field="inventoryID" title="inventoryID"></kendo-grid-column>
-      <kendo-grid-column field="lotNum" title="lotNum"></kendo-grid-column>
-      <kendo-grid-column field="qty" title="qty"></kendo-grid-column>
-      <kendo-grid-column field="checkInOutQty" title="checkInOutQty"></kendo-grid-column>
-      <kendo-grid-column field="area" title="area"></kendo-grid-column>
-      <kendo-grid-column field="wipLocation" title="wipLocation"></kendo-grid-column>
-      <kendo-grid-column field="customerName" title="customerName"></kendo-grid-column>
-      <kendo-grid-column field="receivedFromOrCheckOut" title="receivedFromOrCheckOut"></kendo-grid-column>
-      <kendo-grid-column field="checkInOutTime" title="checkInOutTime"></kendo-grid-column>
-      <kendo-grid-column field="systemCheckInOutPerson" title="systemCheckInOutPerson"></kendo-grid-column>
-      <kendo-grid-column field="currentLocation" title="currentLocation"></kendo-grid-column>
+      <kendo-grid-column field="inventoryID" title="InventoryID"></kendo-grid-column>
+      <kendo-grid-column field="lotNum" title="lotNum">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.lotNum">{{dataItem.lotNum}}</a>
+        </ng-template>
+
+      </kendo-grid-column>
+      <kendo-grid-column field="qty" title="Qty"></kendo-grid-column>
+      <kendo-grid-column field="checkInOutQty" title="CheckInOutQty"></kendo-grid-column>
+      <kendo-grid-column field="area" title="Area">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.area">{{dataItem.area}}</a>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="wipLocation" title="WipLocation">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.wipLocation">{{dataItem.wipLocation}}</a>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="customerName" title="CustomerName">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.customerName">{{dataItem.customerName}}</a>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="receivedFromOrCheckOut" title="ReceivedFromOrCheckOut"></kendo-grid-column>
+      <kendo-grid-column field="checkInOutTime" title="CheckInOutTime">
+
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.checkInOutTime">{{dataItem.checkInOutTime}}</a>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="systemCheckInOutPerson" title="SystemCheckInOutPerson"></kendo-grid-column>
+      <kendo-grid-column field="currentLocation" title="CurrentLocation">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.currentLocation">{{dataItem.currentLocation}}</a>
+        </ng-template>
+
+      </kendo-grid-column>
     </kendo-grid>
   </div>
   

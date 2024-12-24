@@ -39,12 +39,31 @@
 <!--       <kendo-grid-column field="receiptID" title="receipt #"></kendo-grid-column>
       <kendo-grid-column field="customerVendorID" title="customerVendorID"  [hidden]="true" ></kendo-grid-column> -->
       <kendo-grid-column field="comboLotID" title="Combo Lot#"></kendo-grid-column>
-      <kendo-grid-column field="comboName" title="Combo Name"></kendo-grid-column>
-      <kendo-grid-column field="customer" title="Customer"></kendo-grid-column>
+      <kendo-grid-column field="comboName" title="Combo Name"> 
+         <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.comboName">{{dataItem.comboName}}</a>
+      </ng-template></kendo-grid-column>
+      <kendo-grid-column field="customer" title="Customer">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.customer">{{dataItem.customer}}</a>
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column field="status" title="Status"></kendo-grid-column>
-      <kendo-grid-column field="iseLotNumber" title="Ise Lot#"></kendo-grid-column>
-      <kendo-grid-column field="customerLotNumber" title="Cus Lot#"></kendo-grid-column>
-      <kendo-grid-column field="deviceType" title="DeviceType"></kendo-grid-column>
+      <kendo-grid-column field="iseLotNumber" title="Ise Lot#">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.iseLotNumber">{{dataItem.iseLotNumber}}</a>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="customerLotNumber" title="Cus Lot#">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.customerLotNumber">{{dataItem.customerLotNumber}}</a>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="deviceType" title="DeviceType">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.deviceType">{{dataItem.deviceType}}</a>
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column field="isPrimaryAddress" title="IsPrimaryAddress"></kendo-grid-column>
     </kendo-grid>
   </div>

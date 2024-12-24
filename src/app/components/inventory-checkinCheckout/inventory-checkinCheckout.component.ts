@@ -12,7 +12,7 @@ import { ICON } from 'src/app/services/app.interface';
 export class InventorycheckinCheckoutComponent implements OnInit{
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
   readonly ICON = ICON
-  public pageSize = 10;
+  public pageSize = 25;
   public skip = 0;
   private originalData: any[] = []; 
  selectedRowIndex: number = -1;

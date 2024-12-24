@@ -31,12 +31,32 @@
           rounded="large"></kendo-combobox>
       </ng-template>
     </kendo-grid-column> -->
-    <kendo-grid-column field="shipmentNum" title="Shipment No."></kendo-grid-column>
-    <kendo-grid-column field="customerInfo" title="Customer"></kendo-grid-column>
-    <kendo-grid-column field="senderInfo" title="Sender"></kendo-grid-column>
-    <kendo-grid-column field="shippmentInfo" title="Shipment Info"></kendo-grid-column>
+    <kendo-grid-column field="shipmentNum" title="Shipment No.">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.shipmentNum">{{dataItem.shipmentNum}}</a>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="customerInfo" title="Customer">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.customerInfo">{{dataItem.customerInfo}}</a>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="senderInfo" title="Sender">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.senderInfo">{{dataItem.senderInfo}}</a>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="shippmentInfo" title="Shipment Info">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.shippmentInfo">{{dataItem.shippmentInfo}}</a>
+      </ng-template>
+    </kendo-grid-column>
     <!-- <kendo-grid-column field="location" title="Location"></kendo-grid-column> -->
-    <kendo-grid-column field="currentLocation" title="Current Location"></kendo-grid-column>
+    <kendo-grid-column field="currentLocation" title="Current Location">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.currentLocation">{{dataItem.currentLocation}}</a>
+      </ng-template>
+    </kendo-grid-column>
   </kendo-grid>
 </div>
 

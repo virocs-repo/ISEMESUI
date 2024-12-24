@@ -27,7 +27,7 @@ export class AddCheckInoutComponent implements OnInit {
   public uniqueLocations: Array<string> = [];
   public uniqueReceivedFrom: Array<string> = [];
   public uniqueLotNumber: Array<string> = [];
-  public pageSize = 10;
+  public pageSize = 25;
   public skip = 0;
   public combinedData: any[] = [];
   employees: Employee[] = []

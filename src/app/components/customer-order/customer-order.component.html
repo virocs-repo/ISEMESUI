@@ -29,6 +29,11 @@
 
         <!-- Loop through the columns dynamically -->
         <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title">
+            <ng-template kendoGridCellTemplate let-dataItem>
+                <a class="minimal-text" [title]="dataItem?.[c.field] || ''">
+                  {{ dataItem?.[c.field] || '' }}
+                </a>
+              </ng-template>
 
 
         </kendo-grid-column>

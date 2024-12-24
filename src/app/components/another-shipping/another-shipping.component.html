@@ -51,12 +51,36 @@
     <kendo-grid-column field="shipmentId" title="Shipment#"></kendo-grid-column>
     <kendo-grid-column field="customerID" title="Customer#"></kendo-grid-column>
     <kendo-grid-column field="customerType" title="Customer Type"></kendo-grid-column>
-    <kendo-grid-column field="customer" title="Customer"></kendo-grid-column>
-    <kendo-grid-column field="shipmentNum" title="Shipment#"></kendo-grid-column>
-    <kendo-grid-column field="shipmentLocation" title="Shipment Location"></kendo-grid-column>
-    <kendo-grid-column field="shipmentMethod" title="Shipment Method"></kendo-grid-column>
-    <kendo-grid-column field="shipmentCategory" title="Shipment Category"></kendo-grid-column>
-    <kendo-grid-column field="currentLocation" title="Current Location"></kendo-grid-column>
+    <kendo-grid-column field="customer" title="Customer">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.customer">{{dataItem.customer}}</a>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="shipmentNum" title="Shipment#">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.shipmentNum">{{dataItem.shipmentNum}}</a>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="shipmentLocation" title="Shipment Location">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.shipmentLocation">{{dataItem.shipmentLocation}}</a>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="shipmentMethod" title="Shipment Method">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.shipmentMethod">{{dataItem.shipmentMethod}}</a>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="shipmentCategory" title="Shipment Category">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.shipmentCategory">{{dataItem.shipmentCategory}}</a>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="currentLocation" title="Current Location">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.currentLocation">{{dataItem.currentLocation}}</a>
+      </ng-template>
+    </kendo-grid-column>
     <kendo-grid-column field="status" title="Status"></kendo-grid-column>
   </kendo-grid>
 </div>

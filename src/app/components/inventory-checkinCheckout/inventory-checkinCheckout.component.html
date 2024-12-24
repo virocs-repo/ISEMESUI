@@ -24,8 +24,14 @@
         (pageChange)="pageChange($event)" 
         class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
 
-        <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title"></kendo-grid-column>
-        <ng-template kendoGridCellTemplate let-dataItem></ng-template>
+        <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title">
+        <ng-template kendoGridCellTemplate let-dataItem>
+            <a class="minimal-text" [title]="dataItem?.[c.field] || ''">
+              {{ dataItem?.[c.field] || '' }}
+            </a>
+          </ng-template>
+        </kendo-grid-column>
+      
     </kendo-grid>
 </div>
 <kendo-contextmenu (select)="onSelectRowActionMenu($event)" size="large"
