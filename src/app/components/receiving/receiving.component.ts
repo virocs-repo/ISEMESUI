@@ -17,7 +17,7 @@ export class ReceivingComponent implements OnDestroy {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
 
   readonly ICON = ICON;
-  public pageSize = 10;
+  public pageSize = 25;
   public skip = 0;
   public gridDataResult: GridDataResult = { data: [], total: 0 };
 

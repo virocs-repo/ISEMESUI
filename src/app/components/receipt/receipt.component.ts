@@ -547,6 +547,13 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Interim
+  public gridDataInterim: DeviceItem[] = [];
+  addInterimRow() {
+  }
+  saveInterim() {
+  }
+
   // addDevice
   public gridDataDevice: DeviceItem[] = [];
   saveDevices() {
