@@ -229,6 +229,67 @@ body {
 
 }
 
+// apply css if the screen is in beteen 768px and 1492px
+@media only screen and (min-width: 768px) and (max-width: 1492px) {
+  .header-desktop {
+    .app-logo {
+      width: 12rem !important;
+    }
+
+    .k-spacer {
+      flex-basis: 0 !important;
+    }
+
+    .nav-bar {
+      gap: 0.5rem;
+
+      button {
+        font-size: 10px;
+      }
+    }
+
+    .profile-avatar {
+      font-size: 10px;
+      gap: 0.5rem;
+
+      .avatar-img {
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 1096px) {
+  .header-desktop {
+    .app-logo-btn {
+      padding: 0;
+
+      .app-logo {
+        width: 9rem !important;
+      }
+    }
+
+    .nav-bar {
+      gap: 0;
+
+      button {
+        font-size: 8px;
+      }
+    }
+
+    .profile-avatar {
+      font-size: 8px;
+      gap: 0.5rem;
+
+      .avatar-img {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    }
+  }
+}
+
 .k-notification-group {
   z-index: 10002;
   right: 1rem !important;
