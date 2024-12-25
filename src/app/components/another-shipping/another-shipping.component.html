@@ -1,5 +1,5 @@
 <div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header">
-  <h2>Combined Lot</h2>
+  <h2>Another Shipping</h2>
   <div class="k-d-flex k-gap-3 k-ml-auto">
   <kendo-label text="Customer" class="k-w-full k-font-size-sm">
     <kendo-combobox id="customer" [data]="customers" [(ngModel)]="customerSelected"
@@ -35,10 +35,10 @@
       </div>
   </div> -->
   <div>
-    <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="fetchdata()">Search</button>
+    <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="fetchdata()">Search</button>
   </div>
   <div>
-    <button kendoButton rounded="full" themeColor="info" class="search-btn" (click)="openDialog()">Add</button>
+    <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
   </div>
 </div>
 </div>

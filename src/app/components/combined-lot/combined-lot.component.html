@@ -1,5 +1,10 @@
 <div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header">
     <h2>Combined Lot</h2>
+    <div class="k-d-flex k-align-items-center k-flex-1">
+      <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
+      <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search"
+            class="search-input k-w-full" rounded="full" (input)="onSearchMaster()" />
+    </div>
 
     <div class="k-d-flex k-flex-col k-gap-2 k-ml-auto">
       <div class="k-d-flex k-gap-3">
@@ -18,12 +23,6 @@
     <div>
       <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="onSearch()">Search</button>
     </div>
-
-    <!-- <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
-    <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()"
-      [disabled]="!isAddButtonEnabled">Add</button> -->
-
-    
     <div>
       <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
     </div>

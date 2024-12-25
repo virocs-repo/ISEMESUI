@@ -56,6 +56,10 @@ export class InventoryComponent implements OnInit {
   selectedRowIndex: number = -1;
   entityType: string[] = ['Customer' , 'Vendor'];  // Array to hold device types
   entityTypeSelected: string = 'Customer';  // Variable to hold the selected device type
+
+  public searchTerm: string = '';
+  private originalData: any[] = []; 
+
   constructor(private apiService: ApiService,public appService: AppService) { }
 
   ngOnInit(): void {
@@ -71,8 +75,11 @@ export class InventoryComponent implements OnInit {
 
     this.apiService.getallinventorydata().subscribe({
       next: (v: any) => {
-        this.gridDataResult.data = v;
-        this.gridDataResult.total = v.length
+/*         this.gridDataResult.data = v;
+        this.gridDataResult.total = v.length */
+
+        this.originalData = v;
+        this.pageData();
 
       },
       error: (v: any) => { }
@@ -105,8 +112,10 @@ export class InventoryComponent implements OnInit {
     receivingFacilityID = this.receiptLocationSelected?.receivingFacilityID;
     this.apiService.getinventorydata(custVendorID,from_date,to_date).subscribe({
       next: (v: any) => {
-        this.gridDataResult.data = v;
-        this.gridDataResult.total = v.length
+/*         this.gridDataResult.data = v;
+        this.gridDataResult.total = v.length */
+        this.originalData = v;
+        this.pageData();
 
       },
       error: (v: any) => { }
@@ -216,6 +225,41 @@ export class InventoryComponent implements OnInit {
     console.log("click");
     this.isDialogOpen1 = !this.isDialogOpen1
   }
+
+  onSearchMaster(): void {
+    this.skip = 0;  // Reset pagination when searching
+    this.pageData();  // Apply search and pagination
+  }
+  
+  pageData(): void {
+    /*    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
+   
+       // Paginate the data
+       const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+       this.gridDataResult.data = paginatedData;
+           this.gridDataResult.total =filteredData.length ; */
+   
+           const filteredData = this.filterData(this.originalData);
+       const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+       this.gridDataResult.data = filteredData;
+       this.gridDataResult.total = filteredData.length; 
+   
+      
+   
+      
+     } 
+     filterData(data: any[]): any[] {
+       if (!this.searchTerm) {
+         return data;
+       }
+       const term = this.searchTerm.toLowerCase();
+       return data.filter(item =>
+         Object.values(item).some(val => String(val).toLowerCase().includes(term))
+       );
+     }
+
+
+
 /*   onCellClick(event: any): void {
     console.log(event);
     switch (event.columnIndex) {

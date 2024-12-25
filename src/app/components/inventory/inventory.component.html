@@ -1,5 +1,10 @@
 <div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header">
   <h2>Inventory</h2>
+  <div class="k-d-flex k-align-items-center k-flex-1">
+    <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
+    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search"
+          class="search-input k-w-full" rounded="full" (input)="onSearchMaster()" />
+  </div>
   <div class="k-d-flex k-gap-3 k-ml-auto">
 
        <!--  <kendo-label text="Customer / Vendor" class="k-w-full k-font-size-sm">
@@ -28,6 +33,8 @@
             placeholder="Select" rounded="large"></kendo-combobox>
 
     </kendo-label> -->
+ 
+  
     <kendo-label text="Customer" class="k-w-full k-font-size-sm">
      
       <kendo-combobox id="customer" [data]="customer" [(ngModel)]="customerSelected"

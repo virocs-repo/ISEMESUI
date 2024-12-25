@@ -346,12 +346,12 @@ export class ApiService {
     return this.httpClient.get(url);
   }
   getOtherInventoryStatuses() {
-    debugger;
+   
     const url = `${API}v1/ise/otherinventory/getOtherInventoryStatus`;
     return this.httpClient.get(url);
   }
   getOtherInventoryShipment(otherInventoryId: number) {
-    debugger;
+ 
     const url = `${API}v1/ise/otherinventory/getOtherInventoryShipment?otherInventoryId=${otherInventoryId}`;
     return this.httpClient.get(url);
   }

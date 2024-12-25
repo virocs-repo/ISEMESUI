@@ -30,6 +30,8 @@ export class ShippingComponent implements OnDestroy {
   toDate: Date | null = null;    // Variable to store the selected 'to' date
   // fromDate = '';
   // toDate = '';
+  public searchTerm: string = '';
+  private originalData: any[] = []; 
 
   constructor(public appService: AppService, private apiService: ApiService) { }
 
@@ -85,8 +87,11 @@ export class ShippingComponent implements OnDestroy {
   private fetchdata() {
     this.apiService.getShippingData(this.fromDate, this.toDate).subscribe({
       next: (v: any) => {
-        this.gridDataResult.data = v;
-        this.gridDataResult.total = v.length
+   /*      this.gridDataResult.data = v;
+        this.gridDataResult.total = v.length */
+        this.originalData = v;
+        this.pageData();
+        
         for (let index = 0; index < this.gridDataResult.data.length; index++) {
           const element = this.gridDataResult.data[index];
           element.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == element.customerID)
@@ -199,4 +204,36 @@ export class ShippingComponent implements OnDestroy {
     // this.toDate = moment(this.range.end).format('MM-DD-YYYY');
     this.fetchdata()
   }
+
+  onSearchMaster(): void {
+    this.skip = 0;  // Reset pagination when searching
+    this.pageData();  // Apply search and pagination
+  }
+  
+  pageData(): void {
+    /*    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
+   
+       // Paginate the data
+       const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+       this.gridDataResult.data = paginatedData;
+           this.gridDataResult.total =filteredData.length ; */
+   
+           const filteredData = this.filterData(this.originalData);
+       const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+       this.gridDataResult.data = filteredData;
+       this.gridDataResult.total = filteredData.length; 
+   
+      
+   
+      
+     } 
+     filterData(data: any[]): any[] {
+       if (!this.searchTerm) {
+         return data;
+       }
+       const term = this.searchTerm.toLowerCase();
+       return data.filter(item =>
+         Object.values(item).some(val => String(val).toLowerCase().includes(term))
+       );
+     }
 }

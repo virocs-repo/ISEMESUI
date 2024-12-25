@@ -30,7 +30,7 @@ export class AnotherShippingComponent implements OnDestroy {
   statusSelected: KeyValueData | undefined;
 
   constructor(public appService: AppService, private apiService: ApiService, public datePipe: DatePipe) { 
-    debugger;
+   
     this.fromDate = new Date();
     this.fromDate.setMonth(this.fromDate.getMonth() - 2);
     this.toDate = new Date();
@@ -182,10 +182,10 @@ export class AnotherShippingComponent implements OnDestroy {
   }
   populateStatusCombo()
   {
-    debugger;
+    
     this.apiService.getOtherInventoryStatuses().subscribe({
       next: (data:any) => {
-        debugger;
+    
         this.statuses = data;
       },
       error : (e:any) => {}
@@ -193,10 +193,10 @@ export class AnotherShippingComponent implements OnDestroy {
   }
 
   getOtherInventoryShipment(otherInventoryId:number)  {
-    debugger;
+
     this.apiService.getOtherInventoryShipment(otherInventoryId).subscribe({
       next: (data:any) => {
-        debugger;
+      
       }
     })
   }
