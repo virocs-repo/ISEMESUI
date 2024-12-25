@@ -102,8 +102,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       isHoldCommentEnabled: !this.isHoldCommentEnabled
     }
   ];
-
-  expectedOrNot: 'Expected' | 'Unexpected' = 'Expected'
+  isExpected = false;
   isFTZ: boolean = false;
   isInterim: boolean = false;
   isDisabled: any = {
@@ -210,7 +209,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
       this.isFTZ = dataItem.isFTZ;
       this.isInterim = dataItem.isInterim;
-      this.expectedOrNot = dataItem.isExpected ? 'Expected' : 'Unexpected';
+      this.isExpected = dataItem.isExpected;
 
       this.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.customerTypeID);
       this.onChangeCustomerType();
@@ -423,7 +422,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       NoOfCartons: this.gridData[0].noOfCartons || 0,
       IsHold: this.gridData[0].isHold,
       HoldComments: this.gridData[0].holdComments || null,
-      IsExpected: this.expectedOrNot == 'Expected',
+      IsExpected: this.isExpected,
       IsInterim: this.isInterim,
       IsFTZ: this.isFTZ,
       MailStatus: null,
@@ -1036,7 +1035,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   onClearForm() {
     this.isFTZ = false;
     this.isInterim = false;
-    this.expectedOrNot = 'Unexpected';
+    this.isExpected = false;
 
     this.customerTypeSelected = undefined
     this.customerSelected = undefined
@@ -1175,5 +1174,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     // Return the UI value without leading zeros
     return value.replace(/^0+/, '');
   }
-
+  removeRow(gridData: Array<any>, index: number) {
+    gridData.splice(index, 1);
+  }
 }
