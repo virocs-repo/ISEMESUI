@@ -88,7 +88,7 @@ export interface HardwareItem {
   hardwareType: string;
   customerHardwareID: number | null;
   serialNumber: string;
-  expectedQty: number;
+  expectedQty: number | '';
   createdOn: string; // Assuming ISO 8601 format (e.g., "2024-08-28T03:20:22.767")
   modifiedOn: string; // Assuming ISO 8601 format
   active: boolean;
@@ -97,8 +97,11 @@ export interface HardwareItem {
   hardwareTypeID: number;
 
   recordStatus: "I" | "U";
+
+  // custom
   customerSelected: Customer | undefined
   hardwareTypeSelected: HardwareType | undefined
+  error: boolean
 }
 
 export const INIT_HARDWARE_ITEM: HardwareItem = {
@@ -110,13 +113,15 @@ export const INIT_HARDWARE_ITEM: HardwareItem = {
   customerHardwareID: null,
   customerName: '',
   serialNumber: '',
-  expectedQty: 0,
+  expectedQty: '',
   createdOn: '',
   modifiedOn: '',
   active: true,
   recordStatus: 'I',
+
   customerSelected: undefined,
-  hardwareTypeSelected: undefined
+  hardwareTypeSelected: undefined,
+  error: false
 }
 export interface MiscellaneousGoods {
   miscellaneousGoodsID: number | null;
@@ -130,6 +135,8 @@ export interface MiscellaneousGoods {
   modifiedOn: Date | string;
   active: boolean;
   recordStatus?: "I" | "U";
+
+  error?: boolean
 }
 export const INIT_MISCELLANEOUS_GOODS: MiscellaneousGoods = {
   miscellaneousGoodsID: null,
@@ -170,6 +177,8 @@ export interface DeviceItem {
   deviceTypeSelected: DeviceType | undefined
   lotCategoryID: number,
   lotIdentifierSelected: any | undefined
+  // custom
+  error?: boolean
 }
 export const INIT_DEVICE_ITEM: DeviceItem = {
   deviceID: 0,

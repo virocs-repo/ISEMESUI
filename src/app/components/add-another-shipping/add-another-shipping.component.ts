@@ -609,7 +609,7 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
         ReceiptID: r.receiptID,
         CustomerHardwareID: r.customerHardwareID,
         HardwareTypeID: r.hardwareTypeID || 10,
-        ExpectedQty: r.expectedQty,
+        ExpectedQty: r.expectedQty || 1,
         RecordStatus: r.recordStatus,
         Active: r.active,
         LoginId: this.appService.loginId

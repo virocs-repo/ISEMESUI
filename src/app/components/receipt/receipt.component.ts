@@ -168,7 +168,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
     if (this.appService.sharedData.receiving.isEditMode) {
       // edit mode
-      const appFeatureFields = appMenu.appFeatures.find(af => af.featureName == "Receiving Edit")?.appFeatureFields
+      const appFeatureFields = appMenu.appFeatures?.find(af => af.featureName == "Receiving Edit")?.appFeatureFields
       if (appFeatureFields) {
         this.initInputFields(appFeatureFields);
       }
@@ -177,7 +177,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       // in view mode all the field are disabled
     } else {
       // add mode
-      const appFeatureFields = appMenu.appFeatures.find(af => af.featureName == "Receiving Add")?.appFeatureFields
+      const appFeatureFields = appMenu.appFeatures?.find(af => af.featureName == "Receiving Add")?.appFeatureFields
       if (appFeatureFields) {
         this.initInputFields(appFeatureFields);
       }
@@ -596,7 +596,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       ]
       const isValid = !mandatoryFields.some(v => !v);
       if (!r.deviceTypeSelected) {
-        this.appService.errorMessage("Please select Device Type!")
+        r.error = true;
+        this.appService.errorMessage("Please select Device Type!");
         return;
       }
       // if (!r.dateCode) {
@@ -716,17 +717,20 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
     var isEmpty = filteredRecords.find(r => !r.customerHardwareID);
     if (isEmpty) {
+      isEmpty.error = true;
       this.appService.errorMessage("Please enter Customer Hardware ID");
       return;
     }
     var isEmpty = filteredRecords.find(r => !r.expectedQty);
     if (isEmpty) {
+      isEmpty.error = true;
       this.appService.errorMessage("Please enter expected quantity");
       return;
     }
     var isEmpty = filteredRecords.find(r => !r.hardwareTypeSelected);
     if (isEmpty) {
-      this.appService.errorMessage("Please enter hardware type");
+      isEmpty.error = true;
+      this.appService.errorMessage("Please select hardware type");
       return;
     }
     const HardwareDetails: PostHardware[] = [];
@@ -739,7 +743,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         ReceiptID: r.receiptID,
         CustomerHardwareID: r.customerHardwareID,
         HardwareTypeID: r.hardwareTypeID || 10,
-        ExpectedQty: r.expectedQty,
+        ExpectedQty: r.expectedQty || 1,
         RecordStatus: r.recordStatus,
         Active: r.active,
         LoginId: this.appService.loginId
@@ -763,6 +767,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
     const isEmpty = filteredRecords.find(r => !r.additionalInfo);
     if (isEmpty) {
+      isEmpty.error = true;
       this.appService.errorMessage("Please enter Additional Info");
       return;
     }

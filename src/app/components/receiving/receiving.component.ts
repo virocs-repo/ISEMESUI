@@ -113,9 +113,19 @@ export class ReceivingComponent implements OnDestroy {
       next: (v: any) => {
         this.gridDataResult.data = v;
         this.gridDataResult.total = v.length
+        // this.testReceiptEdit();
       },
       error: (v: any) => { }
     });
+  }
+  private testReceiptEdit() {
+    setTimeout(() => {
+      this.appService.sharedData.receiving.dataItem = this.gridDataResult.data[0]
+      this.appService.sharedData.receiving.isEditMode = true;
+      this.appService.sharedData.receiving.isViewMode = false;
+      // access the same in receipt component
+      this.openDialog()
+    }, 3000);
   }
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;

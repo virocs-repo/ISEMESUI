@@ -61,6 +61,8 @@ import { TreeViewModule } from '@progress/kendo-angular-treeview';
 import { IndicatorsModule } from '@progress/kendo-angular-indicators';
 import { InventoryMoveComponent } from './components/inventory-move/inventory-move.component';
 import { AddInventoryMoveComponent } from './components/add-inventory-move/add-inventory-move.component';
+import { TooltipsModule } from '@progress/kendo-angular-tooltip';
+
 
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1;
@@ -173,6 +175,7 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     ExcelModule,
     TreeViewModule,
     IndicatorsModule,
+    TooltipsModule,
 
   ],
   providers: [

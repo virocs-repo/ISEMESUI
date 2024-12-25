@@ -137,16 +137,15 @@
                 text="Email" class="k-w-full">
                 <kendo-textbox [(ngModel)]="email" placeholder="Enter your email" rounded="large"></kendo-textbox>
               </kendo-label>
+            </div>
+            <div class="k-d-flex k-align-items-center k-gap-4" kendoTooltip>
               <kendo-label *ngIf="deliveryModeSelected?.deliveryModeName=='Pickup'" text="Address"
                 class="k-relative k-w-full">
                 <b class="required-label"></b>
-                <!-- <kendo-autocomplete [data]="areaList" [(ngModel)]="address" placeholder="Enter details"
-              style="padding-right: 1.5rem;" [class.invalid]="!receipt.isValid.address"></kendo-autocomplete>
-            <img src="/assets/location-outline.svg" class="input-icon" width="18" /> -->
-                <!-- <kendo-textarea placeholder="Address" [rows]="3" resizable="vertical" [readonly]="true"></kendo-textarea> -->
                 <kendo-combobox [data]="addresses" [(ngModel)]="addressSelected" (ngModelChange)="onChangeAddress()"
                   [textField]="'fullAddress'" [valueField]="'addressId'" placeholder="Select"
-                  [kendoDropDownFilter]="filterSettings" rounded="large"></kendo-combobox>
+                  [kendoDropDownFilter]="filterSettings" rounded="large"
+                  [title]="addressSelected?.fullAddress || ''"></kendo-combobox>
               </kendo-label>
             </div>
             <!-- show kedo icon using src image -->
@@ -313,7 +312,8 @@
         <kendo-label text="Lot Category: "></kendo-label>
         <kendo-combobox [data]="lotCategories" [(ngModel)]="lotCategorySelected" [textField]="'lotCategoryName'"
           [valueField]="'lotCategoryID'" [kendoDropDownFilter]="filterSettings" placeholder="Select" rounded="large"
-          style="min-width: 300px; width: auto; max-width: 100%;"></kendo-combobox>
+          style="min-width: 300px; width: auto; max-width: 100%;" [class.ng-touched]="!lotCategorySelected"
+          required></kendo-combobox>
         <i class="k-ml-auto"></i>
         <button kendoButton type="button" rounded="large" themeColor="info" (click)="addDeviceRow()"
           [disabled]="isDisabled.addDevice">Add Device Row</button>
@@ -365,7 +365,8 @@
               <kendo-combobox [data]="deviceTypes" [(ngModel)]="dataItem.deviceTypeSelected"
                 [textField]="'deviceTypeName'" [valueField]="'deviceTypeID'" placeholder="Select"
                 [kendoDropDownFilter]="filterSettings" rounded="large"
-                [popupSettings]="{ appendTo: 'root',width: 'auto'  }"></kendo-combobox>
+                [popupSettings]="{ appendTo: 'root', width: 'auto'}" [class.ng-touched]="dataItem.error"
+                required></kendo-combobox>
             </ng-template>
           </kendo-grid-column>
           <kendo-grid-column field="lotOwner" title="Lot Owner">
@@ -376,7 +377,7 @@
                   rounded="large"></kendo-combobox>
               </ng-container>
               <ng-template #showValue>
-                <span>{{dataItem.lotOwner}}</span>
+                <a class="minimal-text" [title]="dataItem.lotOwner">{{dataItem.lotOwner}}</a>
               </ng-template>
             </ng-template>
           </kendo-grid-column>
@@ -418,7 +419,7 @@
                   rounded="large"></kendo-combobox>
               </ng-container>
               <ng-template #showValue>
-                <span [title]="dataItem.coo">{{ dataItem.coo }}</span>
+                <a class="minimal-text" [title]="dataItem.coo">{{ dataItem.coo }}</a>
               </ng-template>
             </ng-template>
           </kendo-grid-column>
@@ -467,7 +468,8 @@
                 <!-- <kendo-combobox [data]="customers" [(ngModel)]="dataItem.customerSelected" [textField]="'CustomerName'"
                   [valueField]="'CustomerID'" [kendoDropDownFilter]="filterSettings" placeholder="Select"
                   rounded="large"></kendo-combobox> -->
-                <kendo-textbox [(ngModel)]="dataItem.customerHardwareID" placeholder="Customer ID"></kendo-textbox>
+                <kendo-textbox [(ngModel)]="dataItem.customerHardwareID" placeholder="Customer ID"
+                  [class.ng-touched]="dataItem.error" required></kendo-textbox>
               </ng-container>
               <ng-template #showValue>
                 <span>{{dataItem.customerHardwareID}}</span>
@@ -477,8 +479,8 @@
           <kendo-grid-column field="expectedQty" title="Expected Qty" [width]="200">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
-                <kendo-numerictextbox [(ngModel)]="dataItem.expectedQty" [format]="'n0'"
-                  placeholder="Expected Qty"></kendo-numerictextbox>
+                <kendo-numerictextbox [(ngModel)]="dataItem.expectedQty" [format]="'n0'" placeholder="Expected Qty"
+                  [class.ng-touched]="dataItem.error" required></kendo-numerictextbox>
               </ng-container>
               <ng-template #showValue>
                 <span>{{dataItem.expectedQty}}</span>
@@ -491,7 +493,8 @@
               <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
                 <kendo-combobox [data]="hardwareTypes" [(ngModel)]="dataItem.hardwareTypeSelected"
                   [textField]="'hardwareType'" [valueField]="'hardwareTypeID'" placeholder="Select"
-                  [kendoDropDownFilter]="filterSettings" rounded="large"></kendo-combobox>
+                  [kendoDropDownFilter]="filterSettings" rounded="large" [class.ng-touched]="dataItem.error"
+                  required></kendo-combobox>
               </ng-container>
               <ng-template #showValue><span>{{dataItem.hardwareType}}</span></ng-template>
             </ng-template>
@@ -530,7 +533,8 @@
           <kendo-grid-column field="additionalInfo" title="Additional Info">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
-                <kendo-textbox [(ngModel)]="dataItem.additionalInfo" placeholder="Additional Info"></kendo-textbox>
+                <kendo-textbox [(ngModel)]="dataItem.additionalInfo" placeholder="Additional Info"
+                  [class.ng-touched]="dataItem.error" required></kendo-textbox>
               </ng-container>
               <ng-template #showValue>
                 <span>{{dataItem.additionalInfo}}</span>
