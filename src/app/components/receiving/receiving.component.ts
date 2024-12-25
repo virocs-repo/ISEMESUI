@@ -20,6 +20,7 @@ export class ReceivingComponent implements OnDestroy {
   public pageSize = 25;
   public skip = 0;
   public gridDataResult: GridDataResult = { data: [], total: 0 };
+  originalData: any[] = [];
 
   isAddButtonEnabled: boolean = true;
   isEditButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Edit")?.active ?? true;
@@ -111,6 +112,7 @@ export class ReceivingComponent implements OnDestroy {
   private fetchdata() {
     this.apiService.getReceiptdata(this.fromDate, this.toDate).subscribe({
       next: (v: any) => {
+        this.originalData = v;
         this.gridDataResult.data = v;
         this.gridDataResult.total = v.length
         // this.testReceiptEdit();
@@ -250,5 +252,21 @@ export class ReceivingComponent implements OnDestroy {
     // this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
     // this.toDate = moment(this.range.end).format('MM-DD-YYYY');
     this.fetchdata()
+  }
+  searchTerm = ''
+  onSearchMaster(): void {
+    this.skip = 0;  // Reset pagination when searching
+    const filteredData = this.filterData(this.originalData);
+    this.gridDataResult.data = filteredData;
+    this.gridDataResult.total = filteredData.length;
+  }
+  private filterData(data: any[]): any[] {
+    if (!this.searchTerm) {
+      return data;
+    }
+    const term = this.searchTerm.toLowerCase();
+    return data.filter(item =>
+      Object.values(item).some(val => String(val).toLowerCase().includes(term))
+    );
   }
 }

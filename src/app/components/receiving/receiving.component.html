@@ -1,6 +1,10 @@
 <div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header page-header-desktop">
   <h2>Receiving</h2>
   <i class="k-ml-auto"></i>
+  <kendo-label text="Search" class="k-font-size-sm">
+    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
+      rounded="full" (input)="onSearchMaster()" />
+  </kendo-label>
   <!-- <div class="search-box">
     <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
     <input kendoTextBox type="search" placeholder="Search" class="search-input" rounded="full" />
