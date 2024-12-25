@@ -70,22 +70,7 @@ export class InventorycheckinCheckoutComponent implements OnInit{
     });
   }
 
-  pageData(): void {
-    const filteredData = this.filterData(this.originalData);
-    const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
-    this.gridDataResult.data = filteredData;
-    this.gridDataResult.total = filteredData.length; 
-    }
 
-  filterData(data: any[]): any[] {
-    if (!this.searchTerm) {
-      return data;
-    }
-    const term = this.searchTerm.toLowerCase();
-    return data.filter(item =>
-      Object.values(item).some(val => String(val).toLowerCase().includes(term))
-    );
-  }
 
   onSearch(): void {
     this.skip = 0;
@@ -125,4 +110,37 @@ export class InventorycheckinCheckoutComponent implements OnInit{
       'highlighted-row': context.index === this.selectedRowIndex
     };
   }
+
+  
+  onSearchMaster(): void {
+    this.skip = 0;  // Reset pagination when searching
+    this.pageData();  // Apply search and pagination
+  }
+  
+  pageData(): void {
+    /*    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
+   
+       // Paginate the data
+       const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+       this.gridDataResult.data = paginatedData;
+           this.gridDataResult.total =filteredData.length ; */
+   
+           const filteredData = this.filterData(this.originalData);
+       const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+       this.gridDataResult.data = filteredData;
+       this.gridDataResult.total = filteredData.length; 
+   
+      
+   
+      
+     } 
+     filterData(data: any[]): any[] {
+       if (!this.searchTerm) {
+         return data;
+       }
+       const term = this.searchTerm.toLowerCase();
+       return data.filter(item =>
+         Object.values(item).some(val => String(val).toLowerCase().includes(term))
+       );
+     }
 }

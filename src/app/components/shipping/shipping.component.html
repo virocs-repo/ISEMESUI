@@ -6,11 +6,10 @@
     <input kendoTextBox type="search" placeholder="Search" class="search-input" rounded="full" />
     <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
   </div> -->
-  <div class="k-d-flex k-align-items-center k-flex-1">
-    <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
-    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search"
-          class="search-input k-w-full" rounded="full" (input)="onSearchMaster()" />
-  </div>
+  <kendo-label text="Search" class="k-font-size-sm">
+    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
+      rounded="full" (input)="onSearchMaster()" />
+  </kendo-label>
   <kendo-label text="Shipping Date" class="k-font-size-sm">
     <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
   </kendo-label>

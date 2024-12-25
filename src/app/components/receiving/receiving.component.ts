@@ -21,7 +21,7 @@ export class ReceivingComponent implements OnDestroy {
   public skip = 0;
   public gridDataResult: GridDataResult = { data: [], total: 0 };
   originalData: any[] = [];
-
+  public searchTerm: string = '';
   isAddButtonEnabled: boolean = true;
   isEditButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Edit")?.active ?? true;
   selectableSettings: any = {
@@ -113,8 +113,9 @@ export class ReceivingComponent implements OnDestroy {
     this.apiService.getReceiptdata(this.fromDate, this.toDate).subscribe({
       next: (v: any) => {
         this.originalData = v;
-        this.gridDataResult.data = v;
-        this.gridDataResult.total = v.length
+        this.pageData();
+     /*    this.gridDataResult.data = v;
+        this.gridDataResult.total = v.length */
         // this.testReceiptEdit();
       },
       error: (v: any) => { }
@@ -253,20 +254,36 @@ export class ReceivingComponent implements OnDestroy {
     // this.toDate = moment(this.range.end).format('MM-DD-YYYY');
     this.fetchdata()
   }
-  searchTerm = ''
+ 
   onSearchMaster(): void {
     this.skip = 0;  // Reset pagination when searching
-    const filteredData = this.filterData(this.originalData);
-    this.gridDataResult.data = filteredData;
-    this.gridDataResult.total = filteredData.length;
+    this.pageData();  // Apply search and pagination
   }
-  private filterData(data: any[]): any[] {
-    if (!this.searchTerm) {
-      return data;
-    }
-    const term = this.searchTerm.toLowerCase();
-    return data.filter(item =>
-      Object.values(item).some(val => String(val).toLowerCase().includes(term))
-    );
-  }
+  
+  pageData(): void {
+    /*    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
+   
+       // Paginate the data
+       const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+       this.gridDataResult.data = paginatedData;
+           this.gridDataResult.total =filteredData.length ; */
+   
+           const filteredData = this.filterData(this.originalData);
+       const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+       this.gridDataResult.data = filteredData;
+       this.gridDataResult.total = filteredData.length; 
+   
+      
+   
+      
+     } 
+     filterData(data: any[]): any[] {
+       if (!this.searchTerm) {
+         return data;
+       }
+       const term = this.searchTerm.toLowerCase();
+       return data.filter(item =>
+         Object.values(item).some(val => String(val).toLowerCase().includes(term))
+       );
+     }
 }

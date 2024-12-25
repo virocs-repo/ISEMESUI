@@ -1,6 +1,12 @@
 <div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header">
     <h2>Checkin/Checkout</h2>
     <i class="k-ml-auto"></i>
+   
+    <kendo-label text="Search" class="k-font-size-sm">
+      <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
+        rounded="full" (input)="onSearchMaster()" />
+    </kendo-label>
+
     <kendo-label text="Start Date" class="k-font-size-sm">
         <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
     </kendo-label>
@@ -9,6 +15,8 @@
     </kendo-label>
     <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="onSearch()">Search</button>
     <button kendoButton rounded="full" themeColor="info" style="padding: 0.3rem 2.2rem" (click)="openDialog()" kendoButton>Add</button>
+
+    
 </div>
 <div class="k-m-10" *ngIf="!false">
     <kendo-grid 
