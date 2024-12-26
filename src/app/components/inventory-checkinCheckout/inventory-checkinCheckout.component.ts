@@ -30,7 +30,6 @@ export class InventorycheckinCheckoutComponent implements OnInit{
   public columnData: any[] = [
     { field: 'lotNum', title: 'Lot#/Serial#' },
     { field: 'qty', title: 'Qty' },
-    { field: 'checkinCheckOutQTY', title: 'Checkin/CheckOut QTY' },
     { field: 'area', title: 'Area' },
     { field: 'wipLocation', title: 'WIP Location' },
     { field: 'customerName', title: 'Customer Name' },
