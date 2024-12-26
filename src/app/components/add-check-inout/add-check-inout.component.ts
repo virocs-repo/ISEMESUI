@@ -102,19 +102,19 @@ export class AddCheckInoutComponent implements OnInit {
 
   onLotNumberSelected(selectedLot: string): void {
     if (!selectedLot) {
-      this.clearRequest(); // Clears the grid and other form inputs
+      this.clearRequest();
       return;
     }
   
-    // Fetching status for the selected lot number
     this.apiService.getLotStatus(selectedLot).subscribe({
       next: (response: any) => {
         this.status = response[0]?.inventoryStatus;
-        if (this.status === 'CheckIn') {
+  
+        if (this.isCheckOutBehavior(this.status)) {
           this.selectedLocation = response.location || '';
           this.selectedQty = response.qty || null;
           this.employeesSelected = response.receivedFrom || [];
-        } else if (this.status === 'CheckOut') {
+        } else if (this.status === 'CheckIn') {
           this.returnToCustomer = false;
           this.employeesSelected = response.receivedFrom || [];
         }
@@ -124,12 +124,9 @@ export class AddCheckInoutComponent implements OnInit {
       }
     });
   
-    // Fetching inventory data for the selected lot number
     this.apiService.getInventoryCheckinCheckout(selectedLot).subscribe({
       next: (res: any) => {
         const uniqueRecords = this.getUniqueRecords(res);
-  
-        // Set the unique data to the combined data and update the grid
         this.combinedData = [...uniqueRecords];
         this.gridDataResult = {
           data: this.combinedData,
@@ -140,7 +137,7 @@ export class AddCheckInoutComponent implements OnInit {
         console.error('Error fetching inventory check-in/out data:', err);
       }
     });
-  }
+  }  
 
   getUniqueRecords(records: any[]): any[] {
     const uniqueMap = new Map();
@@ -169,21 +166,23 @@ export class AddCheckInoutComponent implements OnInit {
       this.appService.errorMessage('No record available to check in/out.');
       return;
     }
-
-    if (this.selectedQty !== record.qty) {
+  
+    // Perform qty validation only if the current status is not 'CheckIn'
+    if (record.status !== 'CheckIn' && this.selectedQty !== record.qty) {
       this.appService.errorMessage('Selected quantity does not match the record data.');
       return;
-    }  
-
-    const newStatus = record.status === 'CheckIn' ? 'CheckOut' : 'CheckIn';
+    }
+    const employeeIds = this.employeesSelected.map(emp => emp.EmployeeID); 
+    const employeeNames = this.employeesSelected.map(emp => emp.EmployeeName).join(', ');
+    const newStatus = this.isCheckOutBehavior(record.status) ? 'CheckIn' : 'CheckOut';
     record.status = newStatus;
   
     const updateData = {
       InvMovementDetails: [{
         InventoryID: record.inventoryId,
-        Location: record.location,
+        Location: this.selectedLocation,
         StatusID: newStatus === 'CheckIn' ? 1711 : 1712,
-        ReceivedFromID: record.receivedFromId,
+        ReceivedFromID: employeeIds[0],
         LoginId: 1
       }]
     };
@@ -199,13 +198,21 @@ export class AddCheckInoutComponent implements OnInit {
           console.error('Error updating inventory move status:', err);
         }
       });
-  }
+  }    
+  
   get checkInOutLabel(): string {
     const record = this.gridDataResult.data[0]; 
     if (!record) {
       return 'Check in / Check out'; 
     }
-    return record.status === 'CheckIn' ? 'Check Out' : 'Check In';
+    return this.isCheckOutBehavior(record.status) ? 'Check In' : 'Check Out';
   }
   
+
+private checkOutStatuses: string[] = ['CheckOut', 'Draft', 'Received', 'Shipped','Pending Receive','Pending Shipment'];
+
+isCheckOutBehavior(status: string | null): boolean {
+  return this.checkOutStatuses.includes(status || '');
+}
+
 }
