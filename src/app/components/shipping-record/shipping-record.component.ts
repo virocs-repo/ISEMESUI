@@ -109,7 +109,7 @@ export class ShippingRecordComponent implements OnDestroy {
   selectableSettings: SelectableSettings = {
     enabled: true,
     checkboxOnly: true,
-    mode: 'multiple'
+    mode: 'single'
   }
   columnMenuSettings: any = {
     lock: false,
@@ -128,6 +128,41 @@ export class ShippingRecordComponent implements OnDestroy {
     this.customerInformation = 'customerInformation'
   }
   gridSelectedKeys: number[] = [];
+  shipItem() {
+    if (!this.gridSelectedKeys) {
+      this.appService.errorMessage('Please select atleast one record');
+      return;
+    }
+    if (this.gridSelectedKeys && this.gridSelectedKeys.length != 1) {
+      this.appService.errorMessage("Please select only one record");
+      return;
+    }
+    const sd = this.shipmentDetails.find(s => s.inventoryID == this.gridSelectedKeys[0])
+    if (!sd) {
+      return;
+    }
+    const dataItem: Shipment = this.appService.sharedData.shipping.dataItem;
+    const body = { ...sd, ...dataItem }
+    this.appService.isLoading = true;
+    this.apiService.createShipment(body).subscribe({
+      next: (res: any) => {
+        this.appService.isLoading = false;
+        this.appService.successMessage(MESSAGES.DataSaved);
+        this.onClose.emit();
+      },
+      error: (e) => {
+        this.appService.isLoading = false;
+        const eo = e.error[0];
+        let m = 'Something went wrong! Please try again';
+        if (eo && eo.text) {
+          m = eo.text;
+        } else if (e.error.title) {
+          m = e.error.title;
+        }
+        this.appService.errorMessage(m)
+      }
+    });
+  }
   saveShipment() {
     if (!this.customerSelected) {
       this.appService.errorMessage('Please select customer');

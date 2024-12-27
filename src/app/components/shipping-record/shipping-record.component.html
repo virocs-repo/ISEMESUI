@@ -89,11 +89,11 @@
         title="Shipment Line Item ID"></kendo-grid-column>
       <kendo-grid-column field="iseLotNum" title="ISE Lot#"></kendo-grid-column>
       <kendo-grid-column field="goodsType" title="Device Family"></kendo-grid-column>
-      <kendo-grid-column field="partNum" title="Device">
+      <!-- <kendo-grid-column field="partNum" title="Device">
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.partNum">{{dataItem.partNum}}</a>
         </ng-template>
-      </kendo-grid-column>
+      </kendo-grid-column> -->
       <kendo-grid-column field="currentQty" title="Current Qty"></kendo-grid-column>
       <kendo-grid-column field="shipmentQty" title="Shipment Qty"></kendo-grid-column>
       <kendo-grid-column field="shipmentType" title="Shipment Type" [width]="230">
@@ -108,6 +108,36 @@
           <a class="minimal-text" [title]="dataItem.address">{{dataItem.address}}</a>
         </ng-template>
       </kendo-grid-column>
+      <kendo-grid-column field="toName" title="To Name">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.toName">{{dataItem.toName}}</a>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="toStreet1" title="To Street">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.toStreet1">{{dataItem.toStreet1}}</a>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="toCity" title="To City">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.toCity">{{dataItem.toCity}}</a>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="toState" title="To State">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.toState">{{dataItem.toState}}</a>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="toZip" title="To Zip">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.toZip">{{dataItem.toZip}}</a>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="toCountry" title="To Country">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.toCountry">{{dataItem.toCountry}}</a>
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column *ngIf="isEditMode" field="additionalInfo" title="Additional Info"></kendo-grid-column>
     </kendo-grid>
   </div>
@@ -115,6 +145,8 @@
     <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem"
       [disabled]="isDisabled.clearBtn" (click)="clearForm()">Clear</button>
     <button kendoButton type="button" rounded="full" themeColor="info" class="k-w-25" [disabled]="isDisabled.shipBtn"
-      (click)="saveShipment()">Ship</button>
+      (click)="shipItem()">Ship</button>
+    <button kendoButton type="button" rounded="full" themeColor="success" class="k-w-25" [disabled]="isDisabled.shipBtn"
+      (click)="saveShipment()">Submit</button>
   </div>
 </div>

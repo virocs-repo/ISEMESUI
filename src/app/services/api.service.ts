@@ -58,6 +58,9 @@ export class ApiService {
   postProcessShipment(body: unknown) {
     return this.httpClient.post(`${API}v1/ise/shipment/processShipment`, body);
   }
+  createShipment(body: unknown) {
+    return this.httpClient.post(`${API}v1/ise/shipment/create-shipment`, body);
+  }
   voidReceipt(receiptID: number, isActive: boolean) {
     return this.httpClient.post(`${API}v1/ise/inventory/voidReceipt?receiptID=${receiptID}`, {});
   }
@@ -85,7 +88,7 @@ export class ApiService {
     const headers = new HttpHeaders({ 'Content-Type': 'multipart/form-data', 'Accept': '*/*' });
 
     return this.httpClient.post(`${API}v1/ise/inventory/upload?inputfilename=${inputFilename}&reciptnumber=${receiptNumber}`,
-      formData, { headers});
+      formData, { headers });
   }
 
   // Shipping
@@ -233,11 +236,11 @@ export class ApiService {
   upsertInventoryCheckinCheckoutStatus(data: any, options: { responseType: 'text' }): Observable<any> {
     return this.httpClient.post(`${API}v1/ise/inventory/inventoryCheckinCheckout/UpsertInventoryCheckinCheckoutStatus`, data, { responseType: options.responseType });
   }
-  
+
   getInventoryCheckinCheckoutLocations() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryCheckinCheckout/getInventoryCheckinCheckoutLocation`);
   }
-  getLotStatus(lotNumber: string){
+  getLotStatus(lotNumber: string) {
     const url = `${API}v1/ise/inventory/inventoryCheckinCheckout/getCheckinCheckoutStatus?lotNumber=${lotNumber}`;
     return this.httpClient.get(url);
   }
@@ -292,14 +295,14 @@ export class ApiService {
     return this.httpClient.get(`${API}v1/ise/inventory/move/search`, { params });
   }
 
-  SearchInventoryMovewith_Lot( lotNumber?: string) {
+  SearchInventoryMovewith_Lot(lotNumber?: string) {
     let params = new HttpParams();
     if (lotNumber) {
       params = params.set('lotNumber', lotNumber);
     }
     return this.httpClient.get(`${API}v1/ise/inventory/move/lotinfo`, { params });
   }
-  SearchInventoryMovewith_Facilty( facilityId: any) {
+  SearchInventoryMovewith_Facilty(facilityId: any) {
     let params = new HttpParams();
     if (facilityId) {
       params = params.set('facilityId', facilityId);
@@ -307,7 +310,7 @@ export class ApiService {
     return this.httpClient.get(`${API}v1/ise/inventory/move/facility`, { params });
   }
 
-  postInventoryMovewith_Facilty( invId: number,area_FacilityId: number,receivingFacilityID: number) {
+  postInventoryMovewith_Facilty(invId: number, area_FacilityId: number, receivingFacilityID: number) {
     const url = `${API}v1/ise/inventory/move?inventoryId=${invId}&areaFacilityId=${area_FacilityId}&facilityId=${receivingFacilityID}`;
     return this.httpClient.post(url, null);
   }
@@ -336,7 +339,7 @@ export class ApiService {
   getHoldComments() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getHoldComments`);
   }
-  getCustomerDetails(inventoryID: number){
+  getCustomerDetails(inventoryID: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getCustomerDetails?inventoryID=${inventoryID}`);
   }
 
@@ -346,12 +349,12 @@ export class ApiService {
     return this.httpClient.get(url);
   }
   getOtherInventoryStatuses() {
-   
+
     const url = `${API}v1/ise/otherinventory/getOtherInventoryStatus`;
     return this.httpClient.get(url);
   }
   getOtherInventoryShipment(otherInventoryId: number) {
- 
+
     const url = `${API}v1/ise/otherinventory/getOtherInventoryShipment?otherInventoryId=${otherInventoryId}`;
     return this.httpClient.get(url);
   }

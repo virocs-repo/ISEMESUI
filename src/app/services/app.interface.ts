@@ -266,6 +266,15 @@ export interface ShipmentDetails {
   address: string;
   shipmentTypeSelected?: ShipmentType
   selected?: boolean
+
+  additionalInfo: null;
+  toCity: string;
+  toCountry: string;
+  toName: string;
+  toPhone: string;
+  toState: string;
+  toStreet1: string;
+  toZip: string;
 }
 export interface Shipment {
   shipmentId: number;
