@@ -176,11 +176,11 @@ export class AddCheckInoutComponent implements OnInit {
     const employeeNames = this.employeesSelected.map(emp => emp.EmployeeName).join(', ');
     const newStatus = this.isCheckOutBehavior(record.status) ? 'CheckIn' : 'CheckOut';
     record.status = newStatus;
-  
+    const location = newStatus === 'CheckOut' ? record.location : this.selectedLocation;
     const updateData = {
       InvMovementDetails: [{
         InventoryID: record.inventoryId,
-        Location: this.selectedLocation,
+        Location: location,
         StatusID: newStatus === 'CheckIn' ? 1711 : 1712,
         ReceivedFromID: employeeIds[0],
         LoginId: 1
