@@ -23,14 +23,14 @@ export class EditInventoryHoldComponent implements OnInit {
   customerName: string = '';
   device: string = '';
   public columnData = [
-    { field: 'holdType', title: 'Hold Type' },
-    { field: 'holdCode', title: 'Hold Code' },
+    { field: 'holdCode', title: 'Code' },
+    { field: 'reason', title: 'Reason' },
     { field: 'holdComments', title: 'Hold Comments' },
-    { field: 'holdDate', title: 'Hold Date' },
     { field: 'offHoldComments', title: 'Off Hold Comments' },
-    { field: 'offHoldDate', title: 'Off Hold Date' },
     { field: 'holdBy', title: 'Hold By' },
-    { field: 'offHoldBy', title: 'Off Hold By' }
+    { field: 'holdDate', title: 'Hold Date' },
+    { field: 'offHoldBy', title: 'Off Hold By' },
+    { field: 'offHoldDate', title: 'Off Hold Date' },
   ];
 
   isDialogOpen = false;
