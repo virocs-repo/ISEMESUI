@@ -1,4 +1,4 @@
-<div class="k-m-3 k-overflow-y-auto" style="height: 62vh;">
+<div class="k-m-3 k-overflow-y-auto" style="height: 68vh;">
   <kendo-card-body class="card-flex">
       <legend><b>Lot Info</b></legend>
       <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
@@ -9,17 +9,6 @@
               <span class="value-text">{{ lotNumber }}</span>
             </div>
             <div class="field-container">
-              <kendo-label [for]="'location'" class="label-text">Location:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</kendo-label>
-              <span class="value-text">{{ location }}</span>
-            </div>
-            <div class="field-container">
-              <kendo-label [for]="'noOfHolds'" class="label-text">No Of Holds:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</kendo-label>
-              <span class="value-text">{{ noOfHolds }}</span>
-            </div>
-          </div>
-        
-          <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
-            <div class="field-container">
               <kendo-label [for]="'customerName'" class="label-text">Customer:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
               <span class="value-text">{{ customerName }}</span>
             </div>
@@ -27,15 +16,9 @@
               <kendo-label [for]="'device'" class="label-text">Device:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
               <span class="value-text">{{ device }}</span>
             </div>
-            <div class="field-container">
-              <kendo-label [for]="''" class="label-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
-              <span class="value-text"><nav></nav> </span>
-            </div>
           </div>
         </div>
-                 
-    </kendo-card-body> 
-
+      </kendo-card-body> 
     <fieldset class="k-mt-3">
       <legend><b>Hold Details</b></legend>
       <div class="k-d-flex k-flex-column k-gap-3">
