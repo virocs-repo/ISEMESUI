@@ -1,4 +1,4 @@
-<div class="k-m-3 k-overflow-y-auto" style="height: 50vh;">
+<div class="k-m-3 k-overflow-y-auto" style="height: auto;">
   <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
     <div class="k-d-flex k-flex-column k-gap-3">
       <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
@@ -38,7 +38,8 @@
       [pageable]="true" 
       (pageChange)="pageChange($event)" 
       class="grid-header-sm grid-header-bold" 
-      [rowClass]="rowCallback">
+      [rowClass]="rowCallback"
+      style="height: 40vh;">
       <kendo-grid-column>
         <ng-template kendoGridCellTemplate let-dataItem>
           <button kendoButton (click)="openEditDialog(dataItem)" themeColor="info">Edit</button>
