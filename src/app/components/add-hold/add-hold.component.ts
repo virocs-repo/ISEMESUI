@@ -33,6 +33,7 @@ export class AddHoldComponent implements OnInit {
   offHoldBy: string | null = null;
   offHoldTime: string | null = null;
   inventoryXHoldId: number| null = null;
+  isReadOnly: boolean = false;
 
   constructor(private appService: AppService, private apiService: ApiService) {}
 
@@ -48,6 +49,7 @@ export class AddHoldComponent implements OnInit {
       this.resetForm();
       this.isHold = true;
     }
+    this.isReadOnly = !!this.offHoldComments;
   }
 
   updateHoldTime(): void {
@@ -68,6 +70,7 @@ export class AddHoldComponent implements OnInit {
       this.offHoldBy = this.selectedGridData[0]?.offHoldBy || null;
       this.offHoldTime = this.selectedGridData[0]?.offHoldTime || null;
     }
+    this.isReadOnly = !!this.offHoldComments;
   }
 
   fetchHoldCodes(): void {
@@ -115,16 +118,13 @@ export class AddHoldComponent implements OnInit {
   }  
 
   save(): void {
-    if (!this.selectedHoldComment || !this.selectedHoldType) {
-      this.appService.errorMessage('Please fill in the required fields.');
-      return;
-    }
+    
     const groupName = this.treeNodes?.[0]?.groupName || null;
     const payload = {
       InventoryXHoldId: this.inventoryXHoldId || null,
       InventoryId: this.inventoryId,
       Reason: this.reason,
-      HoldComments: this.selectedHoldComment,
+      HoldComments: this.holdComments,
       HoldType: this.selectedHoldType,
       GroupName: groupName,
       HoldCodeId: this.selectedIds[0] || null,

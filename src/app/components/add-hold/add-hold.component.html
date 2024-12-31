@@ -1,4 +1,4 @@
-<div class="k-m-3 k-overflow-y-auto" style="height: 68vh;">
+<div class="k-m-3 k-overflow-y-auto" style="height: auto">
   <kendo-card-body class="card-flex">
       <legend><b>Lot Info</b></legend>
       <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
@@ -24,7 +24,11 @@
       <div class="k-d-flex k-flex-column k-gap-3">
         <div class="k-d-flex k-align-items-center k-gap-3">
           <label class="k-label k-mb-0" style="min-width: 150px;">Hold:<b class="required-label"></b></label>
-          <kendo-checkbox [(ngModel)]="isHold" label="Hold"></kendo-checkbox>
+          <kendo-checkbox 
+            [(ngModel)]="isHold" 
+            label="Hold"
+            [disabled]="isReadOnly">
+          </kendo-checkbox>
         </div>
 
         <div class="k-d-flex k-flex-wrap k-gap-3">
@@ -34,7 +38,7 @@
               [(ngModel)]="selectedHoldType"
               [data]="holdTypes"
               placeholder="Select Hold Type"
-              [disabled]="!isHold">
+              [disabled]="!isHold || isReadOnly">
             </kendo-combobox>
           </div>
         </div>
@@ -59,7 +63,7 @@
           <kendo-textarea
             [(ngModel)]="reason"
             style="flex: 1;"
-            [disabled]="!isHold">
+            [disabled]="!isHold || isReadOnly">
           </kendo-textarea>
         </div>
 
@@ -67,10 +71,10 @@
           <label class="k-label" style="min-width: 150px;">Hold Comments:<b class="required-label"></b></label>
           <div>
             <kendo-combobox
-              [(ngModel)]="selectedHoldComment"
+              [(ngModel)]="holdComments"
               [data]="holdComment"
               placeholder="Select Hold Comments"
-              [disabled]="!isHold"
+              [disabled]="!isHold || isReadOnly"
               style="width: 400px;">
             </kendo-combobox>
           </div>
@@ -79,9 +83,9 @@
         <div class="k-d-flex k-align-items-center k-gap-3">
           <label class="k-label k-mb-0" style="min-width: 150px;">Hold Comments:<b class="required-label"></b></label>
           <kendo-textarea
-            [(ngModel)]="selectedHoldComment"
+            [(ngModel)]="holdComments"
             style="flex: 1;"
-            [disabled]="!isHold">
+            [disabled]="!isHold || isReadOnly">
           </kendo-textarea>
         </div>
 
@@ -89,7 +93,7 @@
           <label class="k-label k-mb-0" style="min-width: 150px;">Off Hold Comments:<b class="required-label"></b></label>
           <kendo-textarea
             [(ngModel)]="offHoldComments"
-            [disabled]="isHold"
+            [disabled]="isHold || isReadOnly"
             style="flex: 1;">
           </kendo-textarea>
         </div>
