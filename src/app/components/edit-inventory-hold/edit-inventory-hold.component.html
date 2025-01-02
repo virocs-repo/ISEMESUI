@@ -14,9 +14,6 @@
           <kendo-label [for]="'device'" class="label-text">Device:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </kendo-label>
           <span class="value-text">{{ device }}</span>
         </div>
-      </div>
-    
-      <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
         <div class="field-container">
           <kendo-label [for]="'noOfHolds'" class="label-text">No Of Holds:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</kendo-label>
           <span class="value-text">{{ numberOfHolds }}</span>
@@ -40,9 +37,12 @@
       class="grid-header-sm grid-header-bold" 
       [rowClass]="rowCallback"
       style="height: 40vh;">
-      <kendo-grid-column>
+      <kendo-grid-column [width]="80">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <button kendoButton (click)="openEditDialog(dataItem)" themeColor="info">Edit</button>
+          <button kendoButton *ngIf="!dataItem.offHoldComments; else viewButtonTemplate" (click)="openEditDialog(dataItem)" themeColor="info">Edit</button>
+          <ng-template #viewButtonTemplate>
+            <button kendoButton (click)="openViewDialog(dataItem)" themeColor="primary">View</button>
+          </ng-template>
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title"></kendo-grid-column>

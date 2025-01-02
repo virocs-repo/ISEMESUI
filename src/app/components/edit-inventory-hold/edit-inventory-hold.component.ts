@@ -57,6 +57,18 @@ export class EditInventoryHoldComponent implements OnInit {
     });
   }
 
+  openViewDialog(dataItem: any): void {
+    this.apiService.getHoldDetails(dataItem.inventoryXHoldId).subscribe({
+      next: (data) => {
+        console.log('Fetched data for view:', data); 
+        this.selectedRowDat = data; 
+        this.isDialogOpen = true; 
+      },
+      error: (err) => console.error('Failed to fetch hold details for view:', err)
+    });
+  }
+  
+
   getInventoryDetails(inventoryID: number): void {
     this.apiService.getCustomerDetails(inventoryID).subscribe({
       next: (data: any) => {
