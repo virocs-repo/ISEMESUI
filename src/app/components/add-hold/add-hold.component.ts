@@ -65,10 +65,10 @@ export class AddHoldComponent implements OnInit {
       this.offHoldComments = this.selectedGridData[0]?.offHoldComments || '';
       this.isHold = !this.offHoldComments;
       this.inventoryXHoldId = this.selectedGridData[0]?.inventoryXHoldId;
-      this.holdBy = this.selectedGridData[0]?.holdBy || null;
-      this.holdTime = this.selectedGridData[0]?.holdTime || null;
+      this.holdBy = this.selectedGridData[0]?.createdBy || null;
+      this.holdTime = this.selectedGridData[0]?.createdOn || null;
       this.offHoldBy = this.selectedGridData[0]?.offHoldBy || null;
-      this.offHoldTime = this.selectedGridData[0]?.offHoldTime || null;
+      this.offHoldTime = this.selectedGridData[0]?.offHoldDate || null;
     }
     this.isReadOnly = !!this.offHoldComments;
   }
