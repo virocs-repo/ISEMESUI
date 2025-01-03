@@ -4,6 +4,8 @@ import { menuIcon, SVGIcon } from '@progress/kendo-svg-icons';
 import { ICON } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { MsalService } from '@azure/msal-angular';
+import { Client, ResponseType } from '@microsoft/microsoft-graph-client';
 
 @Component({
   selector: 'app-header',
@@ -22,7 +24,7 @@ export class HeaderComponent {
     { text: 'Settings', svgIcon: ICON.gearIcon },
     { text: 'Logout', svgIcon: ICON.logoutIcon },
   ];
-  constructor(public authService: AuthService, public appService: AppService) { }
+  constructor(private msalService: MsalService, public authService: AuthService, public appService: AppService) { }
 
   onSelectRowActionMenu(e: ContextMenuSelectEvent) {
     console.log(e);
@@ -30,6 +32,31 @@ export class HeaderComponent {
       case 'Logout':
         this.authService.logout();
         break;
+    }
+  }
+
+  ngOnInit(): void {
+   this.getProfilePicture();
+  }
+
+  async getProfilePicture() {
+    const accounts = await this.msalService.instance.getAllAccounts();
+    if(accounts.length > 0) {
+      const  accessToken = await this.msalService.instance.acquireTokenSilent({ 
+        scopes: ['user.read'],
+        account: accounts[0]
+        }).then(result => result.accessToken);
+      
+      const graphClient = Client.init({authProvider: (done) => {
+        done(null, accessToken);
+      }});
+
+      const photo = await graphClient.api('/me/photo/$value').responseType(ResponseType.BLOB).get(); 
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.img1 = e.target?.result as string;
+      };
+      reader.readAsDataURL(photo);
     }
   }
 }
