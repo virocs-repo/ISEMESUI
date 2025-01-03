@@ -20,12 +20,12 @@ export class InventoryHoldComponent implements OnInit {
   public gridDataResult: GridDataResult = { data: [], total: 0 };
   public columnData: any[] = [
     { field: 'iseLotNumber', title: 'Lot#/Serial#' },
-    { field: 'location', title: 'Location' },
-    { field: 'person', title: 'Person' },
-    { field: 'qty', title: 'Qty' },
-    { field: 'systemUser', title: 'System User' },
-    { field: 'goodsType', title: 'Goods Type' },
+    { field: 'customerName', title: 'Customer Name' },
+    { field: 'device', title: 'Device' },
     { field: 'status', title: 'Status' },
+    { field: 'commitSOD', title: 'CommitSOD' },
+    { field: 'holdDate', title: 'HoldDate' },
+    { field: 'elapsedTimeOfHold', title: 'ElapsedTimeOfHold' },
   ];
   public rowActionMenu: any[] = [
     { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
