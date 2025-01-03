@@ -181,9 +181,18 @@ export class ApiService {
   getallinventorydata() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventorydata/getdetails`);
   }
-  getallLotsdata() {
+ /*  getallLotsdata() {
     return this.httpClient.get(`${API}v1/ise/inventory/customerorder/invlotnums`);
-  }
+  } */
+  getallLotsdata(customerId?: number) {
+    let params = new HttpParams();
+    if (customerId) {
+        params = params.set('customerId', customerId.toString());
+    }
+
+    return this.httpClient.get(`${API}v1/ise/inventory/customerorder/invlotnums`, { params });
+}
+
 
   getallinventoryreportdata(): Observable<any[]> {
     return this.httpClient.get<any[]>(`${API}v1/ise/inventory/report/getallreport`);

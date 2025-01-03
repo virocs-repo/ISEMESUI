@@ -41,7 +41,7 @@ export class AddCombinedLotComponent implements OnDestroy {
 
   ngOnInit(): void {
 
-    this.getLotNumbers();
+    //this.getLotNumbers();
   
     if (this.appService.sharedData.combolot.isViewMode || this.appService.sharedData.combolot.isEditMode) {
    
@@ -161,6 +161,7 @@ export class AddCombinedLotComponent implements OnDestroy {
 
   onChangeCustomer() {
     if (this.customerSelected) {
+      this.getLotNumbers(this.customerSelected.CustomerID);
      /*  this.apiService.getShipmentInventories(this.customerSelected.CustomerID).subscribe({
         next: (v: any) => {
           
@@ -172,9 +173,12 @@ export class AddCombinedLotComponent implements OnDestroy {
     this.skip = event.skip;
   
   }
-  getLotNumbers(): void {
+  getLotNumbers(customerId?: number): void {
   
-    this.apiService.getallLotsdata().subscribe({
+    debugger;
+    this.allLotNumbers=[];
+    this.lotNumbers=[]
+    this.apiService.getallLotsdata(customerId).subscribe({
       next: (v: any) => {
         this.allLotNumbers = v; // Store the full list
         this.lotNumbers = [...this.allLotNumbers]; 
@@ -186,6 +190,14 @@ export class AddCombinedLotComponent implements OnDestroy {
     this.cancel.emit();  // Emit the cancel event when Cancel button is clicked
   }
   onFilter(value: string): void {
+
+    if (!this.customerSelected) {
+      this.allLotNumbers=[];
+      this.lotNumbers=[];
+
+      this.appService.errorMessage('Please select a customer.');
+      return;
+    }
     // Check if the filter input is empty
     if (value) {
         // Filter the allLotNumbers list based on the input
