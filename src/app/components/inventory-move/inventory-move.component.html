@@ -1,39 +1,34 @@
-<div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header page-header-desktop">
-    <h2 >Inventory Move</h2>
+<div class="k-d-flex k-align-items-center  k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
+    <h4>Inventory Move</h4>
+    <i class="k-ml-auto"></i>
   
- <!--    <div class="k-d-flex k-gap-4 k-align-items-center k-flex-1">
- 
-      <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
-      <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search"
-            class="k-w-auto k-font-size-sm"rounded="full" (input)="onSearchMaster()" />
-            
-      <kendo-label text="From Date" class="k-w-auto k-font-size-sm">
-        <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
-      </kendo-label>
-  
-      <kendo-label text="To Date" class="k-w-auto k-font-size-sm">
-        <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
-      </kendo-label>
-    </div> -->
-    <div class="k-d-flex k-gap-4 k-align-items-center k-flex-1">
+
+    <!-- <div class="k-d-flex k-gap-4 k-align-items-center k-flex-1"> -->
         <!-- Search Icon and Input -->
         <kendo-label text="Search" class="k-font-size-sm">
           <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
             rounded="full" (input)="onSearchMaster()" />
         </kendo-label>
       
-        <!-- From Date -->
-        <div class="k-d-flex k-align-items-center k-flex-1">
+
+        <kendo-label text="From Date" class="k-font-size-sm">
+          <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
+        </kendo-label>
+        <kendo-label text="To Date" class="k-font-size-sm">
+          <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
+        </kendo-label>
+     
+<!--         <div class="k-d-flex k-align-items-center k-flex-1">
           <label class="k-w-auto k-font-size-sm k-mr-2">From Date</label>
           <kendo-datepicker [format]="format" [(value)]="fromDate" class="k-w-full"></kendo-datepicker>
         </div>
       
-        <!-- To Date -->
+
         <div class="k-d-flex k-align-items-center k-flex-1">
           <label class="k-w-auto k-font-size-sm k-mr-2">To Date</label>
           <kendo-datepicker [format]="format" [(value)]="toDate" class="k-w-full"></kendo-datepicker>
-        </div>
-      </div>
+        </div> -->
+      
       
       
  
