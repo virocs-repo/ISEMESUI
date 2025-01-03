@@ -387,4 +387,21 @@ export class ApiService {
     const url = `${API}v1/ise/otherinventory/getAnotherInventoryLots?customerTypeId=${customerTypeId}&customerVendorId=${customerVendorId}`;
     return this.httpClient.get(url);
   }
+
+  //customer order with dates
+
+  getallCustomerOrderwithDates(fromDate?: Date, toDate?: Date) {
+    //v1/ise/inventory/customer/getallorder
+
+    let params = new HttpParams();
+
+    if (fromDate != null) {
+      params = params.set('fromDate', this.formatDate(fromDate));
+    }
+    if (toDate != null) {
+      params = params.set('toDate', this.formatDate(toDate));
+    }
+    return this.httpClient.get(`${API}v1/ise/inventory/customerorder/all`, { params });
+
+  }
 }
