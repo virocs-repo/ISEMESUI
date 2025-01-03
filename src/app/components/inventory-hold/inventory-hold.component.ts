@@ -18,6 +18,9 @@ export class InventoryHoldComponent implements OnInit {
   public isEditMode: boolean = true;
   public searchTerm: string = '';
   public gridDataResult: GridDataResult = { data: [], total: 0 };
+  format: string = 'yyyy-MM-dd'; 
+  fromDate: Date | null = null;
+  toDate: Date | null = null;
   public columnData: any[] = [
     { field: 'iseLotNumber', title: 'Lot#/Serial#' },
     { field: 'customerName', title: 'Customer Name' },
