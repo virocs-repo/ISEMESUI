@@ -20,7 +20,7 @@
   <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()"
     [disabled]="!isAddButtonEnabled">Add</button>
 </div>
-<div class="k-m-10">
+<div class="k-m-4">
   <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
     [pageSize]="pageSize" [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
     class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
