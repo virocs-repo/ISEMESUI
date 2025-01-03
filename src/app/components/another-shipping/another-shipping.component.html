@@ -1,17 +1,16 @@
-<div class="k-d-flex k-align-items-center k-gap-1 k-py-0 k-px-4 page-header">
-  <h4>Another Shipping</h4>
+<div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header">
   <div class="k-d-flex k-gap-3 k-ml-auto">
-  <kendo-label text="Customer" class="k-w-full k-font-size-sm">
+  <kendo-label text="Customer" class="k-w-full k-font-size-sm" [hidden]="true" >
     <kendo-combobox id="customer" [data]="customers" [(ngModel)]="customerSelected"
           [textField]="'CustomerName'" [valueField]="'CustomerID'" placeholder="Select" rounded="large"
           ></kendo-combobox>
 </kendo-label>
-<kendo-label text="Employee" class="k-w-full k-font-size-sm">
+<kendo-label text="Employee" class="k-w-full k-font-size-sm" [hidden]="true" >
   <kendo-combobox id="employee" [data]="employees" [(ngModel)]="employeeSelected"
         [textField]="'EmployeeName'" [valueField]="'EmployeeID'" placeholder="Select" rounded="large"
         ></kendo-combobox>
 </kendo-label>
-<kendo-label text="Status" class="k-w-full k-font-size-sm">
+<kendo-label text="Status" class="k-w-full k-font-size-sm" [hidden]="true" >
 <kendo-combobox id="status" [data]="statuses" [(ngModel)]="statusSelected"
       [textField]="'name'" [valueField]="'id'" placeholder="Select" rounded="large"
       ></kendo-combobox>
@@ -35,53 +34,27 @@
       </div>
   </div> -->
   <div>
-    <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="fetchdata()">Search</button>
+    <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="fetchdata()">Search</button>
   </div>
   <div>
-    <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
+    <button kendoButton rounded="full" themeColor="info" class="search-btn" (click)="addAnotherShipment()">Add</button>
   </div>
 </div>
 </div>
-<div class="k-m-4" *ngIf="!false">
+<div class="k-m-10" *ngIf="!false">
   <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
     [pageSize]="pageSize" [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
     class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
     [rowClass]="rowCallback">
     <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-    <kendo-grid-column field="shipmentId" title="Shipment#"></kendo-grid-column>
-    <kendo-grid-column field="customerID" title="Customer#"></kendo-grid-column>
+    <kendo-grid-column field="anotherShipmentID" title="anotherShipmentID" [hidden]="true" ></kendo-grid-column>
+    <kendo-grid-column field="requestor" title="Requestor"></kendo-grid-column>
+    <kendo-grid-column field="serviceType" title="Service Type"></kendo-grid-column>
     <kendo-grid-column field="customerType" title="Customer Type"></kendo-grid-column>
-    <kendo-grid-column field="customer" title="Customer">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.customer">{{dataItem.customer}}</a>
-      </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="shipmentNum" title="Shipment#">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.shipmentNum">{{dataItem.shipmentNum}}</a>
-      </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="shipmentLocation" title="Shipment Location">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.shipmentLocation">{{dataItem.shipmentLocation}}</a>
-      </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="shipmentMethod" title="Shipment Method">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.shipmentMethod">{{dataItem.shipmentMethod}}</a>
-      </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="shipmentCategory" title="Shipment Category">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.shipmentCategory">{{dataItem.shipmentCategory}}</a>
-      </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="currentLocation" title="Current Location">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.currentLocation">{{dataItem.currentLocation}}</a>
-      </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="status" title="Status"></kendo-grid-column>
+    <kendo-grid-column field="customerVendor" title="Customer/Vendor"></kendo-grid-column>
+    <kendo-grid-column field="shipTo" title="Ship To"></kendo-grid-column>
+    <kendo-grid-column field="recordStatus" title="RecordStatus"></kendo-grid-column>
+    <kendo-grid-column field="status" title="Status" [hidden]="true"></kendo-grid-column>
   </kendo-grid>
 </div>
 
@@ -91,7 +64,7 @@
 <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'78%'"
   class="dialog-round receipt-dialog">
   <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
-    <h2 class="k-m-0">Shipping Record</h2>
+    <h2 class="k-m-0">Another Shipping Record</h2>
     <small *ngIf="appService.sharedData.shipping.isViewMode">(View Mode)</small>
     <small *ngIf="appService.sharedData.shipping.isEditMode">(Edit Mode)</small>
     <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"

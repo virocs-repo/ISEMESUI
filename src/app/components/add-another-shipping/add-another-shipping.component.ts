@@ -5,16 +5,18 @@ import { PDFExportComponent } from '@progress/kendo-angular-pdf-export';
 import { FileRestrictions } from '@progress/kendo-angular-upload';
 import { map, Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt, ReceiptLocation, SignatureTypes, Vendor } from 'src/app/services/app.interface';
+import { INIT_ANOTHERSHIPDETAILS, AnotherShipDetails, INIT_OTHERSHIPPING_ITEM, AnotherShippingLineitem, KeyValueData, Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt, ReceiptLocation, SignatureTypes, Vendor } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 
-enum TableType {
-  Device = 'Device',
-  Hardware = 'Hardware',
-  Misc = 'Misc'
-}
+// enum TableType {
+//   Device = 'Device',
+//   Hardware = 'Hardware',
+//   Misc = 'Misc'
+// }
 enum ActionType {
-  Remove = 'Remove'
+  Remove = 'Remove',
+  Edit = 'Edit Data',
+  Void = 'Void Data'
 }
 
 @Component({
@@ -24,7 +26,7 @@ enum ActionType {
 })
 export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   readonly ICON = ICON;
-  readonly TableType = TableType;
+  //readonly TableType = TableType;
   @Output() onClose = new EventEmitter<void>();
   @Output() onRestart = new EventEmitter<void>();
 
@@ -38,34 +40,20 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   readonly deliveryMode: DeliveryMode[] = this.appService.masterData.deliveryMode;
   deliveryModeSelected: DeliveryMode | undefined;
 
-  readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
-  customerSelected: Customer | undefined;
-  readonly vendors: Vendor[] = this.appService.masterData.entityMap.Vendor;
-  vendorSelected: Vendor | undefined;
   behalfOfCusotmerSelected: Customer | undefined;
   behalfOfVendorSelected: Vendor | undefined;
   contactPhone = '';
   contactPerson = ''
 
-  signatureName = ''
-  readonly signatureTypes: SignatureTypes[] = [
-    { customerTypeID: 1, customerTypeName: 'Customer' }, { customerTypeID: 3, customerTypeName: 'Employee' },
-  ]
-  signatureEmployeeSelected: Employee | undefined;
-  signatureTypeSelected: SignatureTypes | undefined;
-  signatureDate: Date = new Date();
-  expectedDateTime: Date = new Date();
-  format = "MM/dd/yyyy HH:mm";
-
   name: string = '';
-  email: string = '';
+  //email: string = '';
   comments: string = '';
   deliveryComments: string = '';
   address: any;
   readonly addresses: Address[] = this.appService.masterData.addresses;
   addressSelected: Address | undefined;
-  readonly countries = this.appService.masterData.country
-  countrySelected: Country | undefined;
+  
+  
   readonly couriers = this.appService.masterData.courierDetails
   courierSelected: CourierDetails | undefined
   readonly lotCategories = this.appService.masterData.lotCategory;
@@ -88,44 +76,65 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   isHoldCommentEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
     featureField?.find(o => o.featureFieldName == "HoldComments")?.active ?? true;
 
-  gridData = [
-    {
-      noOfCartons: undefined,
-      isHold: false,
-      holdComments: "",
-      isHoldCheckboxEnabled: !this.isHoldCheckboxEnabled,
-      isHoldCommentEnabled: !this.isHoldCommentEnabled
-    }
-  ];
-
   expectedOrNot: 'Expected' | 'Unexpected' = 'Expected'
   isFTZ: boolean = false;
   isInterim: boolean = false;
   isDisabled: any = {
-    clearReceipt: false,
-    addReceipt: false,
-    addDevice: false,
-    addHardware: false,
-    addMisc: false,
-    cancelBtn: false
+    clearAnotherShipping: false,
+    addAnotherShipping: false,
+    addLineIem: false,
   }
-  hardware = {
-    isItemsRemoved: false
-  }
+  
   tracking = ''
-  customVendorName: string | undefined;
-  readonly hardwareTypes = this.appService.hardwareTypes;
+  
   readonly subscription = new Subscription()
   readonly filterSettings: DropDownFilterSettings = {
     caseSensitive: false,
     operator: 'contains'
   };
 
+  recipientName: string = "";
+  phoneNumber: string = "";
+  requestorEmail:string = "";
+  accountNumber:number = 0;
+  requestorSelected: Employee | undefined;
+  serviceTypes: KeyValueData[] = [];
+  serviceTypeSelected: any | undefined;
+  requestorAddress:string = "RequestorAddress";
+  customerOrVendor: 'Customer' | 'Vendor' = 'Customer';
+  customerTypeID: number = 1; //by default customer
+  shipToAddress1:string = "";
+  shipToAddress2:string = "";
+  shipToCity:string = "";
+  shipToState:string = "";
+  shipToZip:string = "";
+  readonly countries: Country[] = this.appService.masterData.country
+  countrySelected: Country | undefined;
+  readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
+  customerSelected: Customer | undefined;
+  readonly vendors: Vendor[] = this.appService.masterData.entityMap.Vendor;
+  vendorSelected: Vendor | undefined;
+  shipToInstructions:string = "";
+  lotNumbers: any[] = [];
+  allLotNumbers: any[] = []; // F
+  anotherShipDetails: AnotherShipDetails = {
+    ...INIT_ANOTHERSHIPDETAILS
+  };
+  signatureName = ''
+  
+  readonly employees: Employee[] = this.appService.masterData.entityMap.Employee
+  signatureEmployeeSelected: Employee | undefined;
+  
+  expectedDateTime: Date = new Date();
+  format = "MM/dd/yyyy HH:mm";
+  public lineItemsGrid: AnotherShippingLineitem[] = [];
+  isViewOrEdit:boolean = false;
+
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
     this.init();
-    this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
+    this.subscription.add(this.appService.sharedData.anotherShipping.eventEmitter.subscribe((v) => {
       switch (v) {
         case 'canCloseDialog?':
           let closeDialog = false;
@@ -136,7 +145,7 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
             closeDialog = true
           }
           if (closeDialog) {
-            this.appService.sharedData.receiving.eventEmitter.emit('closeDialog');
+            this.appService.sharedData.anotherShipping.eventEmitter.emit('closeDialog');
           }
           break;
         default:
@@ -145,552 +154,273 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
     }))
   }
   ngOnDestroy(): void {
-    this.appService.sharedData.receiving.isEditMode = false
-    this.appService.sharedData.receiving.isViewMode = false;
+    this.appService.sharedData.anotherShipping.isEditMode = false
+    this.appService.sharedData.anotherShipping.isViewMode = false;
     this.subscription.unsubscribe();
   }
+
   private init() {
-    if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
-      const dataItem = this.appService.sharedData.receiving.dataItem;
+    debugger;
+    this.getServiceTypes();
 
-      this.isFTZ = dataItem.isFTZ;
-      this.isInterim = dataItem.isInterim;
-      this.expectedOrNot = dataItem.isExpected ? 'Expected' : 'Unexpected';
-
-      this.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.customerTypeID);
-      this.onChangeCustomerType();
-      if (this.customerTypeSelected) {
-        if (this.customerTypeSelected.customerTypeName == 'Customer') {
-          this.customerSelected = this.customers.find((c) => c.CustomerID == dataItem.customerVendorID);
-          this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID == dataItem.behalfID);
-        } else {
-          this.vendorSelected = this.vendors.find((v) => v.VendorID == dataItem.customerVendorID);
-          this.behalfOfVendorSelected = this.vendors.find(v => v.VendorID == dataItem.behalfID);
-        }
-      }
-      this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.receivingFacilityID);
-
-      // this.employeesSelected = not coming in the respose
-      this.comments = dataItem.pmComments;
-      // auto select is diabled
-      this.deliveryModeSelected = this.deliveryMode.find(c => c.deliveryModeID == dataItem.deliveryModeID);
-      this.tracking = dataItem.trackingNumber || ''
-      if (dataItem.courierDetailID) {
-        this.courierSelected = this.couriers.find(c => c.courierDetailID == dataItem.courierDetailID)
-      }
-      if (dataItem.countryFromID) {
-        this.countrySelected = this.countries.find(c => c.countryID == dataItem.countryFromID)
-      }
-      this.expectedDateTime = new Date(dataItem.expectedDateTime);
-      this.deliveryComments = dataItem.mailComments;
-
-      this.addressSelected = this.addresses.find(a => a.addressId == dataItem.addressID)
-
-      this.gridData[0].noOfCartons = dataItem.noOfCartons
-      this.gridData[0].isHold = dataItem.isHold
-      this.gridData[0].holdComments = dataItem.holdComments
-
-      this.signatureTypeSelected = this.signatureTypes.find(c => c.customerTypeName == dataItem.signaturePersonType);
-      this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeID == dataItem.signaturePersonID)
-      this.signatureName = dataItem.signature
-      if (dataItem.signatureDate) {
-        this.signatureDate = new Date(dataItem.signatureDate);
-      }
-
-      // this.goodsTypeSelected = this.goodsType.find(c => c.goodsTypeID == dataItem.goodsTypeID);
-      this.address = dataItem.address
-      this.email = dataItem.email
-      this.contactPhone = dataItem.contactPhone
-      this.contactPerson = dataItem.contactPerson
-      this.fetchReceiptEmployees()
-      this.fetchData();
-    } else {
-      this.isDisabledGoodsType = true;
-    }
-    if (this.appService.sharedData.receiving.isViewMode) {
+    if (this.appService.sharedData.anotherShipping.isViewMode || this.appService.sharedData.anotherShipping.isEditMode) {
+      //this.appService.sharedData.anotherShipping.dataItem.anotherShipmentID = 1;
+      this.isViewOrEdit = true;
+      this.getOtherInventoryShipment(this.appService.sharedData.anotherShipping.dataItem.anotherShipmentID);
+    if (this.appService.sharedData.anotherShipping.isViewMode) {
       this.disabledAllBtns()
     }
   }
-  onChangeAddress() {
-    if (this.addressSelected) {
-      this.contactPhone = this.addressSelected.phone + ''
+  else {
+    this.isViewOrEdit = false;
+  }
+}
+private bindData(){
+
+  var customerVendorId:number;
+  if(this.anotherShipDetails.anotherShipmentID > 0) {
+    this.requestorSelected = this.employees.find((c) => c.EmployeeID === this.anotherShipDetails.requestorID);
+    this.requestorEmail = this.anotherShipDetails.email;
+    this.serviceTypeSelected = this.serviceTypes.find((c) => c.id === this.anotherShipDetails.serviceTypeID);
+    this.accountNumber = this.anotherShipDetails.accountNo;
+    this.shipToInstructions = this.anotherShipDetails.instructions;
+
+    this.recipientName = this.anotherShipDetails.recipientName;
+    this.phoneNumber = this.anotherShipDetails.phoneNo;
+    this.customerTypeID = this.anotherShipDetails.customerTypeID
+    if(this.customerTypeID == 1) {
+      this.customerOrVendor = 'Customer';
+      this.customerSelected = this.customers.find((c) => c.CustomerID === this.anotherShipDetails.behalfID);
+       customerVendorId = this.anotherShipDetails.behalfID;
+
     }
+    else {
+      this.customerOrVendor = 'Vendor';
+      this.vendorSelected = this.vendors.find((v) => v.VendorID == this.anotherShipDetails.customerVendorID);
+      customerVendorId = this.anotherShipDetails.customerVendorID;
+    }
+    this.shipToAddress1 = this.anotherShipDetails.address1;
+    this.shipToAddress2 = this.anotherShipDetails.address2;
+    this.shipToCity = this.anotherShipDetails.city;
+    this.shipToState = this.anotherShipDetails.state;
+    this.shipToZip = this.anotherShipDetails.zip;
+    this.countrySelected = this.countries.find(c => c.countryName === this.anotherShipDetails.country)
+    this.signatureEmployeeSelected = this.employees.find(c => c.EmployeeID === this.anotherShipDetails.approverID)
+
+
+    // this.signatureTypeSelected = this.signatureTypes.find(c => c.customerTypeName == dataItem.signaturePersonType);
+    // this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeID == dataItem.signaturePersonID)
+    // this.signatureName = dataItem.signature
+
+    // if (dataItem.signatureDate) {
+    //   this.signatureDate = new Date(dataItem.signatureDate);
+    // }
+
+    this.bindGridData(this.customerTypeID, customerVendorId);
+
+    
   }
-  private fetchData() {
-    this.fetchDataDevice();
-    this.fetchDataHardware();
-    this.fetchDataMiscellaneous();
+}
+
+bindGridData(customerTypeId:number, customerVendorId:number) {
+  this.apiService.getOtherInventoryLots(customerTypeId, customerVendorId).subscribe({
+    next: (v: any) => {
+      debugger;
+      this.allLotNumbers = v; // Store the full list
+      this.lotNumbers = [...this.allLotNumbers]; 
+
+      this.lineItemsGrid = this.anotherShipDetails.anotherShipLineItems;
+      this.lineItemsGrid.forEach((d, index) => {
+       d.lotNumberSelected = this.allLotNumbers.find(e => e.id == d.inventoryID).name;
+     })
+    },
+    error: (v: any) => { }
+  });
+}
+private getOtherInventoryShipment(anotherShippingID:number) {
+  debugger;
+  if (!anotherShippingID) {
+    return;
   }
-  private fetchDataDevice() {
-    const dataItem = this.appService.sharedData.receiving.dataItem;
-    if (!dataItem.receiptID) {
-      // this is for new form
+  this.apiService.getOtherInventoryShipment(anotherShippingID).subscribe({
+    next: (v: any) => {
+      debugger;
+      this.anotherShipDetails = v;
+      this.bindData();
+      // this.lineItemsGrid = v.anotherShipLineItem;
+      // this.lineItemsGrid.forEach((d, index) => {
+      //   d.lotNumberSelected = this.allLotNumbers.find(e => e.name == d.lotNumber);
+      // })
+    }
+  });
+
+}
+upsertAnotherShipment(sendForApproval:any){
+  debugger;
+  var otherShipID = 0;
+  var recordStatus = 'I';
+  if(this.appService.sharedData.anotherShipping.dataItem.anotherShipmentID) {
+    otherShipID = this.appService.sharedData.anotherShipping.dataItem.anotherShipmentID;
+    recordStatus = 'U';
+  }
+
+  const shipDetail : AnotherShipDetails = {
+    ...INIT_ANOTHERSHIPDETAILS
+  }
+
+  shipDetail.anotherShipmentID = otherShipID;
+  if(this.requestorSelected){
+    shipDetail.requestorID = this.requestorSelected?.EmployeeID == undefined ? 0 : this.requestorSelected.EmployeeID;
+  }
+  else {
+    this.appService.errorMessage('Please select requestor');
+    return;
+  }
+
+  shipDetail.email = this.requestorEmail;
+  if(this.serviceTypeSelected){
+    shipDetail.serviceTypeID = this.serviceTypeSelected?.id == undefined ? 0 : this.serviceTypeSelected.id;
+  }
+  else {
+    this.appService.errorMessage('Please select service type');
+    return;
+  }
+  shipDetail.accountNo = this.accountNumber;
+  if(this.recipientName){
+    shipDetail.recipientName = this.recipientName;
+  }
+  else {
+    this.appService.errorMessage('Please select recipient name');
+    return;
+  }
+  if(this.phoneNumber){
+    shipDetail.phoneNo = this.phoneNumber;
+  }
+  else {
+    this.appService.errorMessage('Please select phone number');
+    return;
+  }
+
+  if(this.customerOrVendor == "Customer") {
+    shipDetail.customerTypeID = 1;
+    if(this.customerSelected) {
+      shipDetail.behalfID = this.customerSelected?.CustomerID == undefined ? 0 : this.customerSelected.CustomerID;
+    }
+    else {
+      this.appService.errorMessage('Please select customer');
       return;
     }
-    this.apiService.getDeviceData(dataItem.receiptID).subscribe({
-      next: (v: any) => {
-        this.gridDataDevice = v;
-        // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Device')
-        this.gridDataDevice.forEach((d, index) => {
-          d.employeeSelected = this.employees.find(e => e.EmployeeID == d.lotOwnerID);
-          d.countrySelected = this.countries.find(c => c.countryName == d.coo)
-          d.deviceTypeSelected = this.deviceTypes.find(dt => dt.deviceTypeID == d.deviceTypeID)
-          if (index == 0) {
-            this.lotCategorySelected = this.lotCategories.find(c => c.lotCategoryID == d.lotCategoryID)
-          }
-          if (d.lotIdentifier) {
-            d.lotIdentifierSelected = this.lotIdentifiers.find(l => l.id == d.lotIdentifier);
-          }
-        })
-      }
-    });
   }
-  private fetchDataHardware() {
-    const dataItem = this.appService.sharedData.receiving.dataItem;
-    if (!dataItem.receiptID) {
-      // this is for new form
+  else {
+    shipDetail.customerTypeID = 0;
+    if(this.vendorSelected) {
+      shipDetail.customerVendorID = this.vendorSelected?.VendorID == undefined ? 0 : this.vendorSelected.VendorID;
+    }
+    else {
+      this.appService.errorMessage('Please select Vendor');
       return;
     }
-    this.apiService.getHardwaredata(dataItem.receiptID).subscribe({
-      next: (v: any) => {
-        if (v) {
-          v.forEach((h: any) => {
-            h.hardwareTypeSelected = this.hardwareTypes.find(c => c.hardwareTypeID == h.hardwareTypeID)
-            h.customerSelected = this.customers.find(c => c.CustomerID == h.customerID)
-          })
-        }
-        this.gridDataHardware = v;
-        // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Hardware')        
-      }
-    });
   }
-  gridDataMiscellaneous: MiscellaneousGoods[] = [];
-  private fetchDataMiscellaneous() {
-    const dataItem = this.appService.sharedData.receiving.dataItem;
-    if (!dataItem.receiptID) {
-      // this is for new form
+  if(this.shipToAddress1){
+    shipDetail.address1 = this.shipToAddress1;
+  }
+  else {
+    this.appService.errorMessage('Please select address 1');
+    return;
+  }
+  shipDetail.address2 = this.shipToAddress2;
+  if(this.shipToCity){
+    shipDetail.city = this.shipToCity;
+  }
+  else {
+    this.appService.errorMessage('Please select city');
+    return;
+  }
+  if(this.shipToState){
+    shipDetail.state = this.shipToState;
+  }
+  else {
+    this.appService.errorMessage('Please select state');
+    return;
+  }
+  if(this.shipToZip){
+    shipDetail.zip = this.shipToZip;
+  }
+  else {
+    this.appService.errorMessage('Please select zip');
+    return;
+  }
+  if(this.countrySelected){
+    shipDetail.country = this.countrySelected?.countryName == undefined ? "" : this.countrySelected.countryName;
+  }
+  else {
+    this.appService.errorMessage('Please select country');
+    return;
+  }
+  shipDetail.instructions = this.shipToInstructions;
+  shipDetail.status = "Active";
+  shipDetail.recordStatus = recordStatus;
+  shipDetail.userID = this.appService.loginId;
+  shipDetail.anotherShipLineItems = [];
+  if(sendForApproval){
+    if(this.signatureEmployeeSelected){
+      shipDetail.approverID = this.signatureEmployeeSelected?.EmployeeID == undefined ? 0 : this.signatureEmployeeSelected.EmployeeID;
+    }
+    else{
+      this.appService.errorMessage('Please select approver');
       return;
     }
-    this.apiService.getMiscellaneousGoods(dataItem.receiptID).subscribe({
-      next: (v: any) => {
-        this.gridDataMiscellaneous = v;
-        // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Miscellaneous Goods')
-      }
-    });
   }
-  private fetchReceiptEmployees() {
-    const dateItem = this.appService.sharedData.receiving.dataItem;
-    this.apiService.getReceiptEmployees(dateItem.receiptID).subscribe({
-      next: (value: any) => {
-        const ids = value.map((v: any) => v.employeeID)
-        if (ids) {
-          this.employeesSelected = this.employees.filter(e => ids.includes(e.EmployeeID))
-        }
+  debugger;
+  this.lineItemsGrid.forEach((d, index) => {
+    debugger;
+    d.inventoryID = this.allLotNumbers.find(e => e.name == d.lotNumberSelected).id;
+    shipDetail.anotherShipLineItems.push(d);
+  })
+
+  
+  const shipDetailJson = JSON.stringify(shipDetail);
+
+  this.apiService.upsertAntherShipment(shipDetailJson).subscribe({
+    next : (v: any) => {
+      debugger;
+      this.appService.successMessage(MESSAGES.DataSaved);
+      //this.closeDialog();
+    },
+    error: (err) => {
+      this.appService.errorMessage(MESSAGES.DataSaveError);
+    }
+  });
+}
+
+  addLineitemRow() {
+
+    if(this.customerOrVendor == "Customer") {
+      if(!this.customerSelected) {
+        this.appService.errorMessage('Please select customer before adding line item');
+        return;
       }
+    }
+    else {
+      if(!this.vendorSelected) {
+        this.appService.errorMessage('Please select Vendor before adding line item');
+        return;
+      }
+    }
+
+    const dataItem = this.appService.sharedData.anotherShipping.dataItem;
+    this.lineItemsGrid.splice(0, 0, {
+      ...INIT_OTHERSHIPPING_ITEM, recordStatus: "I"
     })
   }
-  receipt = {
-    isValid: {
-      customer: true,
-      deliveryMode: true,
-      contactPhone: true,
-      contactPerson: true,
-      address: true,
-      tracking: true
-    }
-  }
-  testAddReceipt() {
-    this.customerSelected = this.customers[0];
-    this.customerTypeSelected = this.customerTypes[0];
-    this.receiptLocationSelected = this.receiptLocation[0];
-    this.employeesSelected = [this.employees[0]]
-
-    this.deliveryModeSelected = this.deliveryMode[0];
-    this.tracking = 'test tracking id'
-    this.courierSelected = this.couriers[0]
-    this.countrySelected = this.countries[0]
-
-    this.comments = 'test comments ' + (Math.floor(Math.random() * 900) + 100);
-    this.contactPerson = "Contact Person Name"
-    this.contactPhone = '90 000 00 ' + (Math.floor(Math.random() * 900) + 100);
-    this.address = 'NY'
-    this.email = 'test@gmail.com'
-  }
-  addReceipt() {
-    const data: PostReceipt = {
-      ...INIT_POST_RECEIPT,
-
-      ReceiptID: null,
-      VendorID: null,
-      VendorName: null,
-      CustomerTypeID: this.customerTypeSelected?.customerTypeID || 1,
-      CustomerVendorID: null,
-      BehalfID: 1,
-      ReceivingFacilityID: this.receiptLocationSelected?.receivingFacilityID || 1,
-      DeliveryModeID: this.deliveryModeSelected?.deliveryModeID || 1,
-      CourierDetailID: this.courierSelected?.courierDetailID || 1,
-      CountryFromID: this.countrySelected?.countryID || 1,
-      ContactPerson: this.contactPerson,
-      ContactPhone: this.contactPhone,
-      Email: this.email,
-      ExpectedDateTime: this.appService.formattedDateTime2(this.expectedDateTime),
-      AddressID: 1,
-      MailComments: this.deliveryComments,
-      PMComments: this.comments?.trim() || null,
-      NoOfCartons: this.gridData[0].noOfCartons || 0,
-      IsHold: this.gridData[0].isHold,
-      HoldComments: this.gridData[0].holdComments || null,
-      IsExpected: this.expectedOrNot == 'Expected',
-      IsInterim: this.isInterim,
-      IsFTZ: this.isFTZ,
-      MailStatus: null,
-      ReceivingStatus: null,
-      SignaturePersonType: this.signatureTypeSelected?.customerTypeName || '',
-      SignaturePersonID: this.signatureEmployeeSelected?.EmployeeID || 1,
-      Signature: this.signatureName,
-      SignatureDate: this.appService.formattedDateTime2(new Date()),
-      RecordStatus: "I",
-      Active: true,
-      LoginId: this.appService.loginId,
-      EmployeeDetail: this.employeesSelected,
-      TrackingNumber: this.tracking
-    }
-    if (this.customerTypeSelected?.customerTypeName == 'Customer') {
-      data.BehalfID = this.behalfOfCusotmerSelected?.CustomerID || 1;
-      if (this.customerSelected) {
-        // custom value by user
-        data.CustomerVendorID = this.customerSelected?.CustomerID
-        this.receipt.isValid.customer = true;
-      } else {
-        this.receipt.isValid.customer = false;
-        this.appService.errorMessage('Please select customer');
-        return;
-      }
-    } else {
-      if (this.vendorSelected) {
-        if (this.vendorSelected?.VendorID == 9999) {
-          // due to new entry refresh masterdata
-          this.appService.refreshVendors = true;
-          data.VendorName = this.vendorSelected.VendorName;
-        } else {
-          data.CustomerVendorID = this.vendorSelected?.VendorID || 1;
-        }
-        data.BehalfID = this.behalfOfVendorSelected?.VendorID || 1;
-      } else {
-        this.appService.errorMessage('Please select vendor');
-        return;
-      }
-    }
-    if (this.appService.sharedData.receiving.isEditMode) {
-      data.RecordStatus = "U";
-      const dataItem = this.appService.sharedData.receiving.dataItem;
-      data.ReceiptID = dataItem.receiptID;
-      // data = { ...this.appService.sharedData.receiving.dataItem, ...data, }
-    } else {
-      data.RecordStatus = "I";
-      data.ReceiptID = null;
-    }
-    if (!this.customerTypeSelected) {
-      this.appService.errorMessage('Please select customer/vendor');
-      return;
-    }
-
-    if (!this.receiptLocationSelected) {
-      this.appService.errorMessage('Please select Receiving Facility');
-      return;
-    }
-    if (!this.employeesSelected) {
-      this.appService.errorMessage('Please select PM/Receivers');
-      return;
-    }
-    if (!this.deliveryModeSelected) {
-      this.receipt.isValid.deliveryMode = false;
-      this.appService.errorMessage('Please select delivery mode');
-      return;
-    } else {
-      this.receipt.isValid.contactPhone = true;
-    }
-    if (['Drop Off', 'Pick Up'].includes(this.deliveryModeSelected?.deliveryModeName)) {
-      if (!this.contactPhone) {
-        this.receipt.isValid.contactPhone = false;
-        this.appService.errorMessage('Please enter contact phone');
-        return;
-      } else {
-        this.receipt.isValid.customer = true;
-      }
-      if (!this.contactPerson) {
-        this.receipt.isValid.contactPerson = false;
-        this.appService.errorMessage('Please enter contact person');
-        return;
-      } else {
-        this.receipt.isValid.contactPerson = true;
-      }
-      // email validation
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailRegex.test(this.email)) {
-        this.appService.errorMessage('Invalid email address');
-        return;
-      }
-    }
-    if (this.deliveryModeSelected?.deliveryModeName == 'Pickup') {
-
-      if (!this.addressSelected) {
-        this.receipt.isValid.address = false;
-        this.appService.errorMessage('Please select address');
-        return;
-      } else {
-        this.receipt.isValid.address = true;
-      }
-    }
-    if (this.deliveryModeSelected?.deliveryModeName == 'Courier') {
-      if (this.tracking) {
-        this.receipt.isValid.tracking = true
-      } else {
-        this.receipt.isValid.tracking = false
-        this.appService.errorMessage('Please enter tracking ID');
-        return;
-      }
-      if (!this.courierSelected) {
-        this.appService.errorMessage('Please select courier name')
-        return;
-      }
-      if (!this.countrySelected) {
-        this.appService.errorMessage('Please select country')
-        return;
-      }
-    }
-
-    this.doPostProcessReceipt(data);
-  }
-  private doPostProcessReceipt(postReceipt: PostReceipt) {
-    const body = { ReceiptDetails: [postReceipt] }
-    this.apiService.postProcessReceipt(body).subscribe({
-      next: (v: any) => {
-        this.appService.successMessage(MESSAGES.DataSaved);
-        this.onClose.emit();
-      },
-      error: (err) => {
-        this.appService.errorMessage(MESSAGES.DataSaveError);
-      }
-    });
-  }
-
-  // addDevice
-  public gridDataDevice: DeviceItem[] = [];
-  saveDevices() {
-    if (!this.lotCategorySelected?.lotCategoryID) {
-      this.appService.errorMessage("Please select Lot Category!")
-      return;
-    }
-    const lotCategoryIDSelected = this.lotCategorySelected.lotCategoryID;
-    this.gridDataDevice.forEach(d => {
-      if (d.lotCategoryID != 0 && d.lotCategoryID != lotCategoryIDSelected) {
-        d.lotCategoryID = lotCategoryIDSelected;
-        d.recordStatus = "U";
-      }
-    })
-
-    if (!this.gridDataDevice || !this.gridDataDevice.length) {
-      this.appService.infoMessage(MESSAGES.NoChanges)
-    }
-    const filteredRecords = this.gridDataDevice.filter(d => d.recordStatus == "I" || d.recordStatus == "U")
-    if (!filteredRecords || filteredRecords.length < 1) {
-      this.appService.infoMessage(MESSAGES.NoChanges);
-      return;
-    }
-    const DeviceDetails: PostDevice[] = []
-    for (let index = 0; index < filteredRecords.length; index++) {
-      const r = filteredRecords[index];
-      const mandatoryFields = [
-        r.dateCode, r.countrySelected, r.deviceTypeSelected?.deviceTypeID
-      ]
-      const isValid = !mandatoryFields.some(v => !v);
-      if (!r.deviceTypeSelected) {
-        this.appService.errorMessage("Please select Device Type!")
-        return;
-      }
-      if (!r.dateCode) {
-        this.appService.errorMessage("Date Code is required!")
-        return;
-      }
-      if (!r.countrySelected) {
-        this.appService.errorMessage("Please select COO!")
-        return;
-      }
-      const postDevice: PostDevice = {
-        DeviceID: r.deviceID,
-        ReceiptID: r.receiptID,
-        CustomerLotNumber: r.customerLotNumber,
-        CustomerCount: r.customerCount,
-        Expedite: r.expedite,
-        IQA: r.iqa,
-        LotIdentifier: r.lotIdentifier,
-        LotOwnerID: r.employeeSelected?.EmployeeID || this.appService.loginId,
-        LabelCount: r.labelCount,
-        DateCode: r.dateCode.toString(),
-        COO: r.countrySelected?.countryID || 1,
-        IsHold: r.isHold,
-        HoldComments: r.holdComments,
-        RecordStatus: r.recordStatus || 'I',
-        Active: r.active,
-        LoginId: this.appService.loginId,
-        LotCategoryID: this.lotCategorySelected?.lotCategoryID || 1,
-        DeviceTypeID: r.deviceTypeSelected?.deviceTypeID || 1
-      }
-
-      if (postDevice.RecordStatus == "I") {
-        postDevice.DeviceID = null;
-      }
-
-      DeviceDetails.push(postDevice)
-    }
-    this.apiService.postProcessDevice({ DeviceDetails }).subscribe({
-      next: (v: any) => {
-        this.appService.successMessage(MESSAGES.DataSaved);
-        this.fetchDataDevice();
-      },
-      error: (err) => {
-        this.appService.errorMessage(MESSAGES.DataSaveError);
-      }
-    });
-  }
-  addDeviceRow() {
-    const dataItem = this.appService.sharedData.receiving.dataItem;
-    this.gridDataDevice.splice(0, 0, {
-      ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID, recordStatus: "I",
-      lotIdentifierSelected: this.lotIdentifiers[0],
-      lotIdentifier: this.lotIdentifiers[0].id
-    })
-  }
-  addHardwareRow() {
-    const dataItem = this.appService.sharedData.receiving.dataItem;
-    this.gridDataHardware.splice(0, 0, { ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID })
-  }
-  addMiscellaneousRow() {
-    const dataItem = this.appService.sharedData.receiving.dataItem;
-    this.gridDataMiscellaneous.splice(0, 0, { ...INIT_MISCELLANEOUS_GOODS, receiptID: dataItem.receiptID })
-  }
-
-  // addHardware
-  gridDataHardware: HardwareItem[] = [];
-  private doPostProcessHardware(HardwareDetails: PostHardware[]) {
-    this.apiService.postProcessHardware({ HardwareDetails }).subscribe({
-      next: (v: any) => {
-        this.appService.successMessage(MESSAGES.DataSaved);
-        this.fetchDataHardware();
-      },
-      error: (err) => {
-        this.appService.errorMessage(MESSAGES.DataSaveError);
-      }
-    });
-  }
-
-  saveHardwares() {
-    if (!this.gridDataHardware.length) {
-      if (this.hardware.isItemsRemoved) {
-        this.doPostProcessHardware([]);
-      } else {
-        this.appService.infoMessage(MESSAGES.NoChanges)
-      }
-      return;
-    }
-    const filteredRecords = this.gridDataHardware.filter(d => d.recordStatus == "I" || d.recordStatus == "U")
-    if (!filteredRecords || filteredRecords.length < 1) {
-      this.appService.infoMessage(MESSAGES.NoChanges);
-      return;
-    }
-    const HardwareDetails: PostHardware[] = [];
-    filteredRecords.forEach((r) => {
-      if (r.hardwareTypeSelected) {
-        r.hardwareTypeID = r.hardwareTypeSelected?.hardwareTypeID
-      }
-      const postHardware: PostHardware = {
-        HardwareID: r.hardwareID,
-        ReceiptID: r.receiptID,
-        CustomerHardwareID: r.customerHardwareID,
-        HardwareTypeID: r.hardwareTypeID || 10,
-        ExpectedQty: r.expectedQty || 1,
-        RecordStatus: r.recordStatus,
-        Active: r.active,
-        LoginId: this.appService.loginId
-      }
-      if (postHardware.RecordStatus == "I") {
-        postHardware.HardwareID = null;
-      }
-      HardwareDetails.push(postHardware)
-    })
-    this.doPostProcessHardware(HardwareDetails);
-  }
-  saveMiscellaneous() {
-    if (!this.gridDataMiscellaneous || !this.gridDataMiscellaneous.length) {
-      this.appService.infoMessage(MESSAGES.NoChanges)
-      return;
-    }
-    const filteredRecords = this.gridDataMiscellaneous.filter(d => d.recordStatus == "I" || d.recordStatus == "U")
-    if (!filteredRecords || filteredRecords.length < 1) {
-      this.appService.infoMessage(MESSAGES.NoChanges);
-      return;
-    }
-    const MiscGoodsDetails: PostMiscGoods[] = []
-    filteredRecords.forEach((r) => {
-      const postMiscGoods: PostMiscGoods = {
-        MiscellaneousGoodsID: r.miscellaneousGoodsID || null,
-        ReceiptID: r.receiptID,
-        AdditionalInfo: r.additionalInfo,
-        RecordStatus: r.recordStatus || "U",
-        Active: r.active,
-        LoginId: this.appService.loginId
-      }
-      MiscGoodsDetails.push(postMiscGoods);
-    })
-    this.apiService.postProcessMiscellaneous({ MiscGoodsDetails }).subscribe({
-      next: (v: any) => {
-        this.appService.successMessage(MESSAGES.DataSaved);
-        this.fetchDataMiscellaneous();
-      },
-      error: (err) => {
-        this.appService.errorMessage(MESSAGES.DataSaveError);
-      }
-    });
-  }
+  
   public selectedValues: string = "";
-  readonly employees: Employee[] = this.appService.masterData.entityMap.Employee
+  
   employeesSelected: Employee[] = [];
   public gridStyle = {
     backgroundColor: 'green'
   };
-  public areaList: Array<string> = [
-    "Amsterdam",
-    "Athens",
-    "Barcelona",
-    "Berlin",
-    "Brussels",
-    "Chicago",
-    "Copenhagen",
-    "Dublin",
-    "Helsinki",
-    "Houston",
-    "Lisbon",
-    "London",
-    "Los Angeles",
-    "Madrid",
-    "Miami",
-    "Montreal",
-    "New York",
-    "Paris",
-    "Philadelphia",
-    "Prague",
-    "Rome",
-    "Sao Paulo",
-    "Seattle",
-    "Stockholm",
-    "Toronto",
-    "Vancouver",
-    "Vienna",
-    "Vienna",
-    "Warsaw",
-  ];
-
+  
   selectableSettings: any = {
     checkboxOnly: true,
     mode: 'single',
@@ -709,122 +439,61 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
     // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
     { text: 'Remove', svgIcon: ICON.trashIcon },
   ];
-  rowActionMenuDevice: MenuItem[] = [
-    { text: 'Receive', svgIcon: ICON.cartIcon },
-    { text: 'Undo Receive', svgIcon: ICON.cartIcon, disabled: true },
-    { text: 'Print', svgIcon: ICON.printIcon },
-    { text: 'Hold', svgIcon: ICON.kpiStatusHoldIcon },
-    { text: 'Edit Data', svgIcon: ICON.pencilIcon },
-    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
-    { text: 'Remove', svgIcon: ICON.trashIcon },
-  ]
+  // rowActionMenuDevice: MenuItem[] = [
+  //   { text: 'Edit Data', svgIcon: ICON.pencilIcon },
+  //   { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
+  //   { text: 'Remove', svgIcon: ICON.trashIcon },
+  // ]
 
-  doTestEditMode() {
-    // this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridDataHardware[3], 'Device');
-  }
-  onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc') {
+  onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, rowIndex: number) {
     switch (e.item.text) {
       case 'Edit Data':
         dataItem.recordStatus = 'U'
-        dataItem.dateCode = parseInt(dataItem.dateCode);
-        break;
-      case 'Receive':
-        this.rowActionMenuDevice[0].disabled = true;
-        this.rowActionMenuDevice[1].disabled = false;
-        break;
-      case 'Undo Receive':
-        this.rowActionMenuDevice[0].disabled = false;
-        this.rowActionMenuDevice[1].disabled = true;
-        break;
-      case 'Hold':
-        dataItem.isHold = !dataItem.isHold
-        break;
-      case 'Print':
-        this.doPrint(dataItem, tableName)
         break;
       case 'Void Data':
-        this.doVoidData(dataItem, rowIndex, tableName)
+        this.doVoidData(dataItem, rowIndex)
         break;
       case 'Remove':
-        this.doRemoveRow(rowIndex, tableName);
+        this.doRemoveRow(rowIndex);
         break;
-
       default:
         break;
     }
   }
-  onOpenRowActionMenu(dateItem: any, tableType: TableType) {
-    const a = this.rowActionMenu.find(a => a.text == ActionType.Remove);
-    if (a) a.disabled = false;
-    switch (tableType) {
-      case TableType.Device:
-        const ac = this.rowActionMenuDevice.find(a => a.text == ActionType.Remove);
-        if (ac) ac.disabled = false;
-        if (dateItem.deviceID) {
-          if (ac) ac.disabled = true;
-        }
-        break;
-      case TableType.Hardware:
-        if (dateItem.hardwareID) {
-          if (a) a.disabled = true;
-        }
-        break;
-      case TableType.Misc:
-        if (dateItem.miscellaneousGoodsID) {
-          if (a) a.disabled = true;
-        }
-        break;
-    }
-  }
-  private doRemoveRow(rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc') {
-    switch (tableName) {
-      case 'Device':
-        this.gridDataDevice.splice(rowIndex, 1);
-        break;
-      case 'Hardware':
-        this.gridDataHardware.splice(rowIndex, 1);
-        this.hardware.isItemsRemoved = true
-        break;
-      case 'Misc':
-        this.gridDataMiscellaneous.splice(rowIndex, 1);
-        break;
-    }
-  }
-  private doPrint(r: any, tableName: 'Device' | 'Hardware' | 'Misc') {
-    switch (tableName) {
-      case 'Device':
-        const text = this.appService.formatJson(r);
-        this.printPreview(text);
-        break;
-    }
-  }
-  private printPreview(textToPrint: string) {
-    const printWindow: any = window.open('', '_blank');
-    printWindow.document.write(textToPrint);
-    printWindow.print();
-    // printWindow.close();
-  }
-  private doVoidData(r: any, rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc') {
-    switch (tableName) {
-      case 'Device':
-        this.gridDataDevice[rowIndex].active = false;
-        this.gridDataDevice[rowIndex].recordStatus = "U";
-        this.saveDevices();
-        break;
-      case 'Hardware':
-        this.gridDataHardware[rowIndex].active = false;
-        this.gridDataHardware[rowIndex].recordStatus = "U";
-        this.saveHardwares();
-        break;
-      case 'Misc':
-        this.gridDataMiscellaneous[rowIndex].active = false;
-        this.gridDataMiscellaneous[rowIndex].recordStatus = "U";
-        this.saveMiscellaneous();
-        break;
+  onOpenRowActionMenu(dateItem: any) {
+    
+    const remove = this.rowActionMenu.find(a => a.text == ActionType.Remove);
+    const edit = this.rowActionMenu.find(a => a.text == ActionType.Edit);
+    const v = this.rowActionMenu.find(a => a.text == ActionType.Void);
 
-      default:
-        break;
+    this.rowActionMenu.forEach((i: any) => {
+      i.disabled = false;
+    });
+
+    if (dateItem.lineItemID > 0) {
+      if(edit)
+        edit.disabled = false;
+      if(v)
+        v.disabled = false;
+      if (remove) 
+        remove.disabled = true;
     }
+    else{
+      if(edit)
+        edit.disabled = true;
+      if(v)
+        v.disabled = true;
+      if (remove) 
+        remove.disabled = false;
+    }
+  }
+
+  private doRemoveRow(rowIndex: number) {
+    this.lineItemsGrid.splice(rowIndex, 1);
+  }
+  private doVoidData(r: any, rowIndex: number) {
+    this.lineItemsGrid[rowIndex].status = 0;
+    this.lineItemsGrid[rowIndex].recordStatus = "U";
   }
   private updateKeysToTitleCase(jsonObj: any) {
     const updatedObj: any = {};
@@ -836,32 +505,13 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
 
     return updatedObj;
   }
-  isDialogOpen = false;
-  openDialog() {
-    this.isDialogOpen = true;
-  }
-  closeDialog() {
-    this.isDialogOpen = false;
-  }
+  
   disabledAllBtns() {
     Object.keys(this.isDisabled).forEach((k: any) => {
       this.isDisabled[k] = true;
     });
   }
-  isDisabledBehalfOfCusotmer = false
-  onChangeCustomerType() {
-    if (this.customerTypeSelected?.customerTypeName == 'Customer') {
-      this.isDisabledBehalfOfCusotmer = true
-    } else {
-      this.isDisabledBehalfOfCusotmer = false
-    }
-  }
-  onChangeCustomerName() {
-    if (this.customerTypeSelected?.customerTypeName == 'Customer') {
-      this.isDisabledBehalfOfCusotmer = true
-      this.behalfOfCusotmerSelected = this.customerSelected;
-    }
-  }
+  
   valueNormalizerCustomer = (text: Observable<string>) => text.pipe(map((content: string) => {
     const customer: Customer = { CustomerID: 9999, CustomerName: content };
     return customer;
@@ -870,14 +520,7 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
     const vendor: Vendor = { VendorID: 9999, VendorName: content };
     return vendor
   }));
-  onChangeHoldComments() {
-    this.gridData[0].holdComments = this.gridData[0].holdComments.trim()
-    if (this.gridData[0].holdComments) {
-      this.gridData[0].isHold = true
-    } else {
-      this.gridData[0].isHold = false
-    }
-  }
+ 
   onClearForm() {
     this.isFTZ = false;
     this.isInterim = false;
@@ -898,18 +541,12 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
 
     this.addressSelected = undefined
 
-    this.gridData[0].noOfCartons = undefined
-    this.gridData[0].isHold = false
-    this.gridData[0].holdComments = ''
-
-    this.signatureTypeSelected = undefined
     this.signatureEmployeeSelected = undefined
     this.signatureName = ''
-    this.signatureDate = new Date();
 
     this.goodsTypeSelected = undefined
     this.address = ''
-    this.email = ''
+    
     this.contactPhone = ''
     this.contactPerson = ''
     this.employeesSelected = [];
@@ -933,16 +570,12 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
         this.deliveryComments,
 
         this.addressSelected,
-
-        this.gridData[0].noOfCartons,
-        this.gridData[0].holdComments,
-
-        this.signatureTypeSelected,
+        
         this.signatureEmployeeSelected,
         this.signatureName,
 
         this.address,
-        this.email,
+        
         this.contactPhone,
         this.contactPerson
       ]
@@ -983,4 +616,59 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
       dataItem.recordStatus = "U";
     }
   }
+
+  getServiceTypes() {
+
+    this.apiService.getServiceTypes().subscribe({
+      next: (v:any) => {
+        this.serviceTypes = v;
+      }
+    });
+
+  }
+
+  onLotFilter(value: any): void {
+    // Check if the filter input is empty
+    debugger;
+    if (value) {
+        // Filter the allLotNumbers list based on the input
+        this.lotNumbers = this.allLotNumbers.filter(lot =>
+            lot.name.toLowerCase().includes(value.toLowerCase())
+        );
+    } else {
+        // Reset to the full list when the input is cleared
+        this.lotNumbers = [...this.allLotNumbers];
+    }
+  }
+  getLotNumbers(customerTypeId:number, customerVendorId:number): void {
+  debugger;
+    this.apiService.getOtherInventoryLots(customerTypeId, customerVendorId).subscribe({
+      next: (v: any) => {
+        debugger;
+        this.allLotNumbers = v; // Store the full list
+        this.lotNumbers = [...this.allLotNumbers]; 
+      },
+      error: (v: any) => { }
+    });
+  }
+
+  onCustomerVendorChanged() {
+    debugger;
+    var customerTypeId:number, customerVendorId:number = 0;
+
+    if(this.customerOrVendor == "Customer") {
+      customerTypeId = 1;
+      if(this.customerSelected) {
+        customerVendorId = this.customerSelected?.CustomerID == undefined ? 0 : this.customerSelected.CustomerID;
+      }
+    }
+    else{
+      customerTypeId = 0;
+      if(this.vendorSelected) {
+        customerVendorId = this.vendorSelected?.VendorID == undefined ? 0 : this.vendorSelected.VendorID;
+      }
+    }
+    this.getLotNumbers(customerTypeId, customerVendorId);
+  }
+
 }

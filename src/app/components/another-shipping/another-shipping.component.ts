@@ -3,7 +3,7 @@ import { CellClickEvent, ColumnMenuSettings, GridDataResult, PageChangeEvent, Se
 import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { KeyValueData, Employee, Customer, CustomerType, ICON, Receipt } from 'src/app/services/app.interface';
+import { AnotherShip, MESSAGES, KeyValueData, Employee, Customer, CustomerType, ICON, Receipt } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { DatePipe } from '@angular/common';
 
@@ -16,7 +16,7 @@ import { DatePipe } from '@angular/common';
 export class AnotherShippingComponent implements OnDestroy {
   readonly ICON = ICON;
   gridDataResult: GridDataResult = { data: [], total: 0 };
-  public pageSize = 25;
+  public pageSize = 10;
   public skip = 0;
   readonly subscription = new Subscription();
   format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker
@@ -30,12 +30,11 @@ export class AnotherShippingComponent implements OnDestroy {
   statusSelected: KeyValueData | undefined;
 
   constructor(public appService: AppService, private apiService: ApiService, public datePipe: DatePipe) { 
-   
+    debugger;
     this.fromDate = new Date();
     this.fromDate.setMonth(this.fromDate.getMonth() - 2);
     this.toDate = new Date();
     this.fetchdata();
-    this.getOtherInventoryShipment(2);
 
   }
 
@@ -69,7 +68,7 @@ export class AnotherShippingComponent implements OnDestroy {
   }
   if(this.statusSelected != null && this.statusSelected != undefined)
   {
-    statusId = this.statusSelected.Id;
+    statusId = this.statusSelected.id;
   }
   this.apiService.getOtherShippingData(customerId, employeeId, statusId, this.fromDate, this.toDate).subscribe({
     next: (v: any) => {
@@ -135,10 +134,11 @@ export class AnotherShippingComponent implements OnDestroy {
 
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
   rowActionMenu: MenuItem[] = [
+    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
     { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
     { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
   ];
-  dataItemSelected!: Receipt;
+  dataItemSelected!: AnotherShip;
   selectedRowIndex: number = -1;
   onCellClick(e: CellClickEvent): void {
     console.log(e);
@@ -151,22 +151,31 @@ export class AnotherShippingComponent implements OnDestroy {
     }
   }
   onSelectRowActionMenu(e: ContextMenuSelectEvent) {
+    debugger;
     const dataItem = this.dataItemSelected;
-    console.log(e);
-    console.log(dataItem);
-    dataItem.holdComments = dataItem.holdComments || '';
     switch (e.item.text) {
+    case 'Void Data':
+      this.apiService.voidAnotherShipping(dataItem.anotherShipmentID).subscribe({
+        next: (value) => {
+          this.appService.successMessage(MESSAGES.DataSaved);
+          this.fetchdata()
+        },
+        error: (err) => {
+          this.appService.errorMessage(MESSAGES.DataSaveError);
+        },
+      })
+      break;
       case 'View Data':
-        this.appService.sharedData.shipping.dataItem = dataItem
-        this.appService.sharedData.shipping.isEditMode = false;
-        this.appService.sharedData.shipping.isViewMode = true;
+        this.appService.sharedData.anotherShipping.dataItem = dataItem
+        this.appService.sharedData.anotherShipping.isEditMode = false;
+        this.appService.sharedData.anotherShipping.isViewMode = true;
         // access the same in receipt component
         this.openDialog()
         break;
       case 'Edit Data':
-        this.appService.sharedData.shipping.dataItem = dataItem
-        this.appService.sharedData.shipping.isEditMode = true;
-        this.appService.sharedData.shipping.isViewMode = false;
+        this.appService.sharedData.anotherShipping.dataItem = dataItem
+        this.appService.sharedData.anotherShipping.isEditMode = true;
+        this.appService.sharedData.anotherShipping.isViewMode = false;
         // access the same in receipt component
         this.openDialog()
         break;
@@ -175,6 +184,16 @@ export class AnotherShippingComponent implements OnDestroy {
         break;
     }
   }
+
+  addAnotherShipment(){
+    debugger;
+    this.appService.sharedData.anotherShipping.dataItem = {};
+    this.appService.sharedData.anotherShipping.isEditMode = false;
+    this.appService.sharedData.anotherShipping.isViewMode = false;
+
+    this.openDialog();
+  }
+
   rowCallback = (context: any) => {
     return {
       'highlighted-row': context.index === this.selectedRowIndex
@@ -182,22 +201,15 @@ export class AnotherShippingComponent implements OnDestroy {
   }
   populateStatusCombo()
   {
-    
+    debugger;
     this.apiService.getOtherInventoryStatuses().subscribe({
       next: (data:any) => {
-    
+        debugger;
         this.statuses = data;
       },
       error : (e:any) => {}
     })
   }
 
-  getOtherInventoryShipment(otherInventoryId:number)  {
-
-    this.apiService.getOtherInventoryShipment(otherInventoryId).subscribe({
-      next: (data:any) => {
-      
-      }
-    })
-  }
+  
 }

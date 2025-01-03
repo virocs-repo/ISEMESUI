@@ -357,14 +357,34 @@ export class ApiService {
     const url = `${API}v1/ise/otherinventory/getOtherInventoryShipments?customerId=${customerId}&employeeId=${employeeId}&statusId=${statusId}&fromDate=${fromDate?.toDateString()}&toDate=${toDate?.toDateString()}`;
     return this.httpClient.get(url);
   }
-  getOtherInventoryStatuses() {
 
+  getOtherInventoryStatuses() {
     const url = `${API}v1/ise/otherinventory/getOtherInventoryStatus`;
     return this.httpClient.get(url);
   }
-  getOtherInventoryShipment(otherInventoryId: number) {
 
-    const url = `${API}v1/ise/otherinventory/getOtherInventoryShipment?otherInventoryId=${otherInventoryId}`;
+  getOtherInventoryShipment(anotherShippingId:number) {
+    const url = `${API}v1/ise/otherinventory/getOtherInventoryShipment?anotherShippingId=${anotherShippingId}`;
+    return this.httpClient.get(url);
+  }
+
+  getServiceTypes() {
+    const url = `${API}v1/ise/otherinventory/getServiceTypes`;
+    return this.httpClient.get(url);
+  }
+
+  upsertAntherShipment(inputJson:string) {
+    const url = `${API}v1/ise/otherinventory/upsertAntherInventoryShipment?anotherShipJson=${inputJson}`;
+    return this.httpClient.get(url);
+  }
+
+  voidAnotherShipping(anotherShippingID: number) {
+    const url = `${API}v1/ise/otherinventory/voidAnotherShipping?anotherShippingID=${anotherShippingID}`;
+    return this.httpClient.get(url);
+  }
+  
+  getOtherInventoryLots(customerTypeId:number, customerVendorId:number) {
+    const url = `${API}v1/ise/otherinventory/getAnotherInventoryLots?customerTypeId=${customerTypeId}&customerVendorId=${customerVendorId}`;
     return this.httpClient.get(url);
   }
 }
