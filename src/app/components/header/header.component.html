@@ -29,14 +29,27 @@
         </div>
       </div>
 
-      <button kendoButton fillMode="flat" routerLink="/shipping" routerLinkActive="active">Shipping</button>
+      <div class="kendo-dropdown-wrapper">
+        <button kendoButton fillMode="flat" class="parent-menu-button" routerLink="/shipping" routerLinkActive="active">
+          Shipping
+          <kendo-icon name="arrow-down" class="menu-icon"></kendo-icon>
+        </button>
+        <div class="submenu">
+          <button kendoButton fillMode="flat" routerLink="/another-shipping" routerLinkActive="active">
+            Other Inventory Shipment
+          </button>
+          <button kendoButton fillMode="flat" routerLink="/combined-lot" routerLinkActive="active">
+            Combined Lot Shipment
+          </button>
+        </div>
+      </div>
+
       <button kendoButton fillMode="flat" routerLink="/inventory" routerLinkActive="active">Inventory</button>
       <button kendoButton fillMode="flat" routerLink="/customer-order" routerLinkActive="active">Customer
         Order/Scrap</button>
       <button kendoButton fillMode="flat" routerLink="/reports" routerLinkActive="active">Reports</button>
-      <button kendoButton fillMode="flat" routerLink="/another-shipping" routerLinkActive="active">Another
-        Shipping</button>
-      <button kendoButton fillMode="flat" routerLink="/combined-lot" routerLinkActive="active">Combined Lot</button>
+   <!--    <button kendoButton fillMode="flat" routerLink="/another-shipping" routerLinkActive="active">Other Inventory Shipment</button>
+      <button kendoButton fillMode="flat" routerLink="/combined-lot" routerLinkActive="active">Combined Lot Shipment</button> -->
     </div>
   </kendo-appbar-section>
 
