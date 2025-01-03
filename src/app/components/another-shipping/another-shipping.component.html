@@ -1,5 +1,12 @@
-<div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-10 page-header">
-  <div class="k-d-flex k-gap-3 k-ml-auto">
+
+  <div class="k-d-flex k-align-items-center k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
+  
+    <h4>Other Inventory Shipping</h4>
+    <div class="k-d-flex k-gap-3 k-ml-auto">
+      <kendo-label text="Search" class="k-font-size-sm">
+        <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
+          rounded="full" (input)="onSearchMaster()" />
+      </kendo-label>
   <kendo-label text="Customer" class="k-w-full k-font-size-sm" [hidden]="true" >
     <kendo-combobox id="customer" [data]="customers" [(ngModel)]="customerSelected"
           [textField]="'CustomerName'" [valueField]="'CustomerID'" placeholder="Select" rounded="large"
@@ -15,10 +22,10 @@
       [textField]="'name'" [valueField]="'id'" placeholder="Select" rounded="large"
       ></kendo-combobox>
 </kendo-label>
-<kendo-label text="From Date" class="k-w-full k-font-size-sm">
+<kendo-label text="From Date" class="k-font-size-sm">
 <kendo-datepicker [format]="format" [(value)]="fromDate" ></kendo-datepicker>
 </kendo-label>
-<kendo-label text="To Date" class="k-w-full k-font-size-sm">
+<kendo-label text="To Date" class="k-font-size-sm">
 <kendo-datepicker [format]="format" [(value)]="toDate" ></kendo-datepicker>
 </kendo-label>
   <!-- <div class="k-d-flex k-flex-col k-gap-2 k-ml-auto">
@@ -33,18 +40,17 @@
   
       </div>
   </div> -->
-  <div>
-    <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="fetchdata()">Search</button>
-  </div>
-  <div>
-    <button kendoButton rounded="full" themeColor="info" class="search-btn" (click)="addAnotherShipment()">Add</button>
-  </div>
 </div>
+    <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="fetchdata()">Search</button>
+  
+    <button kendoButton rounded="full" themeColor="info" class="k-w-25" (click)="addAnotherShipment()">Add</button>
+  
+
 </div>
-<div class="k-m-10" *ngIf="!false">
+<div class="page-body k-m-4">
   <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
     [pageSize]="pageSize" [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
-    class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
+    [filterable]="true" (cellClick)="onCellClick($event)" class="grid-header-sm grid-header-bold"
     [rowClass]="rowCallback">
     <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
     <kendo-grid-column field="anotherShipmentID" title="anotherShipmentID" [hidden]="true" ></kendo-grid-column>
@@ -68,9 +74,9 @@
     <small *ngIf="appService.sharedData.shipping.isViewMode">(View Mode)</small>
     <small *ngIf="appService.sharedData.shipping.isEditMode">(Edit Mode)</small>
     <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
-      (click)="closeDialog()"></button>
+      (click)="canCloseDialog()"></button>
   </div>
   <div class="dialog-body k-overflow-y-auto">
-    <app-add-another-shipping></app-add-another-shipping>
+    <app-add-another-shipping (onClose)="closeDialog()"></app-add-another-shipping>
   </div>
 </kendo-dialog>

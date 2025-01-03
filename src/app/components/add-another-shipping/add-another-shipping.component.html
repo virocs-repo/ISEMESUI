@@ -195,13 +195,15 @@
   </div>
 
   <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-4 k-mt-3">
-    <kendo-label text="Employee" *ngIf="isViewOrEdit">
+    <kendo-label text="Employee" *ngIf="approvedById == 0 && isViewOrEdit">
       <kendo-combobox [data]="employees" [(ngModel)]="signatureEmployeeSelected" [textField]="'EmployeeName'"
         [valueField]="'EmployeeID'" [kendoDropDownFilter]="filterSettings" placeholder="Select"
         rounded="large"></kendo-combobox>
     </kendo-label>
-    <button kendoButton type="button" *ngIf="isViewOrEdit" rounded="large" themeColor="success" style="width:8rem" (click)="upsertAnotherShipment(true)"
+    <button kendoButton type="button" *ngIf="approvedById == 0 && isViewOrEdit" rounded="large" themeColor="success" style="width:8rem" (click)="upsertAnotherShipment('sendForApproval')"
       [disabled]="isDisabled.addAnotherShipping">Send for Approval</button>
+      <button kendoButton type="button" *ngIf="approverId > 0 && approverId == appService.loginId" rounded="large" themeColor="success" style="width:8rem" (click)="upsertAnotherShipment('Approved')"
+      [disabled]="isDisabled.addAnotherShipping">Approve</button>
     <span style="margin-left: auto;"></span>
   </div>
 
@@ -211,7 +213,7 @@
   <span style="margin-left: auto;"></span>
   <button kendoButton type="button" rounded="large" themeColor="primary" style="width:6rem"
     [disabled]="isDisabled.clearAnotherShipping" (click)="onClearForm()">Clear</button>
-  <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" (click)="upsertAnotherShipment(false)"
+  <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" (click)="upsertAnotherShipment('Draft')"
     [disabled]="isDisabled.addAnotherShipping">Save as Draft</button>
   
 </div>

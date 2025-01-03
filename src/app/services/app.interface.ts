@@ -647,6 +647,7 @@ export interface AnotherShipDetails {
   recordStatus:string //What is this?
   shippingStatusID: number //What is this?
   approverID:number
+  approvedBy:number
   userID:number
   approvedON:Date // do we need this from UI or can be taken as getdate in the SQL?
   anotherShipLineItems:AnotherShippingLineitem[]
@@ -673,6 +674,7 @@ export const INIT_ANOTHERSHIPDETAILS:AnotherShipDetails = {
   recordStatus:"",
   shippingStatusID: 0,
   approverID:0,
+  approvedBy:0,
   userID:0,
   approvedON: new Date(),
   anotherShipLineItems:[]

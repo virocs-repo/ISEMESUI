@@ -28,7 +28,6 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   readonly ICON = ICON;
   //readonly TableType = TableType;
   @Output() onClose = new EventEmitter<void>();
-  @Output() onRestart = new EventEmitter<void>();
 
   readonly customerTypes: CustomerType[] = this.appService.masterData.customerType;
   customerTypeSelected: CustomerType | undefined;
@@ -129,6 +128,8 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   format = "MM/dd/yyyy HH:mm";
   public lineItemsGrid: AnotherShippingLineitem[] = [];
   isViewOrEdit:boolean = false;
+  approverId:number=0;
+  approvedById:number=0;
 
   constructor(public appService: AppService, private apiService: ApiService) { }
 
@@ -207,18 +208,13 @@ private bindData(){
     this.countrySelected = this.countries.find(c => c.countryName === this.anotherShipDetails.country)
     this.signatureEmployeeSelected = this.employees.find(c => c.EmployeeID === this.anotherShipDetails.approverID)
 
-
-    // this.signatureTypeSelected = this.signatureTypes.find(c => c.customerTypeName == dataItem.signaturePersonType);
-    // this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeID == dataItem.signaturePersonID)
-    // this.signatureName = dataItem.signature
-
-    // if (dataItem.signatureDate) {
-    //   this.signatureDate = new Date(dataItem.signatureDate);
-    // }
+    this.approverId = this.anotherShipDetails.approverID == undefined ?  0 : this.anotherShipDetails.approverID;
+    this.approvedById = this.anotherShipDetails.approvedBy == undefined ?  0 : this.anotherShipDetails.approvedBy;
+    if(this.approvedById > 0){
+      this.disabledAllBtns();
+    }
 
     this.bindGridData(this.customerTypeID, customerVendorId);
-
-    
   }
 }
 
@@ -255,7 +251,7 @@ private getOtherInventoryShipment(anotherShippingID:number) {
   });
 
 }
-upsertAnotherShipment(sendForApproval:any){
+upsertAnotherShipment(saveType:any){
   debugger;
   var otherShipID = 0;
   var recordStatus = 'I';
@@ -362,7 +358,11 @@ upsertAnotherShipment(sendForApproval:any){
   shipDetail.recordStatus = recordStatus;
   shipDetail.userID = this.appService.loginId;
   shipDetail.anotherShipLineItems = [];
-  if(sendForApproval){
+  if(saveType == 'Draft'){
+    shipDetail.approverID = 0;
+  }
+  else if(saveType == 'sendForApproval') {
+    
     if(this.signatureEmployeeSelected){
       shipDetail.approverID = this.signatureEmployeeSelected?.EmployeeID == undefined ? 0 : this.signatureEmployeeSelected.EmployeeID;
     }
@@ -370,6 +370,10 @@ upsertAnotherShipment(sendForApproval:any){
       this.appService.errorMessage('Please select approver');
       return;
     }
+  }
+  else{
+    shipDetail.approverID = this.approverId;
+    shipDetail.approvedBy = this.appService.loginId;
   }
   debugger;
   this.lineItemsGrid.forEach((d, index) => {
@@ -384,6 +388,7 @@ upsertAnotherShipment(sendForApproval:any){
   this.apiService.upsertAntherShipment(shipDetailJson).subscribe({
     next : (v: any) => {
       debugger;
+      this.onClose.emit();
       this.appService.successMessage(MESSAGES.DataSaved);
       //this.closeDialog();
     },
@@ -552,6 +557,9 @@ upsertAnotherShipment(sendForApproval:any){
     this.employeesSelected = [];
   }
   private areThereAnyChanges() {
+    debugger;
+    return false;
+
     if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
       return false
     } else {

@@ -28,7 +28,9 @@ export class AnotherShippingComponent implements OnDestroy {
   customerSelected: Customer | undefined;
   employeeSelected: Employee | undefined;
   statusSelected: KeyValueData | undefined;
-
+  searchTerm:string="";
+  originalData: any[] = [];
+  
   constructor(public appService: AppService, private apiService: ApiService, public datePipe: DatePipe) { 
     debugger;
     this.fromDate = new Date();
@@ -40,6 +42,16 @@ export class AnotherShippingComponent implements OnDestroy {
 
   ngOnInit(): void {
     this.init()
+    this.subscription.add(this.appService.sharedData.anotherShipping.eventEmitter.subscribe((v) => {
+      switch (v) {
+        case 'closeDialog':
+          this.closeDialog();
+          break;
+        default:
+          break;
+      }
+    }));
+    
   }
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
@@ -53,8 +65,12 @@ export class AnotherShippingComponent implements OnDestroy {
       this.employees.push(...this.appService.masterData.entityMap.Employee)
     }
   }
-
+  canCloseDialog() {
+    debugger;
+    this.appService.sharedData.anotherShipping.eventEmitter.emit('canCloseDialog?')
+  }
   fetchdata() {
+    debugger;
   var customerId:number = 0;
   var employeeId:number = 0;
   var statusId:number = 0;
@@ -72,11 +88,13 @@ export class AnotherShippingComponent implements OnDestroy {
   }
   this.apiService.getOtherShippingData(customerId, employeeId, statusId, this.fromDate, this.toDate).subscribe({
     next: (v: any) => {
-      this.gridDataResult.data = v;
-      this.gridDataResult.total = v.length
-      for (let index = 0; index < this.gridDataResult.data.length; index++) {
-        const element = this.gridDataResult.data[index];
-      }
+      this.originalData = v;
+      this.pageData();
+      // this.gridDataResult.data = v;
+      // this.gridDataResult.total = v.length
+      // for (let index = 0; index < this.gridDataResult.data.length; index++) {
+      //   const element = this.gridDataResult.data[index];
+      // }
     },
     error: (v: any) => { }
   });
@@ -125,6 +143,7 @@ export class AnotherShippingComponent implements OnDestroy {
     this.isDialogOpen = true;
   }
   closeDialog() {
+    this.fetchdata();
     this.isDialogOpen = false;
   }
 
@@ -210,6 +229,25 @@ export class AnotherShippingComponent implements OnDestroy {
       error : (e:any) => {}
     })
   }
-
+  onSearchMaster(): void {
+    this.skip = 0;  // Reset pagination when searching
+    this.pageData();  // Apply search and pagination
+  }
   
+  pageData(): void {
+    const filteredData = this.filterData(this.originalData);
+    const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+    this.gridDataResult.data = filteredData;
+    this.gridDataResult.total = filteredData.length; 
+  } 
+
+  filterData(data: any[]): any[] {
+    if (!this.searchTerm) {
+      return data;
+    }
+    const term = this.searchTerm.toLowerCase();
+    return data.filter(item =>
+      Object.values(item).some(val => String(val).toLowerCase().includes(term))
+    );
+  }
 }
