@@ -30,7 +30,7 @@ export class AnotherShippingComponent implements OnDestroy {
   statusSelected: KeyValueData | undefined;
 
   constructor(public appService: AppService, private apiService: ApiService, public datePipe: DatePipe) { 
-    debugger;
+     
     this.fromDate = new Date();
     this.fromDate.setMonth(this.fromDate.getMonth() - 2);
     this.toDate = new Date();
@@ -151,7 +151,7 @@ export class AnotherShippingComponent implements OnDestroy {
     }
   }
   onSelectRowActionMenu(e: ContextMenuSelectEvent) {
-    debugger;
+     
     const dataItem = this.dataItemSelected;
     switch (e.item.text) {
     case 'Void Data':
@@ -186,7 +186,7 @@ export class AnotherShippingComponent implements OnDestroy {
   }
 
   addAnotherShipment(){
-    debugger;
+     
     this.appService.sharedData.anotherShipping.dataItem = {};
     this.appService.sharedData.anotherShipping.isEditMode = false;
     this.appService.sharedData.anotherShipping.isViewMode = false;
@@ -201,10 +201,10 @@ export class AnotherShippingComponent implements OnDestroy {
   }
   populateStatusCombo()
   {
-    debugger;
+     
     this.apiService.getOtherInventoryStatuses().subscribe({
       next: (data:any) => {
-        debugger;
+         
         this.statuses = data;
       },
       error : (e:any) => {}

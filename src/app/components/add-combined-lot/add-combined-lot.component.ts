@@ -175,7 +175,7 @@ export class AddCombinedLotComponent implements OnDestroy {
   }
   getLotNumbers(customerId?: number): void {
   
-    debugger;
+     
     this.allLotNumbers=[];
     this.lotNumbers=[]
     this.apiService.getallLotsdata(customerId).subscribe({
