@@ -193,7 +193,7 @@
     </kendo-label>
   </div> -->
 
-    <div *ngIf="!isDisabledGoodsType">
+    <!-- <div *ngIf="!isDisabledGoodsType">
       <div class="k-d-flex k-align-items-center k-gap-3">
         <h2>Interim</h2>
         <i class="k-ml-auto"></i>
@@ -276,8 +276,7 @@
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.dateCode" placeholder="Date Code"></kendo-textbox>
-                <!-- <kendo-numerictextbox [min]="0" [(ngModel)]="dataItem.dateCode"
-                placeholder="Date Code"></kendo-numerictextbox> -->
+               
               </ng-container>
               <ng-template #showValue>
                 <span>{{dataItem.dateCode}}</span>
@@ -287,7 +286,7 @@
           <kendo-grid-column field="coo" title="COO">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
-                <!-- <kendo-textbox [(ngModel)]="dataItem.coo" placeholder="COO"></kendo-textbox> -->
+                
                 <kendo-combobox [data]="countries" [(ngModel)]="dataItem.countrySelected" [textField]="'countryName'"
                   [valueField]="'countryID'" [kendoDropDownFilter]="filterSettings" placeholder="Select"
                   rounded="large"></kendo-combobox>
@@ -305,7 +304,7 @@
           </kendo-grid-column>
         </kendo-grid>
       </div>
-    </div>
+    </div> -->
     <div *ngIf="!isDisabledGoodsType">
       <div class="k-d-flex k-align-items-center k-gap-3">
         <h2>Device</h2>
