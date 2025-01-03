@@ -32,6 +32,9 @@ export class CustomerOrderComponent implements OnInit {
   public customerOrd: any = {}; 
   public formOrdData: any = {}; 
   public searchTerm: string = '';
+  format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker
+  fromDate: Date | null = null;  // Variable to store the selected 'from' date
+  toDate: Date | null = null;    // Variable to store the selected 'to' date
   public columnData: any[] = [
 
     { field: 'customerName', title: 'Customer Name' },
@@ -147,6 +150,24 @@ export class CustomerOrderComponent implements OnInit {
   }
 
   onSearch(): void {
+    // Pass Date objects directly
+    const from_date = this.fromDate ?? undefined;
+    const to_date = this.toDate ?? undefined;
+   
+    this.apiService.getallCustomerOrderwithDates(from_date, to_date).subscribe({
+        next: (v: any) => {
+   /*          this.gridDataResult.data = v;
+            this.gridDataResult.total = v.length; */
+            this.originalData = v;
+            this.pageData();
+        },
+        error: (error: any) => {
+            console.error('Error fetching CombinationLots', error);
+        }
+    });
+   
+     }
+  onSearchMaster(): void {
     this.skip = 0;  // Reset pagination when searching
     this.pageData();  // Apply search and pagination
   }

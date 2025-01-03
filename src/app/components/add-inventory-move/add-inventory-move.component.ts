@@ -221,7 +221,7 @@ saveInventorymove(): void {
   console.log(this.newLocationSelected);
   console.log(this.receiptLocationSelected);
   let areaFacId: any | undefined;
-  debugger;
+   
   if (typeof this.newLocationSelected === 'number') {
     // Case 1: newLocationSelected is a number
     areaFacId = this.newLocationSelected;
