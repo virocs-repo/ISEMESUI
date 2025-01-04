@@ -79,16 +79,22 @@ export class ApiService {
     return this.httpClient.get(`${API}v1/ise/inventory/lineItem`);
   }
 
-  uploadFile(file: File, inputFilename: string, receiptNumber: string) {
+  uploadFile(file: File, inputFilename: string, receiptNumber: string, loginId: number) {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('inputfilename', inputFilename);
-    formData.append('reciptnumber', receiptNumber);
-
+    // formData.append('inputfilename', inputFilename);
+    // formData.append('reciptnumber', receiptNumber);
     const headers = new HttpHeaders({ 'Content-Type': 'multipart/form-data', 'Accept': '*/*' });
-
-    return this.httpClient.post(`${API}v1/ise/inventory/upload?inputfilename=${inputFilename}&reciptnumber=${receiptNumber}`,
-      formData, { headers });
+    return this.httpClient.post(`${API}v1/ise/inventory/upload?loginId=${loginId}&receiptId=${receiptNumber}`, formData);
+  }
+  downloadFile(fileName: string) {
+    return this.httpClient.get(`${API}v1/ise/inventory/download/${fileName}`);
+  }
+  listFiles(receiptId: number) {
+    return this.httpClient.get(`${API}v1/ise/inventory/receipt-attachments?receiptId=${receiptId}`);
+  }
+  deleteFile(body: any) {
+    return this.httpClient.delete(`${API}v1/ise/inventory/delete-attachment`, { body });
   }
 
   // Shipping
@@ -181,17 +187,17 @@ export class ApiService {
   getallinventorydata() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventorydata/getdetails`);
   }
- /*  getallLotsdata() {
-    return this.httpClient.get(`${API}v1/ise/inventory/customerorder/invlotnums`);
-  } */
+  /*  getallLotsdata() {
+     return this.httpClient.get(`${API}v1/ise/inventory/customerorder/invlotnums`);
+   } */
   getallLotsdata(customerId?: number) {
     let params = new HttpParams();
     if (customerId) {
-        params = params.set('customerId', customerId.toString());
+      params = params.set('customerId', customerId.toString());
     }
 
     return this.httpClient.get(`${API}v1/ise/inventory/customerorder/invlotnums`, { params });
-}
+  }
 
 
   getallinventoryreportdata(): Observable<any[]> {
@@ -363,7 +369,7 @@ export class ApiService {
     return this.httpClient.get(url);
   }
 
-  getOtherInventoryShipment(anotherShippingId:number) {
+  getOtherInventoryShipment(anotherShippingId: number) {
     const url = `${API}v1/ise/otherinventory/getOtherInventoryShipment?anotherShippingId=${anotherShippingId}`;
     return this.httpClient.get(url);
   }
@@ -373,7 +379,7 @@ export class ApiService {
     return this.httpClient.get(url);
   }
 
-  upsertAntherShipment(inputJson:string) {
+  upsertAntherShipment(inputJson: string) {
     const url = `${API}v1/ise/otherinventory/upsertAntherInventoryShipment?anotherShipJson=${inputJson}`;
     return this.httpClient.get(url);
   }
@@ -382,8 +388,8 @@ export class ApiService {
     const url = `${API}v1/ise/otherinventory/voidAnotherShipping?anotherShippingID=${anotherShippingID}`;
     return this.httpClient.get(url);
   }
-  
-  getOtherInventoryLots(customerTypeId:number, customerVendorId:number) {
+
+  getOtherInventoryLots(customerTypeId: number, customerVendorId: number) {
     const url = `${API}v1/ise/otherinventory/getAnotherInventoryLots?customerTypeId=${customerTypeId}&customerVendorId=${customerVendorId}`;
     return this.httpClient.get(url);
   }

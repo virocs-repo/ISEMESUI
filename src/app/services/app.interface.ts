@@ -602,94 +602,101 @@ export interface KeyValueData {
 }
 
 export interface AnotherShippingLineitem {
-  lineItemId:number;
-  description:string;
-  quantity:number;
-  value:string;
-  lotNumber:string;
-  inventoryID:number;
-  status:number;
-  lotNumberSelected:string;
-  recordStatus:string,
+  lineItemId: number;
+  description: string;
+  quantity: number;
+  value: string;
+  lotNumber: string;
+  inventoryID: number;
+  status: number;
+  lotNumberSelected: string;
+  recordStatus: string,
 }
 
 export const INIT_OTHERSHIPPING_ITEM: AnotherShippingLineitem = {
-  lineItemId:0,
-  description:"",
-  quantity:0,
-  value:"",
-  lotNumber:"",
-  inventoryID:0,
-  status:1,
-  lotNumberSelected:"",
-  recordStatus:'I',
-  }
+  lineItemId: 0,
+  description: "",
+  quantity: 0,
+  value: "",
+  lotNumber: "",
+  inventoryID: 0,
+  status: 1,
+  lotNumberSelected: "",
+  recordStatus: 'I',
+}
 
 export interface AnotherShipDetails {
-  anotherShipmentID:number
-  requestorID:number
-  email:string
-  serviceTypeID:number // add new
-  accountNo:number// add new
-  recipientName:string
-  phoneNo:string
-  customerTypeID:number //modify to IsCustomerOrVendor
-  customerVendorID:number
-  behalfID:number //What is this?
-  address1:string
-  address2:string //What is this?
-  city:string
-  state:string
-  zip:string
-  country:string
-  instructions:string
-  status:string //What is this?
-  recordStatus:string //What is this?
+  anotherShipmentID: number
+  requestorID: number
+  email: string
+  serviceTypeID: number // add new
+  accountNo: number// add new
+  recipientName: string
+  phoneNo: string
+  customerTypeID: number //modify to IsCustomerOrVendor
+  customerVendorID: number
+  behalfID: number //What is this?
+  address1: string
+  address2: string //What is this?
+  city: string
+  state: string
+  zip: string
+  country: string
+  instructions: string
+  status: string //What is this?
+  recordStatus: string //What is this?
   shippingStatusID: number //What is this?
-  approverID:number
-  approvedBy:number
-  userID:number
-  approvedON:Date // do we need this from UI or can be taken as getdate in the SQL?
-  anotherShipLineItems:AnotherShippingLineitem[]
+  approverID: number
+  approvedBy: number
+  userID: number
+  approvedON: Date // do we need this from UI or can be taken as getdate in the SQL?
+  anotherShipLineItems: AnotherShippingLineitem[]
 }
-export const INIT_ANOTHERSHIPDETAILS:AnotherShipDetails = {
-  anotherShipmentID:0,
-  requestorID:0,
-  email:"",
-  serviceTypeID:0,
-  accountNo:0,
-  recipientName:"",
-  phoneNo:"",
-  customerTypeID:0,
-  customerVendorID:0,
-  behalfID:0,
-  address1:"",
-  address2:"",
-  city:"",
-  state:"",
-  zip:"",
-  country:"",
-  instructions:"",
-  status:"",
-  recordStatus:"",
+export const INIT_ANOTHERSHIPDETAILS: AnotherShipDetails = {
+  anotherShipmentID: 0,
+  requestorID: 0,
+  email: "",
+  serviceTypeID: 0,
+  accountNo: 0,
+  recipientName: "",
+  phoneNo: "",
+  customerTypeID: 0,
+  customerVendorID: 0,
+  behalfID: 0,
+  address1: "",
+  address2: "",
+  city: "",
+  state: "",
+  zip: "",
+  country: "",
+  instructions: "",
+  status: "",
+  recordStatus: "",
   shippingStatusID: 0,
-  approverID:0,
-  approvedBy:0,
-  userID:0,
+  approverID: 0,
+  approvedBy: 0,
+  userID: 0,
   approvedON: new Date(),
-  anotherShipLineItems:[]
+  anotherShipLineItems: []
 }
 
 export interface AnotherShip {
-anotherShipmentID:number
-customerID:number
-customerType:string
-customer:string
-shipmentNum:string
-shipmentLocation:string
-shipmentMethod:string
-shipmentCategory:string
-currentLocation:string
-status:string
-
+  anotherShipmentID: number
+  customerID: number
+  customerType: string
+  customer: string
+  shipmentNum: string
+  shipmentLocation: string
+  shipmentMethod: string
+  shipmentCategory: string
+  currentLocation: string
+  status: string
+}
+export interface ReceiptAttachment {
+  attachmentId: number,
+  objectID: number,
+  attachmentName: string,
+  path: string,
+  active: boolean,
+  loginId: number
 }

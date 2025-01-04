@@ -5,8 +5,14 @@ import { PDFExportComponent } from '@progress/kendo-angular-pdf-export';
 import { FileRestrictions } from '@progress/kendo-angular-upload';
 import { map, Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt, ReceiptLocation, SignatureTypes, Vendor } from 'src/app/services/app.interface';
+import {
+  Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee,
+  EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE,
+  INIT_POST_RECEIPT, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt,
+  ReceiptAttachment, ReceiptLocation, SignatureTypes, Vendor
+} from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
+import { environment } from 'src/environments/environment';
 
 enum TableType {
   Device = 'Device',
@@ -265,6 +271,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     if (this.appService.sharedData.receiving.isViewMode) {
       this.disabledAllBtns()
     }
+    this.listFiles()
   }
   onChangeAddress() {
     if (this.addressSelected) {
@@ -1139,15 +1146,49 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       const inputFilename = file.name.replace(/\.[^/.]+$/, ''); // Remove file extension
       const receiptNumber = dataItem.receiptID; // You can generate or get this value dynamically
 
-      this.apiService.uploadFile(file, inputFilename, receiptNumber).subscribe({
+      this.apiService.uploadFile(file, inputFilename, receiptNumber, this.appService.loginId).subscribe({
         next: (v: any) => {
           console.log(v);
+          this.appService.successMessage('Success: File uploaded!');
+          this.listFiles();
         },
         error: (v: any) => {
           this.appService.errorMessage('Error while uploading file')
         }
       });
     }
+  }
+  receiptAttachments: ReceiptAttachment[] = []
+  private listFiles() {
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    if (!dataItem.receiptID) {
+      // this is for new form
+      return;
+    }
+    this.apiService.listFiles(dataItem.receiptID).subscribe({
+      next: (v: any) => {
+        console.log(v);
+        this.receiptAttachments = v;
+      }
+    })
+  }
+  readonly downloadFileApi = environment.apiUrl + 'v1/ise/inventory/download/'
+  downloadFile(d: ReceiptAttachment) {
+    console.log(d);
+    this.apiService.downloadFile(d.path).subscribe();
+  }
+  deleteFile(d: ReceiptAttachment) {
+    console.log(d);
+    d.active = false;
+    this.apiService.deleteFile(d).subscribe({
+      next: (v: any) => {
+        this.appService.successMessage('Success: File deleted!')
+        this.listFiles();
+      },
+      error: (v: any) => {
+        this.appService.errorMessage('Error: Unable to delete file')
+      }
+    })
   }
   // print
   @ViewChild('pdfExport', { static: true }) pdfExportComponent!: PDFExportComponent;

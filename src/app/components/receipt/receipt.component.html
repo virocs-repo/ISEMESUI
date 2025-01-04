@@ -564,9 +564,32 @@
     </div>
 
     <div *ngIf="!isDisabledGoodsType" class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
+      <div>
+        <h2>Receipt Attachments</h2>
+      </div>
       <kendo-fileselect #upFiles (select)="onSelect($event)" (upload)="onUpload($event)"></kendo-fileselect>
       <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
         (click)="uploadFiles(upFiles)">Upload</button>
+    </div>
+    <div *ngIf="!isDisabledGoodsType">
+      <kendo-grid [data]="receiptAttachments">
+        <kendo-grid-column title="#" [width]="40">
+          <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+            {{ rowIndex + 1 }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="attachmentName" title="File Name">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <a class="minimal-text link" [href]="downloadFileApi+dataItem.path" target="_blank">
+              {{ dataItem.attachmentName }}/{{dataItem.path}}</a>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column title="Actions" [width]="100">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <button kendoButton [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteFile(dataItem)"></button>
+          </ng-template>
+        </kendo-grid-column>
+      </kendo-grid>
     </div>
     <kendo-card class="card-blue card-full k-mt-4"
       *ngIf="gridDataHardware.length > 0 || gridDataMiscellaneous.length > 0 || gridDataDevice.length > 0">
