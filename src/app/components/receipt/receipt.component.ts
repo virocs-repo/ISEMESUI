@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { PDFExportComponent } from '@progress/kendo-angular-pdf-export';
-import { FileRestrictions } from '@progress/kendo-angular-upload';
+import { FileRestrictions, FileSelectComponent } from '@progress/kendo-angular-upload';
 import { map, Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import {
@@ -1133,7 +1133,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     });
     // Call API
   }
-  uploadFiles(upFiles: any) {
+  uploadFiles(upFiles: FileSelectComponent) {
     const dataItem = this.appService.sharedData.receiving.dataItem;
     if (!dataItem.receiptID) {
       // this is for new form
@@ -1142,6 +1142,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const files = upFiles.fileList.files;
     if (files && files.length) {
       const file = files[0][0].rawFile;
+      if (!file) {
+        this.appService.errorMessage('Error while selecting file');
+        return;
+      }
 
       const inputFilename = file.name.replace(/\.[^/.]+$/, ''); // Remove file extension
       const receiptNumber = dataItem.receiptID; // You can generate or get this value dynamically
@@ -1150,12 +1154,15 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         next: (v: any) => {
           console.log(v);
           this.appService.successMessage('Success: File uploaded!');
+          upFiles.clearFiles();
           this.listFiles();
         },
         error: (v: any) => {
           this.appService.errorMessage('Error while uploading file')
         }
       });
+    } else {
+      this.appService.errorMessage('Please select file to upload')
     }
   }
   receiptAttachments: ReceiptAttachment[] = []

@@ -567,11 +567,12 @@
       <div>
         <h2>Receipt Attachments</h2>
       </div>
-      <kendo-fileselect #upFiles (select)="onSelect($event)" (upload)="onUpload($event)"></kendo-fileselect>
+      <kendo-fileselect #upFiles (select)="onSelect($event)" (upload)="onUpload($event)"
+        [multiple]="false"></kendo-fileselect>
       <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
         (click)="uploadFiles(upFiles)">Upload</button>
     </div>
-    <div *ngIf="!isDisabledGoodsType">
+    <div *ngIf="!isDisabledGoodsType" class="k-mt-2">
       <kendo-grid [data]="receiptAttachments">
         <kendo-grid-column title="#" [width]="40">
           <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
@@ -580,8 +581,7 @@
         </kendo-grid-column>
         <kendo-grid-column field="attachmentName" title="File Name">
           <ng-template kendoGridCellTemplate let-dataItem>
-            <a class="minimal-text link" [href]="downloadFileApi+dataItem.path" target="_blank">
-              {{ dataItem.attachmentName }}/{{dataItem.path}}</a>
+            <a class="minimal-text link" [href]="downloadFileApi+dataItem.path" target="_blank">{{dataItem.path}}</a>
           </ng-template>
         </kendo-grid-column>
         <kendo-grid-column title="Actions" [width]="100">
