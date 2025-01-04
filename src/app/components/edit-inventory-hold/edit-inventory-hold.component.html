@@ -1,25 +1,31 @@
 <div class="k-m-3 k-overflow-y-auto" style="height: auto;">
   <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
-    <div class="k-d-flex k-flex-wrap k-gap-3">
-      <div class="field-container k-d-flex k-align-items-center">
+    <div class="k-d-flex k-flex-column k-gap-3">
+      <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
+        <div class="field-container">
         <kendo-label [for]="'lotNumber'" class="label-text">
           <strong>Lot/ Mail/ FGI Pull #:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </kendo-label>
         <span class="value-text">{{ selectedLotNumber }}</span>
       </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <div class="field-container k-d-flex k-align-items-center">
+      <div class="field-container">
         <kendo-label [for]="'customerName'" class="label-text">
           <strong>Customer:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </kendo-label>
         <span class="value-text">{{ customerName }}</span>
       </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <div class="field-container k-d-flex k-align-items-center">
+      <div class="field-container">
         <kendo-label [for]="'device'" class="label-text">
           <strong>Device:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </kendo-label>
         <span class="value-text">{{ device }}</span>
-      </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <div class="field-container k-d-flex k-align-items-center">
+      </div>
+      </div>
+      </div>
+
+      <div class="k-d-flex k-flex-column k-gap-3">
+      <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
+        <div class="field-container">
         <kendo-label [for]="'noOfHolds'" class="label-text">
           <strong>No Of Holds:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </kendo-label>
@@ -37,6 +43,7 @@
         </button>
       </div>
     </div>
+      </div>
   </kendo-card-body>
   <div class="k-my-6">
     <kendo-grid 
