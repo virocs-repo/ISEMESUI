@@ -1,7 +1,7 @@
 
   <div class="k-d-flex k-align-items-center k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
   
-    <h4>Other Inventory Shipping</h4>
+    <h4>Other Inventory Shipment</h4>
     <div class="k-d-flex k-gap-3 k-ml-auto">
       <kendo-label text="Search" class="k-font-size-sm">
         <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
@@ -70,7 +70,7 @@
 <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'78%'"
   class="dialog-round receipt-dialog">
   <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
-    <h2 class="k-m-0">Another Shipping Record</h2>
+    <h2 class="k-m-0">Other Shipment Record</h2>
     <small *ngIf="appService.sharedData.shipping.isViewMode">(View Mode)</small>
     <small *ngIf="appService.sharedData.shipping.isEditMode">(Edit Mode)</small>
     <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"

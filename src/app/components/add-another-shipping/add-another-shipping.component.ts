@@ -131,7 +131,9 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   approverId:number=0;
   approvedById:number=0;
 
-  constructor(public appService: AppService, private apiService: ApiService) { }
+  constructor(public appService: AppService, private apiService: ApiService) { 
+    this.getServiceTypes();
+  }
 
   ngOnInit(): void {
     this.init();
@@ -153,6 +155,7 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
           break;
       }
     }))
+    
   }
   ngOnDestroy(): void {
     this.appService.sharedData.anotherShipping.isEditMode = false
@@ -161,9 +164,7 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   }
 
   private init() {
-     
-    this.getServiceTypes();
-
+    
     if (this.appService.sharedData.anotherShipping.isViewMode || this.appService.sharedData.anotherShipping.isEditMode) {
       //this.appService.sharedData.anotherShipping.dataItem.anotherShipmentID = 1;
       this.isViewOrEdit = true;
@@ -177,7 +178,7 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   }
 }
 private bindData(){
-
+  
   var customerVendorId:number;
   if(this.anotherShipDetails.anotherShipmentID > 0) {
     this.requestorSelected = this.employees.find((c) => c.EmployeeID === this.anotherShipDetails.requestorID);
@@ -213,7 +214,7 @@ private bindData(){
     if(this.approvedById > 0){
       this.disabledAllBtns();
     }
-
+    
     this.bindGridData(this.customerTypeID, customerVendorId);
   }
 }
@@ -221,7 +222,7 @@ private bindData(){
 bindGridData(customerTypeId:number, customerVendorId:number) {
   this.apiService.getOtherInventoryLots(customerTypeId, customerVendorId).subscribe({
     next: (v: any) => {
-       
+    
       this.allLotNumbers = v; // Store the full list
       this.lotNumbers = [...this.allLotNumbers]; 
 
@@ -636,7 +637,7 @@ upsertAnotherShipment(saveType:any){
 
   onLotFilter(value: any): void {
     // Check if the filter input is empty
-     
+
     if (value) {
         // Filter the allLotNumbers list based on the input
         this.lotNumbers = this.allLotNumbers.filter(lot =>
@@ -651,7 +652,7 @@ upsertAnotherShipment(saveType:any){
    
     this.apiService.getOtherInventoryLots(customerTypeId, customerVendorId).subscribe({
       next: (v: any) => {
-         
+
         this.allLotNumbers = v; // Store the full list
         this.lotNumbers = [...this.allLotNumbers]; 
       },
@@ -660,7 +661,7 @@ upsertAnotherShipment(saveType:any){
   }
 
   onCustomerVendorChanged() {
-     
+
     var customerTypeId:number, customerVendorId:number = 0;
 
     if(this.customerOrVendor == "Customer") {
