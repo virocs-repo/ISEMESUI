@@ -18,8 +18,12 @@
           <strong>Device:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </kendo-label>
         <span class="value-text">{{ device }}</span>
-      </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <div class="field-container k-d-flex k-align-items-center">
+      </div>
+      </div>
+
+      <div class="k-d-flex k-flex-column k-gap-3">
+      <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
+        <div class="field-container">
         <kendo-label [for]="'noOfHolds'" class="label-text">
           <strong>No Of Holds:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </kendo-label>
@@ -37,6 +41,7 @@
         </button>
       </div>
     </div>
+      </div>
   </kendo-card-body>
   <div class="k-my-6">
     <kendo-grid 
