@@ -206,6 +206,12 @@ export class AddCustomerRequestComponent implements OnInit {
 
   // Function to load data from the API based on selected filters
   onSearch(): void {
+
+    if (!this.customerSelected) {
+      
+      this.appService.errorMessage('Please select a customer');
+      return;
+    } 
     const customerId = this.customerSelected?.CustomerID || null;
     const goodsType = this.deviceTypeSelected || 'All';  // Fallback to 'All' if undefined
     const lotNumber = this.lotNumber || 'null';  // Fallback to 'null' if not set
