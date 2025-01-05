@@ -54,7 +54,7 @@ newLocationSelected: any;
    
       this.isEditMode = true;
       const dataItem = this.appService.sharedData.Inttransfer.dataItem;
-      debugger;
+      
 
       this.customerSelected = this.customers.find(c => c.CustomerName == dataItem.customerName);
       this.getLotNumbers(this.customerSelected?.CustomerID);
