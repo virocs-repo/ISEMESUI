@@ -26,7 +26,7 @@
     class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
     [rowClass]="rowCallback">
     <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-    <kendo-grid-column field="shipmentId" title="Shipment#"></kendo-grid-column>
+    <kendo-grid-column field="shipmentId" title="Shipment#" [hidden]="true" ></kendo-grid-column>
     <!-- <kendo-grid-column field="customerVendor" title="Customer/Vendor">
       <ng-template kendoGridCellTemplate let-dataItem>
         <kendo-combobox [data]="customerTypes" [(ngModel)]="dataItem.customerTypeSelected"
@@ -49,6 +49,11 @@
         <a class="minimal-text" [title]="dataItem.senderInfo">{{dataItem.senderInfo}}</a>
       </ng-template>
     </kendo-grid-column>
+    <kendo-grid-column field="shipmentCategory" title="Shipment Category">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.shipmentCategory">{{dataItem.shipmentCategory}}</a>
+      </ng-template>
+    </kendo-grid-column>
     <kendo-grid-column field="shippmentInfo" title="Shipment Info">
       <ng-template kendoGridCellTemplate let-dataItem>
         <a class="minimal-text" [title]="dataItem.shippmentInfo">{{dataItem.shippmentInfo}}</a>
@@ -59,6 +64,11 @@
         <a class="minimal-text" [title]="dataItem.currentLocation">{{dataItem.currentLocation}}</a>
       </ng-template>
     </kendo-grid-column>
+    <kendo-grid-column field="shipped" title="Shipped">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.shipped">{{dataItem.shipped}}</a>
+      </ng-template>
+    </kendo-grid-column>
     <kendo-grid-column field="trackingnum" title="Tracking #">
       <ng-template kendoGridCellTemplate let-dataItem>
         <a class="minimal-text" [title]="dataItem.trackingnum">{{dataItem.trackingnum}}</a>
@@ -67,7 +77,7 @@
     <kendo-grid-column field="trackingurl" title="Tracking URL">
       <ng-template kendoGridCellTemplate let-dataItem>
         <a class="minimal-text link" [title]="dataItem.trackingurl" [href]="dataItem.trackingurl"
-          target="_blank">{{dataItem.trackingurl}}</a>
+          target="_blank">{{"Shipment Label"}}</a>
       </ng-template>
     </kendo-grid-column>
   </kendo-grid>

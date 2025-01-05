@@ -85,16 +85,20 @@ export class ShippingComponent implements OnDestroy {
     this.customerTypes.push(...this.appService.masterData.customerType)
   }
   private fetchdata() {
+    debugger;
     this.apiService.getShippingData(this.fromDate, this.toDate).subscribe({
       next: (v: any) => {
         /*      this.gridDataResult.data = v;
              this.gridDataResult.total = v.length */
+        debugger;
         this.originalData = v;
         this.pageData();
 
         for (let index = 0; index < this.gridDataResult.data.length; index++) {
+
           const element = this.gridDataResult.data[index];
-          element.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == element.customerID)
+          element.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == element.customerID);
+          element.shipped = element.isShipped == true ? 'Yes' : 'No';
         }
       },
       error: (v: any) => { }
