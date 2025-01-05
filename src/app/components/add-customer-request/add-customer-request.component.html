@@ -50,14 +50,20 @@
             [width]="column.width">
 
             <!-- Default Cell Template -->
-            <ng-template kendoGridCellTemplate let-dataItem>
+      <!--       <ng-template kendoGridCellTemplate let-dataItem>
                 {{ dataItem[column.field] }}
+            </ng-template> -->
+            <ng-template kendoGridCellTemplate let-dataItem>
+                <a class="minimal-text" [title]="dataItem?.[column.field] || ''">
+                    {{ dataItem?.[column.field] || '' }}
+                </a>
             </ng-template>
 
             <!-- Edit Template for shippedQty-->
             <ng-template *ngIf="column.field === 'shippedQty'" kendoGridEditTemplate let-dataItem="dataItem">
-                <input kendoTextBox [(ngModel)]="dataItem.shippedQty" type="number" />
+                <input kendoTextBox [(ngModel)]="dataItem.shippedQty" type="number" class="black-border-textbox" />
             </ng-template>
+    
 
         </kendo-grid-column>
 

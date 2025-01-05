@@ -62,6 +62,8 @@ import { IndicatorsModule } from '@progress/kendo-angular-indicators';
 import { InventoryMoveComponent } from './components/inventory-move/inventory-move.component';
 import { AddInventoryMoveComponent } from './components/add-inventory-move/add-inventory-move.component';
 import { TooltipsModule } from '@progress/kendo-angular-tooltip';
+import { IntTranferReceivingComponent } from './components/int-tranfer-receiving/int-tranfer-receiving.component';
+import { IntTranferReceivingAddComponent } from './components/int-tranfer-receiving-add/int-tranfer-receiving-add.component';
 
 
 
@@ -139,7 +141,9 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     AddCombinedLotComponent,
     EditInventoryHoldComponent,
     InventoryMoveComponent,
-    AddInventoryMoveComponent
+    AddInventoryMoveComponent,
+    IntTranferReceivingComponent,
+    IntTranferReceivingAddComponent
   ],
   imports: [
     BrowserModule,

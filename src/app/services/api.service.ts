@@ -410,4 +410,36 @@ export class ApiService {
     return this.httpClient.get(`${API}v1/ise/inventory/customerorder/all`, { params });
 
   }
+
+   //IntransferRecieve
+   SearchIntransferRecieve() {
+    return this.httpClient.get(`${API}v1/ise/inventory/inttransfer/search`);
+  }
+
+  SearchIntransferRecievewithDates(fromDate?: Date, toDate?: Date) {
+    let params = new HttpParams();
+
+    if (fromDate != null) {
+      params = params.set('fromDate', this.formatDate(fromDate));
+    }
+    if (toDate != null) {
+      params = params.set('toDate', this.formatDate(toDate));
+    }
+    return this.httpClient.get(`${API}v1/ise/inventory/inttransfer/search`, { params });
+  }
+
+  getallIntransferRecieveLotsdata(customerId?: number) {
+    let params = new HttpParams();
+    if (customerId) {
+      params = params.set('customerVendorID', customerId.toString());
+      params = params.set('customerTypeID', '1');
+    }
+
+    return this.httpClient.get(`${API}v1/ise/inventory/inttransfer/GetcustTransferLots`, { params });
+  }
+  
+  saveInternalTransferReceipt(data: any): Observable<any> {
+    return this.httpClient.post(`${API}v1/ise/inventory/inttransfer/UpsertIntTransReceipt`, data);
+  }
+  
 }
