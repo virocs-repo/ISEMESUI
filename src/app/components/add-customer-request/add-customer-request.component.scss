@@ -3,3 +3,22 @@
     font-size: 12px;
   }
   
+/* Highlight editable cells */
+.editable-column {
+  border: 1px solid black; /* Black border */
+  background-color: #f0f0f0; /* Light grey background */
+  border-radius: 4px; /* Optional: Rounded corners */
+  padding: 4px 8px; /* Add padding for better spacing */
+  height: 24px; /* Ensure consistent height */
+  width: 100%; /* Ensure it spans the full cell width */
+  box-sizing: border-box; /* Ensure padding and border don't affect layout */
+}
+
+/* Input box style for edit mode */
+.black-border-textbox {
+  border: 1px solid black;
+  border-radius: 4px;
+  padding: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}

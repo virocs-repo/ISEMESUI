@@ -1,0 +1,73 @@
+<div class="shipping-record">
+    <kendo-card class="card-green card-full">
+      <kendo-card-body>
+        <div class="k-d-flex k-gap-3 nested-cards">
+          <div class="k-d-flex k-gap-2 k-flex-col k-flex-1">
+            <div class="k-d-flex k-gap-3 flex-col-sm">
+                <kendo-label text="Customer" class="k-w-full">
+                    <b class="required-label"></b>
+                    <kendo-combobox [data]="customers" [(ngModel)]="customerSelected" (ngModelChange)="onChangeCustomer()"
+                      [textField]="'CustomerName'" [valueField]="'CustomerID'" placeholder="Select"
+                      rounded="large"  [disabled]="isEditMode"></kendo-combobox>
+                  </kendo-label>
+              <kendo-label text="Lot Number">
+                <kendo-autocomplete
+                  placeholder="#Lot Number"
+                  rounded="large"
+                  [(ngModel)]="lotNumber"
+                  [data]="lotNumbers"
+                  [filterable]="true"
+                  (filterChange)="onFilter($event)"  [disabled]="isEditMode" >
+                </kendo-autocomplete>
+              </kendo-label> 
+              <kendo-label text="ReceivedQty">
+                <kendo-textbox
+                  [(ngModel)]="ReceivedQty"
+                  rounded="large"
+                  [disabled]="isDisabled.shipBtn"
+                 >
+                </kendo-textbox>
+              </kendo-label>
+              
+              
+              
+             <!--  <kendo-label text="Receiving Facility" >
+                <b class="required-label"></b>
+                <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
+                  [textField]="'receivingFacilityName'" [valueField]="'receivingFacilityID'" [allowCustom]="true"
+                  placeholder="Select" rounded="large" (valueChange)="onReceivingFacilityChange($event)" [disabled]="isDisabled.shipBtn"></kendo-combobox>
+              </kendo-label>
+             
+              <kendo-label text="New Location">
+                <b class="required-label"></b>
+                <kendo-combobox 
+                  [data]="newLocations" 
+                  [(ngModel)]="newLocationSelected" 
+                  (ngModelChange)="onChangeNewLocations()"
+                  [textField]="'area_Name'" 
+                  [valueField]="'area_FacilityId'" 
+                  placeholder="Select" 
+                  rounded="large" [disabled]="isDisabled.shipBtn" >
+                </kendo-combobox>
+              </kendo-label> -->
+              
+             
+        
+            </div>
+           
+           
+          </div>
+          <div class="k-d-flex k-gap-3 k-mt-3">
+            <!--   <button kendoButton type="button" rounded="large" themeColor="error" class="k-ml-auto" style="width:6rem"
+              (click)="cancelRequest()">Cancel</button> -->
+              <button kendoButton type="button" rounded="full" themeColor="info" class="k-w-25" [disabled]="isDisabled.shipBtn"
+                (click)="saveInventorymove()">Save</button>
+            </div>
+        </div>
+      </kendo-card-body>
+    </kendo-card>
+ 
+
+    
+   
+  </div>

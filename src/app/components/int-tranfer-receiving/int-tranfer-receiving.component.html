@@ -1,0 +1,90 @@
+
+<div class="k-d-flex k-align-items-center  k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
+    <h4> Internal Tranfer Receiving</h4>
+    <i class="k-ml-auto"></i>
+  
+
+    <!-- <div class="k-d-flex k-gap-4 k-align-items-center k-flex-1"> -->
+        <!-- Search Icon and Input -->
+        <kendo-label text="Search" class="k-font-size-sm">
+          <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
+            rounded="full" (input)="onSearchMaster()" />
+        </kendo-label>
+      
+
+        <kendo-label text="From Date" class="k-font-size-sm">
+          <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
+        </kendo-label>
+        <kendo-label text="To Date" class="k-font-size-sm">
+          <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
+        </kendo-label>
+    <div>
+      <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="onSearch()">Search</button>
+    </div>
+
+    <!-- <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
+    <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()"
+      [disabled]="!isAddButtonEnabled">Add</button> -->
+
+    
+    <div>
+      <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
+    </div>
+  </div>
+  <div class="k-m-4" *ngIf="!false">
+    <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
+      [pageSize]="pageSize" [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
+      class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
+      [rowClass]="rowCallback">
+      <!-- <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column> -->
+      
+   
+<!--       <kendo-grid-column field="receiptID" title="receipt #"></kendo-grid-column>
+      <kendo-grid-column field="customerVendorID" title="customerVendorID"  [hidden]="true" ></kendo-grid-column> -->
+      <kendo-grid-column field="internalTransferId" title="Internal TransferId"></kendo-grid-column>
+      <kendo-grid-column field="lotNum" title="lotNum">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.lotNum">{{dataItem.lotNum}}</a>
+        </ng-template>
+
+      </kendo-grid-column>
+      <kendo-grid-column field="lotQty" title="LotQty"></kendo-grid-column>
+      <kendo-grid-column field="device" title="Device"></kendo-grid-column>
+      <kendo-grid-column field="customerName" title="Customer Name">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.customerName">{{dataItem.customerName}}</a>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="deviceFamily" title="DeviceFamily">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.deviceFamily">{{dataItem.deviceFamily}}</a>
+        </ng-template>
+      </kendo-grid-column>
+  
+      <kendo-grid-column field="receivedQty" title="ReceivedQty">
+
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.receivedQty">{{dataItem.receivedQty}}</a>
+        </ng-template>
+      </kendo-grid-column>
+
+
+    </kendo-grid>
+  </div>
+  
+  <kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
+    #gridContextMenu></kendo-contextmenu>
+  
+  <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'78%'"
+    class="dialog-round receipt-dialog">
+    <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
+      <h2 class="k-m-0">Add Internal Transfer Receiving</h2>
+      <small *ngIf="appService.sharedData.Inttransfer.isViewMode">(View Mode)</small>
+      <small *ngIf="appService.sharedData.Inttransfer.isEditMode">(Edit Mode)</small>
+      <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+        (click)="closeDialog()"></button>
+    </div>
+    <div class="dialog-body k-overflow-y-auto">
+      <app-int-tranfer-receiving-add (cancel)="closeDialog()" ></app-int-tranfer-receiving-add>
+    </div>
+  </kendo-dialog>
