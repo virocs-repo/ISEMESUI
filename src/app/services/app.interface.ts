@@ -1,3 +1,4 @@
+import { MenuItem } from "@progress/kendo-angular-menu";
 import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, kpiStatusHoldIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, printIcon, selectBoxIcon, trashIcon, userIcon, windowRestoreIcon, xIcon } from "@progress/kendo-svg-icons";
 
 export interface CustomerType {
@@ -179,6 +180,8 @@ export interface DeviceItem {
   lotIdentifierSelected: any | undefined
   // custom
   error?: boolean
+  isReceived?: boolean
+  rowActionMenu: MenuItem[]
 }
 export const INIT_DEVICE_ITEM: DeviceItem = {
   deviceID: 0,
@@ -205,7 +208,9 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   countrySelected: undefined,
   deviceTypeSelected: undefined,
   lotCategoryID: 0,
-  lotIdentifierSelected: undefined
+  lotIdentifierSelected: undefined,
+
+  rowActionMenu: []
 };
 export interface JSON_Object {
   [key: string]: any

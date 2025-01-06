@@ -298,16 +298,13 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.currentBehalfID = dataItem.behalfID;
     this.apiService.getDevicesByCustomer(dataItem.behalfID).subscribe({
       next: (v: any) => {
-        console.log({ v });
         this.deviceTypes.length = 0;
         this.deviceTypes.push(...v);
         this.gridDataDevice.forEach((d) => {
           d.deviceTypeSelected = this.deviceTypes.find(dt => dt.deviceTypeID == d.deviceTypeID)
         });
       },
-      error: (e: any) => {
-        console.log({ e });
-      }
+      error: (e: any) => { }
     })
   }
   private fetchDataDevice() {
@@ -330,6 +327,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           if (d.lotIdentifier) {
             d.lotIdentifierSelected = this.lotIdentifiers.find(l => l.id == d.lotIdentifier);
           }
+          d.rowActionMenu = this.RowActionMenuDevice.map(o => ({ ...o }));
         })
       }
     });
@@ -607,14 +605,23 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.appService.errorMessage("Please select Device Type!");
         return;
       }
-      // if (!r.dateCode) {
-      //   this.appService.errorMessage("Date Code is required!")
-      //   return;
-      // }
-      // if (!r.countrySelected) {
-      //   this.appService.errorMessage("Please select COO!")
-      //   return;
-      // }
+      if (r.isReceived) {
+        if (!r.labelCount) {
+          r.error = true;
+          this.appService.errorMessage("Label count is required!")
+          return;
+        }
+        if (!r.dateCode) {
+          r.error = true;
+          this.appService.errorMessage("Date Code is required!")
+          return;
+        }
+        if (!r.countrySelected) {
+          r.error = true;
+          this.appService.errorMessage("Please select COO!")
+          return;
+        }
+      }
       const postDevice: PostDevice = {
         // @ts-ignore
         IseLotNumber: r.iseLotNumber,
@@ -660,12 +667,13 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.apiService.generateLineItem().subscribe({
       next: (v: any) => {
         this.appService.isLoading = false;
-        console.log({ v });
         this.gridDataDevice.splice(0, 0, {
           ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID, recordStatus: "I",
           lotIdentifierSelected: this.lotIdentifiers[0],
           lotIdentifier: this.lotIdentifiers[0].id,
-          iseLotNumber: v.data + ''
+          iseLotNumber: v.data + '',
+
+          rowActionMenu: this.RowActionMenuDeviceAdd.map(o => ({ ...o }))
         });
       },
       error: (e: any) => {
@@ -803,41 +811,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   public selectedValues: string = "";
   readonly employees: Employee[] = this.appService.masterData.entityMap.Employee
   employeesSelected: Employee[] = [];
-  public gridStyle = {
-    backgroundColor: 'green'
-  };
-  public areaList: Array<string> = [
-    "Amsterdam",
-    "Athens",
-    "Barcelona",
-    "Berlin",
-    "Brussels",
-    "Chicago",
-    "Copenhagen",
-    "Dublin",
-    "Helsinki",
-    "Houston",
-    "Lisbon",
-    "London",
-    "Los Angeles",
-    "Madrid",
-    "Miami",
-    "Montreal",
-    "New York",
-    "Paris",
-    "Philadelphia",
-    "Prague",
-    "Rome",
-    "Sao Paulo",
-    "Seattle",
-    "Stockholm",
-    "Toronto",
-    "Vancouver",
-    "Vienna",
-    "Vienna",
-    "Warsaw",
-  ];
-
   selectableSettings: any = {
     checkboxOnly: true,
     mode: 'single',
@@ -858,13 +831,18 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
     { text: 'Remove', svgIcon: ICON.trashIcon },
   ];
-  rowActionMenuDevice: MenuItem[] = [
+  private readonly RowActionMenuDevice: MenuItem[] = [
     { text: 'Receive', svgIcon: ICON.cartIcon },
     { text: 'Undo Receive', svgIcon: ICON.cartIcon, disabled: true },
     { text: 'Print', svgIcon: ICON.printIcon },
     { text: 'Hold', svgIcon: ICON.kpiStatusHoldIcon },
     { text: 'Edit Data', svgIcon: ICON.pencilIcon },
     { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
+    { text: 'Remove', svgIcon: ICON.trashIcon },
+  ]
+  private readonly RowActionMenuDeviceAdd: MenuItem[] = [
+    { text: 'Receive', svgIcon: ICON.cartIcon },
+    { text: 'Undo Receive', svgIcon: ICON.cartIcon, disabled: true },
     { text: 'Remove', svgIcon: ICON.trashIcon },
   ]
 
@@ -878,14 +856,22 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         dataItem.dateCode = parseInt(dataItem.dateCode);
         break;
       case 'Receive':
-        dataItem.recordStatus = 'U'
-        dataItem.dateCode = parseInt(dataItem.dateCode);
-        // this.rowActionMenuDevice[0].disabled = true;
-        // this.rowActionMenuDevice[1].disabled = false;
+        if (dataItem.recordStatus != 'I') {
+          dataItem.recordStatus = 'U';
+        }
+        dataItem.isReceived = true;
+        dataItem.dateCode = parseInt(dataItem.dateCode) || '';
+        if (dataItem.rowActionMenu) {
+          dataItem.rowActionMenu[0].disabled = true;
+          dataItem.rowActionMenu[1].disabled = false;
+        }
         break;
       case 'Undo Receive':
-        this.rowActionMenuDevice[0].disabled = false;
-        this.rowActionMenuDevice[1].disabled = true;
+        dataItem.isReceived = false;
+        if (dataItem.rowActionMenu) {
+          dataItem.rowActionMenu[0].disabled = false;
+          dataItem.rowActionMenu[1].disabled = true;
+        }
         break;
       case 'Hold':
         dataItem.isHold = !dataItem.isHold
@@ -904,24 +890,24 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         break;
     }
   }
-  onOpenRowActionMenu(dateItem: any, tableType: TableType) {
+  onOpenRowActionMenu(dataItem: any, tableType: TableType) {
     const a = this.rowActionMenu.find(a => a.text == ActionType.Remove);
     if (a) a.disabled = false;
     switch (tableType) {
       case TableType.Device:
-        const ac = this.rowActionMenuDevice.find(a => a.text == ActionType.Remove);
+        const ac = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Remove);
         if (ac) ac.disabled = false;
-        if (dateItem.deviceID) {
+        if (dataItem.deviceID) {
           if (ac) ac.disabled = true;
         }
         break;
       case TableType.Hardware:
-        if (dateItem.hardwareID) {
+        if (dataItem.hardwareID) {
           if (a) a.disabled = true;
         }
         break;
       case TableType.Misc:
-        if (dateItem.miscellaneousGoodsID) {
+        if (dataItem.miscellaneousGoodsID) {
           if (a) a.disabled = true;
         }
         break;
@@ -1122,7 +1108,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   };
   onSelect(event: any): void {
     // Get selected files count
-    console.log('Selected Files:', event.files);
   }
 
   onUpload(event: any): void {
@@ -1152,7 +1137,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
       this.apiService.uploadFile(file, inputFilename, receiptNumber, this.appService.loginId).subscribe({
         next: (v: any) => {
-          console.log(v);
           this.appService.successMessage('Success: File uploaded!');
           upFiles.clearFiles();
           this.listFiles();
@@ -1174,18 +1158,15 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
     this.apiService.listFiles(dataItem.receiptID).subscribe({
       next: (v: any) => {
-        console.log(v);
         this.receiptAttachments = v;
       }
     })
   }
   readonly downloadFileApi = environment.apiUrl + 'v1/ise/inventory/download/'
   downloadFile(d: ReceiptAttachment) {
-    console.log(d);
     this.apiService.downloadFile(d.path).subscribe();
   }
   deleteFile(d: ReceiptAttachment) {
-    console.log(d);
     d.active = false;
     this.apiService.deleteFile(d).subscribe({
       next: (v: any) => {

@@ -315,7 +315,7 @@
           required></kendo-combobox>
         <i class="k-ml-auto"></i>
         <button kendoButton type="button" rounded="large" themeColor="info" (click)="addDeviceRow()"
-          [disabled]="isDisabled.addDevice">Add Device Row</button>
+          [disabled]="isDisabled.addDevice">Add</button>
         <button kendoButton type="button" rounded="large" themeColor="info" (click)="saveDevices()"
           [disabled]="isDisabled.addDevice">Save</button>
       </div>
@@ -384,13 +384,14 @@
             <ng-template kendoGridCellTemplate let-dataItem>
               <kendo-combobox [data]="lotIdentifiers" [(ngModel)]="dataItem.lotIdentifierSelected" [textField]="'name'"
                 (ngModelChange)="onChangeLotIdentifier(dataItem)" [valueField]="'id'" placeholder="Select"
-                rounded="large" [popupSettings]="{ appendTo: 'root',width: 'auto'  }"></kendo-combobox>
+                rounded="large" [popupSettings]="{ appendTo: 'root', width: 'auto' }"></kendo-combobox>
             </ng-template>
           </kendo-grid-column>
           <kendo-grid-column field="labelCount" title="Label Count">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
-                <kendo-textbox [(ngModel)]="dataItem.labelCount" placeholder="Label Count"></kendo-textbox>
+              <ng-container *ngIf="dataItem.isReceived; else showValue">
+                <kendo-textbox [(ngModel)]="dataItem.labelCount" placeholder="Label Count"
+                  [class.ng-touched]="dataItem.error" required></kendo-textbox>
               </ng-container>
               <ng-template #showValue>
                 <span>{{dataItem.labelCount}}</span>
@@ -399,8 +400,9 @@
           </kendo-grid-column>
           <kendo-grid-column field="dateCode" title="Date Code">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
-                <kendo-textbox [(ngModel)]="dataItem.dateCode" placeholder="Date Code"></kendo-textbox>
+              <ng-container *ngIf="dataItem.isReceived; else showValue">
+                <kendo-textbox [(ngModel)]="dataItem.dateCode" placeholder="Date Code"
+                  [class.ng-touched]="dataItem.error" required></kendo-textbox>
                 <!-- <kendo-numerictextbox [min]="0" [(ngModel)]="dataItem.dateCode"
                   placeholder="Date Code"></kendo-numerictextbox> -->
               </ng-container>
@@ -411,11 +413,11 @@
           </kendo-grid-column>
           <kendo-grid-column field="coo" title="COO">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
+              <ng-container *ngIf="dataItem.isReceived; else showValue">
                 <!-- <kendo-textbox [(ngModel)]="dataItem.coo" placeholder="COO"></kendo-textbox> -->
                 <kendo-combobox [data]="countries" [(ngModel)]="dataItem.countrySelected" [textField]="'countryName'"
-                  [valueField]="'countryID'" [kendoDropDownFilter]="filterSettings" placeholder="Select"
-                  rounded="large"></kendo-combobox>
+                  [valueField]="'countryID'" [kendoDropDownFilter]="filterSettings" placeholder="Select" rounded="large"
+                  [class.ng-touched]="dataItem.error" required></kendo-combobox>
               </ng-container>
               <ng-template #showValue>
                 <a class="minimal-text" [title]="dataItem.coo">{{ dataItem.coo }}</a>
@@ -430,14 +432,10 @@
           </kendo-grid-column>
           <kendo-grid-column title="" [width]="50">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <button *ngIf="dataItem.recordStatus =='I'; else showActionsBtn" kendoButton type="button" rounded="large"
-                (click)="removeRow(gridDataDevice, rowIndex)" title="Remove Row" [svgIcon]="ICON.trashIcon"></button>
-              <ng-template #showActionsBtn>
-                <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
-                  (click)="onOpenRowActionMenu(dataItem, TableType.Device)" #rowActionMenuTarget></button>
-                <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenuDevice"
-                  (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Device')"></kendo-contextmenu>
-              </ng-template>
+              <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
+                (click)="onOpenRowActionMenu(dataItem, TableType.Device)" #rowActionMenuTarget></button>
+              <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="dataItem.rowActionMenu"
+                (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Device')"></kendo-contextmenu>
             </ng-template>
           </kendo-grid-column>
         </kendo-grid>
@@ -452,7 +450,7 @@
         <h2>Hardware</h2>
         <i class="k-ml-auto"></i>
         <button kendoButton type="button" rounded="large" themeColor="info" (click)="addHardwareRow()"
-          [disabled]="isDisabled.addHardware">Add Hardware Row</button>
+          [disabled]="isDisabled.addHardware">Add</button>
         <button kendoButton type="button" rounded="large" themeColor="info" (click)="saveHardwares()"
           [disabled]="isDisabled.addHardware">Save</button>
       </div>
@@ -519,7 +517,7 @@
         <h2>Miscellaneous Goods</h2>
         <i class="k-ml-auto"></i>
         <button kendoButton type="button" rounded="large" themeColor="info" (click)="addMiscellaneousRow()"
-          [disabled]="isDisabled.addMisc">Add Miscellaneous Row</button>
+          [disabled]="isDisabled.addMisc">Add</button>
         <button kendoButton type="button" rounded="large" themeColor="info" (click)="saveMiscellaneous()"
           [disabled]="isDisabled.addMisc">Save</button>
       </div>
@@ -573,7 +571,7 @@
         (click)="uploadFiles(upFiles)">Upload</button>
     </div>
     <div *ngIf="!isDisabledGoodsType" class="k-mt-2">
-      <kendo-grid [data]="receiptAttachments">
+      <kendo-grid [data]="receiptAttachments" class="receipt-attachments">
         <kendo-grid-column title="#" [width]="40">
           <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
             {{ rowIndex + 1 }}

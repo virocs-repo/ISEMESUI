@@ -120,6 +120,11 @@ a.link {
   font-size: 0.875rem;
 }
 
+.receipt-attachments td {
+  padding: 3px 0.75rem !important;
+}
+
+
 // other than mobile
 @media (min-width: 769px) {
   .add-btn {
