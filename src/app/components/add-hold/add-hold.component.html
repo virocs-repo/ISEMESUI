@@ -32,7 +32,8 @@
           <kendo-checkbox 
             [(ngModel)]="isHold" 
             label="Hold"
-            [disabled]="isReadOnly">
+            [disabled]="isView"
+            (change) ="onHoldChanged()" >
           </kendo-checkbox>
         </div>
 
@@ -43,14 +44,14 @@
               [(ngModel)]="selectedHoldType"
               [data]="holdTypes"
               placeholder="Select Hold Type"
-              [disabled]="!isHold || isReadOnly">
+              [disabled]="isReadOnly">
             </kendo-combobox>
           </div>
         </div>
 
         <div class="k-d-flex k-align-items-center k-gap-3">
           <label class="k-label k-mb-0" style="min-width: 150px;">Hold Code:<b class="required-label"></b></label>
-          <div>
+          <div [class.disabled]="isReadOnly">
             <kendo-treeview
               [nodes]="treeNodes"
               [textField]="['groupName', 'holdCode']"
@@ -68,7 +69,7 @@
           <kendo-textarea
             [(ngModel)]="reason"
             style="flex: 1;"
-            [disabled]="!isHold || isReadOnly">
+            [disabled]="isReadOnly">
           </kendo-textarea>
         </div>
 
@@ -79,7 +80,7 @@
               [(ngModel)]="holdComments"
               [data]="holdComment"
               placeholder="Select Hold Comments"
-              [disabled]="!isHold || isReadOnly"
+              [disabled]="isReadOnly"
               style="width: 400px;">
             </kendo-combobox>
           </div>
@@ -90,27 +91,27 @@
           <kendo-textarea
             [(ngModel)]="holdComments"
             style="flex: 1;"
-            [disabled]="!isHold || isReadOnly">
+            [disabled]="isReadOnly">
           </kendo-textarea>
         </div>
 
-        <div *ngIf="!isHold" class="k-d-flex k-align-items-center k-gap-3">
+        <div *ngIf="showHoldFields" class="k-d-flex k-align-items-center k-gap-3">
           <label class="k-label k-mb-0" style="min-width: 150px;">Off Hold Comments:<b class="required-label"></b></label>
           <kendo-textarea
             [(ngModel)]="offHoldComments"
-            [disabled]="isHold || isReadOnly"
-            style="flex: 1;">
+            style="flex: 1;"
+            [disabled]="isView">
           </kendo-textarea>
         </div>
 
-        <div *ngIf="!isHold" class="k-d-flex k-align-items-center k-gap-3">
+        <div *ngIf="showHoldFields" class="k-d-flex k-align-items-center k-gap-3">
           <kendo-label class="k-mb-0" style="min-width: 150px;">Hold By:</kendo-label>
           <span class="value-text">{{ holdBy || '......' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <kendo-label class="k-mb-0" style="min-width: 150px;">Hold Time:</kendo-label>
           <span class="value-text">{{ holdTime || '......' }}</span>
         </div>
     
-        <div *ngIf="!isHold" class="k-d-flex k-align-items-center k-gap-3">
+        <div *ngIf="showHoldFields" class="k-d-flex k-align-items-center k-gap-3">
           <kendo-label class="k-mb-0" style="min-width: 150px;">Off Hold By:</kendo-label>
           <span class="value-text">{{ offHoldBy || '......' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <kendo-label class="k-mb-0" style="min-width: 150px;">Off Hold Time:</kendo-label>
@@ -119,7 +120,7 @@
       </div>
     </fieldset>
     <div class="k-d-flex k-gap-3 k-mt-3">
-      <button kendoButton type="button" rounded="full" themeColor="info" class="k-ml-auto" style="width:6rem" (click)="save()">Save</button>
-      <button kendoButton type="button" rounded="full" themeColor="error" style="width:6rem" (click)="resetForm()">Cancel</button>
+      <button kendoButton type="button" rounded="full" themeColor="info" class="k-ml-auto" style="width:6rem" (click)="save()" [hidden]="isView">Save</button>
+      <button kendoButton type="button" rounded="full" themeColor="error" style="width:6rem" (click)="resetForm()" [hidden]="true">Cancel</button>
     </div>
     

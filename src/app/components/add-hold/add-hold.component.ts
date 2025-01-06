@@ -16,7 +16,7 @@ export class AddHoldComponent implements OnInit {
   @Input() device: string = '';
   @Input() inventoryId: number = 0;
   @Output() cancel = new EventEmitter<void>();
-  @Input() mode: 'add' | 'edit' = 'add';
+  @Input() mode: string = 'add';
   @Input() selectedGridData: any;
   holdTypes: string[] = [];
   holdComment: string[] = [];
@@ -34,24 +34,38 @@ export class AddHoldComponent implements OnInit {
   offHoldTime: string | null = null;
   inventoryXHoldId: number| null = null;
   isReadOnly: boolean = false;
-
+  isView: boolean = false;
+  showHoldFields:boolean = false;
   constructor(private appService: AppService, private apiService: ApiService) {}
 
   ngOnInit(): void {
+    debugger;
     this.updateHoldTime();
     this.fetchHoldCodes();
     this.fetchHoldTypes();
     this.fetchHoldComments();
     if (this.mode === 'edit') {
       this.populateFields();
+      this.isReadOnly = true;
+    }
+    if (this.mode === 'view') {
+      this.populateFields();
+      this.isView = true;
+      this.isReadOnly = true;
+      this.showHoldFields = true;
     }
     else if (this.mode === 'add') {
       this.resetForm();
       this.isHold = true;
+      this.isView = false;
+      this.isReadOnly = false;
     }
-    this.isReadOnly = !!this.offHoldComments;
+    //this.isReadOnly = !!this.offHoldComments;
   }
 
+  onHoldChanged(){
+    this.showHoldFields = !this.isHold;
+  }
   updateHoldTime(): void {
     const currentDate = new Date();
     this.holdTime = currentDate.toLocaleTimeString();
@@ -70,7 +84,7 @@ export class AddHoldComponent implements OnInit {
       this.offHoldBy = this.selectedGridData[0]?.offHoldBy || null;
       this.offHoldTime = this.selectedGridData[0]?.offHoldDate || null;
     }
-    this.isReadOnly = !!this.offHoldComments;
+    //this.isReadOnly = !!this.offHoldComments;
   }
 
   fetchHoldCodes(): void {
@@ -127,7 +141,7 @@ export class AddHoldComponent implements OnInit {
       HoldComments: this.holdComments,
       HoldType: this.selectedHoldType,
       GroupName: groupName,
-      HoldCodeId: this.selectedIds[0] || null,
+      HoldCodeId: 10,//this.selectedIds[0] || null,
       OffHoldComments: this.isHold ? null : this.offHoldComments,
       UserId: 1
     };
@@ -137,7 +151,10 @@ export class AddHoldComponent implements OnInit {
         this.dataUpdated.emit();
         this.cancel.emit();
       },
-      () => this.appService.errorMessage('Failed to save hold details.')
+      () => 
+        {
+          this.appService.errorMessage('Failed to save hold details.')
+        }
     );
   }  
 
