@@ -1,17 +1,21 @@
 .input-icon {
-    position: absolute;
-    z-index: 1;
-    right: 2%;
-    bottom: 12%;
+  position: absolute;
+  z-index: 1;
+  right: 2%;
+  bottom: 12%;
 }
 
 /* Ensure grid and cells do not restrict dropdown visibility */
 .k-grid {
-    overflow: visible !important;
-  }
-  
-  .k-grid td {
-    overflow: visible !important;
-    position: relative; /* Required for proper dropdown positioning */
-  }
-  
+  overflow: visible !important;
+}
+
+.k-grid td {
+  overflow: visible !important;
+  position: relative;
+  /* Required for proper dropdown positioning */
+}
+
+#addReceiptForm {
+  --kendo-font-size: 0.5rem;
+}
