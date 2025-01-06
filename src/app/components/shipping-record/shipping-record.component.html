@@ -108,11 +108,12 @@
           <a class="minimal-text" [title]="dataItem.address">{{dataItem.address}}</a>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="toName" title="To Name">
+     <kendo-grid-column field="toName" title="Contact Name">
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.toName">{{dataItem.toName}}</a>
         </ng-template>
       </kendo-grid-column>
+      <!--  
       <kendo-grid-column field="toStreet1" title="To Street">
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.toStreet1">{{dataItem.toStreet1}}</a>
@@ -138,7 +139,7 @@
           <a class="minimal-text" [title]="dataItem.toCountry">{{dataItem.toCountry}}</a>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column *ngIf="isEditMode" field="additionalInfo" title="Additional Info"></kendo-grid-column>
+      <kendo-grid-column *ngIf="isEditMode" field="additionalInfo" title="Additional Info"></kendo-grid-column> -->
     </kendo-grid>
   </div>
   <div class="k-d-flex k-gap-3 k-mt-3">
