@@ -37,8 +37,7 @@
           rounded="full"
           themeColor="info"
           style="padding: 0.3rem 1.2rem"
-          (click)="openDialog()"
-        >
+          (click)="onAddClick()">
           Add
         </button>
       </div>
@@ -81,7 +80,7 @@
             (click)="closeDialog()"></button>
     </div>
     <app-add-hold
-      [mode]="'edit'"
+      [mode]="viewOrEdit"
       [lotNumber]="selectedRowData?.iseLotNumber || ''"
       [location]="selectedRowData?.location || ''"
       [noOfHolds]="gridDataResult.total.toString()"
@@ -89,7 +88,6 @@
       [device]="device"
       [inventoryId]="selectedRowData?.inventoryID || 0"
       [selectedGridData]="selectedRowDat"
-      (cancel)="closeDialog()"
       (dataUpdated)="onDataUpdated()">
     </app-add-hold>
   </kendo-dialog>

@@ -38,6 +38,8 @@ export class EditInventoryHoldComponent implements OnInit {
     checkboxOnly: true,
     mode: 'single',
   }
+  viewOrEdit: string = '';
+
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
@@ -51,6 +53,7 @@ export class EditInventoryHoldComponent implements OnInit {
       next: (data) => {
         console.log('Fetched data:', data); 
         this.selectedRowDat = data; 
+        this.viewOrEdit = 'edit';
         this.isDialogOpen = true; 
       },
       error: (err) => console.error('Failed to fetch hold details:', err)
@@ -62,6 +65,7 @@ export class EditInventoryHoldComponent implements OnInit {
       next: (data) => {
         console.log('Fetched data for view:', data); 
         this.selectedRowDat = data; 
+        this.viewOrEdit = 'view';
         this.isDialogOpen = true; 
       },
       error: (err) => console.error('Failed to fetch hold details for view:', err)
@@ -152,5 +156,8 @@ export class EditInventoryHoldComponent implements OnInit {
       this.loadHoldData(this.selectedRowData.inventoryID);
     }
   }
-  
+  onAddClick()  {
+    this.viewOrEdit = 'add'
+    this.openDialog();
+  }
 }
