@@ -157,7 +157,7 @@ export class EditInventoryHoldComponent implements OnInit {
     }
   }
   onAddClick()  {
-    this.viewOrEdit = 'add'
+    this.viewOrEdit = '';
     this.openDialog();
   }
 }
