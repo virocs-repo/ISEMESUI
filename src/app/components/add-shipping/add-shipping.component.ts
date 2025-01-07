@@ -144,6 +144,10 @@ onDeviceSelectionChange(value: any): void {
     const custId=this.customerSelected?.CustomerID ||null;
     this.gridDataResult.data = [];
   
+    if (!receivedFromId || !this.customerSelected) {
+      this.appService.errorMessage('Please select customer  and Location.');
+      return;
+    }
     if (!receivedFromId && !deviceId && !lotNumber && !this.customerSelected) {
       this.appService.errorMessage('Please select at least one customer ,Location, Device, or Lot Number.');
       return;
