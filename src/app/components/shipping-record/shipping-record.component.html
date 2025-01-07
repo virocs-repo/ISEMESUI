@@ -19,17 +19,16 @@
           <div class="k-d-flex k-gap-3">
             <kendo-label text="Sender Information" class="k-w-full">
               <b class="required-label"></b>
-              <kendo-textarea [(ngModel)]="senderInformation" [rows]="4" placeholder="Enter Info"
+              <kendo-textarea [(ngModel)]="senderInformation" [rows]="2" placeholder="Enter Info"
                 rounded="large"></kendo-textarea>
             </kendo-label>
-          </div>
-          <div class="k-d-flex k-gap-3" class="k-w-full">
             <kendo-label text="Shipping Comments">
               <b class="required-label"></b>
-              <kendo-textarea [(ngModel)]="shipmentComments" [rows]="4" placeholder="Enter comments"
+              <kendo-textarea [(ngModel)]="shipmentComments" [rows]="2" placeholder="Enter comments"
                 rounded="large"></kendo-textarea>
             </kendo-label>
           </div>
+       
         </div>
 
         <div class="k-d-flex k-gap-2 k-flex-col k-flex-1">
@@ -46,28 +45,29 @@
                 [textField]="'receivingFacilityName'" [valueField]="'receivingFacilityID'" placeholder="Select"
                 rounded="large"></kendo-combobox>
             </kendo-label>
-          </div>
-
-          <div class="k-d-flex k-gap-3 flex-col-sm">
             <kendo-label text="Shipment" class="k-w-full">
               <small class="k-ml-1">(Is Shipped?)</small>
               <br>
               <input type="checkbox" kendoCheckBox [(ngModel)]="isShipped"
                 style="border: 1px solid black;  border-radius: 4px;">
             </kendo-label>
-            <kendo-label text="Shipment Location" class="k-w-full">
+          </div>
+
+          <div class="k-d-flex k-gap-3 flex-col-sm">
+           
+          <!--   <kendo-label text="Shipment Location" class="k-w-full">
               <b class="required-label"></b>
               <kendo-textbox placeholder="Enter" rounded="large" [(ngModel)]="shipmentLocation">
               </kendo-textbox>
-            </kendo-label>
+            </kendo-label> -->
           </div>
-          <div class="k-d-flex k-gap-3" class="k-w-full">
+         <!--  <div class="k-d-flex k-gap-3" class="k-w-full">
             <kendo-label text="Customer Information">
               <b class="required-label"></b>
               <kendo-textarea [rows]="4" placeholder="Enter info" rounded="large"
                 [(ngModel)]="customerInformation"></kendo-textarea>
             </kendo-label>
-          </div>
+          </div> -->
           <!-- <kendo-button type="button" rounded="large" themeColor="dark"
             (click)="autoFillTestValues()">AutoFillTestValues</kendo-button> -->
         </div>
