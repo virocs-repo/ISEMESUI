@@ -36,9 +36,9 @@ export class AddCheckInoutComponent implements OnInit {
   public columnData: any[] = [
     { field: 'lotNum', title: 'Lot#/Serial#', visible: true },
     { field: 'location', title: 'Location', visible: true },
-    { field: 'employeeNames', title: 'Person', visible: true },
+    { field: 'employeeNames', title: 'Received From/CheckOut To', visible: true },
     { field: 'qty', title: 'Qty', visible: false },
-    { field: 'systemUser', title: 'System User', visible: true },
+    { field: 'systemUser', title: 'CheckIn/Out To', visible: true },
     { field: 'goodsType', title: 'Goods Type', visible: true},
     { field: 'status', title: 'Status', visible: true },
     { field: 'receivedFrom', title: 'Received From', visible: false },

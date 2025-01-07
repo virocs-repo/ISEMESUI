@@ -1,50 +1,49 @@
-<div class="k-m-3 k-overflow-y-auto" style="height: auto;">
+<div class="k-m-2 k-overflow-y-auto" style="height: auto;">
   <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
     <div class="k-d-flex k-flex-column k-gap-3">
       <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
-        <div class="field-container">
-        <kendo-label [for]="'lotNumber'" class="label-text">
-          <strong>Lot/ Mail/ FGI Pull #:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        </kendo-label>
-        <span class="value-text">{{ selectedLotNumber }}</span>
-      </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <div class="field-container">
-        <kendo-label [for]="'customerName'" class="label-text">
-          <strong>Customer:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        </kendo-label>
-        <span class="value-text">{{ customerName }}</span>
-      </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <div class="field-container">
-        <kendo-label [for]="'device'" class="label-text">
-          <strong>Device:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        </kendo-label>
-        <span class="value-text">{{ device }}</span>
-      </div>
-      </div>
-      </div>
-
-      <div class="k-d-flex k-flex-column k-gap-3">
-      <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
-        <div class="field-container">
-        <kendo-label [for]="'noOfHolds'" class="label-text">
-          <strong>No Of Holds:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        </kendo-label>
-        <span class="value-text">{{ numberOfHolds }}</span>
-      </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <div class="field-container">
-        <button
-          kendoButton
-          rounded="full"
-          themeColor="info"
-          style="padding: 0.3rem 1.2rem"
-          (click)="onAddClick()">
-          Add
-        </button>
+        <div class="field-container" style="flex: 1; display: flex; align-items: center;">
+          <kendo-label [for]="'lotNumber'" class="label-text">
+            <strong>Lot/ Mail/ FGI Pull #:</strong>
+          </kendo-label>
+          <span class="value-text" style="margin-left: 0.5rem;">{{ selectedLotNumber }}</span>
+        </div>
+        <div class="field-container" style="flex: 2; display: flex; align-items: center;">
+          <kendo-label [for]="'customerName'" class="label-text">
+            <strong>Customer:</strong>
+          </kendo-label>
+          <span class="value-text" style="margin-left: 0.5rem;">{{ customerName }}</span>
+        </div>
       </div>
     </div>
+    <div class="k-d-flex k-flex-column k-gap-3">
+      <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
+        <div class="field-container" style="flex: 1; display: flex; align-items: center;">
+          <kendo-label [for]="'device'" class="label-text">
+            <strong>Device:</strong>
+          </kendo-label>
+          <span class="value-text" style="margin-left: 0.5rem;">{{ device }}</span>
+        </div>
+        <div class="field-container" style="flex: 1; display: flex; align-items: center;">
+          <kendo-label [for]="'noOfHolds'" class="label-text">
+            <strong>No Of Holds:</strong>
+          </kendo-label>
+          <span class="value-text" style="margin-left: 0.5rem;">{{ numberOfHolds }}</span>
+        </div>
+        <div class="field-container" style="flex: 1; display: flex; justify-content: flex-end;">
+          <button
+            kendoButton
+            rounded="full"
+            themeColor="info"
+            style="padding: 0.3rem 1.2rem"
+            (click)="onAddClick()">
+            Add
+          </button>
+        </div>
       </div>
+    </div>
   </kendo-card-body>
-  <div class="k-my-6">
+  <div class="k-my-2">
     <kendo-grid 
       [kendoGridBinding]="gridDataResult.data"  
       [selectable]="selectableSettings" 
@@ -70,7 +69,7 @@
       <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title"></kendo-grid-column>
     </kendo-grid>
   </div>
-  <div class="k-d-flex k-gap-3 k-mt-3">
+  <div class="k-d-flex k-gap-3 k-mt-2">
     <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem" (click)="clearRequest()">Cancel</button>
   </div>
   <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'58%'">

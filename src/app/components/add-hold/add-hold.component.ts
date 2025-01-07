@@ -41,7 +41,7 @@ export class AddHoldComponent implements OnInit {
   ngOnInit(): void {
     this.fetchHoldCodes();
     this.fetchHoldTypes();
-    this.fetchHoldComments();
+   //this.fetchHoldComments();
     if (this.mode === 'edit') {
       this.populateFields();
       this.isReadOnly = true;
@@ -106,7 +106,7 @@ export class AddHoldComponent implements OnInit {
     );
   }
 
-  fetchHoldComments(): void {
+ /* fetchHoldComments(): void {
     this.apiService.getHoldComments().subscribe(
       (response: any) => {
           this.holdComment = response.map((item: any) => item.holdComments);
@@ -116,7 +116,7 @@ export class AddHoldComponent implements OnInit {
         },
       () => this.appService.errorMessage('Failed to fetch hold codes.')
     );
-  }
+  }*/
 
   onSelectionChange(event: any): void {
     const selectedNode = event.dataItem;
@@ -127,7 +127,10 @@ export class AddHoldComponent implements OnInit {
   }  
 
   save(): void {
-    
+    if (!this.holdComments || !this.selectedHoldType || !this.reason ) {
+      this.appService.errorMessage('Please fill in the required fields.');
+      return;
+    }
     const groupName = this.treeNodes?.[0]?.groupName || null;
     const payload = {
       InventoryXHoldId: this.inventoryXHoldId || null,

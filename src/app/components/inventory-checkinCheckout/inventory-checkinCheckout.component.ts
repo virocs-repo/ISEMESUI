@@ -28,16 +28,18 @@ export class InventorycheckinCheckoutComponent implements OnInit{
   isEditButtonEnabled: boolean=true;
   public searchTerm: string = '';
   public columnData: any[] = [
+    { field: 'customerLotNumber', title: 'Customer LotNumber'},
     { field: 'lotNum', title: 'Lot#/Serial#' },
-    { field: 'qty', title: 'Qty' },
-    { field: 'area', title: 'Area' },
-    { field: 'wipLocation', title: 'WIP Location' },
     { field: 'customerName', title: 'Customer Name' },
     { field: 'device', title: 'Device' },
-    { field: 'receivedFromCheckOut', title: 'Received From/CheckOut' },
-    { field: 'checkInOutTime', title: 'CheckIn/Out Time' },
+    { field: 'currentLocation', title: 'Current Location' },
+    { field: 'inventoryStatus', title: 'Inventory Status'},
+    { field: 'qty', title: 'Qty' },
+    { field: 'wipLocation', title: 'WIP Location' },
+    { field: 'receivedFromCheckOut', title: 'Received From/CheckOut To' },
+    { field: 'area', title: 'Area' },
     { field: 'systemCheckInOutPerson', title: 'System CheckIn/Out Person' },
-    { field: 'currentLocation', title: 'Current Location' }
+    { field: 'checkInOutTime', title: 'CheckIn/Out Time' }
   ];
   selectableSettings: any = {
     checkboxOnly: true,
