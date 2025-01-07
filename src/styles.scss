@@ -125,7 +125,7 @@ a.link {
 }
 
 .device-grid {
-  --kendo-font-size: 0.5rem !important;
+  --kendo-font-size: 0.625rem !important;
 
   .k-svg-icon {
     width: 8px;
@@ -146,6 +146,11 @@ a.link {
   }
 }
 
+.grid-receiving {
+  table tbody {
+    user-select: none;
+  }
+}
 
 // other than mobile
 @media (min-width: 769px) {
@@ -361,4 +366,5 @@ body.print-mode * {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  user-select: none;
 }

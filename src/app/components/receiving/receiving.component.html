@@ -48,24 +48,24 @@
 <div class="page-body k-m-4">
   <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings"
     [columnMenu]="columnMenuSettings" [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
-    [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" class="grid-header-sm grid-header-bold"
-    (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
+    [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
+    class="grid-header-sm grid-header-bold grid-receiving" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
     <kendo-grid-column field="receiptID" title="Receipt ID"></kendo-grid-column>
     <kendo-grid-column field="customerType" title="Receive From"></kendo-grid-column>
     <kendo-grid-column field="customerVendor" title="Customer / Vendor">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.customerVendor">{{dataItem.customerVendor}}</a>
+        <div class="minimal-text" [title]="dataItem.customerVendor">{{dataItem.customerVendor}}</div>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="receivedOnBehalf" title="Received on Behalf">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.receivedOnBehalf">{{dataItem.receivedOnBehalf}}</a>
+        <div class="minimal-text" [title]="dataItem.receivedOnBehalf">{{dataItem.receivedOnBehalf}}</div>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="receivingFacility" title="Receiving Facility"></kendo-grid-column>
     <kendo-grid-column field="deliveryMode" title="Delivery Method">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.deliveryMode">{{dataItem.deliveryMode}}</a>
+        <div class="minimal-text" [title]="dataItem.deliveryMode">{{dataItem.deliveryMode}}</div>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="mailStatus" title="Mail Status"></kendo-grid-column>
