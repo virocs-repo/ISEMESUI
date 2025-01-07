@@ -251,7 +251,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.gridData[0].holdComments = dataItem.holdComments
 
       this.signatureTypeSelected = this.signatureTypes.find(c => c.customerTypeName == dataItem.signaturePersonType);
-      this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeID == dataItem.signaturePersonID)
+      this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeID == dataItem.signaturePersonID) || undefined
       this.signatureName = dataItem.signature
       this.Signaturebase64Data = dataItem.signaturebase64Data
       if (dataItem.signatureDate) {
@@ -433,7 +433,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       MailStatus: null,
       ReceivingStatus: null,
       SignaturePersonType: this.signatureTypeSelected?.customerTypeName || '',
-      SignaturePersonID: this.signatureEmployeeSelected?.EmployeeID || 1,
+      SignaturePersonID: this.signatureEmployeeSelected?.EmployeeID || null,
       Signature: this.signatureName,
       Signaturebase64Data: this.Signaturebase64Data,
       SignatureDate: this.appService.formattedDateTime2(new Date()),
@@ -513,11 +513,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       } else {
         this.receipt.isValid.contactPerson = true;
       }
-      // email validation
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailRegex.test(this.email)) {
-        this.appService.errorMessage('Invalid email address');
-        return;
+      this.email = this.email.trim();
+      if (this.email) {
+        // email validation
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(this.email)) {
+          this.appService.errorMessage('Invalid email address');
+          return;
+        }
       }
     }
     if (this.deliveryModeSelected?.deliveryModeName == PICKUP) {
@@ -620,6 +623,15 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           r.error = true;
           this.appService.errorMessage("Please select COO!")
           return;
+        }
+      }
+      const cln = parseInt(r.customerLotNumber);
+      const lcStr = r.labelCount?.toString() || '';
+      const lc = parseInt(lcStr);
+      console.log({ cln, lc });
+      if (cln && lc) {
+        if (cln != lc) {
+          console.log('are not matching');
         }
       }
       const postDevice: PostDevice = {

@@ -380,7 +380,7 @@ export interface PostReceipt {
   MailStatus: string | null;
   ReceivingStatus: string | null;
   SignaturePersonType: string;
-  SignaturePersonID: number;
+  SignaturePersonID: number | null;
   Signature: string;
   Signaturebase64Data: string;
   SignatureDate: Date | string;
