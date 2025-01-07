@@ -39,8 +39,6 @@ export class AddHoldComponent implements OnInit {
   constructor(private appService: AppService, private apiService: ApiService) {}
 
   ngOnInit(): void {
-    debugger;
-    this.updateHoldTime();
     this.fetchHoldCodes();
     this.fetchHoldTypes();
     this.fetchHoldComments();
@@ -66,10 +64,7 @@ export class AddHoldComponent implements OnInit {
   onHoldChanged(){
     this.showHoldFields = !this.isHold;
   }
-  updateHoldTime(): void {
-    const currentDate = new Date();
-    this.holdTime = currentDate.toLocaleTimeString();
-  }
+ 
 
   populateFields(): void {
     if (this.selectedGridData) {

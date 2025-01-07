@@ -80,9 +80,9 @@
             (click)="closeDialog()"></button>
     </div>
     <app-add-hold
+      (cancel)="closeDialog()"
       [mode]="viewOrEdit"
       [lotNumber]="selectedRowData?.iseLotNumber || ''"
-      [location]="selectedRowData?.location || ''"
       [noOfHolds]="gridDataResult.total.toString()"
       [customerName]="customerName"
       [device]="device"
