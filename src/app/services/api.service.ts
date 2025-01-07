@@ -69,6 +69,9 @@ export class ApiService {
   getDevicesByCustomer(customerId: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/deviceTypeByCustomer?customerId=${customerId}`);
   }
+  getDevicesByCustomerall() {
+    return this.httpClient.get(`${API}v1/ise/inventory/deviceTypeByCustomer`);
+  }
   getEntitiesName(entityType: string) {
     return this.httpClient.get(`${API}v1/ise/inventory/entity/${entityType}`);
   }
@@ -442,4 +445,39 @@ export class ApiService {
     return this.httpClient.post(`${API}v1/ise/inventory/inttransfer/UpsertIntTransReceipt`, data);
   }
   
+
+  // addshippinginvcentory
+  getAddShippingInventory(customerId: number | null,deviceId: number | null, locationId: number | null, receivedFromId: number | null,lotNumber: string | null,shipCategoryID: number | null)
+   {
+    const params = new URLSearchParams();
+
+    // Add each parameter only if it has a value
+   
+    if (customerId !== null && customerId !== undefined) {
+      params.append("customerId", customerId.toString());
+    }
+   
+    if (deviceId !== null && deviceId !== undefined) {
+      params.append("deviceId", deviceId.toString());
+    }
+    if (locationId !== null && locationId !== undefined) {
+      params.append("locationId", locationId.toString());
+    }
+    if (receivedFromId !== null && receivedFromId !== undefined) {
+      params.append("receivedFromId", receivedFromId.toString());
+    }
+      if (lotNumber !== null && lotNumber !== undefined) {
+      params.append("lotNumber", lotNumber);
+    }
+    if (shipCategoryID !== null && shipCategoryID !== undefined) {
+      params.append("shipmentCategoryID", shipCategoryID.toString());
+    }
+    const url = `${API}v1/ise/inventory/inventorydata/GetShipmentInventory?${params.toString()}`;
+    return this.httpClient.get(url);
+  }
+
+ saveAddShipmentRecord(data: any): Observable<any> {
+    return this.httpClient.post(`${API}v1/ise/inventory/inventorydata/add-ship-record`, data);
+  }
+
 }

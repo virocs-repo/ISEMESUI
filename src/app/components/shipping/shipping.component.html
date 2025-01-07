@@ -17,7 +17,7 @@
     <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
   </kendo-label>
   <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
-  <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()"
+  <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="onAddShipping()"
     [disabled]="!isAddButtonEnabled">Add</button>
 </div>
 <div class="k-m-4">
@@ -86,7 +86,21 @@
 <kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
   #gridContextMenu></kendo-contextmenu>
 
-<kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'78%'"
+<!-- View/Edit Shipping Dialog -->
+<!-- Grid -->
+<!-- <kendo-grid
+  [kendoGridBinding]="gridDataResult.data"
+  [pageSize]="pageSize"
+  [skip]="skip"
+  [pageable]="true"
+  [selectable]="{ checkboxOnly: true, mode: 'multiple' }"
+  (cellClick)="onCellClick($event)">
+</kendo-grid> -->
+
+<!-- Action Buttons -->
+
+<!-- View/Edit Shipping Dialog -->
+<kendo-dialog  *ngIf="isDialogOpen && dialogType === 'viewEdit'" (close)="closeDialog()" [minWidth]="250" [width]="'80%'"
   class="dialog-round receipt-dialog">
   <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
     <h2 class="k-m-0">Shipping Record</h2>
@@ -98,13 +112,15 @@
   <div class="dialog-body k-overflow-y-auto">
     <app-shipping-record (onClose)="closeDialog()"></app-shipping-record>
   </div>
+
 </kendo-dialog>
 
-<!-- <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'68%'" class="dialog-round">
+ <kendo-dialog *ngIf="isDialogAddOpen && dialogType === 'add'" (close)="closeDialgadd()" [minWidth]="250" [width]="'80%'" class="dialog-round">
   <div class="k-d-flex k-align-items-center k-mb-3">
     <h2 class="k-m-0">Shipping</h2>
     <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
-      (click)="closeDialog()"></button>
+      (click)="closeDialgadd()"></button>
   </div>
-  <app-add-shipping></app-add-shipping>
-</kendo-dialog> -->
+  <app-add-shipping (cancel)="closeDialgadd()"></app-add-shipping>
+</kendo-dialog> 
+

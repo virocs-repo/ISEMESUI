@@ -33,6 +33,9 @@ export class ShippingComponent implements OnDestroy {
   public searchTerm: string = '';
   private originalData: any[] = [];
 
+  dialogType: 'viewEdit' | 'add' | null = null; 
+
+
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
@@ -85,12 +88,12 @@ export class ShippingComponent implements OnDestroy {
     this.customerTypes.push(...this.appService.masterData.customerType)
   }
   private fetchdata() {
-    debugger;
+    
     this.apiService.getShippingData(this.fromDate, this.toDate).subscribe({
       next: (v: any) => {
         /*      this.gridDataResult.data = v;
              this.gridDataResult.total = v.length */
-        debugger;
+      
         this.originalData = v;
         this.pageData();
 
@@ -143,13 +146,41 @@ export class ShippingComponent implements OnDestroy {
   }
 
   isDialogOpen = false;
-  openDialog() {
+  isDialogAddOpen = false;
+  openDialog(type: 'viewEdit' | 'add', isEditMode: boolean = false): void {
     this.isDialogOpen = true;
+    this.isDialogAddOpen=true;
+    this.dialogType = type;
+
+    if (type === 'viewEdit') {
+      this.appService.sharedData.shipping = {
+        ...this.appService.sharedData.shipping,
+        dataItem: this.dataItemSelected,
+        isViewMode: !isEditMode,
+        isEditMode: isEditMode
+      };
+    }
   }
-  closeDialog() {
+
+  // Close dialog
+  closeDialog(): void {
     this.isDialogOpen = false;
-    this.fetchdata(); // because there might be changes from dialog
+    this.dialogType = null;
+    this.fetchdata(); // Refresh data after closing the dialog
   }
+
+  closeDialgadd():void{
+    this.isDialogAddOpen=false;
+    this.dialogType = null;
+    this.fetchdata(); 
+  }
+  closeDialogAddParent():void{
+   
+    
+    this.isDialogAddOpen=false;
+    this.dialogType ='viewEdit' ;
+  }
+
 
   doTestEditMode() {
     // this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridData[0]);
@@ -183,14 +214,16 @@ export class ShippingComponent implements OnDestroy {
         this.appService.sharedData.shipping.isEditMode = false;
         this.appService.sharedData.shipping.isViewMode = true;
         // access the same in receipt component
-        this.openDialog()
+        //this.openDialog()
+        this.openDialog('viewEdit', false);
         break;
       case 'Edit Data':
         this.appService.sharedData.shipping.dataItem = dataItem
         this.appService.sharedData.shipping.isEditMode = true;
         this.appService.sharedData.shipping.isViewMode = false;
         // access the same in receipt component
-        this.openDialog()
+        //this.openDialog()
+        this.openDialog('viewEdit', true);
         break;
 
       default:
@@ -202,7 +235,9 @@ export class ShippingComponent implements OnDestroy {
       'highlighted-row': context.index === this.selectedRowIndex
     };
   }
-
+  onAddShipping(): void {
+    this.openDialog('add'); // Open add shipping dialog
+  }
   search() {
     // this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
     // this.toDate = moment(this.range.end).format('MM-DD-YYYY');

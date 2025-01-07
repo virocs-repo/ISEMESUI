@@ -73,6 +73,7 @@ export class AppService {
     Invmove: SharedInfo
     Inttransfer:SharedInfo
     anotherShipping:SharedInfo
+    addshipping:SharedInfo
 
   } = {
       receiving: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
@@ -80,6 +81,7 @@ export class AppService {
       combolot: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
       Invmove: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
       Inttransfer: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
+      addshipping: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
       anotherShipping : {isEditMode:false, isViewMode:false, dataItem: {}, eventEmitter: new EventEmitter() }
     }
   hardwareTypes: HardwareType[] = []

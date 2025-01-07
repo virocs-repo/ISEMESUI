@@ -57,6 +57,15 @@ export class ShippingRecordComponent implements OnDestroy {
       this.fetchShipmentLineItems(dataItem.shipmentId);
       this.fetchData();
     }
+    else
+    {
+      
+        this.customerSelected = this.customers.find(c => c.CustomerID ==this.appService.sharedData.addshipping.dataItem.customerID);
+        this.customerID = this.appService.sharedData.addshipping.dataItem.customerID;
+        
+        this.fetchData();
+      
+    }
     if (this.appService.sharedData.shipping.isViewMode) {
       this.isDisabled.shipBtn = true;
       this.isDisabled.clearBtn = true;
@@ -78,13 +87,15 @@ export class ShippingRecordComponent implements OnDestroy {
     if (!this.customerID) {
       return;
     }
-    this.apiService.getShipmentDetails(this.customerID).subscribe({
+    
+    this.apiService.getShipmentInventories(this.customerID).subscribe({
       next: (shipmentDetails: ShipmentDetails[] | any) => {
         this.rebuildTable(shipmentDetails);
       }
     });
   }
   private rebuildTable(shipmentDetails: ShipmentDetails[] | any) {
+    
     if (shipmentDetails) {
       shipmentDetails.forEach((a: ShipmentDetails) => {
         a.selected = a.shipmentLineItemID ? true : false;
