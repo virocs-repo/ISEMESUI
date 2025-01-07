@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { PDFExportComponent } from '@progress/kendo-angular-pdf-export';
@@ -98,7 +98,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     featureField?.find(o => o.featureFieldName == 'HoldCheckbox')?.active ?? true;
   isHoldCommentEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
     featureField?.find(o => o.featureFieldName == "HoldComments")?.active ?? true;
-
+  @ViewChild('noOfCartons', { static: false, }) noOfCartons: ElementRef | undefined;
   gridData = [
     {
       noOfCartons: undefined,
@@ -856,6 +856,13 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         dataItem.dateCode = parseInt(dataItem.dateCode);
         break;
       case 'Receive':
+        const noOfCartons = this.gridData[0].noOfCartons;
+        if (!noOfCartons) {
+          this.appService.errorMessage("Please set No. of Cartons to receive");
+          this.noOfCartons?.nativeElement.scrollIntoView({ behavior: 'smooth' })
+          return;
+        }
+
         if (dataItem.recordStatus != 'I') {
           dataItem.recordStatus = 'U';
         }

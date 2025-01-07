@@ -1,6 +1,6 @@
 <kendo-appbar position="top" class="header-desktop k-px-4" [themeColor]="'light'">
   <kendo-appbar-section routerLink="/">
-    <button kendoButton fillMode="flat" class="app-logo-btn" >
+    <button kendoButton fillMode="flat" class="app-logo-btn">
       <img src="assets/logo.svg" alt="App Logo" class="app-logo" style="width:16rem">
     </button>
   </kendo-appbar-section>
@@ -9,21 +9,21 @@
 
   <kendo-appbar-section width="100%">
     <div class="nav-bar k-d-flex k-align-items-center k-justify-content-center k-gap-3">
-<!--       <button kendoButton fillMode="flat" routerLink="/receiving" routerLinkActive="active"
+      <!--       <button kendoButton fillMode="flat" routerLink="/receiving" routerLinkActive="active"
         [disabled]="!(appService.userPreferences || (appService.userPreferences && appService.activeNavigationUrls.includes('Receiving')))">Receiving</button> -->
 
-        <div class="kendo-dropdown-wrapper">
-          <button kendoButton fillMode="flat" class="parent-menu-button" routerLink="/receiving" routerLinkActive="active"  [disabled]="!(appService.userPreferences || (appService.userPreferences && appService.activeNavigationUrls.includes('Receiving')))">
-            Receiving
-            <kendo-icon name="arrow-down" class="menu-icon"></kendo-icon>
+      <div class="kendo-dropdown-wrapper">
+        <button kendoButton fillMode="flat" class="parent-menu-button" routerLink="/receiving" routerLinkActive="active"
+          [disabled]="!(appService.userPreferences || (appService.userPreferences && appService.activeNavigationUrls.includes('Receiving')))">
+          Receiving
+          <kendo-icon name="arrow-down" class="menu-icon"></kendo-icon>
+        </button>
+        <div class="submenu">
+          <button kendoButton fillMode="flat" routerLink="/int-transfer-receiving" routerLinkActive="active">
+            Internal Tranfer Receiving
           </button>
-          <div class="submenu">
-            <button kendoButton fillMode="flat" routerLink="/int-transfer-receiving" routerLinkActive="active">
-              Internal Tranfer Receiving
-            </button>
-           
-          </div>
         </div>
+      </div>
       <button kendoButton fillMode="flat" routerLink="/inventory-hold" routerLinkActive="active"
         [disabled]="!(appService.userPreferences || (appService.userPreferences && appService.activeNavigationUrls.includes('Hold')))">Hold</button>
 
@@ -61,7 +61,7 @@
       <button kendoButton fillMode="flat" routerLink="/customer-order" routerLinkActive="active">Customer
         Order/Scrap</button>
       <button kendoButton fillMode="flat" routerLink="/reports" routerLinkActive="active">Reports</button>
-   <!--    <button kendoButton fillMode="flat" routerLink="/another-shipping" routerLinkActive="active">Other Inventory Shipment</button>
+      <!--    <button kendoButton fillMode="flat" routerLink="/another-shipping" routerLinkActive="active">Other Inventory Shipment</button>
       <button kendoButton fillMode="flat" routerLink="/combined-lot" routerLinkActive="active">Combined Lot Shipment</button> -->
     </div>
   </kendo-appbar-section>
@@ -70,13 +70,13 @@
 
   <kendo-appbar-section style="margin-left: auto;">
     <div class="profile-avatar k-d-flex k-gap-4 k-align-items-center k-justify-content-center">
-      <div>
+      <div class="k-user-select-none" #profileMenuTarget>
         <b>{{appService.userData.firstName}}</b> <br>
         <small>Admin</small>
       </div>
-      <span #profileMenuTarget>
+      <!-- <span #profileMenuTarget>
         <kendo-avatar [imageSrc]="img1" class="avatar-size avatar-img"></kendo-avatar>
-      </span>
+      </span> -->
       <!-- <kendo-avatar [imageSrc]="img1" class="avatar-size" (click)="authService.logout()" title="Logout"></kendo-avatar> -->
       <!-- <kendo-avatar [svgIcon]="ICON.userIcon" class="avatar-size"></kendo-avatar> -->
     </div>

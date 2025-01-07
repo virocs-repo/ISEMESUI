@@ -162,11 +162,12 @@
       <kendo-card class="card-green card-full k-mt-4" *ngIf="isVisibleHoldComments"
         [ngClass]="{'k-pointer-events-none':isDisableHoldComments}">
         <kendo-card-body class="card-flex">
+          <i #noOfCartons> </i>
           <kendo-grid [kendoGridBinding]="gridData" class="bold-column-header cartons">
             <kendo-grid-column field="noOfCartons" title="No of Cartons" [width]="200">
               <ng-template kendoGridCellTemplate let-dataItem>
-                <kendo-numerictextbox [(ngModel)]="dataItem.noOfCartons" [format]="'n0'"
-                  placeholder="Enter cartons"></kendo-numerictextbox>
+                <kendo-numerictextbox [(ngModel)]="dataItem.noOfCartons" [format]="'n0'" placeholder="Enter cartons"
+                  required></kendo-numerictextbox>
               </ng-template>
             </kendo-grid-column>
             <kendo-grid-column field="isHold" title="Hold" [width]="60" class="center">
@@ -329,7 +330,7 @@
               <span [title]="dataItem.iseLotNumber">{{ dataItem.iseLotNumber }}</span>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="customerLotNumber" title="Customer Lot#" [width]="150">
+          <kendo-grid-column field="customerLotNumber" title="Cust cnt" [width]="80">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.customerLotNumber" placeholder="Lot Number"></kendo-textbox>
@@ -338,7 +339,7 @@
                 <span>{{dataItem.customerLotNumber}}</span>
               </ng-template>
             </ng-template></kendo-grid-column>
-          <kendo-grid-column field="customerCount" title="Customer #" [width]="100">
+          <kendo-grid-column field="customerCount" title="Customer #" [width]="80">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.customerCount" (ngModelChange)="onCountUIChange($event)"
@@ -349,12 +350,12 @@
               </ng-template>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="expedite" title="Expedite" [width]="80">
+          <kendo-grid-column field="expedite" title="Expedite" [width]="70">
             <ng-template kendoGridCellTemplate let-dataItem>
               <input type="checkbox" name="expedite" [(ngModel)]="dataItem.expedite" kendoCheckBox>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="iqa" title="IQA" [width]="50">
+          <kendo-grid-column field="iqa" title="IQA" [width]="45">
             <ng-template kendoGridCellTemplate let-dataItem>
               <input type="checkbox" name="iqa" [(ngModel)]="dataItem.iqa" kendoCheckBox>
             </ng-template>
@@ -387,7 +388,7 @@
                 rounded="large" [popupSettings]="{ appendTo: 'root', width: 'auto' }"></kendo-combobox>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="labelCount" title="Label Count" [width]="100">
+          <kendo-grid-column field="labelCount" title="Label Count" [width]="80">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.isReceived; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.labelCount" placeholder="Label Count"
@@ -398,7 +399,7 @@
               </ng-template>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="dateCode" title="Date Code" [width]="100">
+          <kendo-grid-column field="dateCode" title="Date Code" [width]="80">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.isReceived; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.dateCode" placeholder="Date Code"
