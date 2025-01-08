@@ -2,10 +2,10 @@
 <div class="k-d-flex k-align-items-center  k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
     <h4> Internal Tranfer Receiving</h4>
     <i class="k-ml-auto"></i>
-    <kendo-label text="Status" class="k-font-size-sm">
+    <!--<kendo-label text="Status" class="k-font-size-sm">
       <br />
       <kendo-autocomplete [data]="areaList" placeholder="status"></kendo-autocomplete>
-    </kendo-label>
+    </kendo-label>-->
     <!-- <div class="k-d-flex k-gap-4 k-align-items-center k-flex-1"> -->
         <!-- Search Icon and Input -->
         <kendo-label text="Search" class="k-font-size-sm">
@@ -43,18 +43,9 @@
    
 <!--       <kendo-grid-column field="receiptID" title="receipt #"></kendo-grid-column>
       <kendo-grid-column field="customerVendorID" title="customerVendorID"  [hidden]="true" ></kendo-grid-column> -->
-      <kendo-grid-column field="customerLotNumber" title="Customer LotNumber"></kendo-grid-column>
       <kendo-grid-column field="lotNum" title="lotNum">
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.lotNum">{{dataItem.lotNum}}</a>
-        </ng-template>
-
-      </kendo-grid-column>
-      <kendo-grid-column field="lotQty" title="LotQty"></kendo-grid-column>
-      <kendo-grid-column field="device" title="Device"></kendo-grid-column>
-      <kendo-grid-column field="customerName" title="Customer Name">
-        <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="minimal-text" [title]="dataItem.customerName">{{dataItem.customerName}}</a>
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column field="deviceFamily" title="DeviceFamily">
@@ -62,7 +53,15 @@
           <a class="minimal-text" [title]="dataItem.deviceFamily">{{dataItem.deviceFamily}}</a>
         </ng-template>
       </kendo-grid-column>
-  
+      <kendo-grid-column field="device" title="Device"></kendo-grid-column>
+      <kendo-grid-column field="status" title="Status"></kendo-grid-column>  
+      <kendo-grid-column field="lotQty" title="LotQty"></kendo-grid-column>  
+      <kendo-grid-column field="customerLotNumber" title="Customer LotNumber"></kendo-grid-column>
+      <kendo-grid-column field="customerName" title="Customer Name">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem.customerName">{{dataItem.customerName}}</a>
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column field="receivedQty" title="ReceivedQty">
 
         <ng-template kendoGridCellTemplate let-dataItem>
