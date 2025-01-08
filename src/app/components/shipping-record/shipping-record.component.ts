@@ -147,10 +147,10 @@ export class ShippingRecordComponent implements OnDestroy {
       this.appService.errorMessage('Please select atleast one record');
       return;
     }
-    if (this.gridSelectedKeys && this.gridSelectedKeys.length != 1) {
-      this.appService.errorMessage("Please select only one record");
-      return;
-    }
+   // if (this.gridSelectedKeys && this.gridSelectedKeys.length != 1) {
+     // this.appService.errorMessage("Please select only one record");
+      //return;
+    //}
     const sd = this.shipmentDetails.find(s => s.inventoryID == this.gridSelectedKeys[0])
     if (!sd) {
       return;

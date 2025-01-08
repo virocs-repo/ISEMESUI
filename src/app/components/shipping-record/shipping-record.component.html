@@ -85,8 +85,8 @@
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column *ngIf="isEditMode" field="inventoryID" title="Inventory ID"></kendo-grid-column>
-      <kendo-grid-column *ngIf="isEditMode" field="shipmentLineItemID"
-        title="Shipment Line Item ID"></kendo-grid-column>
+      <!--<kendo-grid-column *ngIf="isEditMode" field="shipmentLineItemID"
+        title="Shipment Line Item ID"></kendo-grid-column>-->
       <kendo-grid-column field="iseLotNum" title="ISE Lot#"></kendo-grid-column>
       <kendo-grid-column field="goodsType" title="Device Family"></kendo-grid-column>
       <!-- <kendo-grid-column field="partNum" title="Device">
@@ -143,11 +143,10 @@
     </kendo-grid>
   </div>
   <div class="k-d-flex k-gap-3 k-mt-3">
-    <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem"
-      [disabled]="isDisabled.clearBtn" (click)="clearForm()">Clear</button>
-    <button kendoButton type="button" rounded="full" themeColor="info" class="k-w-25" [disabled]="isDisabled.shipBtn"
+   
+    <button kendoButton type="button" rounded="full" themeColor="info" class="k-ml-auto" style="width:6rem" [disabled]="isDisabled.shipBtn"
       (click)="shipItem()">Ship</button>
     <button kendoButton type="button" rounded="full" themeColor="success" class="k-w-25" [disabled]="isDisabled.shipBtn"
-      (click)="saveShipment()">Submit</button>
+      (click)="saveShipment()">Save</button>
   </div>
 </div>
