@@ -1,9 +1,10 @@
 <div class="k-m-3 k-overflow-y-auto" style="width: auto;">
   <kendo-card-body class="card-flex">
     <div class="k-d-flex k-align-items-end k-gap-3">
-      <kendo-label text="Lot Number" class="k-w-full">
+      <kendo-label text="Lot Number test" class="k-w-full">
         <b class="required-label"></b>
-        <kendo-autocomplete text="Lot Number" [data]="filteredLotNumbers" [(ngModel)]="selectedLotNumber" placeholder="#Lot Number" rounded="large" (filterChange)="onLotNumberFilter($event)" [suggest]="true" (valueChange)="onLotNumberSelected($event)" ></kendo-autocomplete>
+        <kendo-autocomplete text="Lot Number" [data]="filteredLotNumbers" [(ngModel)]="selectedLotNumber" placeholder="#Lot Number" rounded="large" 
+        (filterChange)="onLotNumberFilter($event)" [suggest]="true" (valueChange)="onLotNumberSelected($event)" ></kendo-autocomplete>
             </kendo-label>
       <kendo-label *ngIf="isCheckOutBehavior(status)" text="Location" class="k-w-full">
         <b class="required-label"></b>
@@ -15,11 +16,11 @@
       </kendo-label>
       <kendo-label *ngIf="isCheckOutBehavior(status)" text="Received From" class="k-w-full">
         <b class="required-label"></b>
-        <kendo-multiselect [data]="employees" [(ngModel)]="employeesSelected" [textField]="'EmployeeName'" [valueField]="'EmployeeID'" placeholder="Select" rounded="large"></kendo-multiselect>
+        <kendo-textbox [(ngModel)]="employeesSelected"></kendo-textbox>
       </kendo-label>
       <kendo-label *ngIf="status === 'CheckIn'" text="CheckOut To" class="k-w-full">
         <b class="required-label"></b>
-        <kendo-multiselect [data]="employees" [(ngModel)]="employeesSelected" [textField]="'EmployeeName'" [valueField]="'EmployeeID'" placeholder="Select" rounded="large"></kendo-multiselect>
+        <kendo-textbox [(ngModel)]="employeesSelected"></kendo-textbox>
       </kendo-label>    
       <kendo-label *ngIf="status === 'CheckIn'" text="Return to Customer" class="k-w-full">
         <b class="required-label"></b>
