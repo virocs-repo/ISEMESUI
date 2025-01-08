@@ -191,7 +191,7 @@ export class AddCheckInoutComponent implements OnInit {
         Location: location,
         StatusID: newStatus === 'CheckIn' ? 1711 : 1712,
         ReceivedFrom: this.employeesSelected,
-        LoginId: 1
+        LoginId: this.appService.loginId,
       }]
     };
   
