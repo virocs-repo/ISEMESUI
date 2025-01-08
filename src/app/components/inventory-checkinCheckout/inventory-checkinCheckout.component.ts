@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CellClickEvent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
-import { ContextMenuComponent, ContextMenuSelectEvent } from '@progress/kendo-angular-menu';
+import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
-import { ICON } from 'src/app/services/app.interface';
+import { MESSAGES,ICON } from 'src/app/services/app.interface';
+import { AppService } from 'src/app/services/app.service';
 
 @Component({
   selector: 'app-inventory-checkinCheckout',
@@ -53,7 +54,12 @@ export class InventorycheckinCheckoutComponent implements OnInit{
     autoSizeAllColumns: true,
   }
 
-  constructor(private apiService: ApiService) { }
+  rowActionMenu: MenuItem[] = [
+    { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
+    { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
+  ];
+
+  constructor(public appService: AppService, private apiService: ApiService) { }
   
   ngOnInit(): void {
     this.loadGridData();
@@ -102,8 +108,28 @@ export class InventorycheckinCheckoutComponent implements OnInit{
       this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
     }
   }
+  onSelectRowActionMenu(e: ContextMenuSelectEvent) {
+     
+    const dataItem = this.dataItemSelected;
+    switch (e.item.text) {
+      case 'View Data':
+        this.appService.sharedData.anotherShipping.dataItem = dataItem
+        this.appService.sharedData.anotherShipping.isEditMode = false;
+        this.appService.sharedData.anotherShipping.isViewMode = true;
+        // access the same in receipt component
+        this.openDialog()
+        break;
+      case 'Edit Data':
+        this.appService.sharedData.anotherShipping.dataItem = dataItem
+        this.appService.sharedData.anotherShipping.isEditMode = true;
+        this.appService.sharedData.anotherShipping.isViewMode = false;
+        // access the same in receipt component
+        this.openDialog()
+        break;
 
-  onSelectRowActionMenu(e: ContextMenuSelectEvent): void {
+      default:
+        break;
+    }
   }
 
   rowCallback = (context: any) => {
