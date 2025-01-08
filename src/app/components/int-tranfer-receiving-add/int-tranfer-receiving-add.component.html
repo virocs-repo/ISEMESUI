@@ -23,7 +23,7 @@
             <kendo-label text="Device Family" class="k-w-full">
               <b class="required-label"></b>
               <br />
-              <kendo-combobox [textField]="'DeviceFamily'"  [valueField]="'deviceFamily'"  placeholder="Select" rounded="large"  [disabled]="isEditMode" style="width:20rem"></kendo-combobox>
+              <kendo-autocomplete [data]="deviceFamily" [(ngModel)]="deviceFamily"  [valueField]="'DeviceFamily'"  placeholder="Select" rounded="large"  [disabled]="isEditMode" style="width:20rem"></kendo-autocomplete>
             </kendo-label>
           </div>
           </div>
@@ -34,20 +34,20 @@
               <kendo-label text="Device" class="k-w-full">
                 <b class="required-label"></b>
                 <br />
-                <kendo-combobox [textField]="'Device'"  [valueField]="'device'"  placeholder="Select" rounded="large"  [disabled]="isEditMode" style="width:20rem"></kendo-combobox>
+                <kendo-autocomplete  [data]="device" [(ngModel)]="device" [valueField]="'device'"  placeholder="Select" rounded="large"  [disabled]="isEditMode" style="width:20rem"></kendo-autocomplete>
               </kendo-label>
             </div>
             <div class="field-container" style="flex: 1; display: flex; align-items: center;">
               <kendo-label text="Lot Qty" class="k-w-full">
                 <b class="required-label"></b>
                 <br />
-                <kendo-combobox [textField]="'LotQty'"  [valueField]="'lotQty'"  placeholder="Select" rounded="large"  [disabled]="isEditMode" style="width:20rem"></kendo-combobox>
+                <kendo-textbox [(ngModel)]="lotQTY"  rounded="large"  [disabled]="isEditMode" style="width:20rem"></kendo-textbox>
               </kendo-label>
             </div>
             <div class="field-container" style="flex: 1; display: flex; align-items: center;">
               <kendo-label text="ReceivedQty">
                 <br />
-                <input type="number" [(ngModel)]="ReceivedQty" rounded="large" [disabled]="isDisabled.shipBtn" style="width:20rem"/>
+                <kendo-textbox [(ngModel)]="ReceivedQty" rounded="large" [disabled]="isDisabled.shipBtn" style="width:20rem"></kendo-textbox>
               </kendo-label>
             </div>
           </div>
