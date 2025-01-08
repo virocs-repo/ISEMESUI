@@ -55,7 +55,7 @@ export class ShippingRecordComponent implements OnDestroy {
       this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.currentLocationID);
       this.customerID = dataItem.customerID;
       this.fetchShipmentLineItems(dataItem.shipmentId);
-      this.fetchData();
+     // this.fetchData();
     }
     else
     {
@@ -63,7 +63,7 @@ export class ShippingRecordComponent implements OnDestroy {
         this.customerSelected = this.customers.find(c => c.CustomerID ==this.appService.sharedData.addshipping.dataItem.customerID);
         this.customerID = this.appService.sharedData.addshipping.dataItem.customerID;
         
-        this.fetchData();
+       // this.fetchData();
       
     }
     if (this.appService.sharedData.shipping.isViewMode) {
@@ -104,7 +104,10 @@ export class ShippingRecordComponent implements OnDestroy {
       this.gridDataResult.data = shipmentDetails;
       this.gridDataResult.total = shipmentDetails.length;
       this.shipmentDetails = shipmentDetails;
-      this.gridSelectedKeys = this.shipmentDetails.filter(v => v.shipmentLineItemID).map(d => d.inventoryID);
+      this.gridSelectedKeys = this.shipmentDetails
+      .filter(v => v.shipmentLineItemID >0) // Check for not null
+      .map(d => d.inventoryID);
+    
       console.log({ shipmentDetails });
     }
   }
@@ -120,7 +123,7 @@ export class ShippingRecordComponent implements OnDestroy {
   selectableSettings: SelectableSettings = {
     enabled: true,
     checkboxOnly: true,
-    mode: 'single'
+    mode: 'multiple'
   }
   columnMenuSettings: any = {
     lock: false,
