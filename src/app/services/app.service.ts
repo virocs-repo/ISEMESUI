@@ -2,6 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { AppFeature, AppFeatureField, AppMenu, HardwareType, MasterData, ShipmentCategory, ShipmentType, UserData } from './app.interface';
 import { NotificationService } from '@progress/kendo-angular-notification';
 import * as moment from 'moment';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 
 interface FeatureField {
@@ -91,7 +92,7 @@ export class AppService {
   eventEmitter: EventEmitter<{ action: 'updates' | 'refreshMasterData' | 'refreshVendors'; data: any }> = new EventEmitter();
   refreshVendors = false;
 
-  constructor(private notificationService: NotificationService) {
+  constructor(private notificationService: NotificationService, public deviceDetectorService:DeviceDetectorService) {
     const up = localStorage.getItem('UserPreferences');
     if (up) {
       this.userPreferences = JSON.parse(up);

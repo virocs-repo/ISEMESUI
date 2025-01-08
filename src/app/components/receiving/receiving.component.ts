@@ -114,8 +114,8 @@ export class ReceivingComponent implements OnDestroy {
       next: (v: any) => {
         this.originalData = v;
         this.pageData();
-     /*    this.gridDataResult.data = v;
-        this.gridDataResult.total = v.length */
+        /*    this.gridDataResult.data = v;
+           this.gridDataResult.total = v.length */
         // this.testReceiptEdit();
       },
       error: (v: any) => { }
@@ -190,12 +190,21 @@ export class ReceivingComponent implements OnDestroy {
   selectedRowIndex: number = -1;
   onCellClick(e: CellClickEvent): void {
     if (e.type === 'contextmenu') {
-      const originalEvent = e.originalEvent;
-      originalEvent.preventDefault();
-      this.dataItemSelected = e.dataItem;
-      this.selectedRowIndex = e.rowIndex;
-      this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
+      this.showContextMenu(e);
+    } else {
+      if (e.type == 'click') {
+        if (['Mac', 'iOS'].includes(this.appService.deviceDetectorService.os)) {
+          this.showContextMenu(e);
+        }
+      }
     }
+  }
+  private showContextMenu(e: CellClickEvent) {
+    const originalEvent = e.originalEvent;
+    originalEvent.preventDefault();
+    this.dataItemSelected = e.dataItem;
+    this.selectedRowIndex = e.rowIndex;
+    this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
   }
   onSelectRowActionMenu(e: ContextMenuSelectEvent) {
     const dataItem = this.dataItemSelected;
@@ -254,12 +263,12 @@ export class ReceivingComponent implements OnDestroy {
     // this.toDate = moment(this.range.end).format('MM-DD-YYYY');
     this.fetchdata()
   }
- 
+
   onSearchMaster(): void {
     this.skip = 0;  // Reset pagination when searching
     this.pageData();  // Apply search and pagination
   }
-  
+
   pageData(): void {
     /*    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
    
@@ -267,23 +276,23 @@ export class ReceivingComponent implements OnDestroy {
        const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
        this.gridDataResult.data = paginatedData;
            this.gridDataResult.total =filteredData.length ; */
-   
-           const filteredData = this.filterData(this.originalData);
-       const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
-       this.gridDataResult.data = filteredData;
-       this.gridDataResult.total = filteredData.length; 
-   
-      
-   
-      
-     } 
-     filterData(data: any[]): any[] {
-       if (!this.searchTerm) {
-         return data;
-       }
-       const term = this.searchTerm.toLowerCase();
-       return data.filter(item =>
-         Object.values(item).some(val => String(val).toLowerCase().includes(term))
-       );
-     }
+
+    const filteredData = this.filterData(this.originalData);
+    const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
+    this.gridDataResult.data = filteredData;
+    this.gridDataResult.total = filteredData.length;
+
+
+
+
+  }
+  filterData(data: any[]): any[] {
+    if (!this.searchTerm) {
+      return data;
+    }
+    const term = this.searchTerm.toLowerCase();
+    return data.filter(item =>
+      Object.values(item).some(val => String(val).toLowerCase().includes(term))
+    );
+  }
 }

@@ -94,3 +94,8 @@ npm install @azure/msal-browser@3 @azure/msal-angular@3
 ```
 - `MSAL` Guide https://learn.microsoft.com/en-us/azure/active-directory/develop/tutorial-v2-angular-auth-code
 - `Sign in with Microsoft` Button Policy https://learn.microsoft.com/en-us/entra/identity-platform/howto-add-branding-in-apps
+
+## Issues
+
+-  Context Menus does not work on iOS Devices, so fixed it using click method by detecting the device `npm i ngx-device-detector@6`
+https://www.telerik.com/forums/kendo-grid-context-menus-do-not-work-on-iphone-(ios-version-%3D-13)

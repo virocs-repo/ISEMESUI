@@ -53,6 +53,7 @@
     "@progress/kendo-svg-icons": "^3.0.0",
     "@progress/kendo-theme-default": "^8.0.1",
     "moment": "^2.30.1",
+    "ngx-device-detector": "^6.0.2",
     "play-k16": "file:",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
