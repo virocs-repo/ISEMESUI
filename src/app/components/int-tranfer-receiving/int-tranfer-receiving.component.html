@@ -26,12 +26,12 @@
 
     <!-- <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
     <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()"
-      [disabled]="!isAddButtonEnabled">Add</button> -->
+      [disabled]="!isAddButtonEnabled">Add</button>
 
     
     <div>
       <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
-    </div>
+    </div> -->
   </div>
   <div class="k-m-4" *ngIf="!false">
     <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
@@ -43,7 +43,7 @@
    
 <!--       <kendo-grid-column field="receiptID" title="receipt #"></kendo-grid-column>
       <kendo-grid-column field="customerVendorID" title="customerVendorID"  [hidden]="true" ></kendo-grid-column> -->
-      <kendo-grid-column field="internalTransferId" title="Internal TransferId"></kendo-grid-column>
+      <kendo-grid-column field="customerLotNumber" title="Customer LotNumber"></kendo-grid-column>
       <kendo-grid-column field="lotNum" title="lotNum">
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.lotNum">{{dataItem.lotNum}}</a>

@@ -19,6 +19,9 @@ export class IntTranferReceivingAddComponent implements OnDestroy {
   lotNumbers: string[] = [];
   inventoryID:number  = 0;
   ReceivedQty:string  = '';
+  deviceFamily : string = '';
+  device : string = '';
+  lotQTY: number = 0;
   currentLocation:string  = '';
   public searchTerm: string = '';
     allLotNumbers: string[] = []; // 
@@ -58,6 +61,9 @@ newLocationSelected: any;
 
       this.customerSelected = this.customers.find(c => c.CustomerName == dataItem.customerName);
       this.getLotNumbers(this.customerSelected?.CustomerID);
+      this.deviceFamily = dataItem.deviceFamily;
+      this.device = dataItem.device;
+      this.lotQTY = dataItem.lotQty;
       this.ReceivedQty=dataItem.receivedQty;
       this.lotNumber=dataItem.lotNum;
       this.inventoryID=dataItem.inventoryID;
