@@ -66,11 +66,11 @@
       </kendo-grid-column>
       <kendo-grid-column field="qty" title="Qty"></kendo-grid-column>
       <kendo-grid-column field="checkInOutQty" title="CheckInOutQty"></kendo-grid-column>
-      <kendo-grid-column field="area" title="Area">
+      <!--<kendo-grid-column field="area" title="Area">
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.area">{{dataItem.area}}</a>
         </ng-template>
-      </kendo-grid-column>
+      </kendo-grid-column> -->
       <kendo-grid-column field="wipLocation" title="WipLocation">
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.wipLocation">{{dataItem.wipLocation}}</a>
@@ -81,14 +81,17 @@
           <a class="minimal-text" [title]="dataItem.customerName">{{dataItem.customerName}}</a>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="receivedFromOrCheckOut" title="ReceivedFromOrCheckOut"></kendo-grid-column>
+     <!-- <kendo-grid-column field="receivedFromOrCheckOut" title="ReceivedFromOrCheckOut"></kendo-grid-column>
       <kendo-grid-column field="checkInOutTime" title="CheckInOutTime">
 
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.checkInOutTime">{{dataItem.checkInOutTime}}</a>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="systemCheckInOutPerson" title="SystemCheckInOutPerson"></kendo-grid-column>
+      <kendo-grid-column field="systemCheckInOutPerson" title="SystemCheckInOutPerson"></kendo-grid-column>-->
+      <kendo-grid-column field="facilityArea" title="Facility Area"></kendo-grid-column>
+      <kendo-grid-column field="facility" title="Facility"></kendo-grid-column>
+      
       <kendo-grid-column field="currentLocation" title="CurrentLocation">
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.currentLocation">{{dataItem.currentLocation}}</a>
