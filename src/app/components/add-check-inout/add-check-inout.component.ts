@@ -21,24 +21,24 @@ export class AddCheckInoutComponent implements OnInit {
   public status: 'CheckIn' | 'CheckOut' | null = null;
   public selectedQty: number | null = null;
   public returnToCustomer: boolean = false;
-  public selectedLocation: number= 0;
+  public selectedLocation: string= '';
   public selectedReceivedFrom: string = '';
   public selectedLotNumber: string = '';
   public uniqueLocations: Array<string> = [];
   public uniqueReceivedFrom: Array<string> = [];
-  public uniqueLotNumber: Array<string> = [];
+  public uniqueLotNumber: string[] = [];
   public pageSize = 25;
   public skip = 0;
   public combinedData: any[] = [];
   employees: Employee[] = []
-  employeesSelected: Employee[] = [];
+  employeesSelected: string = "";
   public filteredLotNumbers: Array<string> = [];
   public columnData: any[] = [
     { field: 'lotNum', title: 'Lot#/Serial#', visible: true },
     { field: 'location', title: 'Location', visible: true },
-    { field: 'employeeNames', title: 'Received From/CheckOut To', visible: true },
+    { field: 'receivedFrom', title: 'Received From/CheckOut To', visible: true },
     { field: 'qty', title: 'Qty', visible: false },
-    { field: 'systemUser', title: 'CheckIn/Out To', visible: true },
+    { field: 'systemUser', title: 'Modified By', visible: true },
     { field: 'goodsType', title: 'Goods Type', visible: true},
     { field: 'status', title: 'Status', visible: true },
     { field: 'receivedFrom', title: 'Received From', visible: false },
@@ -47,7 +47,9 @@ export class AddCheckInoutComponent implements OnInit {
     { field: 'receivedFromId',title: 'Received ID',visible: false}
   ];
 
-  constructor(private appService: AppService,private apiService: ApiService) { }
+  constructor(private appService: AppService,private apiService: ApiService) { 
+
+  }
 
   ngOnInit(): void {
     this.loadGridData();
@@ -67,11 +69,12 @@ export class AddCheckInoutComponent implements OnInit {
     this.filteredLotNumbers = [...this.uniqueLotNumber];
   }
   
-  onLotNumberFilter(value: string): void {
+  onLotNumberFilter(value: any): void {
     if (value) {
-      this.filteredLotNumbers = this.uniqueLotNumber.filter(
-        (lotNumber) => lotNumber.toLowerCase().includes(value.toLowerCase())
+      this.filteredLotNumbers = this.uniqueLotNumber.filter(lotNumber => 
+        lotNumber.toLowerCase().includes(value.toLowerCase())
       );
+
     } else {
       this.filteredLotNumbers = [...this.uniqueLotNumber];
     }
@@ -111,12 +114,12 @@ export class AddCheckInoutComponent implements OnInit {
         this.status = response[0]?.inventoryStatus;
   
         if (this.isCheckOutBehavior(this.status)) {
-          this.selectedLocation = response.location || '';
+          //this.selectedLocation = response.location || '';
           this.selectedQty = response.qty || null;
-          this.employeesSelected = response.receivedFrom || [];
+          this.employeesSelected = response.receivedFrom || '';
         } else if (this.status === 'CheckIn') {
           this.returnToCustomer = false;
-          this.employeesSelected = response.receivedFrom || [];
+          this.employeesSelected = response.receivedFrom || '';
         }
       },
       error: (err) => {
@@ -132,6 +135,12 @@ export class AddCheckInoutComponent implements OnInit {
           data: this.combinedData,
           total: this.combinedData.length
         };
+      
+      if(this.combinedData.length > 0){
+        const location = this.uniqueLocations.find(loc => loc == this.combinedData[0].location);
+        this.selectedLocation = location == undefined ? '' : location;
+      }
+
       },
       error: (err) => {
         console.error('Error fetching inventory check-in/out data:', err);
@@ -154,7 +163,7 @@ export class AddCheckInoutComponent implements OnInit {
 
   clearRequest(): void {
     this.gridDataResult = { data: [], total: 0 };
-    this.selectedLocation = 0;
+    this.selectedLocation = '';
     this.selectedReceivedFrom = '';
     this.selectedLotNumber = '';
     this.cancel.emit();
@@ -172,8 +181,7 @@ export class AddCheckInoutComponent implements OnInit {
       this.appService.errorMessage('Selected quantity does not match the record data.');
       return;
     }
-    const employeeIds = this.employeesSelected.map(emp => emp.EmployeeID); 
-    const employeeNames = this.employeesSelected.map(emp => emp.EmployeeName).join(', ');
+
     const newStatus = this.isCheckOutBehavior(record.status) ? 'CheckIn' : 'CheckOut';
     record.status = newStatus;
     const location = newStatus === 'CheckOut' ? record.location : this.selectedLocation;
@@ -182,7 +190,7 @@ export class AddCheckInoutComponent implements OnInit {
         InventoryID: record.inventoryId,
         Location: location,
         StatusID: newStatus === 'CheckIn' ? 1711 : 1712,
-        ReceivedFromID: employeeIds[0],
+        ReceivedFrom: this.employeesSelected,
         LoginId: 1
       }]
     };

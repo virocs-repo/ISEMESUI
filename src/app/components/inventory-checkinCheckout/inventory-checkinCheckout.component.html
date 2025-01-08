@@ -1,54 +1,55 @@
 <div class="k-d-flex k-align-items-center  k-gap-1 k-py-0 k-px-4 page-header">
-    <h4>Checkin/Checkout</h4>
-    <i class="k-ml-auto"></i>
-   
-    <kendo-label text="Search" class="k-font-size-sm">
-      <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
-        rounded="full" (input)="onSearchMaster()" />
-    </kendo-label>
+  <h4>Checkin/Checkout</h4>
+  <i class="k-ml-auto"></i>
+ 
+  <kendo-label text="Search" class="k-font-size-sm">
+    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
+      rounded="full" (input)="onSearchMaster()" />
+  </kendo-label>
 
-    <kendo-label text="Start Date" class="k-font-size-sm">
-        <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
-    </kendo-label>
-    <kendo-label text="End Date" class="k-font-size-sm">
-        <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
-    </kendo-label>
-    <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="onSearch()">Search</button>
-    <button kendoButton rounded="full" themeColor="info" style="padding: 0.3rem 2.2rem" (click)="openDialog()" kendoButton>Add</button>
+  <kendo-label text="Start Date" class="k-font-size-sm">
+      <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
+  </kendo-label>
+  <kendo-label text="End Date" class="k-font-size-sm">
+      <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
+  </kendo-label>
+  <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="onSearch()">Search</button>
+  <button kendoButton rounded="full" themeColor="info" style="padding: 0.3rem 2.2rem" (click)="openDialog()" kendoButton>Add</button>
 
-    
+  
 </div>
 <div class="k-m-4" *ngIf="!false">
-    <kendo-grid 
-        [kendoGridBinding]="gridDataResult.data"  
-        [selectable]="selectableSettings" 
-        [columnMenu]="columnMenuSettings"
-        [filterable]="true" 
-        [sortable]="true" 
-        [resizable]="true" 
-        [pageSize]="pageSize"
-        [skip]="skip" 
-        [pageable]="true" 
-        (pageChange)="pageChange($event)" 
-        class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
+  <kendo-grid 
+      [kendoGridBinding]="gridDataResult.data"  
+      [selectable]="selectableSettings" 
+      [filterable]="true" 
+      [sortable]="true" 
+      [resizable]="true" 
+      [pageSize]="pageSize"
+      [skip]="skip" 
+      [pageable]="true" 
+      (pageChange)="pageChange($event)" 
+      (cellClick)="onCellClick($event)"
+      class="grid-header-sm grid-header-bold" [rowClass]="rowCallback">
 
-        <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title">
-        <ng-template kendoGridCellTemplate let-dataItem>
-            <a class="minimal-text" [title]="dataItem?.[c.field] || ''">
-              {{ dataItem?.[c.field] || '' }}
-            </a>
-          </ng-template>
-        </kendo-grid-column>
-      
-    </kendo-grid>
+      <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title">
+      <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text" [title]="dataItem?.[c.field] || ''">
+            {{ dataItem?.[c.field] || '' }}
+          </a>
+        </ng-template>
+      </kendo-grid-column>
+    
+  </kendo-grid>
 </div>
-<kendo-contextmenu (select)="onSelectRowActionMenu($event)" size="large"
-  #gridContextMenu></kendo-contextmenu>
+<kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
+#gridContextMenu></kendo-contextmenu>
+
 <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [width]="'auto'" [height]="'auto'" style="width: 100%; height: 100%;" class="dialog-round custom-dialog">
-    <div class="k-d-flex k-align-items-center k-mb-3">
-        <h2 class="k-m-0">Check In / Check Out</h2>
-        <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
-            (click)="closeDialog()"></button>
-    </div>
-    <app-add-check-inout (cancel)="closeDialog()"></app-add-check-inout>
+  <div class="k-d-flex k-align-items-center k-mb-3">
+      <h2 class="k-m-0">Check In / Check Out</h2>
+      <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+          (click)="closeDialog()"></button>
+  </div>
+  <app-add-check-inout (cancel)="closeDialog()"></app-add-check-inout>
 </kendo-dialog>
