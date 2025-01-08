@@ -260,7 +260,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
       // this.goodsTypeSelected = this.goodsType.find(c => c.goodsTypeID == dataItem.goodsTypeID);
       this.address = dataItem.address
-      this.email = dataItem.email
+      this.email = dataItem.email || '';
       this.contactPhone = dataItem.contactPhone
       this.contactPerson = dataItem.contactPerson
       this.fetchReceiptEmployees()
@@ -603,6 +603,16 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         r.dateCode, r.countrySelected, r.deviceTypeSelected?.deviceTypeID
       ]
       const isValid = !mandatoryFields.some(v => !v);
+      if (!r.customerLotNumber) {
+        r.error = true;
+        this.appService.errorMessage("Customer Lot# is required!");
+        return;
+      }
+      if (!r.customerCount) {
+        r.error = true;
+        this.appService.errorMessage("Customer Count is required!");
+        return;
+      }
       if (!r.deviceTypeSelected) {
         r.error = true;
         this.appService.errorMessage("Please select Device Type!");
@@ -625,14 +635,20 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           return;
         }
       }
-      const cln = parseInt(r.customerLotNumber);
+      const clnStr = r.customerCount.toString() || ''
+      const cln = parseInt(clnStr);
       const lcStr = r.labelCount?.toString() || '';
       const lc = parseInt(lcStr);
       console.log({ cln, lc });
       if (cln && lc) {
         if (cln != lc) {
           console.log('are not matching');
+          r.isHold = true;
+        } else {
+          r.isHold = false
         }
+      } else {
+        r.isHold = true;
       }
       const postDevice: PostDevice = {
         // @ts-ignore

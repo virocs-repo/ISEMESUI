@@ -1,7 +1,7 @@
-<div class="k-m-4" id="addReceiptForm" [ngClass]="{'k-pointer-events-none':isDisabled.addReceipt}">
+<div class="k-mx-2" id="addReceiptForm" [ngClass]="{'k-pointer-events-none':isDisabled.addReceipt}">
   <kendo-pdf-export #pdfExport>
     <div>
-      <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-6 k-pb-3">
+      <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-6 k-mb-2">
         <i class="k-ml-auto d-none-sm"></i>
         <div class="k-d-flex k-align-items-center k-gap-2">
           <input type="checkbox" name="isExpected" id="isExpected" [(ngModel)]="isExpected" kendoCheckBox>
@@ -18,7 +18,7 @@
         </div> -->
       </div>
 
-      <div class="k-d-flex k-flex-wrap k-align-items-stretch k-gap-4 k-w-full k">
+      <div class="k-d-flex k-flex-wrap k-align-items-stretch k-gap-4 k-w-full label-fs">
         <kendo-card class="card-green k-flex-1 flex-auto-md">
           <kendo-card-body class="card-flex">
             <div class="k-d-flex k-align-items-center k-gap-4">
@@ -196,7 +196,7 @@
 
     <!-- <div *ngIf="!isDisabledGoodsType">
       <div class="k-d-flex k-align-items-center k-gap-3">
-        <h2>Interim</h2>
+        <h3 class="k-my-2">Interim</h3>
         <i class="k-ml-auto"></i>
         <button kendoButton type="button" rounded="large" themeColor="info" (click)="addInterimRow()"
           [disabled]="isDisabled.addDevice">Add Interim Row</button>
@@ -308,7 +308,7 @@
     </div> -->
     <div *ngIf="!isDisabledGoodsType">
       <div class="k-d-flex k-align-items-center k-gap-3">
-        <h2>Device</h2>
+        <h3 class="k-my-2">Device</h3>
         <kendo-label text="Lot Category: "></kendo-label>
         <kendo-combobox [data]="lotCategories" [(ngModel)]="lotCategorySelected" [textField]="'lotCategoryName'"
           [valueField]="'lotCategoryID'" [kendoDropDownFilter]="filterSettings" placeholder="Select" rounded="large"
@@ -330,20 +330,21 @@
               <span [title]="dataItem.iseLotNumber">{{ dataItem.iseLotNumber }}</span>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="customerLotNumber" title="Cust cnt" [width]="80">
+          <kendo-grid-column field="customerLotNumber" title="Cust lot#" [width]="70">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
-                <kendo-textbox [(ngModel)]="dataItem.customerLotNumber" placeholder="Lot Number"></kendo-textbox>
+                <kendo-textbox [(ngModel)]="dataItem.customerLotNumber" placeholder="Lot Number"
+                  [class.ng-touched]="dataItem.error" required></kendo-textbox>
               </ng-container>
               <ng-template #showValue>
                 <span>{{dataItem.customerLotNumber}}</span>
               </ng-template>
             </ng-template></kendo-grid-column>
-          <kendo-grid-column field="customerCount" title="Customer #" [width]="80">
+          <kendo-grid-column field="customerCount" title="Cust Cnt" [width]="70">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.customerCount" (ngModelChange)="onCountUIChange($event)"
-                  placeholder="Customer Count"></kendo-textbox>
+                  placeholder="Customer Count" [class.ng-touched]="dataItem.error" required></kendo-textbox>
               </ng-container>
               <ng-template #showValue>
                 <span>{{dataItem.customerCount}}</span>
@@ -448,7 +449,7 @@
   </div> -->
     <div *ngIf="!isDisabledGoodsType">
       <div class="k-d-flex k-align-items-center k-gap-3">
-        <h2>Hardware</h2>
+        <h3 class="k-my-2">Hardware</h3>
         <i class="k-ml-auto"></i>
         <button kendoButton type="button" rounded="large" themeColor="info" (click)="addHardwareRow()"
           [disabled]="isDisabled.addHardware">Add</button>
@@ -515,7 +516,7 @@
     </div>
     <div *ngIf="!isDisabledGoodsType">
       <div class="k-d-flex k-align-items-center k-gap-3">
-        <h2>Miscellaneous Goods</h2>
+        <h3 class="k-my-2">Miscellaneous Goods</h3>
         <i class="k-ml-auto"></i>
         <button kendoButton type="button" rounded="large" themeColor="info" (click)="addMiscellaneousRow()"
           [disabled]="isDisabled.addMisc">Add</button>
@@ -564,7 +565,7 @@
 
     <div *ngIf="!isDisabledGoodsType" class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
       <div>
-        <h2>Receipt Attachments</h2>
+        <h3 class="k-my-2">Receipt Attachments</h3>
       </div>
       <kendo-fileselect #upFiles (select)="onSelect($event)" (upload)="onUpload($event)"
         [multiple]="false"></kendo-fileselect>
@@ -648,7 +649,7 @@
 <!--  For Hold popup   -->
 <kendo-dialog *ngIf="isDialogOpen" [width]="'68%'" class="dialog-round">
   <div class="k-d-flex k-align-items-center k-mb-3">
-    <h2 class="k-m-0">On / Off Hold</h2>
+    <h3 class="k-m-0">On / Off Hold</h3>
     <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon"
       (click)="closeDialog()"></button>
   </div>

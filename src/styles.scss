@@ -124,6 +124,12 @@ a.link {
   padding: 3px 0.75rem !important;
 }
 
+.label-fs {
+  label {
+    font-size: 0.75rem;
+  }
+}
+
 .device-grid {
   --kendo-font-size: 0.625rem !important;
 
