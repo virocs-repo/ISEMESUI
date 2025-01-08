@@ -70,13 +70,14 @@
 
   <kendo-appbar-section style="margin-left: auto;">
     <div class="profile-avatar k-d-flex k-gap-4 k-align-items-center k-justify-content-center">
-      <div class="k-user-select-none" #profileMenuTarget>
+      <div>
         <b>{{appService.userData.firstName}}</b> <br>
         <small>Admin</small>
       </div>
-      <!-- <span #profileMenuTarget>
-        <kendo-avatar [imageSrc]="img1" class="avatar-size avatar-img"></kendo-avatar>
-      </span> -->
+      <span #profileMenuTarget>
+        <kendo-avatar *ngIf="profilePicture" [imageSrc]="profilePicture" class="avatar-size avatar-img"></kendo-avatar>
+        <kendo-avatar *ngIf="!profilePicture" [svgIcon]="ICON.userIcon" class="avatar-size avatar-img"></kendo-avatar>
+      </span>
       <!-- <kendo-avatar [imageSrc]="img1" class="avatar-size" (click)="authService.logout()" title="Logout"></kendo-avatar> -->
       <!-- <kendo-avatar [svgIcon]="ICON.userIcon" class="avatar-size"></kendo-avatar> -->
     </div>
@@ -96,11 +97,14 @@
   </kendo-appbar-section>
   <kendo-appbar-spacer></kendo-appbar-spacer>
   <kendo-appbar-section>
-    <span #profileMenuTarget>
-      <kendo-avatar [imageSrc]="img1" class="avatar-size"></kendo-avatar>
+    <span #profileMenuTargetMobile>
+      <kendo-avatar *ngIf="profilePicture" [imageSrc]="profilePicture" class="avatar-size"></kendo-avatar>
+      <kendo-avatar *ngIf="!profilePicture" [svgIcon]="ICON.userIcon" class="avatar-size"></kendo-avatar>
     </span>
   </kendo-appbar-section>
 </kendo-appbar>
 
 <kendo-contextmenu showOn="click" size="large" [target]="profileMenuTarget" [items]="profileActionMenu"
+  (select)="onSelectRowActionMenu($event)"></kendo-contextmenu>
+<kendo-contextmenu showOn="click" size="large" [target]="profileMenuTargetMobile" [items]="profileActionMenu"
   (select)="onSelectRowActionMenu($event)"></kendo-contextmenu>

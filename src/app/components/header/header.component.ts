@@ -15,7 +15,7 @@ import { Client, ResponseType } from '@microsoft/microsoft-graph-client';
 export class HeaderComponent {
   readonly ICON = ICON
   public menuIcon: SVGIcon = menuIcon;
-  img1 = "https://demos.telerik.com/kendo-ui/content/web/Customers/RICSU.jpg";
+  profilePicture = "";
 
   isDialogOpen = false;
 
@@ -27,34 +27,37 @@ export class HeaderComponent {
   constructor(private msalService: MsalService, public authService: AuthService, public appService: AppService) { }
 
   onSelectRowActionMenu(e: ContextMenuSelectEvent) {
-    console.log(e);
     switch (e.item.text) {
       case 'Logout':
         this.authService.logout();
+        // clear data on logout
+        this.profilePicture = '';
         break;
     }
   }
 
   ngOnInit(): void {
-   this.getProfilePicture();
+    this.getProfilePicture();
   }
 
   async getProfilePicture() {
     const accounts = await this.msalService.instance.getAllAccounts();
-    if(accounts.length > 0) {
-      const  accessToken = await this.msalService.instance.acquireTokenSilent({ 
+    if (accounts.length > 0) {
+      const accessToken = await this.msalService.instance.acquireTokenSilent({
         scopes: ['user.read'],
         account: accounts[0]
-        }).then(result => result.accessToken);
-      
-      const graphClient = Client.init({authProvider: (done) => {
-        done(null, accessToken);
-      }});
+      }).then(result => result.accessToken);
 
-      const photo = await graphClient.api('/me/photo/$value').responseType(ResponseType.BLOB).get(); 
+      const graphClient = Client.init({
+        authProvider: (done) => {
+          done(null, accessToken);
+        }
+      });
+
+      const photo = await graphClient.api('/me/photo/$value').responseType(ResponseType.BLOB).get();
       const reader = new FileReader();
       reader.onload = (e) => {
-        this.img1 = e.target?.result as string;
+        this.profilePicture = (e.target?.result as string) || '';
       };
       reader.readAsDataURL(photo);
     }
