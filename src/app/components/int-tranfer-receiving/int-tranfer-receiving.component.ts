@@ -178,4 +178,15 @@ export class IntTranferReceivingComponent implements OnDestroy {
       'highlighted-row': context.index === this.selectedRowIndex
     };
   }
+  public areaList: Array<string> = [
+    "Boston",
+    "Chicago",
+    "Houston",
+    "Los Angeles",
+    "Miami",
+    "New York",
+    "Philadelphia",
+    "San Francisco",
+    "Seattle",
+  ];
 }
