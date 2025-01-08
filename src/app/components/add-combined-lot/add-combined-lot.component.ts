@@ -32,6 +32,7 @@ export class AddCombinedLotComponent implements OnDestroy {
     clearBtn: false
   }
   isEditMode = false;
+  selecteddropdownData: any[] = []; // Data for the dropdown
   dropdownData: any[] = []; // Data for the dropdown
   selectedDropdownValue: any; // Selected value in the dropdown
   gridSelectedKeys: any[] = []; // Tracks selected rows in the grid
@@ -73,7 +74,7 @@ export class AddCombinedLotComponent implements OnDestroy {
                 .map(item => item.inventoryID); // Map to the unique key field (inventoryID)
                  // Populate dropdown data
                  this.dropdownData = allresdata
-                 .filter((row: any) => row.AddressId > 0) // Filter rows with AddressId > 0
+                 .filter((row: any) => row.addressId > 0) // Filter rows with addressId > 0
                  .map((row: any) => ({
                    iseLotNum: row.iseLotNum,
                    inventoryID: row.inventoryID,
@@ -119,7 +120,9 @@ export class AddCombinedLotComponent implements OnDestroy {
             // Populate dropdown data
       
 
-            this.dropdownData = allresdata.map((row: any) => ({
+            this.dropdownData = allresdata
+            .filter((row: any) => row.addressId > 0) // Filter rows with addressId > 0
+            .map((row: any) => ({
               iseLotNum: row.iseLotNum,
               inventoryID: row.inventoryID,
             }));
@@ -146,6 +149,10 @@ export class AddCombinedLotComponent implements OnDestroy {
         }
       });
      
+    }
+    else
+    {
+
     }
     if (this.appService.sharedData.combolot.isViewMode) {
       this.isDisabled.shipBtn = true;
@@ -249,7 +256,7 @@ saveCombineLots(): void {
   const payload: CombineLotPayload = {
     comboLotID: null, // Assuming it's 0 for a new combo
     comboName: this.comboLotName,
-    str_InventoryId: this.dropdownData.map((item) => item.inventoryID).join(','), // Convert inventory IDs to a comma-separated string
+    str_InventoryId: this.selecteddropdownData.map((item) => item.inventoryID).join(','), // Convert inventory IDs to a comma-separated string
     primary_InventoryId: this.selectedDropdownValue.inventoryID, // The selected primary inventory ID
     userID: this.appService.loginId, // Replace with actual logged-in user ID
     active: true,
@@ -280,8 +287,12 @@ saveCombineLots(): void {
 
 onSelectionChange(event: SelectionEvent): void {
   console.log('Grid Selected Keys:', this.gridSelectedKeys);
+  
 
   const selectedRows = this.gridDataResult.data.filter((item) =>
+    this.gridSelectedKeys.includes(item.inventoryID) && item.addressId > 0
+  );
+  const selectedRowsall = this.gridDataResult.data.filter((item) =>
     this.gridSelectedKeys.includes(item.inventoryID)
   );
 
@@ -290,8 +301,16 @@ onSelectionChange(event: SelectionEvent): void {
     inventoryID: row.inventoryID,
   }));
 
+
+  this.selecteddropdownData = selectedRowsall.map((row: any) => ({
+    iseLotNum: row.iseLotNum,
+    inventoryID: row.inventoryID,
+  }));
+
+  
+
   this.isDisabled.shipBtn =false;
-  console.log('Updated Dropdown Data:', this.dropdownData);
+
 }
 
 
