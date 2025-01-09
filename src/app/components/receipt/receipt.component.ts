@@ -243,7 +243,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       }
       this.expectedDateTime = new Date(dataItem.expectedDateTime);
       this.deliveryComments = dataItem.mailComments;
-      
+
       this.addressSelected = this.addresses.find(a => a.addressId == dataItem.addressID)
 
       this.gridData[0].noOfCartons = dataItem.noOfCartons
@@ -421,7 +421,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       ContactPhone: this.contactPhone,
       Email: this.email,
       ExpectedDateTime: this.appService.formattedDateTime2(this.expectedDateTime),
-      AddressID: this.addressSelected?.addressId || 1,
+      AddressID: this.addressSelected?.addressId || null,
       MailComments: this.deliveryComments,
       PMComments: this.comments?.trim() || null,
       NoOfCartons: this.gridData[0].noOfCartons || 0,
@@ -522,11 +522,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           return;
         }
       }
-      if(data.NoOfCartons < 0) {
-      this.appService.errorMessage('No. of cartons cannot be less than zero');
-      return;
+      if (data.NoOfCartons < 0) {
+        this.appService.errorMessage('No. of cartons cannot be less than zero');
+        return;
       }
-
     }
     if (this.deliveryModeSelected?.deliveryModeName == PICKUP) {
 
@@ -624,7 +623,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         return;
       }
       if (r.isReceived) {
-        debugger;
         if (!r.labelCount || r.labelCount < 1) {
           r.error = true;
           this.appService.errorMessage("Label count should be greater than zero!")
@@ -645,7 +643,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       const cln = parseInt(clnStr);
       const lcStr = r.labelCount?.toString() || '';
       const lc = parseInt(lcStr);
-      
+
       debugger;
       if (r.isReceived) {
         if (cln != lc) {

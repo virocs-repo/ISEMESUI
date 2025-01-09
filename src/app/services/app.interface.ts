@@ -368,7 +368,7 @@ export interface PostReceipt {
   ContactPhone: string;
   Email: string | null;
   ExpectedDateTime: Date | string;
-  AddressID: number;
+  AddressID: number | null;
   MailComments: string | null;
   PMComments: string | null;
   NoOfCartons: number;
@@ -405,7 +405,7 @@ export const INIT_POST_RECEIPT: PostReceipt = {
   ContactPhone: "215-634-123",
   Email: "Amith_s@xyz.com",
   ExpectedDateTime: "2024-08-27 09:28:39.187",
-  AddressID: 1,
+  AddressID: null,
   MailComments: null,
   PMComments: null,
   NoOfCartons: 2,
