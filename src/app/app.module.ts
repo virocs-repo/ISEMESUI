@@ -17,7 +17,7 @@ import { LabelModule } from '@progress/kendo-angular-label';
 import { AutoCompleteModule, ComboBoxModule, MultiSelectModule } from '@progress/kendo-angular-dropdowns';
 import { DialogsModule } from '@progress/kendo-angular-dialog';
 import { UploadsModule } from '@progress/kendo-angular-upload';
-
+import { TabStripModule } from '@progress/kendo-angular-layout';
 // MSAL
 import { MSAL_GUARD_CONFIG, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalBroadcastService, MsalGuard, MsalGuardConfiguration, MsalInterceptor, MsalInterceptorConfiguration, MsalModule, MsalRedirectComponent, MsalService } from "@azure/msal-angular";
 import { BrowserCacheLocation, InteractionType, IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
@@ -180,7 +180,7 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     TreeViewModule,
     IndicatorsModule,
     TooltipsModule,
-
+    TabStripModule,
   ],
   providers: [
     {
