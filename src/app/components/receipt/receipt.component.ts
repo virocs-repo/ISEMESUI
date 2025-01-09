@@ -68,7 +68,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   format = "MM/dd/yyyy HH:mm";
 
   name: string = '';
-  email: string = '';
+  email: string | null = '';
   comments: string = '';
   deliveryComments: string = '';
   address: any;
@@ -513,7 +513,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       } else {
         this.receipt.isValid.contactPerson = true;
       }
-      this.email = this.email.trim();
+      this.email = this.email?.trim() || "";
       if (this.email) {
         // email validation
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -1058,7 +1058,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
   }
   onChangeHoldComments() {
-    this.gridData[0].holdComments = this.gridData[0].holdComments.trim()
+    this.gridData[0].holdComments = this.gridData[0].holdComments?.trim()
     if (this.gridData[0].holdComments) {
       this.gridData[0].isHold = true
     } else {

@@ -366,7 +366,7 @@ export interface PostReceipt {
   CountryFromID: number | null;
   ContactPerson: string;
   ContactPhone: string;
-  Email: string;
+  Email: string | null;
   ExpectedDateTime: Date | string;
   AddressID: number;
   MailComments: string | null;
