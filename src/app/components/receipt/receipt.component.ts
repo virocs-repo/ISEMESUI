@@ -243,7 +243,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       }
       this.expectedDateTime = new Date(dataItem.expectedDateTime);
       this.deliveryComments = dataItem.mailComments;
-
+      
       this.addressSelected = this.addresses.find(a => a.addressId == dataItem.addressID)
 
       this.gridData[0].noOfCartons = dataItem.noOfCartons
@@ -416,12 +416,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       ReceivingFacilityID: this.receiptLocationSelected?.receivingFacilityID || 1,
       DeliveryModeID: this.deliveryModeSelected?.deliveryModeID || 1,
       CourierDetailID: this.courierSelected?.courierDetailID || null,
-      CountryFromID: this.countrySelected?.countryID || 1,
+      CountryFromID: this.countrySelected?.countryID || null,
       ContactPerson: this.contactPerson,
       ContactPhone: this.contactPhone,
       Email: this.email,
       ExpectedDateTime: this.appService.formattedDateTime2(this.expectedDateTime),
-      AddressID: 1,
+      AddressID: this.addressSelected?.addressId || 1,
       MailComments: this.deliveryComments,
       PMComments: this.comments?.trim() || null,
       NoOfCartons: this.gridData[0].noOfCartons || 0,
@@ -522,6 +522,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           return;
         }
       }
+      if(data.NoOfCartons < 0) {
+      this.appService.errorMessage('No. of cartons cannot be less than zero');
+      return;
+      }
+
     }
     if (this.deliveryModeSelected?.deliveryModeName == PICKUP) {
 
@@ -608,9 +613,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.appService.errorMessage("Customer Lot# is required!");
         return;
       }
-      if (!r.customerCount) {
+      if (!r.customerCount || r.customerCount < 1) {
         r.error = true;
-        this.appService.errorMessage("Customer Count is required!");
+        this.appService.errorMessage("Customer Count should be greater than zero!");
         return;
       }
       if (!r.deviceTypeSelected) {
@@ -619,9 +624,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         return;
       }
       if (r.isReceived) {
-        if (!r.labelCount) {
+        debugger;
+        if (!r.labelCount || r.labelCount < 1) {
           r.error = true;
-          this.appService.errorMessage("Label count is required!")
+          this.appService.errorMessage("Label count should be greater than zero!")
           return;
         }
         if (!r.dateCode) {
@@ -639,16 +645,14 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       const cln = parseInt(clnStr);
       const lcStr = r.labelCount?.toString() || '';
       const lc = parseInt(lcStr);
-      console.log({ cln, lc });
-      if (cln && lc) {
+      
+      debugger;
+      if (r.isReceived) {
         if (cln != lc) {
-          console.log('are not matching');
           r.isHold = true;
         } else {
           r.isHold = false
         }
-      } else {
-        r.isHold = true;
       }
       const postDevice: PostDevice = {
         // @ts-ignore
