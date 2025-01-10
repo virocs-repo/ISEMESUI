@@ -1,39 +1,44 @@
 <div class="k-m-3 k-overflow-y-auto" style="width: auto;">
-  <kendo-card-body class="card-flex">
+  <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
     <div class="k-d-flex k-align-items-end k-gap-3">
-      <kendo-label text="Lot Number test" class="k-w-full">
+      <kendo-label class="k-w-full">
+        <strong>Lot Number test</strong>
         <b class="required-label"></b>
         <kendo-autocomplete text="Lot Number" [data]="filteredLotNumbers" [(ngModel)]="selectedLotNumber" placeholder="#Lot Number" rounded="large" 
         (filterChange)="onLotNumberFilter($event)" [suggest]="true" (valueChange)="onLotNumberSelected($event)" ></kendo-autocomplete>
             </kendo-label>
-      <kendo-label *ngIf="isCheckOutBehavior(status)" text="Location" class="k-w-full">
+      <kendo-label *ngIf="isCheckOutBehavior(status)" class="k-w-full">
+        <strong>Location</strong>
         <b class="required-label"></b>
         <kendo-combobox [data]="uniqueLocations" [(ngModel)]="selectedLocation" placeholder="Location" rounded="large"></kendo-combobox>
       </kendo-label>
-      <kendo-label *ngIf="isCheckOutBehavior(status)" text="Qty" class="k-w-full">
+      <kendo-label *ngIf="isCheckOutBehavior(status)" class="k-w-full">
+        <strong>Qty</strong>
         <b class="required-label"></b>
         <input type="number" [(ngModel)]="selectedQty" placeholder="Qty" class="k-input k-textbox" />
       </kendo-label>
-      <kendo-label *ngIf="isCheckOutBehavior(status)" text="Received From" class="k-w-full">
+      <kendo-label *ngIf="isCheckOutBehavior(status)" class="k-w-full">
+        <strong>Received From</strong>
         <b class="required-label"></b>
         <kendo-textbox [(ngModel)]="employeesSelected"></kendo-textbox>
       </kendo-label>
-      <kendo-label *ngIf="status === 'CheckIn'" text="CheckOut To" class="k-w-full">
+      <kendo-label *ngIf="status === 'CheckIn'" class="k-w-full">
+        <strong>CheckOut To</strong>
         <b class="required-label"></b>
         <kendo-textbox [(ngModel)]="employeesSelected"></kendo-textbox>
       </kendo-label>    
-      <kendo-label *ngIf="status === 'CheckIn'" text="Return to Customer" class="k-w-full">
+      <kendo-label *ngIf="status === 'CheckIn'" class="k-w-full">
+        <strong>Return to Customer</strong>
         <b class="required-label"></b>
-        <div>
+        <div class="centered-checkbox">
         <kendo-checkbox [checkedState]="true" [(ngModel)]="returnToCustomer" rounded="large"></kendo-checkbox></div>
       </kendo-label>
     </div>
   </kendo-card-body>
   <div class="k-my-6" *ngIf="selectedLotNumber">
     <kendo-grid 
-    class="k-my-3" 
-    [kendoGridBinding]="gridDataResult.data" 
-    >
+    class="grid-header-sm grid-header-bold"
+    [kendoGridBinding]="gridDataResult.data">
       <kendo-grid-column *ngFor="let c of columnData" [hidden]="!c.visible" [field]="c.field" [title]="c.title"></kendo-grid-column>
       <ng-template kendoGridCellTemplate let-dataItem>
         <button kendoButton [svgIcon]="ICON.moreVerticalIcon" #rowActionMenu></button>
