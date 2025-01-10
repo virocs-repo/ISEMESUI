@@ -1,16 +1,17 @@
 <div class="k-d-flex k-align-items-center k-gap-1 k-py-0 k-px-4 page-header">
     <h4>Hold</h4>
     <i class="k-ml-auto"></i>
-        <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
-        <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input" rounded="full" (input)="onSearch()" style="width: auto;" />
-        <div class="k-d-flex k-align-items-center k-gap-1 date-picker-group">
-            <kendo-label text="Start Date" class="k-font-size-sm"></kendo-label>
-            <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
-        </div>
-        <div class="k-d-flex k-align-items-center k-gap-1 date-picker-group">
-            <kendo-label text="End Date" class="k-font-size-sm"></kendo-label>
-            <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
-        </div>
+    <kendo-label text="Search" class="k-font-size-sm">
+        <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
+          rounded="full" (input)="onSearch()" />
+      </kendo-label>
+    
+      <kendo-label text="Start Date" class="k-font-size-sm">
+          <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
+      </kendo-label>
+      <kendo-label text="End Date" class="k-font-size-sm">
+          <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
+      </kendo-label>
         <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="onSearch()">Search</button>
 </div>
 <div class="k-m-4">

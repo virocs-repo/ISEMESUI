@@ -22,13 +22,13 @@ export class InventoryHoldComponent implements OnInit {
   fromDate: Date | null = null;
   toDate: Date | null = null;
   public columnData: any[] = [
-    { field: 'iseLotNumber', title: 'Lot#/Serial#' },
+    { field: 'iseLotNumber', title: 'Lot/Serial#' },
     { field: 'customerName', title: 'Customer Name' },
     { field: 'device', title: 'Device' },
     { field: 'status', title: 'Status' },
-    { field: 'commitSOD', title: 'CommitSOD' },
-    { field: 'holdDate', title: 'HoldDate' },
-    { field: 'elapsedTimeOfHold', title: 'ElapsedTimeOfHold' },
+    { field: 'commitSOD', title: 'Commit SOD' },
+    { field: 'holdDate', title: 'Hold Date' },
+    { field: 'elapsedTimeOfHold', title: 'Elapsed Time Of Hold' },
   ];
   public rowActionMenu: any[] = [
     { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
