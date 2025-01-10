@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { GridComponent, GridDataResult } from '@progress/kendo-angular-grid';
 import { ContextMenuComponent } from '@progress/kendo-angular-menu';
 import { printIcon } from '@progress/kendo-svg-icons';
@@ -13,10 +13,12 @@ import { AppService } from 'src/app/services/app.service';
 })
 export class AddCheckInoutComponent implements OnInit {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
+  @Input() selectedRowData: any;
   @Output() cancel = new EventEmitter<void>();
   @ViewChild('grid', { static: true }) grid!: GridComponent; 
   gridDataResult: GridDataResult = { data: [], total: 0 };
   public icons = { printIcon: printIcon };
+  private previousLotNumber: string | null = null;
   readonly ICON = ICON;
   public status: 'CheckIn' | 'CheckOut' | null = null;
   public selectedQty: number | null = null;
@@ -27,12 +29,13 @@ export class AddCheckInoutComponent implements OnInit {
   public uniqueLocations: Array<string> = [];
   public uniqueReceivedFrom: Array<string> = [];
   public uniqueLotNumber: string[] = [];
+  lotNumberInput: string = '';
   public pageSize = 25;
   public skip = 0;
   public combinedData: any[] = [];
   employees: Employee[] = []
   employeesSelected: string = "";
-  public filteredLotNumbers: Array<string> = [];
+  public filteredLotNumbers: string[] = [...this.uniqueLotNumber];
   public columnData: any[] = [
     { field: 'lotNum', title: 'Lot#/Serial#', visible: true },
     { field: 'location', title: 'Location', visible: true },
@@ -55,6 +58,7 @@ export class AddCheckInoutComponent implements OnInit {
     this.loadGridData();
     this.loadLocations();
     this.employees = this.appService.masterData.entityMap.Employee;
+    this.selectedLotNumber = this.selectedRowData.lotNum;
   }
 
   extractUniqueValues(data: any[]): void {
@@ -69,15 +73,13 @@ export class AddCheckInoutComponent implements OnInit {
     this.filteredLotNumbers = [...this.uniqueLotNumber];
   }
   
-  onLotNumberFilter(value: any): void {
-    if (value) {
-      this.filteredLotNumbers = this.uniqueLotNumber.filter(lotNumber => 
-        lotNumber.toLowerCase().includes(value.toLowerCase())
-      );
-
-    } else {
-      this.filteredLotNumbers = [...this.uniqueLotNumber];
-    }
+  onLotNumberFilter(value: string): void {
+    this.lotNumberInput = value; // Update the input value
+    this.filteredLotNumbers = value
+      ? this.uniqueLotNumber.filter(lotNumber =>
+          lotNumber.toLowerCase().includes(value.toLowerCase())
+        )
+      : [...this.uniqueLotNumber];
   }
   
   loadLocations(): void {
@@ -103,6 +105,14 @@ export class AddCheckInoutComponent implements OnInit {
     });
   }
 
+  ngDoCheck(): void {
+    if (this.selectedLotNumber !== this.previousLotNumber) {
+      this.previousLotNumber = this.selectedLotNumber;
+      if (this.selectedLotNumber) {
+        this.onLotNumberSelected(this.selectedLotNumber);
+      }
+    }
+  }
   onLotNumberSelected(selectedLot: string): void {
     if (!selectedLot) {
       this.clearRequest();

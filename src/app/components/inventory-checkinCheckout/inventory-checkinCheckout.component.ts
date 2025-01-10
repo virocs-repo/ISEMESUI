@@ -27,6 +27,7 @@ export class InventorycheckinCheckoutComponent implements OnInit{
     filters: []
   };
   isEditButtonEnabled: boolean=true;
+  public checkinoutData: any = {};
   public searchTerm: string = '';
   public columnData: any[] = [
     { field: 'customerLotNumber', title: 'Customer LotNumber'},
@@ -99,6 +100,13 @@ export class InventorycheckinCheckoutComponent implements OnInit{
 
   }
   dataItemSelected:any;
+  onCellContextMenu(event: MouseEvent, dataItem: any, rowIndex: number): void {
+    event.preventDefault();
+    this.dataItemSelected = dataItem;
+    this.selectedRowIndex = rowIndex;
+    this.gridContextMenu.show({ left: event.pageX, top: event.pageY });
+  }
+  
   onCellClick(e: CellClickEvent): void {
     if (e.type === 'contextmenu') {
       const originalEvent = e.originalEvent;
@@ -116,6 +124,7 @@ export class InventorycheckinCheckoutComponent implements OnInit{
         this.appService.sharedData.anotherShipping.dataItem = dataItem
         this.appService.sharedData.anotherShipping.isEditMode = false;
         this.appService.sharedData.anotherShipping.isViewMode = true;
+        this.checkinoutData = { ...dataItem };
         // access the same in receipt component
         this.openDialog()
         break;
@@ -123,6 +132,7 @@ export class InventorycheckinCheckoutComponent implements OnInit{
         this.appService.sharedData.anotherShipping.dataItem = dataItem
         this.appService.sharedData.anotherShipping.isEditMode = true;
         this.appService.sharedData.anotherShipping.isViewMode = false;
+        this.checkinoutData = { ...dataItem };
         // access the same in receipt component
         this.openDialog()
         break;
