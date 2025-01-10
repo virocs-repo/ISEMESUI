@@ -99,6 +99,15 @@ export class ApiService {
   deleteFile(body: any) {
     return this.httpClient.delete(`${API}v1/ise/inventory/delete-attachment`, { body });
   }
+  postInterim(body: any) {
+    return this.httpClient.post(`${API}v1/ise/inventory/upsert-interim-device`, body);
+  }
+  listInterimLots() {
+    return this.httpClient.get(`${API}v1/ise/inventory/Interim-lot`);
+  }
+  listInterims(receiptId: number) {
+    return this.httpClient.get(`${API}v1/ise/inventory/Interim-devicedata?interimReceiptID=${receiptId}`);
+  }
 
   // Shipping
   getShippingData(fromDate?: Date | null, toDate?: Date | null) {
@@ -414,8 +423,8 @@ export class ApiService {
 
   }
 
-   //IntransferRecieve
-   SearchIntransferRecieve() {
+  //IntransferRecieve
+  SearchIntransferRecieve() {
     return this.httpClient.get(`${API}v1/ise/inventory/inttransfer/search`);
   }
 
@@ -440,23 +449,22 @@ export class ApiService {
 
     return this.httpClient.get(`${API}v1/ise/inventory/inttransfer/GetcustTransferLots`, { params });
   }
-  
+
   saveInternalTransferReceipt(data: any): Observable<any> {
     return this.httpClient.post(`${API}v1/ise/inventory/inttransfer/UpsertIntTransReceipt`, data);
   }
-  
+
 
   // addshippinginvcentory
-  getAddShippingInventory(customerId: number | null,deviceId: number | null, locationId: number | null, receivedFromId: number | null,lotNumber: string | null,shipCategoryID: number | null)
-   {
+  getAddShippingInventory(customerId: number | null, deviceId: number | null, locationId: number | null, receivedFromId: number | null, lotNumber: string | null, shipCategoryID: number | null) {
     const params = new URLSearchParams();
 
     // Add each parameter only if it has a value
-   
+
     if (customerId !== null && customerId !== undefined) {
       params.append("customerId", customerId.toString());
     }
-   
+
     if (deviceId !== null && deviceId !== undefined) {
       params.append("deviceId", deviceId.toString());
     }
@@ -466,7 +474,7 @@ export class ApiService {
     if (receivedFromId !== null && receivedFromId !== undefined) {
       params.append("receivedFromId", receivedFromId.toString());
     }
-      if (lotNumber !== null && lotNumber !== undefined) {
+    if (lotNumber !== null && lotNumber !== undefined) {
       params.append("lotNumber", lotNumber);
     }
     if (shipCategoryID !== null && shipCategoryID !== undefined) {
@@ -476,7 +484,7 @@ export class ApiService {
     return this.httpClient.get(url);
   }
 
- saveAddShipmentRecord(data: any): Observable<any> {
+  saveAddShipmentRecord(data: any): Observable<any> {
     return this.httpClient.post(`${API}v1/ise/inventory/inventorydata/add-ship-record`, data);
   }
 

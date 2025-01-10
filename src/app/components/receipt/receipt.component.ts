@@ -8,7 +8,7 @@ import { ApiService } from 'src/app/services/api.service';
 import {
   Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee,
   EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE,
-  INIT_POST_RECEIPT, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt,
+  INIT_POST_RECEIPT, InterimLot, InterimItem, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt,
   ReceiptAttachment, ReceiptLocation, SignatureTypes, Vendor
 } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
@@ -265,6 +265,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.contactPerson = dataItem.contactPerson
       this.fetchReceiptEmployees()
       this.fetchData();
+      if (dataItem.isInterim) {
+        this.listInterimLots();
+        this.fetchDataInterim();
+      }
     } else {
       this.isDisabledGoodsType = true;
     }
@@ -306,6 +310,32 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       },
       error: (e: any) => { }
     })
+  }
+  private fetchDataInterim() {
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    if (!dataItem.receiptID) {
+      // this is for new form
+      return;
+    }
+    this.apiService.listInterims(dataItem.receiptID).subscribe({
+      next: (v: any) => {
+        console.log(v);
+        this.gridDataInterim = v;
+        this.gridDataInterim.forEach((d, index) => {
+          d.employeeSelected = this.employees.find(e => e.EmployeeID == d.lotOwnerID);
+          d.countrySelected = this.countries.find(c => c.countryName == d.coo)
+          d.deviceTypeSelected = this.deviceTypes.find(dt => dt.deviceTypeID == d.deviceTypeID)
+          if (index == 0) {
+            this.lotCategorySelected = this.lotCategories.find(c => c.lotCategoryID == d.lotCategoryID)
+          }
+          if (d.lotIdentifier) {
+            d.lotIdentifierSelected = this.lotIdentifiers.find(l => l.id == d.lotIdentifier);
+          }
+          d.rowActionMenu = this.RowActionMenuDevice.map(o => ({ ...o }));
+          d.interimLotSelected = this.interimLotsList.find(o => o.iseLotNumber == d.iseLotNumber);
+        })
+      }
+    });
   }
   private fetchDataDevice() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
@@ -571,12 +601,147 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
 
   // Interim
-  public gridDataInterim: DeviceItem[] = [];
-  addInterimRow() {
+  public gridDataInterim: InterimItem[] = [];
+  addRowInterim() {
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    this.gridDataInterim.splice(0, 0, {
+      ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID, recordStatus: "I",
+      lotIdentifierSelected: this.lotIdentifiers[0],
+      lotIdentifier: this.lotIdentifiers[0].id,
+      rowActionMenu: this.RowActionMenuDeviceAdd.map(o => ({ ...o })),
+
+      interimLotSelected: undefined,
+      // @ts-ignore
+      goodQty: null,
+      // @ts-ignore
+      receivedQTY: null,
+      // @ts-ignore
+      rejectQty: null,
+    });
   }
   saveInterim() {
+    // postInterim    
+    const dataItem = this.appService.sharedData.receiving.dataItem;
+    if (!this.gridDataInterim || !this.gridDataInterim.length) {
+      this.appService.infoMessage(MESSAGES.NoChanges)
+    }
+    const filteredRecords = this.gridDataInterim.filter(d => d.recordStatus == "I" || d.recordStatus == "U")
+    if (!filteredRecords || filteredRecords.length < 1) {
+      this.appService.infoMessage(MESSAGES.NoChanges);
+      return;
+    }
+    const DeviceDetails: PostDevice[] = []
+    for (let index = 0; index < filteredRecords.length; index++) {
+      const r = filteredRecords[index];
+      const mandatoryFields = [
+        r.dateCode, r.countrySelected, r.deviceTypeSelected?.deviceTypeID
+      ]
+      const isValid = !mandatoryFields.some(v => !v);
+      if (!r.customerLotNumber) {
+        r.error = true;
+        this.appService.errorMessage("Customer Lot# is required!");
+        return;
+      }
+      if (!r.customerCount || r.customerCount < 1) {
+        r.error = true;
+        this.appService.errorMessage("Customer Count should be greater than zero!");
+        return;
+      }
+      // if (!r.deviceTypeSelected) {
+      //   r.error = true;
+      //   this.appService.errorMessage("Please select Device Type!");
+      //   return;
+      // }
+      if (r.isReceived) {
+        if (!r.labelCount || r.labelCount < 1) {
+          r.error = true;
+          this.appService.errorMessage("Label count should be greater than zero!")
+          return;
+        }
+      }
+      const clnStr = r.customerCount.toString() || ''
+      const cln = parseInt(clnStr);
+      const lcStr = r.labelCount?.toString() || '';
+      const lc = parseInt(lcStr);
+
+      if (r.isReceived) {
+        if (cln != lc) {
+          r.isHold = true;
+        } else {
+          r.isHold = false
+        }
+      }
+      const postDevice: PostDevice = {
+        // @ts-ignore
+        IseLotNumber: r.iseLotNumber,
+        DeviceID: r.deviceID,
+        ReceiptID: r.receiptID,
+        CustomerLotNumber: r.customerLotNumber,
+        CustomerCount: r.customerCount,
+        Expedite: r.expedite,
+        IQA: r.iqa,
+        LotIdentifier: r.lotIdentifier,
+        LotOwnerID: r.employeeSelected?.EmployeeID || this.appService.loginId,
+        LabelCount: r.labelCount,
+        DateCode: r.dateCode?.toString() || '',
+        COO: r.countrySelected?.countryID || null,
+        IsHold: r.isHold,
+        HoldComments: r.holdComments,
+        RecordStatus: r.recordStatus || 'I',
+        Active: r.active,
+        LoginId: this.appService.loginId,
+        LotCategoryID: this.lotCategorySelected?.lotCategoryID || 1,
+        DeviceTypeID: r.deviceTypeSelected?.deviceTypeID || 1,
+        // for Interim
+        inventoryID: 3361,
+        ISELot: r.interimLotSelected?.iseLotNumber || '',
+        InterimReceiptID: dataItem.receiptID,
+        userID: 1,
+        receivedQTY: r.receivedQTY,
+        goodQty: r.goodQty,
+        rejectQty: r.rejectQty,
+        InterimStatusID: 1,
+      }
+
+      if (postDevice.RecordStatus == "I") {
+        postDevice.DeviceID = null;
+      }
+
+      DeviceDetails.push(postDevice)
+    }
+    this.apiService.postInterim(DeviceDetails[0]).subscribe({
+      next: (v: any) => {
+        this.appService.successMessage(MESSAGES.DataSaved);
+        this.fetchDataInterim();
+      },
+      error: (err) => {
+        this.appService.errorMessage(MESSAGES.DataSaveError);
+      }
+    });
   }
 
+  onChangeInterim() {
+    if (this.isInterim) {
+      this.listInterimLots();
+      this.fetchDataInterim();
+    }
+  }
+  interimLotsList: InterimLot[] = [];
+  private listInterimLots() {
+    if (this.interimLotsList.length) {
+      return;
+    }
+    this.apiService.listInterimLots().subscribe({
+      next: (v: any) => {
+        this.interimLotsList = v;
+        this.gridDataInterim.forEach((d, index) => {
+          d.interimLotSelected = this.interimLotsList.find(o => o.iseLotNumber == d.iseLotNumber);
+        })
+      },
+      error: (err) => {
+      }
+    })
+  }
   // addDevice
   public gridDataDevice: DeviceItem[] = [];
   saveDevices() {
@@ -644,7 +809,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       const lcStr = r.labelCount?.toString() || '';
       const lc = parseInt(lcStr);
 
-      debugger;
       if (r.isReceived) {
         if (cln != lc) {
           r.isHold = true;
@@ -691,7 +855,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       }
     });
   }
-  addDeviceRow() {
+  addRowDevice() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
     this.appService.isLoading = true;
     this.apiService.generateLineItem().subscribe({
@@ -702,7 +866,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           lotIdentifierSelected: this.lotIdentifiers[0],
           lotIdentifier: this.lotIdentifiers[0].id,
           iseLotNumber: v.data + '',
-
           rowActionMenu: this.RowActionMenuDeviceAdd.map(o => ({ ...o }))
         });
       },

@@ -488,6 +488,17 @@ export const INIT_POST_DEVICE: PostDevice = {
   DeviceTypeID: 1,
   LotCategoryID: 1
 }
+// interim
+export interface InterimLot {
+  inventoryID: number
+  iseLotNumber: string
+}
+export interface InterimItem extends DeviceItem {
+  interimLotSelected: InterimLot | undefined
+  receivedQTY: number
+  goodQty: number
+  rejectQty: number
+}
 export interface HardwareType {
   hardwareTypeID: number
   hardwareType: string
