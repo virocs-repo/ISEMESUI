@@ -28,7 +28,7 @@
           <span class="k-form-separator"></span>
           <kendo-label text="Shipment Method: (If Other than ISE Driver)"></kendo-label>
           <div class="k-d-flex k-align-items-center k-gap-4">
-            <kendo-label text="Service Type" class="k-w-full">
+            <kendo-label text="Delivery Method" class="k-w-full">
               <b class="required-label"></b>
               <kendo-combobox [data]="serviceTypes" [(ngModel)]="serviceTypeSelected" 
               [textField]="'name'" [valueField]="'id'" placeholder="Select" rounded="large"
@@ -167,7 +167,7 @@
             </ng-template>
           </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="lotNumber" title="Lot Number">
+        <kendo-grid-column field="lotNumber" title="Lot/Hardware/Misc">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
             <div class="k-d-flex k-align-items-center">
               <kendo-autocomplete

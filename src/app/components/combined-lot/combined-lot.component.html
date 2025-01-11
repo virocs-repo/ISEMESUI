@@ -50,7 +50,6 @@
           <a class="minimal-text" [title]="dataItem.customer">{{dataItem.customer}}</a>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="status" title="Status"></kendo-grid-column>
       <kendo-grid-column field="iseLotNumber" title="Ise Lot#">
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.iseLotNumber">{{dataItem.iseLotNumber}}</a>
@@ -61,12 +60,13 @@
           <a class="minimal-text" [title]="dataItem.customerLotNumber">{{dataItem.customerLotNumber}}</a>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="deviceType" title="DeviceType">
+      <kendo-grid-column field="deviceType" title="Device Type">
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.deviceType">{{dataItem.deviceType}}</a>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="isPrimaryAddress" title="IsPrimaryAddress"></kendo-grid-column>
+     <!-- <kendo-grid-column field="isPrimaryAddress" title="Is Primary Address"></kendo-grid-column>-->
+      <kendo-grid-column field="status" title="Status"></kendo-grid-column>
     </kendo-grid>
   </div>
   
