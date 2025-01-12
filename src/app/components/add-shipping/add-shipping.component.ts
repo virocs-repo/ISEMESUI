@@ -90,7 +90,7 @@ shipaddItem():void{
     return;
   }
 
-  debugger;
+  
   const sd =  this.addShippingData.find(s => s.inventoryID == this.gridSelectedKeys[0])
   this.appService.sharedData.addshipping.dataItem = sd;
 
@@ -102,7 +102,7 @@ shipaddItem():void{
     userID: this.appService.loginId // Replace with actual user ID
   };
 
-  debugger;
+  
   this.apiService.saveAddShipmentRecord(requestData).subscribe({
     next: (response: any) => {
       this.appService.successMessage('created successfully!');

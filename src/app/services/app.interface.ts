@@ -298,6 +298,7 @@ export interface Shipment {
   modifiedOn: string; // or Date if you want to enforce date format
   customerTypeSelected: CustomerType | undefined;
   holdComments: string;
+  deliveryInfoId:number;
 }
 export interface CustomerOrderDetail {
   CustomerOrderDetailID: number | null;

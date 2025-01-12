@@ -69,6 +69,17 @@
         <a class="minimal-text" [title]="dataItem.shipped">{{dataItem.shipped}}</a>
       </ng-template>
     </kendo-grid-column>
+  
+    <kendo-grid-column field="deliveryMethod" title="Delivery Method ">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.deliveryMethod">{{dataItem.deliveryMethod}}</a>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="contactPerson" title="Contact Person ">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.contactPerson">{{dataItem.contactPerson}}</a>
+      </ng-template>
+    </kendo-grid-column>
     <kendo-grid-column field="trackingnum" title="Tracking #">
       <ng-template kendoGridCellTemplate let-dataItem>
         <a class="minimal-text" [title]="dataItem.trackingnum">{{dataItem.trackingnum}}</a>

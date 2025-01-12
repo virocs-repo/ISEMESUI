@@ -13,7 +13,7 @@
         </kendo-label>
 
         <!-- Device Type ComboBox -->
-        <kendo-label text="Device Type">
+        <kendo-label text="Device Type" hidden>
            
             <kendo-combobox [data]="deviceTypes" placeholder="Device" rounded="large" [(ngModel)]="deviceTypeSelected"  [disabled]="!addCustomerMode">
             </kendo-combobox>

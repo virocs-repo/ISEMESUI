@@ -488,4 +488,9 @@ export class ApiService {
     return this.httpClient.post(`${API}v1/ise/inventory/inventorydata/add-ship-record`, data);
   }
 
+  getShipmentdeliveryInfo(deliveryInfoId: number) {
+    const url = `${API}v1/ise/inventory/inventorydata/GetShipdeliveryInfo?deliveryInfoId=${deliveryInfoId}`;
+    return this.httpClient.get(url);
+  }
+
 }

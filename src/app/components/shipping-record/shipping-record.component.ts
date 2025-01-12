@@ -26,6 +26,54 @@ export class ShippingRecordComponent implements OnDestroy {
 
   gridDataResult: GridDataResult = { data: [], total: 0 };
   customerID: number = 0;
+  shipDeliveryDetailInfo :any =[];
+  address = {
+    Country: '',
+    ReceiversName: '',
+    CompanyName: '',
+    Address1: '',
+    Address2: '',
+    Address3: '',
+    Telephone: '',
+    State: '',
+    City: '',
+    PostCode: '',
+    Ext: '',
+    Comments:'',
+    SpecialInstructions:'',
+    PackingComments:'',
+    InvoiceComments:'',
+    contactPerson:''
+
+
+  };
+  shippingDetails = {
+    ShippingMethod: '',
+    Email: '',
+    ShipAlertEmail: '',
+    ContactPerson: '',
+    Destination: '',
+    CourierName: '',
+    CIFrom: '',
+    ServiceType: '',
+    BillTransportTo: '',
+    BillTransportAcct: '',
+    CustomerReference: '',
+    InvoiceNumber: '',
+    BillDutiesTaxes: '',
+    DutiesTaxes: '',
+    ECCN: '',
+    COO: '',
+    Quantity: '',
+    UnitValue: '',
+    TotalValue: '',
+    CIAdditionalInfo: '',
+    ShipAlertEmailCourier: '',
+    
+  };
+
+  
+
   isDisabled: any = {
     shipBtn: false,
     clearBtn: false
@@ -55,7 +103,10 @@ export class ShippingRecordComponent implements OnDestroy {
       this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.currentLocationID);
       this.customerID = dataItem.customerID;
       this.fetchShipmentLineItems(dataItem.shipmentId);
-     // this.fetchData();
+
+     
+      this.fetchShipDeliveryData(dataItem.deliveryInfoId);
+
     }
     else
     {
@@ -63,7 +114,7 @@ export class ShippingRecordComponent implements OnDestroy {
         this.customerSelected = this.customers.find(c => c.CustomerID ==this.appService.sharedData.addshipping.dataItem.customerID);
         this.customerID = this.appService.sharedData.addshipping.dataItem.customerID;
         
-       // this.fetchData();
+    
       
     }
     if (this.appService.sharedData.shipping.isViewMode) {
@@ -75,6 +126,9 @@ export class ShippingRecordComponent implements OnDestroy {
     this.appService.sharedData.shipping.isEditMode = false
     this.appService.sharedData.shipping.isViewMode = false
   }
+  onShippingMethodChange(method: string) {
+    this.shippingDetails.ShippingMethod = method;
+  }
   private fetchShipmentLineItems(shipmentID: number) {
     this.apiService.getShipmentLineItems(shipmentID).subscribe({
       next: (shipmentDetails: ShipmentDetails[] | any) => {
@@ -83,16 +137,31 @@ export class ShippingRecordComponent implements OnDestroy {
     })
   }
   shipmentDetails: ShipmentDetails[] = []
-  private fetchData() {
-    if (!this.customerID) {
-      return;
-    }
-    
-    this.apiService.getShipmentInventories(this.customerID).subscribe({
-      next: (shipmentDetails: ShipmentDetails[] | any) => {
-        this.rebuildTable(shipmentDetails);
+  private fetchShipDeliveryData(deliveryInfoId: number) {
+   
+    this.apiService.getShipmentdeliveryInfo(deliveryInfoId).subscribe({
+      next: (res: any) => {
+        console.log(res);
+        this.shipDeliveryDetailInfo=res[0];
+        this.address.Address1=res[0].address1;
+        this.address.CompanyName=res[0].companyName;
+        this.address.Address2=res[0].address2;
+        this.address.Address3=res[0].address3;
+        this.address.Country=res[0].country;
+        this.address.PostCode=res[0].postCode;
+        this.address.State=res[0].stateProvince;
+        this.address.City=res[0].city;
+        this.address.Telephone=res[0].phone;
+        this.shippingDetails.ShippingMethod=res[0].shippingMethod;
+        this.shippingDetails.ContactPerson=res[0].contactPerson;
+        this.onShippingMethodChange(res[0].shippingMethod);
+
+
+      },
+      error: (err) => {
       }
     });
+
   }
   private rebuildTable(shipmentDetails: ShipmentDetails[] | any) {
     
