@@ -253,6 +253,22 @@ private getOtherInventoryShipment(anotherShippingID:number) {
 
 }
 upsertAnotherShipment(saveType:any){
+  const invalidQuantityItems = this.lineItemsGrid.filter(item =>
+    item.quantity == null || isNaN(item.quantity) || item.quantity <= 0
+  );
+
+if (invalidQuantityItems.length > 0) {
+    this.appService.errorMessage('Please enter valid Quantity for the line items.');
+    return;
+}
+const invalidValueItems = this.lineItemsGrid.filter(item =>
+  item.value== null 
+);
+if (invalidValueItems.length > 0) {
+  this.appService.errorMessage('Please enter valid Value for the line items.');
+  return;
+}
+
   var otherShipID = 0;
   var recordStatus = 'I';
   if(this.appService.sharedData.anotherShipping.dataItem.anotherShipmentID) {
@@ -278,7 +294,7 @@ upsertAnotherShipment(saveType:any){
     shipDetail.serviceTypeID = this.serviceTypeSelected?.id == undefined ? 0 : this.serviceTypeSelected.id;
   }
   else {
-    this.appService.errorMessage('Please select service type');
+    this.appService.errorMessage('Please select Delivery Method');
     return;
   }
   shipDetail.accountNo = this.accountNumber;
@@ -677,6 +693,9 @@ upsertAnotherShipment(saveType:any){
       }
     }
     this.getLotNumbers(customerTypeId, customerVendorId);
+  }
+  getTotalValue(): number {
+    return this.lineItemsGrid.reduce((sum, item) => sum + (parseFloat(item.value) || 0), 0);
   }
 
 }
