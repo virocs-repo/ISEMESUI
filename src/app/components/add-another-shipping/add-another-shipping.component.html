@@ -166,6 +166,9 @@
               <span>{{dataItem.value}}</span>
             </ng-template>
           </ng-template>
+          <ng-template kendoGridFooterTemplate>
+            <strong>Total: {{ getTotalValue() | number:'1.2-2' }}</strong>
+        </ng-template>
         </kendo-grid-column>
         <kendo-grid-column field="lotNumber" title="Lot/Hardware/Misc">
           <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
