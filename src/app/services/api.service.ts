@@ -100,13 +100,13 @@ export class ApiService {
     return this.httpClient.delete(`${API}v1/ise/inventory/delete-attachment`, { body });
   }
   postInterim(body: any) {
-    return this.httpClient.post(`${API}v1/ise/inventory/upsert-interim-device`, body);
+    return this.httpClient.post(`${API}v1/ise/inventory/processInterimDevice`, body);
   }
   listInterimLots() {
-    return this.httpClient.get(`${API}v1/ise/inventory/Interim-lot`);
+    return this.httpClient.get(`${API}v1/ise/inventory/getInterimLots`);
   }
-  listInterims(receiptId: number) {
-    return this.httpClient.get(`${API}v1/ise/inventory/Interim-devicedata?interimReceiptID=${receiptId}`);
+  listInterimDevices(receiptId: number) {
+    return this.httpClient.get(`${API}v1/ise/inventory/getInterimDeviceData?interimReceiptID=${receiptId}`);
   }
 
   // Shipping
@@ -493,4 +493,10 @@ export class ApiService {
     return this.httpClient.get(url);
   }
 
+  getInvUserByRole(filterKey:string, isActive:number, condition:string|null) {
+    return this.httpClient.get(`${API}v1/ise/inventory/getInvUserByRole?filterKey=${filterKey}&isActive=${isActive}&condition=${condition}`);
+  }
+  getDeviceDetailsById(invId:number){
+    return this.httpClient.get(`${API}v1/ise/inventory/getdetailsByInventoryID?inventoryID=${invId}`)
+  }
 }

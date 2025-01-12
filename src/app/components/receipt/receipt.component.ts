@@ -9,7 +9,7 @@ import {
   Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee,
   EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE,
   INIT_POST_RECEIPT, InterimLot, InterimItem, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt,
-  ReceiptAttachment, ReceiptLocation, SignatureTypes, Vendor
+  ReceiptAttachment, ReceiptLocation, SignatureTypes, Vendor,InterimDevice
 } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { environment } from 'src/environments/environment';
@@ -131,7 +131,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     operator: 'contains'
   };
 
-  constructor(public appService: AppService, private apiService: ApiService) { }
+  PMReceivers:any[] = [];
+  PMReceiverSelected:any;
+
+  constructor(public appService: AppService, private apiService: ApiService) { 
+    this.getInvUserByRole();
+  }
 
   ngOnInit(): void {
     this.init();
@@ -154,6 +159,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       }
     }))
     this.initRoleBasedUI()
+    debugger;
+    if(this.appService.sharedData.receiving.isEditMode){
+      this.isDisableInterim = true;
+    }
   }
   ngOnDestroy(): void {
     this.appService.sharedData.receiving.isEditMode = false
@@ -198,6 +207,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           break;
         case "ISInterim":
           this.isVisibleInterim = aff.active
+          debugger;
           this.isDisableInterim = !aff.isWriteOnly;
           break;
         case "ReceiptHold":
@@ -210,6 +220,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
 
   private init() {
+    debugger;
     if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
       const dataItem = this.appService.sharedData.receiving.dataItem;
 
@@ -291,6 +302,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
   currentBehalfID: any;
   private fetchDevicesByCustomer() {
+    debugger;
     const dataItem = this.appService.sharedData.receiving.dataItem;
     if (!dataItem.behalfID) {
       // this is for new form
@@ -302,6 +314,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.currentBehalfID = dataItem.behalfID;
     this.apiService.getDevicesByCustomer(dataItem.behalfID).subscribe({
       next: (v: any) => {
+        debugger;
         this.deviceTypes.length = 0;
         this.deviceTypes.push(...v);
         this.gridDataDevice.forEach((d) => {
@@ -312,25 +325,26 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     })
   }
   private fetchDataInterim() {
+    debugger;
     const dataItem = this.appService.sharedData.receiving.dataItem;
     if (!dataItem.receiptID) {
       // this is for new form
       return;
     }
-    this.apiService.listInterims(dataItem.receiptID).subscribe({
+    this.apiService.listInterimDevices(dataItem.receiptID).subscribe({
       next: (v: any) => {
-        console.log(v);
+        debugger;
         this.gridDataInterim = v;
         this.gridDataInterim.forEach((d, index) => {
-          d.employeeSelected = this.employees.find(e => e.EmployeeID == d.lotOwnerID);
-          d.countrySelected = this.countries.find(c => c.countryName == d.coo)
+          //d.employeeSelected = this.employees.find(e => e.EmployeeID == d.lotOwnerID);
+          //d.countrySelected = this.countries.find(c => c.countryName == d.coo)
           d.deviceTypeSelected = this.deviceTypes.find(dt => dt.deviceTypeID == d.deviceTypeID)
-          if (index == 0) {
-            this.lotCategorySelected = this.lotCategories.find(c => c.lotCategoryID == d.lotCategoryID)
-          }
-          if (d.lotIdentifier) {
-            d.lotIdentifierSelected = this.lotIdentifiers.find(l => l.id == d.lotIdentifier);
-          }
+          // if (index == 0) {
+          //   this.lotCategorySelected = this.lotCategories.find(c => c.lotCategoryID == d.lotCategoryID)
+          // }
+          // if (d.lotIdentifier) {
+          //   d.lotIdentifierSelected = this.lotIdentifiers.find(l => l.id == d.lotIdentifier);
+          // }
           d.rowActionMenu = this.RowActionMenuDevice.map(o => ({ ...o }));
           d.interimLotSelected = this.interimLotsList.find(o => o.iseLotNumber == d.iseLotNumber);
         })
@@ -434,6 +448,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.email = 'test@gmail.com'
   }
   addReceipt() {
+    debugger;
+    
     const data: PostReceipt = {
       ...INIT_POST_RECEIPT,
 
@@ -470,7 +486,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       RecordStatus: "I",
       Active: true,
       LoginId: this.appService.loginId,
-      EmployeeDetail: this.employeesSelected,
       TrackingNumber: this.tracking
     }
     if (this.customerTypeSelected?.customerTypeName == 'Customer') {
@@ -517,7 +532,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.appService.errorMessage('Please select Receiving Facility');
       return;
     }
-    if (!this.employeesSelected) {
+    if (!this.PMReceiverSelected) {
       this.appService.errorMessage('Please select PM/Receivers');
       return;
     }
@@ -584,10 +599,19 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         return;
       }
     }
+    debugger;
+    if(this.PMReceiverSelected){
+      const PMRecev: Employee = { EmployeeID: this.PMReceiverSelected.employeeID, EmployeeName: this.PMReceiverSelected.employeeName} 
+      data.EmployeeDetail = [PMRecev];
+    }
+    else  {
+      data.EmployeeDetail = this.employeesSelected;
+    }
 
     this.doPostProcessReceipt(data);
   }
   private doPostProcessReceipt(postReceipt: PostReceipt) {
+    debugger;
     const body = { ReceiptDetails: [postReceipt] }
     this.apiService.postProcessReceipt(body).subscribe({
       next: (v: any) => {
@@ -603,6 +627,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   // Interim
   public gridDataInterim: InterimItem[] = [];
   addRowInterim() {
+    debugger;
     const dataItem = this.appService.sharedData.receiving.dataItem;
     this.gridDataInterim.splice(0, 0, {
       ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID, recordStatus: "I",
@@ -621,6 +646,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   saveInterim() {
     // postInterim    
+    debugger;
     const dataItem = this.appService.sharedData.receiving.dataItem;
     if (!this.gridDataInterim || !this.gridDataInterim.length) {
       this.appService.infoMessage(MESSAGES.NoChanges)
@@ -630,13 +656,11 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.appService.infoMessage(MESSAGES.NoChanges);
       return;
     }
-    const DeviceDetails: PostDevice[] = []
+    const InterimDeviceDetails: InterimDevice[] = []
+    debugger;
     for (let index = 0; index < filteredRecords.length; index++) {
       const r = filteredRecords[index];
-      const mandatoryFields = [
-        r.dateCode, r.countrySelected, r.deviceTypeSelected?.deviceTypeID
-      ]
-      const isValid = !mandatoryFields.some(v => !v);
+      
       if (!r.customerLotNumber) {
         r.error = true;
         this.appService.errorMessage("Customer Lot# is required!");
@@ -652,66 +676,52 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       //   this.appService.errorMessage("Please select Device Type!");
       //   return;
       // }
-      if (r.isReceived) {
-        if (!r.labelCount || r.labelCount < 1) {
+      
+      if (r.isReceived == true) {
+        debugger;
+        const mandatoryFields = [ r.receivedQTY, r.goodQty, r.receivedQTY ]
+        const isValid = !mandatoryFields.some(v => v > 0);
+        if(isValid != true) {
           r.error = true;
-          this.appService.errorMessage("Label count should be greater than zero!")
+          this.appService.errorMessage("ReceivedQTY, GoodQty, ReceivedQTY should be greater than zero!")
           return;
         }
-      }
-      const clnStr = r.customerCount.toString() || ''
-      const cln = parseInt(clnStr);
-      const lcStr = r.labelCount?.toString() || '';
-      const lc = parseInt(lcStr);
-
-      if (r.isReceived) {
-        if (cln != lc) {
+      
+        const recevQtyStr = r.receivedQTY.toString() || ''
+        const recevQty = parseInt(recevQtyStr);
+        const goodQtyStr = r.goodQty.toString() || '';
+        const goodQty = parseInt(goodQtyStr);
+        const rejQtyStr = r.goodQty.toString() || '';
+        const rejQty = parseInt(rejQtyStr);
+      
+        if (recevQty != (goodQty + rejQty)) {
           r.isHold = true;
         } else {
           r.isHold = false
         }
       }
-      const postDevice: PostDevice = {
-        // @ts-ignore
-        IseLotNumber: r.iseLotNumber,
-        DeviceID: r.deviceID,
-        ReceiptID: r.receiptID,
-        CustomerLotNumber: r.customerLotNumber,
-        CustomerCount: r.customerCount,
-        Expedite: r.expedite,
-        IQA: r.iqa,
-        LotIdentifier: r.lotIdentifier,
-        LotOwnerID: r.employeeSelected?.EmployeeID || this.appService.loginId,
-        LabelCount: r.labelCount,
-        DateCode: r.dateCode?.toString() || '',
-        COO: r.countrySelected?.countryID || null,
-        IsHold: r.isHold,
-        HoldComments: r.holdComments,
+      else if (r.isReceived == false) {
+
+      }
+
+      const postInterimDevice: InterimDevice = {
+        InventoryID: r.interimLotSelected?.inventoryID || 0,
+        InterimReceiptID: r.receiptID,
         RecordStatus: r.recordStatus || 'I',
-        Active: r.active,
-        LoginId: this.appService.loginId,
-        LotCategoryID: this.lotCategorySelected?.lotCategoryID || 1,
-        DeviceTypeID: r.deviceTypeSelected?.deviceTypeID || 1,
-        // for Interim
-        inventoryID: 3361,
-        ISELot: r.interimLotSelected?.iseLotNumber || '',
-        InterimReceiptID: dataItem.receiptID,
-        userID: 1,
-        receivedQTY: r.receivedQTY,
-        goodQty: r.goodQty,
-        rejectQty: r.rejectQty,
-        InterimStatusID: 1,
+        UserID:1, //this.apiService.loginId,
+        ReceivedQTY:r.receivedQTY,
+        GoodQty:r.goodQty,
+        RejectQty:r.rejectQty,
+        InterimStatusID: r.isReceived == true ? 1 : 0,
+        IsHold: r.isHold
       }
-
-      if (postDevice.RecordStatus == "I") {
-        postDevice.DeviceID = null;
-      }
-
-      DeviceDetails.push(postDevice)
+      
+      InterimDeviceDetails.push(postInterimDevice)
     }
-    this.apiService.postInterim(DeviceDetails[0]).subscribe({
+    this.apiService.postInterim(InterimDeviceDetails[0]).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
+        debugger;
         this.fetchDataInterim();
       },
       error: (err) => {
@@ -1410,5 +1420,40 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   removeRow(gridData: Array<any>, index: number) {
     gridData.splice(index, 1);
+  }
+  getInvUserByRole(){
+    const filterKey = 'PMReceiver'
+    const isActive = 1
+    const condition = null;
+    this.apiService.getInvUserByRole(filterKey, isActive, condition).subscribe({
+      next: (v:any) => {
+        this.PMReceivers = v;
+      }
+    });
+  }
+  onLotValueChange(selectLot: any, dataItem:InterimItem, indx :any): void {
+    debugger;
+    this.apiService.getDeviceDetailsById(selectLot.inventoryID).subscribe({
+      next: (devDetails:any) =>{
+        debugger;
+        if(devDetails.length > 0){
+          const devicDetail = devDetails[0];
+          dataItem.customerLotNumber = devicDetail.customerLotNumber;
+          dataItem.customerCount = devicDetail.customerCount;
+          //dataItem.deviceTypeSelected = this.deviceTypes.find(d => d.deviceTypeID === devicDetail.deviceTypeID);
+          //dataItem.employeeSelected = this.employees.find(d => d.EmployeeID === devicDetail.EmployeeID);
+          dataItem.lotIdentifierSelected = this.lotIdentifiers.find(d => d.id === devicDetail.lotIdentifier);
+          dataItem.labelCount = devicDetail.labelCount;
+          // dataItem.receivedQTY = devicDetail.receivedQTY;
+          // dataItem.goodQty = devicDetail.goodQty;
+          // dataItem.receivedQTY = devicDetail.receivedQTY;
+          // dataItem.isHold = devicDetail.isHold;
+          // dataItem.deviceID = devicDetail.deviceID;
+          //dataItem.receiptID = devicDetail.receiptID;
+          //dataItem.lotCategoryID = devicDetail.lotCategoryID;
+          dataItem.active = devicDetail.active;
+        }
+      }
+    })
   }
 }

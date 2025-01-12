@@ -69,8 +69,8 @@
             </div>
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label text="PM/Receiver" class="k-w-full">
-                <kendo-multiselect [data]="employees" [(ngModel)]="employeesSelected" [textField]="'EmployeeName'"
-                  [valueField]="'EmployeeID'" placeholder="Select" rounded="large"></kendo-multiselect>
+                <kendo-combobox [data]="PMReceivers" [(ngModel)]="PMReceiverSelected" [textField]="'employeeName'"
+                  [valueField]="'employeeID'" placeholder="Select" rounded="large"></kendo-combobox>
               </kendo-label>
             </div>
             <div class="k-d-flex k-align-items-center k-gap-4">
@@ -213,7 +213,7 @@
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <kendo-combobox [data]="interimLotsList" [(ngModel)]="dataItem.interimLotSelected"
                 [textField]="'iseLotNumber'" [valueField]="'inventoryID'" placeholder="Select"
-                [kendoDropDownFilter]="filterSettings" rounded="large"
+                [kendoDropDownFilter]="filterSettings" rounded="large"  (valueChange)="onLotValueChange($event, dataItem, rowIndex)"
                 [popupSettings]="{ appendTo: 'root', width: 'auto'}" [class.ng-touched]="dataItem.error"
                 required></kendo-combobox>
             </ng-template>
@@ -239,18 +239,8 @@
               </ng-template>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="goodQty" title="Good Qty" [width]="70">
-            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
-                <kendo-textbox [(ngModel)]="dataItem.goodQty" placeholder="Good Qty" [class.ng-touched]="dataItem.error"
-                  required></kendo-textbox>
-              </ng-container>
-              <ng-template #showValue>
-                <span>{{dataItem.goodQty}}</span>
-              </ng-template>
-            </ng-template>
-          </kendo-grid-column>
-          <kendo-grid-column field="expedite" title="Device" [width]="200">
+          
+          <!-- <kendo-grid-column field="deviceType" title="Device Type" [width]="200">
             <ng-template kendoGridCellTemplate let-dataItem>
               <kendo-combobox [data]="deviceTypes" [(ngModel)]="dataItem.deviceTypeSelected"
                 [textField]="'deviceTypeName'" [valueField]="'deviceTypeID'" placeholder="Select"
@@ -277,7 +267,7 @@
                 (ngModelChange)="onChangeLotIdentifier(dataItem)" [valueField]="'id'" placeholder="Select"
                 rounded="large" [popupSettings]="{ appendTo: 'root', width: 'auto' }"></kendo-combobox>
             </ng-template>
-          </kendo-grid-column>
+          </kendo-grid-column>-->
           <kendo-grid-column field="labelCount" title="Label Count" [width]="80">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.isReceived; else showValue">
@@ -300,6 +290,17 @@
               </ng-template>
             </ng-template>
           </kendo-grid-column>
+          <kendo-grid-column field="goodQty" title="Good Qty" [width]="70">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
+                <kendo-textbox [(ngModel)]="dataItem.goodQty" placeholder="Good Qty" [class.ng-touched]="dataItem.error"
+                  required></kendo-textbox>
+              </ng-container>
+              <ng-template #showValue>
+                <span>{{dataItem.goodQty}}</span>
+              </ng-template>
+            </ng-template>
+          </kendo-grid-column>
           <kendo-grid-column field="rejectQty" title="Reject Qty" [width]="200">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
@@ -311,12 +312,12 @@
               </ng-template>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="isHold" title="Hold" [width]="60">
+          <!--<kendo-grid-column field="isHold" title="Hold" [width]="60">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <input type="checkbox" name="isHold" [(ngModel)]="dataItem.isHold"
                 (ngModelChange)="onHoldChange(dataItem)" kendoCheckBox [disabled]="!dataItem.isReceived">
             </ng-template>
-          </kendo-grid-column>
+          </kendo-grid-column> -->
           <kendo-grid-column title="" [width]="50">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"

@@ -717,3 +717,22 @@ export interface ReceiptAttachment {
   active: boolean,
   loginId: number
 }
+export interface ReceiptAttachment {
+  attachmentId: number,
+  objectID: number,
+  attachmentName: string,
+  path: string,
+  active: boolean,
+  loginId: number
+}
+export interface InterimDevice {
+  InventoryID:number
+  InterimReceiptID:number
+  UserID:number
+  ReceivedQTY:number|null
+  GoodQty:number|null
+  RejectQty:number|null
+  InterimStatusID:number
+  RecordStatus: "I" | "U"
+  IsHold:boolean
+}
