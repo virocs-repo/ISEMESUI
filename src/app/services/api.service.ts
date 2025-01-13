@@ -337,11 +337,16 @@ export class ApiService {
     return this.httpClient.get(`${API}v1/ise/inventory/move/facility`, { params });
   }
 
-  postInventoryMovewith_Facilty(invId: number, area_FacilityId: number, receivingFacilityID: number) {
-    const url = `${API}v1/ise/inventory/move?inventoryId=${invId}&areaFacilityId=${area_FacilityId}&facilityId=${receivingFacilityID}`;
+  postInventoryMovewith_Facilty(invId: number, area_FacilityId: number | null, receivingFacilityID: number) {
+    let url = `${API}v1/ise/inventory/move?inventoryId=${invId}&facilityId=${receivingFacilityID}`;
+    
+    if (area_FacilityId !== null && area_FacilityId !== undefined) {
+      url += `&areaFacilityId=${area_FacilityId}`;
+    }
+  
     return this.httpClient.post(url, null);
   }
-
+  
 
 
   //Inventory Hold

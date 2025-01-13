@@ -45,11 +45,11 @@
   <i class="k-ml-auto"></i>
   <button kendoButton (click)="doTestEditMode()">Test Edit Mode</button>
 </div> -->
-<div class="page-body k-m-4 minimal-table">
+<div class="page-body k-m-4">
   <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings"
     [columnMenu]="columnMenuSettings" [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
-    [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
-    class="grid-header-bold grid-receiving" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
+    [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" 
+    class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
     <kendo-grid-column field="receiptID" title="Receipt ID"></kendo-grid-column>
     <kendo-grid-column field="customerType" title="Receive From"></kendo-grid-column>
     <kendo-grid-column field="customerVendor" title="Customer / Vendor">

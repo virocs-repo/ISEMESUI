@@ -41,6 +41,8 @@ newLocationSelected: any;
   gridSelectedKeys: any[] = []; // Tracks selected rows in the grid
   @Output() cancel = new EventEmitter<void>();
   isPrimaryLotValid: boolean = true; // Assume valid by default
+  subLocation: string[] = ['Rel Storage'];
+  subLocationSelected: string = '';
   constructor(public appService: AppService, private apiService: ApiService,private cdr: ChangeDetectorRef ) { }
 
   ngOnInit(): void {
@@ -206,46 +208,35 @@ onChangeNewLocations(): void {
 
 
 saveInventorymove(): void {
-
-
-  if (!this.newLocationSelected) {
-    this.appService.errorMessage('Please select new location');
-    return;
-  } 
   if (!this.receiptLocationSelected) {
-    this.appService.errorMessage('Please select receiptLocation');
+    this.appService.errorMessage('Please select Facility');
     return;
-  } 
-  const ivnid=this.inventoryID;
+  }
 
-  console.log(this.newLocationSelected);
-  console.log(this.receiptLocationSelected);
-  let areaFacId: any | undefined;
-   
+  const ivnid = this.inventoryID;
+  let areaFacId: any = null; // Default to null
+
   if (typeof this.newLocationSelected === 'number') {
     // Case 1: newLocationSelected is a number
     areaFacId = this.newLocationSelected;
   } else if (typeof this.newLocationSelected === 'object' && this.newLocationSelected !== null) {
     // Case 2: newLocationSelected is an object with area_FacilityId property
-    areaFacId = this.newLocationSelected.area_FacilityId;
+    areaFacId = this.newLocationSelected.area_FacilityId ?? null; // Fallback to null if area_FacilityId is undefined
   } else {
     // Case 3: Invalid or missing data
     console.error('Invalid newLocationSelected value:', this.newLocationSelected);
   }
 
-
- const receivingFacID= this.receiptLocationSelected.receivingFacilityID;
+  const receivingFacID = this.receiptLocationSelected.receivingFacilityID;
 
   // Call the API
-  this.apiService.postInventoryMovewith_Facilty(ivnid,areaFacId,receivingFacID).subscribe({
+  this.apiService.postInventoryMovewith_Facilty(ivnid, areaFacId, receivingFacID).subscribe({
     next: (response: any) => {
       this.appService.successMessage('Inventory move saved successfully!');
       this.cancel.emit();
-
     },
     error: (error: any) => {
       this.appService.errorMessage('Failed to save Inventory move.');
-      
     },
   });
 }
