@@ -220,9 +220,9 @@
           </kendo-grid-column>
           <kendo-grid-column field="customerLotNumber" title="Cust lot#" [width]="70">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
+              <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.customerLotNumber" placeholder="Lot Number"
-                  [class.ng-touched]="dataItem.error" required></kendo-textbox>
+                  ></kendo-textbox>
               </ng-container>
               <ng-template #showValue>
                 <span>{{dataItem.customerLotNumber}}</span>
@@ -230,7 +230,7 @@
             </ng-template></kendo-grid-column>
           <kendo-grid-column field="customerCount" title="Cust Cnt" [width]="70">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
+              <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.customerCount" (ngModelChange)="onCountUIChange($event)"
                   placeholder="Customer Count" [class.ng-touched]="dataItem.error" required></kendo-textbox>
               </ng-container>
@@ -270,7 +270,7 @@
           </kendo-grid-column>-->
           <kendo-grid-column field="labelCount" title="Label Count" [width]="80">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.isReceived; else showValue">
+              <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.labelCount" placeholder="Label Count"
                   [class.ng-touched]="dataItem.error" required></kendo-textbox>
               </ng-container>
@@ -281,7 +281,7 @@
           </kendo-grid-column>
           <kendo-grid-column field="receivedQTY" title="Received Qty" [width]="80">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
+              <ng-container *ngIf="dataItem.isReceived; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.receivedQTY" placeholder="Received Qty"
                   [class.ng-touched]="dataItem.error" required></kendo-textbox>
               </ng-container>
@@ -292,7 +292,7 @@
           </kendo-grid-column>
           <kendo-grid-column field="goodQty" title="Good Qty" [width]="70">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
+              <ng-container *ngIf="dataItem.isReceived; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.goodQty" placeholder="Good Qty" [class.ng-touched]="dataItem.error"
                   required></kendo-textbox>
               </ng-container>
@@ -303,7 +303,7 @@
           </kendo-grid-column>
           <kendo-grid-column field="rejectQty" title="Reject Qty" [width]="200">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'I' || dataItem.recordStatus == 'U'; else showValue">
+              <ng-container *ngIf="dataItem.isReceived; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.rejectQty" placeholder="Reject Qty"
                   [class.ng-touched]="dataItem.error" required></kendo-textbox>
               </ng-container>
@@ -335,8 +335,7 @@
         <kendo-label text="Lot Category: "></kendo-label>
         <kendo-combobox [data]="lotCategories" [(ngModel)]="lotCategorySelected" [textField]="'lotCategoryName'"
           [valueField]="'lotCategoryID'" [kendoDropDownFilter]="filterSettings" placeholder="Select" rounded="large"
-          style="min-width: 300px; width: auto; max-width: 100%;" [class.ng-touched]="!lotCategorySelected"
-          required></kendo-combobox>
+          style="min-width: 300px; width: auto; max-width: 100%;" required></kendo-combobox>
         <i class="k-ml-auto"></i>
         <button kendoButton type="button" rounded="large" themeColor="info" (click)="addRowDevice()"
           [disabled]="isDisabled.addDevice">Add</button>

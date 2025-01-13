@@ -220,7 +220,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
 
   private init() {
-    debugger;
+    
     if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
       const dataItem = this.appService.sharedData.receiving.dataItem;
 
@@ -604,9 +604,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       const PMRecev: Employee = { EmployeeID: this.PMReceiverSelected.employeeID, EmployeeName: this.PMReceiverSelected.employeeName} 
       data.EmployeeDetail = [PMRecev];
     }
-    else  {
-      data.EmployeeDetail = this.employeesSelected;
-    }
 
     this.doPostProcessReceipt(data);
   }
@@ -661,6 +658,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     for (let index = 0; index < filteredRecords.length; index++) {
       const r = filteredRecords[index];
       
+      if (!r.interimLotSelected) {
+        r.error = true;
+        this.appService.errorMessage("ISE Lot# is required!");
+        return;
+      }
+
       if (!r.customerLotNumber) {
         r.error = true;
         this.appService.errorMessage("Customer Lot# is required!");
@@ -1422,12 +1425,15 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     gridData.splice(index, 1);
   }
   getInvUserByRole(){
+    const dataItem = this.appService.sharedData.receiving.dataItem;
     const filterKey = 'PMReceiver'
     const isActive = 1
     const condition = null;
     this.apiService.getInvUserByRole(filterKey, isActive, condition).subscribe({
       next: (v:any) => {
+        debugger;
         this.PMReceivers = v;
+        this.PMReceiverSelected = this.PMReceivers.find(e => e.employeeID == dataItem.pmReceiverID)
       }
     });
   }
