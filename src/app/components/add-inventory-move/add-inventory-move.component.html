@@ -23,14 +23,14 @@
                 </kendo-textbox>
               </kendo-label>
               
-              <kendo-label text="New Facility" >
+              <kendo-label text="Facility" >
                <!-- <b class="required-label"></b>-->
                 <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
                   [textField]="'receivingFacilityName'" [valueField]="'receivingFacilityID'" [allowCustom]="true"
                   placeholder="Select" rounded="large" (valueChange)="onReceivingFacilityChange($event)" [disabled]="isDisabled.shipBtn"></kendo-combobox>
               </kendo-label>
              
-              <kendo-label text="Facility Area">
+              <kendo-label *ngIf="currentLocation === receiptLocationSelected?.receivingFacilityName" text="Facility Area">
                 <b class="required-label"></b>
                 <kendo-combobox 
                   [data]="newLocations" 
@@ -42,8 +42,8 @@
                   rounded="large" [disabled]="isDisabled.shipBtn" >
                 </kendo-combobox>
               </kendo-label>
-              <kendo-label text="Sub Location" >
-                <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"></kendo-combobox>
+              <kendo-label *ngIf="newLocationSelected?.area_Name === 'WIP'"  text="Sub Location">
+                <kendo-combobox [data]="subLocation" [(ngModel)]="subLocationSelected"></kendo-combobox>
               </kendo-label>
         
             </div>
