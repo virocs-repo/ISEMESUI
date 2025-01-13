@@ -711,7 +711,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         InventoryID: r.interimLotSelected?.inventoryID || 0,
         InterimReceiptID: r.receiptID,
         RecordStatus: r.recordStatus || 'I',
-        UserID:1, //this.apiService.loginId,
+        UserID:this.appService.loginId,
         ReceivedQTY:r.receivedQTY,
         GoodQty:r.goodQty,
         RejectQty:r.rejectQty,
