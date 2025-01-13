@@ -489,7 +489,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       TrackingNumber: this.tracking
     }
     if (this.customerTypeSelected?.customerTypeName == 'Customer') {
-      data.BehalfID = this.behalfOfCusotmerSelected?.CustomerID || 1;
+      data.BehalfID = this.behalfOfCusotmerSelected?.CustomerID || null;
       if (this.customerSelected) {
         // custom value by user
         data.CustomerVendorID = this.customerSelected?.CustomerID
@@ -506,9 +506,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           this.appService.refreshVendors = true;
           data.VendorName = this.vendorSelected.VendorName;
         } else {
-          data.CustomerVendorID = this.vendorSelected?.VendorID || 1;
+          data.CustomerVendorID = this.vendorSelected?.VendorID || null;
         }
-        data.BehalfID = this.behalfOfCusotmerSelected?.CustomerID || 1;
+        data.BehalfID = this.behalfOfCusotmerSelected?.CustomerID || null;
       } else {
         this.appService.errorMessage('Please select vendor');
         return;
@@ -545,11 +545,16 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
     if ([CUSTOMER_DROP_OFF, PICKUP].includes(this.deliveryModeSelected?.deliveryModeName)) {
       if (!this.contactPhone) {
-        this.receipt.isValid.contactPhone = false;
-        this.appService.errorMessage('Please enter contact phone');
-        return;
+        if(this.deliveryModeSelected?.deliveryModeName=='Pickup'){
+          this.receipt.isValid.contactPhone = false;
+          this.appService.errorMessage('Please enter contact phone');
+          return;
+        }
+        else {
+          this.receipt.isValid.contactPhone = true;
+        }
       } else {
-        this.receipt.isValid.customer = true;
+        this.receipt.isValid.contactPhone = true;
       }
       if (!this.contactPerson) {
         this.receipt.isValid.contactPerson = false;
@@ -718,7 +723,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         InterimStatusID: r.isReceived == true ? 1 : 0,
         IsHold: r.isHold
       }
-      
+
       InterimDeviceDetails.push(postInterimDevice)
     }
     this.apiService.postInterim(InterimDeviceDetails[0]).subscribe({
@@ -1433,7 +1438,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       next: (v:any) => {
         debugger;
         this.PMReceivers = v;
-        this.PMReceiverSelected = this.PMReceivers.find(e => e.employeeID == dataItem.pmReceiverID)
+        if(this.appService.sharedData.receiving.isEditMode || this.appService.sharedData.receiving.isViewMode)
+          this.PMReceiverSelected = this.PMReceivers.find(e => e.employeeID == dataItem.pmReceiverID)
       }
     });
   }

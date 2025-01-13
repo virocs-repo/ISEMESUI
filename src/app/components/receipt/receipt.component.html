@@ -69,6 +69,7 @@
             </div>
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label text="PM/Receiver" class="k-w-full">
+                <b class="required-label"></b>
                 <kendo-combobox [data]="PMReceivers" [(ngModel)]="PMReceiverSelected" [textField]="'employeeName'"
                   [valueField]="'employeeID'" placeholder="Select" rounded="large"></kendo-combobox>
               </kendo-label>
@@ -94,7 +95,7 @@
               <kendo-label
                 *ngIf="deliveryModeSelected?.deliveryModeName=='Customer Drop-Off' || deliveryModeSelected?.deliveryModeName=='Pickup'"
                 text="Phone" class="k-w-full">
-                <b class="required-label"></b>
+                <b *ngIf="deliveryModeSelected?.deliveryModeName=='Pickup'" class="required-label"></b>
                 <kendo-textbox [(ngModel)]="contactPhone" placeholder="Enter phone" rounded="large"
                   [class.invalid]="!receipt.isValid.contactPhone"></kendo-textbox>
               </kendo-label>

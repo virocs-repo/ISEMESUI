@@ -72,7 +72,7 @@
     <div class="profile-avatar k-d-flex k-gap-4 k-align-items-center k-justify-content-center">
       <div>
         <b>{{appService.userData.firstName}}</b> <br>
-        <small>Admin</small>
+        <small>{{appService.userName}}</small>
       </div>
       <span #profileMenuTarget>
         <kendo-avatar *ngIf="profilePicture" [imageSrc]="profilePicture" class="avatar-size avatar-img"></kendo-avatar>

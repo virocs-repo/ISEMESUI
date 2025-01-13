@@ -360,7 +360,7 @@ export interface PostReceipt {
   VendorName: string | null;
   CustomerTypeID: number;
   CustomerVendorID: number | null;
-  BehalfID: number;
+  BehalfID: number|null;
   ReceivingFacilityID: number;
   DeliveryModeID: number;
   CourierDetailID: number | null;

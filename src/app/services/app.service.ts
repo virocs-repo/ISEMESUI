@@ -18,6 +18,7 @@ interface MainMenuItem {
   navigationUrl: string
   feature: Array<Feature>
   loginId: number;
+  userName:string
 }
 
 interface UserPreferences {
@@ -49,6 +50,7 @@ export class AppService {
   activeNavigationUrls: string[] = []
   feature: Array<Feature> = []
   loginId: number = 0;
+  userName:string =''
 
   masterData: MasterData = {
     customerType: [],
@@ -152,7 +154,8 @@ export class AppService {
       if (item) {
         this.activeNavigationUrls.push(item.navigationUrl)
         this.feature = item.feature || [];
-        this.loginId = item.loginId
+        this.loginId = item.loginId;
+        this.userName = item.userName;
       }
     } else {
       console.error("Main Menu Item is missing!")
