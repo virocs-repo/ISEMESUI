@@ -55,10 +55,15 @@
 
 
         </kendo-grid-column>
-
+        <kendo-grid-column field="createdOn" title="Created On">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.createdOn | date:'MM/dd/yyyy HH:mm:ss' }}
+          </ng-template>
+        </kendo-grid-column>
       <ng-template kendoGridCellTemplate let-dataItem>
 
        </ng-template>
+
     </kendo-grid>
 </div>
 <kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
