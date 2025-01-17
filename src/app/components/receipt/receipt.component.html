@@ -3,16 +3,16 @@
     <div>
       <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-6 k-mb-2">
         <i class="k-ml-auto d-none-sm"></i>
-        <div class="k-d-flex k-align-items-center k-gap-2">
+        <!--<div class="k-d-flex k-align-items-center k-gap-2">
           <input type="checkbox" name="isExpected" id="isExpected" [(ngModel)]="isExpected" style="border: 1px solid"
             kendoCheckBox>
           <label for="isExpected" kendoLabel> Expected</label>
-        </div>
-        <div class="k-d-flex k-align-items-center k-gap-2" *ngIf="isVisibleFTZ">
+        </div>-->
+        <!--<div class="k-d-flex k-align-items-center k-gap-2" *ngIf="isVisibleFTZ">
           <input type="checkbox" name="FTZ" id="FTZ" [(ngModel)]="isFTZ" [disabled]="isDisableFTZ"
             style="border: 1px solid" kendoCheckBox>
           <label for="FTZ" kendoLabel> FTZ</label>
-        </div>
+        </div>-->
         <div class="k-d-flex k-align-items-center k-gap-2">
           <input type="checkbox" name="IsInterim" id="IsInterim" [(ngModel)]="isInterim"
             (ngModelChange)="onChangeInterim()" [disabled]="isDisableInterim" style="border: 1px solid" kendoCheckBox>
@@ -379,7 +379,7 @@
               <input type="checkbox" name="expedite" [(ngModel)]="dataItem.expedite" kendoCheckBox>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="iqa" title="IQA" [width]="45">
+          <kendo-grid-column field="iqa" title="IQA Optional" [width]="70">
             <ng-template kendoGridCellTemplate let-dataItem>
               <input type="checkbox" name="iqa" [(ngModel)]="dataItem.iqa" kendoCheckBox>
             </ng-template>
