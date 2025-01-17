@@ -295,4 +295,9 @@ export class ReceivingComponent implements OnDestroy {
       Object.values(item).some(val => String(val).toLowerCase().includes(term))
     );
   }
+
+  public areaList: Array<string> = [
+    "Active",
+    "Pending Receiving",
+  ];
 }
