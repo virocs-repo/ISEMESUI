@@ -297,7 +297,7 @@ export class ReceivingComponent implements OnDestroy {
   }
 
   public areaList: Array<string> = [
-    "Active",
-    "Pending Receiving",
+    "Pending Receive",
+    "Received",
   ];
 }
