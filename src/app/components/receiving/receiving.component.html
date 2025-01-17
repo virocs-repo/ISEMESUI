@@ -2,7 +2,7 @@
 
   <h4>Receiving</h4>
   <i class="k-ml-auto"></i>
-  <kendo-label text="Status" class="k-font-size-sm">
+  <kendo-label text="Receipt Status" class="k-font-size-sm">
     <br />
     <kendo-autocomplete [data]="areaList" placeholder="status"></kendo-autocomplete>
   </kendo-label>
@@ -55,14 +55,14 @@
     [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" 
     class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
     <kendo-grid-column field="receiptID" title="Receipt ID" [width]="112"></kendo-grid-column>
-    <kendo-grid-column field="iseLots" title="ISELot#" [width]="112"></kendo-grid-column>
     <kendo-grid-column field="customerType" title="Receive From" [width]="135"></kendo-grid-column>
-    <kendo-grid-column field="customerLots" title="Customer Lot#" [width]="140"></kendo-grid-column>
     <kendo-grid-column field="customerVendor" title="Customer / Vendor" [width]="161">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="minimal-text" [title]="dataItem.customerVendor">{{dataItem.customerVendor}}</div>
       </ng-template>
     </kendo-grid-column>
+    <kendo-grid-column field="iseLots" title="ISELot#" [width]="112"></kendo-grid-column>
+    <kendo-grid-column field="customerLots" title="Customer Lot#" [width]="140"></kendo-grid-column>
     <kendo-grid-column field="receivedOnBehalf" title="Received on Behalf" [width]="170">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="minimal-text" [title]="dataItem.receivedOnBehalf">{{dataItem.receivedOnBehalf}}</div>
@@ -76,8 +76,8 @@
         <div class="minimal-text" [title]="dataItem.deliveryMode">{{dataItem.deliveryMode}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="mailStatus" title="Mail Status" [width]="125"></kendo-grid-column>
-    <kendo-grid-column field="receivingStatus" title="Receiving Status" [width]="160"></kendo-grid-column>
+    <!--<kendo-grid-column field="mailStatus" title="Mail Status" [width]="125"></kendo-grid-column>-->
+    <kendo-grid-column field="receivingStatus" title="Receipt Status" [width]="160"></kendo-grid-column>
     <kendo-grid-column field="receiptType" title="Receipt Type" [width]="150"></kendo-grid-column>
     <kendo-grid-column field="trackingNumber" title="Tracking/AWB#" [width]="180"></kendo-grid-column>
     <kendo-grid-column field="active" title="Active" filter="boolean"[width]="100">
