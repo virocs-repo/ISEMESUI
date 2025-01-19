@@ -47,7 +47,7 @@ export class ShippingRecordComponent implements OnDestroy {
 
 
   };
-  shippingDetails = {
+  shippingDetailsData = {
     ShippingMethod: '',
     Email: '',
     ShipAlertEmail: '',
@@ -69,6 +69,13 @@ export class ShippingRecordComponent implements OnDestroy {
     TotalValue: '',
     CIAdditionalInfo: '',
     ShipAlertEmailCourier: '',
+    Weight:'',
+    Width:'',
+    Length:'',
+    Attention:'',
+    PackageType:'',
+    Residential:''
+
     
   };
 
@@ -127,7 +134,7 @@ export class ShippingRecordComponent implements OnDestroy {
     this.appService.sharedData.shipping.isViewMode = false
   }
   onShippingMethodChange(method: string) {
-    this.shippingDetails.ShippingMethod = method;
+    this.shippingDetailsData.ShippingMethod = method;
   }
   private fetchShipmentLineItems(shipmentID: number) {
     this.apiService.getShipmentLineItems(shipmentID).subscribe({
@@ -152,8 +159,28 @@ export class ShippingRecordComponent implements OnDestroy {
         this.address.State=res[0].stateProvince;
         this.address.City=res[0].city;
         this.address.Telephone=res[0].phone;
-        this.shippingDetails.ShippingMethod=res[0].shippingMethod;
-        this.shippingDetails.ContactPerson=res[0].contactPerson;
+        this.address.Ext=res[0].ext;
+        this.address.Comments=res[0].shippingComments;
+        this.address.SpecialInstructions=res[0].specialInstructionforShipping;
+        this.address.PackingComments=res[0].commentsforPackingSlip;
+        this.address.InvoiceComments=res[0].commentsforCommericalInvoice;
+
+        this.shippingDetailsData.ShippingMethod=res[0].shippingMethod;
+        this.shippingDetailsData.ContactPerson=res[0].contactPerson;
+        this.shippingDetailsData.Destination=res[0].destination;
+        this.shippingDetailsData.CourierName=res[0].courier;
+        this.shippingDetailsData.CustomerReference=res[0].customerReference;
+        this.shippingDetailsData.InvoiceNumber=res[0].invoiceNumber;
+        this.shippingDetailsData.BillDutiesTaxes=res[0].billDutyTaxFeesTo;
+        this.shippingDetailsData.DutiesTaxes=res[0].billDutyTaxFeesAcct;
+        this.shippingDetailsData.ECCN=res[0].eCCN;
+        this.shippingDetailsData.COO=res[0].countryOfOrigin;
+        this.shippingDetailsData.Quantity=res[0].qty;
+        this.shippingDetailsData.UnitValue=res[0].unitValue;
+        this.shippingDetailsData.TotalValue=res[0].totalValue;
+        this.shippingDetailsData.CIAdditionalInfo=res[0].commodityDescription;
+        this.shippingDetailsData.ShipAlertEmail=res[0].shipAlertEmail;
+
         this.onShippingMethodChange(res[0].shippingMethod);
 
 
