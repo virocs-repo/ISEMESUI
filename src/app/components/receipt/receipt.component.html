@@ -202,9 +202,9 @@
         <h3 class="k-my-2">Interim</h3>
         <i class="k-ml-auto"></i>
         <button kendoButton type="button" rounded="large" themeColor="info" (click)="addRowInterim()"
-          [disabled]="isDisabled.addDevice">Add</button>
+          [disabled]="isDisabled.addInterim">Add</button>
         <button kendoButton type="button" rounded="large" themeColor="info" (click)="saveInterim()"
-          [disabled]="isDisabled.addDevice">Save</button>
+          [disabled]="isDisabled.addInterim">Save</button>
       </div>
       <div class="page-body">
         <kendo-grid [kendoGridBinding]="gridDataInterim" [selectable]="selectableSettings" [sortable]="true"
@@ -219,21 +219,21 @@
                 required></kendo-combobox>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="customerLotNumber" title="Cust lot#" [width]="70">
+          <kendo-grid-column field="deviceType" title="Device" [width]="70">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
-                <kendo-textbox [(ngModel)]="dataItem.customerLotNumber" placeholder="Lot Number"
+                <kendo-textbox [(ngModel)]="dataItem.deviceType" placeholder="Device Type"
                   ></kendo-textbox>
               </ng-container>
               <ng-template #showValue>
-                <span>{{dataItem.customerLotNumber}}</span>
+                <span>{{dataItem.deviceType}}</span>
               </ng-template>
             </ng-template></kendo-grid-column>
-          <kendo-grid-column field="customerCount" title="Cust Cnt" [width]="70">
+          <kendo-grid-column field="customerCount" title="Lot Qty" [width]="70">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.customerCount" (ngModelChange)="onCountUIChange($event)"
-                  placeholder="Customer Count" [class.ng-touched]="dataItem.error" required></kendo-textbox>
+                  placeholder="Lot Qty" [class.ng-touched]="dataItem.error" required></kendo-textbox>
               </ng-container>
               <ng-template #showValue>
                 <span>{{dataItem.customerCount}}</span>
@@ -269,11 +269,11 @@
                 rounded="large" [popupSettings]="{ appendTo: 'root', width: 'auto' }"></kendo-combobox>
             </ng-template>
           </kendo-grid-column>-->
-          <kendo-grid-column field="labelCount" title="Label Count" [width]="80">
+          <kendo-grid-column field="labelCount" title="Step Qty" [width]="80">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
-                <kendo-textbox [(ngModel)]="dataItem.labelCount" placeholder="Label Count"
-                  [class.ng-touched]="dataItem.error" required></kendo-textbox>
+                <kendo-textbox [(ngModel)]="dataItem.labelCount" placeholder="Step Qty">
+                </kendo-textbox>
               </ng-container>
               <ng-template #showValue>
                 <span>{{dataItem.labelCount}}</span>
@@ -322,9 +322,9 @@
           <kendo-grid-column title="" [width]="50">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
-                (click)="onOpenRowActionMenu(dataItem, TableType.Device)" #rowActionMenuTarget></button>
+                (click)="onOpenRowActionMenu(dataItem, TableType.Interim)" #rowActionMenuTarget></button>
               <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="dataItem.rowActionMenu"
-                (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Device')"></kendo-contextmenu>
+                (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Interim')"></kendo-contextmenu>
             </ng-template>
           </kendo-grid-column>
         </kendo-grid>

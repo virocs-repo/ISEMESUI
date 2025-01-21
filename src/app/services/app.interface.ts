@@ -173,6 +173,7 @@ export interface DeviceItem {
   lotOwnerID: number
   iqa: boolean
   deviceTypeID: number
+  deviceType: string
   employeeSelected: Employee | undefined
   countrySelected: Country | undefined,
   deviceTypeSelected: DeviceType | undefined
@@ -204,6 +205,7 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   iqa: false,
   recordStatus: 'I',
   deviceTypeID: 0,
+  deviceType:'',
   employeeSelected: undefined,
   countrySelected: undefined,
   deviceTypeSelected: undefined,

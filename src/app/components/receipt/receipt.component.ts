@@ -17,7 +17,8 @@ import { environment } from 'src/environments/environment';
 enum TableType {
   Device = 'Device',
   Hardware = 'Hardware',
-  Misc = 'Misc'
+  Misc = 'Misc',
+  Interim = 'Interim'
 }
 enum ActionType {
   Remove = 'Remove'
@@ -117,7 +118,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     addDevice: false,
     addHardware: false,
     addMisc: false,
-    cancelBtn: false
+    cancelBtn: false,
+    addInterim:false
   }
   hardware = {
     isItemsRemoved: false
@@ -633,11 +635,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const dataItem = this.appService.sharedData.receiving.dataItem;
     this.gridDataInterim.splice(0, 0, {
       ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID, recordStatus: "I",
-      lotIdentifierSelected: this.lotIdentifiers[0],
-      lotIdentifier: this.lotIdentifiers[0].id,
       rowActionMenu: this.RowActionMenuDeviceAdd.map(o => ({ ...o })),
-
-      interimLotSelected: undefined,
       // @ts-ignore
       goodQty: null,
       // @ts-ignore
@@ -668,22 +666,6 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.appService.errorMessage("ISE Lot# is required!");
         return;
       }
-
-      if (!r.customerLotNumber) {
-        r.error = true;
-        this.appService.errorMessage("Customer Lot# is required!");
-        return;
-      }
-      if (!r.customerCount || r.customerCount < 1) {
-        r.error = true;
-        this.appService.errorMessage("Customer Count should be greater than zero!");
-        return;
-      }
-      // if (!r.deviceTypeSelected) {
-      //   r.error = true;
-      //   this.appService.errorMessage("Please select Device Type!");
-      //   return;
-      // }
       
       if (r.isReceived == true) {
         debugger;
@@ -1060,7 +1042,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   doTestEditMode() {
     // this.onSelectRowActionMenu({ item: { text: 'Edit Data' } } as any, this.gridDataHardware[3], 'Device');
   }
-  onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc') {
+  onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc' |'Interim') {
     switch (e.item.text) {
       case 'Edit Data':
         dataItem.recordStatus = 'U'
@@ -1131,7 +1113,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         break;
     }
   }
-  private doRemoveRow(rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc') {
+  private doRemoveRow(rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc'|'Interim') {
     switch (tableName) {
       case 'Device':
         this.gridDataDevice.splice(rowIndex, 1);
@@ -1143,9 +1125,12 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       case 'Misc':
         this.gridDataMiscellaneous.splice(rowIndex, 1);
         break;
+      case 'Interim':
+      this.gridDataInterim.splice(rowIndex, 1);
+      break;
     }
   }
-  private doPrint(r: any, tableName: 'Device' | 'Hardware' | 'Misc') {
+  private doPrint(r: any, tableName: 'Device' | 'Hardware' | 'Misc' | 'Interim') {
     switch (tableName) {
       case 'Device':
         const text = this.appService.formatJson(r);
@@ -1159,7 +1144,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     printWindow.print();
     // printWindow.close();
   }
-  private doVoidData(r: any, rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc') {
+  private doVoidData(r: any, rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc' | 'Interim') {
     switch (tableName) {
       case 'Device':
         this.gridDataDevice[rowIndex].active = false;
@@ -1450,20 +1435,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         debugger;
         if(devDetails.length > 0){
           const devicDetail = devDetails[0];
-          dataItem.customerLotNumber = devicDetail.customerLotNumber;
+          dataItem.deviceType = devicDetail.deviceType;
           dataItem.customerCount = devicDetail.customerCount;
-          //dataItem.deviceTypeSelected = this.deviceTypes.find(d => d.deviceTypeID === devicDetail.deviceTypeID);
-          //dataItem.employeeSelected = this.employees.find(d => d.EmployeeID === devicDetail.EmployeeID);
-          dataItem.lotIdentifierSelected = this.lotIdentifiers.find(d => d.id === devicDetail.lotIdentifier);
           dataItem.labelCount = devicDetail.labelCount;
-          // dataItem.receivedQTY = devicDetail.receivedQTY;
-          // dataItem.goodQty = devicDetail.goodQty;
-          // dataItem.receivedQTY = devicDetail.receivedQTY;
-          // dataItem.isHold = devicDetail.isHold;
-          // dataItem.deviceID = devicDetail.deviceID;
-          //dataItem.receiptID = devicDetail.receiptID;
-          //dataItem.lotCategoryID = devicDetail.lotCategoryID;
-          dataItem.active = devicDetail.active;
         }
       }
     })
