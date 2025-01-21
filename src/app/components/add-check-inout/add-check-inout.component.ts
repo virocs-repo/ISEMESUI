@@ -13,6 +13,7 @@ import { AppService } from 'src/app/services/app.service';
 })
 export class AddCheckInoutComponent implements OnInit {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
+  @Input() isReadOnly: boolean = false;
   @Input() selectedRowData: any;
   @Output() cancel = new EventEmitter<void>();
   @ViewChild('grid', { static: true }) grid!: GridComponent; 

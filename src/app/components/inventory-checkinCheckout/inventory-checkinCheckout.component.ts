@@ -16,6 +16,7 @@ export class InventorycheckinCheckoutComponent implements OnInit{
   public pageSize = 25;
   public skip = 0;
   private originalData: any[] = []; 
+  viewMode: boolean = false;
  selectedRowIndex: number = -1;
  format: string = 'yyyy-MM-dd'; 
   fromDate: Date | null = null;
@@ -125,6 +126,7 @@ export class InventorycheckinCheckoutComponent implements OnInit{
         this.appService.sharedData.anotherShipping.isEditMode = false;
         this.appService.sharedData.anotherShipping.isViewMode = true;
         this.checkinoutData = { ...dataItem };
+        this.viewMode = true;
         // access the same in receipt component
         this.openDialog()
         break;
