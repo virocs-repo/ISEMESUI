@@ -48,7 +48,12 @@ export class InventoryHoldComponent implements OnInit {
   loadGridData(): void {
     this.apiService.getAllSearchHold().subscribe({
       next: (data: any) => {
+        debugger;
         this.originalData = data;
+        this.originalData.forEach(obj => {
+          obj.holdDate = new Date(obj.holdDate).toLocaleString('en-US')
+        })
+        
         this.pageData();
       },
       error: () => { }

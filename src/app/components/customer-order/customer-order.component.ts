@@ -47,8 +47,8 @@ export class CustomerOrderComponent implements OnInit {
     //{ field: 'address', title: 'address' },
     { field: 'orderStatus', title: 'Order Status' },
     { field: 'active', title: 'Active' },
-    { field: 'customerOrderType', title: 'CustomerOrderType' },
-    { field: 'createdOn', title: 'Created On' }
+    { field: 'customerOrderType', title: 'CustomerOrderType' }
+    // { field: 'createdOn', title: 'Created On' }
    // { field: 'modifiedOn', title: 'Modified On' }
   ];
   selectableSettings: any = {

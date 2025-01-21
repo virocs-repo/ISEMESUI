@@ -72,6 +72,10 @@ export class InventorycheckinCheckoutComponent implements OnInit{
     this.apiService.getAllInventoryCheckinCheckoutStatus().subscribe({
       next: (v: any) => {
         this.originalData = v;
+        this.originalData.forEach(obj => {
+          obj.checkInOutTime = new Date(obj.checkInOutTime).toLocaleString('en-US')
+        })
+
         this.pageData();
         console.log(v);
       },

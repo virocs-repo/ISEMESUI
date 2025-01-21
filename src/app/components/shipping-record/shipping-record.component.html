@@ -20,13 +20,13 @@
                     </kendo-textbox>
                   </kendo-label>
                 </div>
-                <div class="k-d-flex k-gap-3">
+                <div class="k-d-flex k-gap-6">
                   <kendo-label text="Sender Information" class="k-w-full">
                     <b class="required-label"></b>
                     <kendo-textarea [(ngModel)]="senderInformation" [rows]="2" placeholder="Enter Info"
                       rounded="large"></kendo-textarea>
                   </kendo-label>
-                  <kendo-label text="Shipping Comments">
+                  <kendo-label text="Shipping Comments" class="k-w-full">
                     <b class="required-label"></b>
                     <kendo-textarea [(ngModel)]="shipmentComments" [rows]="2" placeholder="Enter comments"
                       rounded="large"></kendo-textarea>
@@ -191,105 +191,147 @@
         <div>
           <kendo-card class="card-green card-full">
             <kendo-card-body>
-              <h4 >Shipping Details:</h4>
+            
           
               <!-- Shipping Method -->
-              <div class="k-d-flex k-flex-col k-gap-4"  >
-                <div class="k-d-flex k-flex-col">
-                  <label for="shippingMethod">Shipping Method</label>
-                  <input type="text" id="shippingMethod" placeholder="Shipping Method" kendoTextBox name="ShippingMethod" [(ngModel)]="shippingDetails.ShippingMethod" (ngModelChange)="onShippingMethodChange($event)">
+              <div class="k-d-flex k-flex-col k-gap-4 k-mt-4"  >
+                <div class="k-d-flex k-gap-12">
+                  <div class="k-d-flex k-flex-col k-w-1-6">
+                    <h4 >Shipping Details:</h4>
+                    </div>
+                  <div class="k-d-flex k-flex-col k-w-1-6">
+                    <label for="shippingMethod">Shipping Method</label>
+                    <input type="text" id="shippingMethod" placeholder="Shipping Method" kendoTextBox name="ShippingMethod" [(ngModel)]="shippingDetailsData.ShippingMethod" (ngModelChange)="onShippingMethodChange($event)">  
+
+                  </div>
+                
                 </div>
               </div>
 
               
           
               <!-- Drop Off Details -->
-              <div *ngIf="shippingDetails.ShippingMethod === 'Drop-Off'" class="k-d-flex k-flex-col k-gap-4 k-mt-4">
+              <div *ngIf="shippingDetailsData.ShippingMethod === 'Drop-Off'" class="k-d-flex k-flex-col k-gap-4 k-mt-4">
                 <div class="k-d-flex k-gap-12">
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="contactPerson">Contact Person</label>
-                    <input type="text" id="contactPerson" placeholder="Contact Person" class="k-w-full" kendoTextBox name="ContactPerson" [(ngModel)]="shippingDetails.ContactPerson">
+                    <input type="text" id="contactPerson" placeholder="Contact Person" class="k-w-full" kendoTextBox name="ContactPerson" [(ngModel)]="shippingDetailsData.ContactPerson">
                   </div>
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="email">Email</label>
-                    <input type="text" id="email" placeholder="Email" class="k-w-full" kendoTextBox name="Email" [(ngModel)]="shippingDetails.Email">
+                    <input type="text" id="email" placeholder="Email" class="k-w-full" kendoTextBox name="Email" [(ngModel)]="shippingDetailsData.Email">
                   </div>
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="shipAlertEmail">Ship Alert Email</label>
-                    <input type="text" id="shipAlertEmail" placeholder="Ship Alert Email" class="k-w-full" kendoTextBox name="ShipAlertEmail" [(ngModel)]="shippingDetails.ShipAlertEmail">
+                    <input type="text" id="shipAlertEmail" placeholder="Ship Alert Email" class="k-w-full" kendoTextBox name="ShipAlertEmail" [(ngModel)]="shippingDetailsData.ShipAlertEmail">
                   </div>
                 </div>
               </div>
           
               <!-- Courier Details -->
-              <div *ngIf="shippingDetails.ShippingMethod === 'Courier'" class="k-d-flex k-flex-col k-gap-6 k-mt-4">
+              <div *ngIf="shippingDetailsData.ShippingMethod === 'Courier'" class="k-d-flex k-flex-col k-gap-6 k-mt-4">
                 <!-- Line 1: Contact Person, Destination, Courier Name -->
                 <div class="k-d-flex k-gap-12">
-                  <div class="k-d-flex k-flex-col k-w-1-6">
+                  <div class="k-d-flex k-flex-col k-w-1-4">
                     <label for="contactPerson">Contact Person</label>
-                    <input type="text" id="contactPerson" placeholder="Contact Person" class="k-w-full" kendoTextBox name="ContactPerson" [(ngModel)]="shippingDetails.ContactPerson">
+                    <input type="text" id="contactPerson" placeholder="Contact Person" class="k-w-full" kendoTextBox name="ContactPerson" [(ngModel)]="shippingDetailsData.ContactPerson">
                   </div>
-                  <div class="k-d-flex k-flex-col k-w-1-6">
+                  <div class="k-d-flex k-flex-col k-w-1-4">
                     <label for="destination">Destination</label>
-                    <input type="text" id="destination" placeholder="Destination" class="k-w-full" kendoTextBox name="Destination" [(ngModel)]="shippingDetails.Destination">
+                    <input type="text" id="destination" placeholder="Destination" class="k-w-full" kendoTextBox name="Destination" [(ngModel)]="shippingDetailsData.Destination">
                   </div>
-                  <div class="k-d-flex k-flex-col k-w-1-6">
+                  <div class="k-d-flex k-flex-col k-w-1-4">
                     <label for="courierName">Courier Name</label>
-                    <input type="text" id="courierName" placeholder="Courier Name" class="k-w-full" kendoTextBox name="CourierName" [(ngModel)]="shippingDetails.CourierName">
+                    <input type="text" id="courierName" placeholder="Courier Name" class="k-w-full" kendoTextBox name="CourierName" [(ngModel)]="shippingDetailsData.CourierName">
                   </div>
-                  <div class="k-d-flex k-flex-col k-w-1-6">
-                    <label for="customerReference">Customer Reference</label>
-                    <input type="text" id="customerReference" placeholder="Customer Reference" class="k-w-full" kendoTextBox name="CustomerReference" [(ngModel)]="shippingDetails.CustomerReference">
+                 
+                  <div class="k-d-flex k-flex-col k-w-1-4">
+                    <label for="Weight">Weight</label>
+                    <input type="text" id="weight" placeholder="Weight" class="k-w-full" kendoTextBox name="Weight" [(ngModel)]="shippingDetailsData.Weight">
                   </div>
-                  <div class="k-d-flex k-flex-col k-w-1-6">
-                    <label for="invoiceNumber">Invoice Number</label>
-                    <input type="text" id="invoiceNumber" placeholder="Invoice Number" class="k-w-full" kendoTextBox name="InvoiceNumber" [(ngModel)]="shippingDetails.InvoiceNumber">
+                  <div class="k-d-flex k-flex-col k-w-1-4">
+                    <label for="width">Width</label>
+                    <input type="text" id="width" placeholder="Width" class="k-w-full" kendoTextBox name="Width" [(ngModel)]="shippingDetailsData.Width">
+                  </div>
+                  <div class="k-d-flex k-flex-col k-w-1-4">
+                    <label for="length">Length</label>
+                    <input type="text" id="Length" placeholder="Length" class="k-w-full" kendoTextBox name="Length" [(ngModel)]="shippingDetailsData.Length">
                   </div>
                 </div>
               
                 <!-- Line 2: Customer Reference, Invoice Number, Bill Duties/Taxes, Duties/Taxes -->
                 <div class="k-d-flex k-gap-12">
-                
+                  <div class="k-d-flex k-flex-col k-w-1-8">
+                    <label for="customerReference">Customer Reference</label>
+                    <input type="text" id="customerReference" placeholder="Customer Reference" class="k-w-full" kendoTextBox name="CustomerReference" [(ngModel)]="shippingDetailsData.CustomerReference">
+                  </div>
+                  <div class="k-d-flex k-flex-col k-w-1-6">
+                    <label for="invoiceNumber">Invoice Number</label>
+                    <input type="text" id="invoiceNumber" placeholder="Invoice Number" class="k-w-full" kendoTextBox name="InvoiceNumber" [(ngModel)]="shippingDetailsData.InvoiceNumber">
+                  </div>
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="billDutiesTaxes">Bill Duties/Taxes</label>
-                    <input type="text" id="billDutiesTaxes" placeholder="Bill Duties/Taxes" class="k-w-full" kendoTextBox name="BillDutiesTaxes" [(ngModel)]="shippingDetails.BillDutiesTaxes">
+                    <input type="text" id="billDutiesTaxes" placeholder="Bill Duties/Taxes" class="k-w-full" kendoTextBox name="BillDutiesTaxes" [(ngModel)]="shippingDetailsData.BillDutiesTaxes">
                   </div>
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="dutiesTaxes">Duties/Taxes</label>
-                    <input type="text" id="dutiesTaxes" placeholder="Duties/Taxes" class="k-w-full" kendoTextBox name="DutiesTaxes" [(ngModel)]="shippingDetails.DutiesTaxes">
+                    <input type="text" id="dutiesTaxes" placeholder="Duties/Taxes" class="k-w-full" kendoTextBox name="DutiesTaxes" [(ngModel)]="shippingDetailsData.DutiesTaxes">
                   </div>
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="eccn">ECCN</label>
-                    <input type="text" id="eccn" placeholder="ECCN" class="k-w-full" kendoTextBox name="ECCN" [(ngModel)]="shippingDetails.ECCN">
+                    <input type="text" id="eccn" placeholder="ECCN" class="k-w-full" kendoTextBox name="ECCN" [(ngModel)]="shippingDetailsData.ECCN">
                   </div>
                   <div class="k-d-flex k-flex-col k-w-1-6">
-                    <label for="coo">Country of Origin (COO)</label>
-                    <input type="text" id="coo" placeholder="Country of Origin" class="k-w-full" kendoTextBox name="COO" [(ngModel)]="shippingDetails.COO">
+                    <label for="coo">COO</label>
+                    <input type="text" id="coo" placeholder="Country of Origin" class="k-w-full" kendoTextBox name="COO" [(ngModel)]="shippingDetailsData.COO">
                   </div>
-                  <div class="k-d-flex k-flex-col k-w-1-6">
-                    <label for="quantity">Quantity</label>
-                    <input type="text" id="quantity" placeholder="Quantity" class="k-w-full" kendoTextBox name="Quantity" [(ngModel)]="shippingDetails.Quantity">
-                  </div>
+                 
                 </div>
               
                 <!-- Line 3: ECCN, COO, Quantity, Unit Value, Total Value -->
                 <div class="k-d-flex k-gap-12">
-                  
-                  <div class="k-d-flex k-flex-col k-w-1-12">
+                  <div class="k-d-flex k-flex-col k-w-1-4">
+                    <label for="quantity">Quantity</label>
+                    <input type="text" id="quantity" placeholder="Quantity" class="k-w-full" kendoTextBox name="Quantity" [(ngModel)]="shippingDetailsData.Quantity">
+                  </div>
+                  <div class="k-d-flex k-flex-col k-w-1-4">
                     <label for="unitValue">Unit Value</label>
-                    <input type="text" id="unitValue" placeholder="Unit Value" class="k-w-full" kendoTextBox name="UnitValue" [(ngModel)]="shippingDetails.UnitValue">
+                    <input type="text" id="unitValue" placeholder="Unit Value" class="k-w-full" kendoTextBox name="UnitValue" [(ngModel)]="shippingDetailsData.UnitValue">
                   </div>
-                  <div class="k-d-flex k-flex-col k-w-1-12">
+                  <div class="k-d-flex k-flex-col k-w-1-4">
                     <label for="totalValue">Total Value</label>
-                    <input type="text" id="totalValue" placeholder="Total Value" class="k-w-full" kendoTextBox name="TotalValue" [(ngModel)]="shippingDetails.TotalValue">
+                    <input type="text" id="totalValue" placeholder="Total Value" class="k-w-full" kendoTextBox name="TotalValue" [(ngModel)]="shippingDetailsData.TotalValue">
                   </div>
-                  <div class="k-d-flex k-flex-col k-w-1-12">
+                  <div class="k-d-flex k-flex-col k-w-1-4">
+                    <label for="Attention">Attention</label>
+                    <input type="text" id="attention" placeholder="Attention" class="k-w-full" kendoTextBox name="Attention" [(ngModel)]="shippingDetailsData.Attention">
+                  </div>
+                  <div class="k-d-flex k-flex-col k-w-1-4">
+                    <label for="PackageType">PackageType</label>
+                    <input type="text" id="packageType" placeholder="PackageType" class="k-w-full" kendoTextBox name="PackageType" [(ngModel)]="shippingDetailsData.PackageType">
+                  </div>
+                  <div class="k-d-flex k-flex-col k-w-1-4">
+                    <label for="Residential">Residential</label>
+                    <input
+                      type="checkbox"
+                      id="residential"
+                      class="k-checkbox"
+                      name="Residential"
+                      [(ngModel)]="shippingDetailsData.Residential"
+                      kendoCheckBox
+                    />
+                 
+                  </div>
+                  
+
+
+                  <div class="k-d-flex k-flex-col k-w-1-4">
                     <label for="ciAdditionalInfo">CI Additional Info</label>
-                    <kendo-textarea [rows]="3" id="ciAdditionalInfo" placeholder="Enter additional info" class="k-w-full" name="CIAdditionalInfo" [(ngModel)]="shippingDetails.CIAdditionalInfo"></kendo-textarea>
+                    <kendo-textarea [rows]="3" id="ciAdditionalInfo" placeholder="Enter additional info" class="k-w-full" name="CIAdditionalInfo" [(ngModel)]="shippingDetailsData.CIAdditionalInfo"></kendo-textarea>
                   </div>
-                  <div class="k-d-flex k-flex-col k-w-1-12">
+                  <div class="k-d-flex k-flex-col k-w-1-4">
                     <label for="shipAlertEmail">Ship Alert Email</label>
-                    <kendo-textarea [rows]="3" id="shipAlertEmail" placeholder="Enter ship alert email" class="k-w-full" name="ShipAlertEmail" [(ngModel)]="shippingDetails.ShipAlertEmail"></kendo-textarea>
+                    <kendo-textarea [rows]="3" id="shipAlertEmail" placeholder="Enter ship alert email" class="k-w-full" name="ShipAlertEmail" [(ngModel)]="shippingDetailsData.ShipAlertEmail"></kendo-textarea>
                   </div>
                 </div>
               
@@ -327,7 +369,7 @@
                   </div>
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="address2">Address Line 2</label>
-                    <input type="text" id="address2" placeholder="Address Line 2" class="k-w-full" kendoTextBox name="Address2">
+                    <input type="text" id="address2" placeholder="Address Line 2" class="k-w-full" kendoTextBox name="Address2" [(ngModel)]="address.Address2">
                   </div>
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="address3">Address Line 3</label>

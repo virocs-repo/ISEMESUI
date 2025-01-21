@@ -41,7 +41,7 @@ newLocationSelected: any;
   gridSelectedKeys: any[] = []; // Tracks selected rows in the grid
   @Output() cancel = new EventEmitter<void>();
   isPrimaryLotValid: boolean = true; // Assume valid by default
-  subLocation: string[] = ['Rel Storage'];
+  subLocation: string[] = ['Shelf 1', 'Shelf 2'];
   subLocationSelected: string = '';
   constructor(public appService: AppService, private apiService: ApiService,private cdr: ChangeDetectorRef ) { }
 

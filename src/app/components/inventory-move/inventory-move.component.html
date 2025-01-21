@@ -58,14 +58,14 @@
 <!--       <kendo-grid-column field="receiptID" title="receipt #"></kendo-grid-column>
       <kendo-grid-column field="customerVendorID" title="customerVendorID"  [hidden]="true" ></kendo-grid-column> -->
       <!--<kendo-grid-column field="inventoryID" title="InventoryID"></kendo-grid-column>-->
-      <kendo-grid-column field="lotNum" title="lotNum">
+      <kendo-grid-column field="lotNum" title="ISE Lot #">
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.lotNum">{{dataItem.lotNum}}</a>
         </ng-template>
 
       </kendo-grid-column>
-      <kendo-grid-column field="customerLotNumber" title="Customer LotNumber"></kendo-grid-column>
-      <kendo-grid-column field="customerName" title="CustomerName">
+      <kendo-grid-column field="customerLotNumber" title="Customer Lot #"></kendo-grid-column>
+      <kendo-grid-column field="customerName" title="Customer Name">
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.customerName">{{dataItem.customerName}}</a>
         </ng-template>
@@ -74,13 +74,13 @@
       <kendo-grid-column field="facility" title="Current Facility"></kendo-grid-column>
       <kendo-grid-column field="inventoryStatus" title="Inventory Status"></kendo-grid-column>
       <kendo-grid-column field="qty" title="Qty"></kendo-grid-column>
-      <kendo-grid-column field="checkInOutQty" title="CheckInOutQty"></kendo-grid-column>
+      <kendo-grid-column field="checkInOutQty" title="CheckInOutQty" [hidden]="true"></kendo-grid-column>
       <!--<kendo-grid-column field="area" title="Area">
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.area">{{dataItem.area}}</a>
         </ng-template>
       </kendo-grid-column> -->
-      <kendo-grid-column field="wipLocation" title="WipLocation">
+      <kendo-grid-column field="wipLocation" title="WipLocation" [hidden]="true">
         <ng-template kendoGridCellTemplate let-dataItem>
           <a class="minimal-text" [title]="dataItem.wipLocation">{{dataItem.wipLocation}}</a>
         </ng-template>
