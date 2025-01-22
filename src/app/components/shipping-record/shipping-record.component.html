@@ -133,77 +133,25 @@
     </kendo-tabstrip-tab>
     <kendo-tabstrip-tab title="Shipping & Address Info">
       <ng-template kendoTabContent>
- 
-       <!--  <kendo-card class="card-full">
-          <kendo-card-body>
-            <h2 class="k-mt-2">Shipping Details:</h2>
-            <div class="k-d-flex k-flex-col k-gap-2 k-w-full">
-              <div class="k-d-flex k-gap-4">
-              
-                <label for="contactPerson">Contact Person</label>
-                <input type="text" id="contactPerson" placeholder="contactPerson" class="k-w-full" kendoTextBox name="contactPerson" [(ngModel)]="address.contactPerson" required>
-        
-              
-                <kendo-combobox
-                  [data]="['Courier', 'Drop-Off', 'Pick Up', 'Forwarder']"
-                  placeholder="Shipping Method"
-                  class="k-w-full"
-                  name="shippingMethod">
-                </kendo-combobox>
-              </div>
-              <div class="k-d-flex k-gap-4">
-               
-                <kendo-combobox
-                  [data]="['Domestic', 'International']"
-                  placeholder="Destination"
-                  class="k-w-full"
-                  name="destination">
-                </kendo-combobox>
-        
-              
-                <kendo-combobox
-                  [data]="['FedEx', 'UPS', 'DHL']"
-                  placeholder="Courier Name"
-                  class="k-w-full"
-                  name="courierName">
-                </kendo-combobox>
-              </div>
-              <div class="k-d-flex k-gap-4">
-               
-                <kendo-combobox
-                  [data]="['Reject Inventory', 'CI']"
-                  placeholder="Rejection Location"
-                  class="k-w-full"
-                  name="rejectionLocation">
-                </kendo-combobox>
-        
-                
-                <kendo-combobox
-                  [data]="['Location A', 'Location B', 'Location C']"
-                  placeholder="CI From"
-                  class="k-w-full"
-                  name="ciFrom">
-                </kendo-combobox>
-              </div>
-            </div>
-          </kendo-card-body>
-        </kendo-card> -->
         <div>
           <kendo-card class="card-green card-full">
             <kendo-card-body>
             
           
               <!-- Shipping Method -->
-              <div class="k-d-flex k-flex-col k-gap-4 k-mt-4"  >
+              <div class="k-d-flex k-flex-col k-gap-4 k-mt-4" style="margin-top: 0%;" >
                 <div class="k-d-flex k-gap-12">
-                  <div class="k-d-flex k-flex-col k-w-1-6">
-                    <h4 >Shipping Details:</h4>
-                    </div>
+
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="shippingMethod">Shipping Method</label>
-                    <input type="text" id="shippingMethod" placeholder="Shipping Method" kendoTextBox name="ShippingMethod" [(ngModel)]="shippingDetailsData.ShippingMethod" (ngModelChange)="onShippingMethodChange($event)">  
-
+                  
                   </div>
+                  <div class="k-d-flex k-flex-col k-w-1-6">
+                    <input type="text" id="shippingMethod" placeholder="Shipping Method" kendoTextBox name="ShippingMethod" [(ngModel)]="shippingDetailsData.ShippingMethod" readonly>  
+
+                  
+                  </div>
+                 
                 
                 </div>
               </div>
@@ -211,7 +159,7 @@
               
           
               <!-- Drop Off Details -->
-              <div *ngIf="shippingDetailsData.ShippingMethod === 'Drop-Off'" class="k-d-flex k-flex-col k-gap-4 k-mt-4">
+              <div *ngIf="shippingDetailsData.ShippingMethod === 'Drop-Off'" class="k-d-flex k-flex-col k-gap-4 k-mt-4" >
                 <div class="k-d-flex k-gap-12">
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="contactPerson">Contact Person</label>
@@ -231,7 +179,7 @@
               <!-- Courier Details -->
               <div *ngIf="shippingDetailsData.ShippingMethod === 'Courier'" class="k-d-flex k-flex-col k-gap-6 k-mt-4">
                 <!-- Line 1: Contact Person, Destination, Courier Name -->
-                <div class="k-d-flex k-gap-12">
+                <div class="k-d-flex k-gap-12" style="margin-top:0%;">
                   <div class="k-d-flex k-flex-col k-w-1-4">
                     <label for="contactPerson">Contact Person</label>
                     <input type="text" id="contactPerson" placeholder="Contact Person" class="k-w-full" kendoTextBox name="ContactPerson" [(ngModel)]="shippingDetailsData.ContactPerson">
@@ -260,7 +208,7 @@
                 </div>
               
                 <!-- Line 2: Customer Reference, Invoice Number, Bill Duties/Taxes, Duties/Taxes -->
-                <div class="k-d-flex k-gap-12">
+                <div class="k-d-flex k-gap-12" style="margin-top:0%;">
                   <div class="k-d-flex k-flex-col k-w-1-8">
                     <label for="customerReference">Customer Reference</label>
                     <input type="text" id="customerReference" placeholder="Customer Reference" class="k-w-full" kendoTextBox name="CustomerReference" [(ngModel)]="shippingDetailsData.CustomerReference">
@@ -289,7 +237,7 @@
                 </div>
               
                 <!-- Line 3: ECCN, COO, Quantity, Unit Value, Total Value -->
-                <div class="k-d-flex k-gap-12">
+                <div class="k-d-flex k-gap-12" style="margin-top:0%;">
                   <div class="k-d-flex k-flex-col k-w-1-4">
                     <label for="quantity">Quantity</label>
                     <input type="text" id="quantity" placeholder="Quantity" class="k-w-full" kendoTextBox name="Quantity" [(ngModel)]="shippingDetailsData.Quantity">
@@ -348,9 +296,9 @@
         <div style="margin-top:1%;">
           <kendo-card class="card-blue card-full">
             <kendo-card-body>
-              <h4 >Ship To:</h4>
+           
                 <!-- Line 1: Country, Receiver's Name, Company Name, Address Line 1, Address Line 2 -->
-                <div class="k-d-flex k-gap-12" style="margin-top:1%;">
+                <div class="k-d-flex k-gap-12" style="margin-top:0%;">
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="country">Country</label>
                     <input type="text" id="country" placeholder="Country" class="k-w-full" kendoTextBox name="Country" [(ngModel)]="address.Country" required>
@@ -371,15 +319,15 @@
                     <label for="address2">Address Line 2</label>
                     <input type="text" id="address2" placeholder="Address Line 2" class="k-w-full" kendoTextBox name="Address2" [(ngModel)]="address.Address2">
                   </div>
+                
+                </div>
+          
+                <!-- Line 2: Address Line 3, Telephone, State/Province, City, Post Code, Ext -->
+                <div class="k-d-flex k-gap-15" style="margin-top:0%;">
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="address3">Address Line 3</label>
                     <input type="text" id="address3" placeholder="Address Line 3" class="k-w-full" kendoTextBox name="Address3" [(ngModel)]="address.Address3">
                   </div>
-                </div>
-          
-                <!-- Line 2: Address Line 3, Telephone, State/Province, City, Post Code, Ext -->
-                <div class="k-d-flex k-gap-12" style="margin-top:1%;">
-                 
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="telephone">Telephone</label>
                     <input type="text" id="telephone" placeholder="Telephone" class="k-w-full" kendoTextBox name="Telephone" [(ngModel)]="address.Telephone" required pattern="[0-9]{10}">
@@ -396,28 +344,29 @@
                     <label for="postCode">Post Code</label>
                     <input type="text" id="postCode" placeholder="Post Code" class="k-w-full" kendoTextBox name="PostCode" [(ngModel)]="address.PostCode" required>
                   </div>
+                 
+                
+                 
+                </div>
+          
+                <div class="k-d-flex k-gap-12" style="margin-top:0%;" > <!-- Increased horizontal gap between text areas -->
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="ext">Ext</label>
                     <input type="text" id="ext" placeholder="Ext" class="k-w-full" kendoTextBox name="Ext" [(ngModel)]="address.Ext">
                   </div>
-                 
-                </div>
-          
-                <div class="k-d-flex k-gap-12" style="margin-top:1%;" > <!-- Increased horizontal gap between text areas -->
-                
-                  <div class="k-d-flex k-flex-col k-w-1-4">
+                  <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="comments">Comments</label>
                     <kendo-textarea [rows]="3" id="comments" placeholder="Enter comments" class="k-w-full" name="Comments" [(ngModel)]="address.Comments"></kendo-textarea>
                   </div>
-                  <div class="k-d-flex k-flex-col k-w-1-4">
+                  <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="specialInstructions">Special Instructions</label>
                     <kendo-textarea  [rows]="3" id="specialInstructions" placeholder="Enter special instructions" class="k-w-full" name="SpecialInstructions" [(ngModel)]="address.SpecialInstructions"></kendo-textarea>
                   </div>
-                  <div class="k-d-flex k-flex-col k-w-1-4">
+                  <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="packingComments">Comments for Packing Slip</label>
                     <kendo-textarea [rows]="3" id="packingComments" placeholder="Enter packing comments" class="k-w-full" name="PackingComments" [(ngModel)]="address.PackingComments"></kendo-textarea>
                   </div>
-                  <div class="k-d-flex k-flex-col k-w-1-4">
+                  <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="invoiceComments">Comments for Invoice</label>
                     <kendo-textarea [rows]="3" id="invoiceComments" placeholder="Enter invoice comments" class="k-w-full" name="InvoiceComments" [(ngModel)]="address.InvoiceComments"></kendo-textarea>
                   </div>
