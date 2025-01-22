@@ -5,33 +5,33 @@
         <strong>Lot Number test</strong>
         <b class="required-label"></b>
         <kendo-autocomplete text="Lot Number" [data]="filteredLotNumbers" [(ngModel)]="selectedLotNumber" placeholder="#Lot Number" rounded="large" 
-        (filterChange)="onLotNumberFilter($event)" [suggest]="true" (valueChange)="onLotNumberSelected($event)" ></kendo-autocomplete>
+        (filterChange)="onLotNumberFilter($event)" [suggest]="true" (valueChange)="onLotNumberSelected($event)" [disabled]="isReadOnly"></kendo-autocomplete>
             </kendo-label>
       <kendo-label *ngIf="isCheckOutBehavior(status)" class="k-w-full">
         <strong>Location</strong>
         <b class="required-label"></b>
-        <kendo-combobox [data]="uniqueLocations" [(ngModel)]="selectedLocation" placeholder="Location" rounded="large"></kendo-combobox>
+        <kendo-combobox [data]="uniqueLocations" [(ngModel)]="selectedLocation" placeholder="Location" rounded="large" [disabled]="isReadOnly"></kendo-combobox>
       </kendo-label>
       <kendo-label *ngIf="isCheckOutBehavior(status)" class="k-w-full">
         <strong>Qty</strong>
         <b class="required-label"></b>
-        <input type="number" [(ngModel)]="selectedQty" placeholder="Qty" class="k-input k-textbox" />
+        <input type="number" [(ngModel)]="selectedQty" placeholder="Qty" class="k-input k-textbox" [disabled]="isReadOnly"/>
       </kendo-label>
       <kendo-label *ngIf="isCheckOutBehavior(status)" class="k-w-full">
         <strong>Received From</strong>
         <b class="required-label"></b>
-        <kendo-textbox [(ngModel)]="employeesSelected"></kendo-textbox>
+        <kendo-textbox [(ngModel)]="employeesSelected" [disabled]="isReadOnly"></kendo-textbox>
       </kendo-label>
       <kendo-label *ngIf="status === 'CheckIn'" class="k-w-full">
         <strong>CheckOut To</strong>
         <b class="required-label"></b>
-        <kendo-textbox [(ngModel)]="employeesSelected"></kendo-textbox>
+        <kendo-textbox [(ngModel)]="employeesSelected" [disabled]="isReadOnly"></kendo-textbox>
       </kendo-label>    
       <kendo-label *ngIf="status === 'CheckIn'" class="k-w-full">
         <strong>Return to Customer</strong>
         <b class="required-label"></b>
         <div class="centered-checkbox">
-        <kendo-checkbox [checkedState]="true" [(ngModel)]="returnToCustomer" rounded="large"></kendo-checkbox></div>
+        <kendo-checkbox [checkedState]="true" [(ngModel)]="returnToCustomer" rounded="large" [disabled]="isReadOnly"></kendo-checkbox></div>
       </kendo-label>
     </div>
   </kendo-card-body>
@@ -48,7 +48,7 @@
   </div>
 
   <div class="k-d-flex k-gap-3 k-mt-3">
-    <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem">Print</button>
-    <button kendoButton type="button" rounded="full" themeColor="info" (click)="onCheckInOut()">{{ checkInOutLabel }}</button>
+    <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem" [disabled]="isReadOnly">Print</button>
+    <button kendoButton type="button" rounded="full" themeColor="info" (click)="onCheckInOut()" [disabled]="isReadOnly">{{ checkInOutLabel }}</button>
   </div>
 </div>
