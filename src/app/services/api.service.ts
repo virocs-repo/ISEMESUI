@@ -504,4 +504,7 @@ export class ApiService {
   getDeviceDetailsById(invId:number){
     return this.httpClient.get(`${API}v1/ise/inventory/getdetailsByInventoryID?inventoryID=${invId}`)
   }
+  canUndoReceive(inventoryId:number){
+    return this.httpClient.get(`${API}v1/ise/inventory/canUndoReceiveLot?inventoryId=${inventoryId}`)
+  }
 }

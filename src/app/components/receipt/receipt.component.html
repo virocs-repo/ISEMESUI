@@ -330,7 +330,7 @@
         </kendo-grid>
       </div>
     </div>
-    <div *ngIf="!isDisabledGoodsType && !isInterim">
+    <div *ngIf="!isDisabledGoodsType && !isInterim && isPMRole">
       <div class="k-d-flex k-align-items-center k-gap-3">
         <h3 class="k-my-2">Device</h3>
         <kendo-label text="Lot Category: "></kendo-label>
@@ -470,7 +470,7 @@
     <i class="k-ml-auto"></i>
     <button kendoButton (click)="doTestEditMode()">Test Edit Mode</button>
   </div> -->
-    <div *ngIf="!isDisabledGoodsType && !isInterim">
+    <div *ngIf="!isDisabledGoodsType && !isInterim && (isPMRole || isReceiverOrMail)">
       <div class="k-d-flex k-align-items-center k-gap-3">
         <h3 class="k-my-2">Hardware</h3>
         <i class="k-ml-auto"></i>
@@ -537,7 +537,7 @@
         </kendo-grid>
       </div>
     </div>
-    <div *ngIf="!isDisabledGoodsType && !isInterim">
+    <div *ngIf="!isDisabledGoodsType && !isInterim && (isPMRole || isReceiverOrMail)">
       <div class="k-d-flex k-align-items-center k-gap-3">
         <h3 class="k-my-2">Miscellaneous Goods</h3>
         <i class="k-ml-auto"></i>

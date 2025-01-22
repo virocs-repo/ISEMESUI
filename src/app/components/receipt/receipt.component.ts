@@ -21,7 +21,13 @@ enum TableType {
   Interim = 'Interim'
 }
 enum ActionType {
-  Remove = 'Remove'
+  Remove = 'Remove',
+  Receive = 'Receive',
+  UndoReceive = 'Undo Receive',
+  EditData = 'Edit Data',
+  Hold = 'Hold',
+  Print = 'Print',
+  VoidData = 'Void Data'
 }
 const CUSTOMER_DROP_OFF = 'Customer Drop-Off'
 const PICKUP = 'Pickup'
@@ -135,6 +141,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
   PMReceivers:any[] = [];
   PMReceiverSelected:any;
+  isPMRole:boolean = false;
+  isReceiverOrMail:boolean = false;
 
   constructor(public appService: AppService, private apiService: ApiService) { 
     this.getInvUserByRole();
@@ -278,12 +286,35 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.contactPerson = dataItem.contactPerson
       this.fetchReceiptEmployees()
       this.fetchData();
+
       if (dataItem.isInterim) {
         this.listInterimLots();
         this.fetchDataInterim();
       }
+      if(this.appService.userName == 'PM') {
+        this.isPMRole = true;
+      }
+      else if(this.appService.userName == 'Receiving' || this.appService.userName == 'Male') {
+        this.isReceiverOrMail = true;      
+      }
+      else {
+        this.isPMRole = this.isReceiverOrMail = true;
+      }
+
     } else {
+      debugger;
+      this.appService.sharedData.receiving.isEditMode = false
+      this.appService.sharedData.receiving.isViewMode = false
+      this.appService.sharedData.receiving.dataItem = {}
+
       this.isDisabledGoodsType = true;
+      //this.isPMRole = this.isReceiverOrMail = true;
+      if(this.appService.userName == 'PM') {
+        this.PMReceiverSelected = this.PMReceivers.find(e => e.employeeID == this.appService.loginId)
+      }
+      
+      this.receiptLocationSelected = this.receiptLocation.find(e => e.receivingFacilityName == this.appService.facility)
+
     }
     if (this.appService.sharedData.receiving.isViewMode) {
       this.disabledAllBtns()
@@ -845,6 +876,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
 
       DeviceDetails.push(postDevice)
     }
+    debugger;
     this.apiService.postProcessDevice({ DeviceDetails }).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
@@ -1044,37 +1076,18 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc' |'Interim') {
     switch (e.item.text) {
-      case 'Edit Data':
+      case 'Edit Data': 
         dataItem.recordStatus = 'U'
         dataItem.dateCode = parseInt(dataItem.dateCode);
         break;
       case 'Receive':
-        const noOfCartons = this.gridData[0].noOfCartons;
-        if (!noOfCartons) {
-          this.appService.errorMessage("Please set No. of Cartons to receive");
-          this.noOfCartons?.nativeElement.scrollIntoView({ behavior: 'smooth' })
-          return;
-        }
-
-        if (dataItem.recordStatus != 'I') {
-          dataItem.recordStatus = 'U';
-        }
-        dataItem.isReceived = true;
-        dataItem.dateCode = parseInt(dataItem.dateCode) || '';
-        if (dataItem.rowActionMenu) {
-          dataItem.rowActionMenu[0].disabled = true;
-          dataItem.rowActionMenu[1].disabled = false;
-        }
+        this.receiveRow(dataItem,tableName);
         break;
       case 'Undo Receive':
-        dataItem.isReceived = false;
-        if (dataItem.rowActionMenu) {
-          dataItem.rowActionMenu[0].disabled = false;
-          dataItem.rowActionMenu[1].disabled = true;
-        }
+        this.canUndoReceive(dataItem, tableName);
         break;
       case 'Hold':
-        dataItem.isHold = !dataItem.isHold
+        this.doHoldUnHold(dataItem, tableName);
         break;
       case 'Print':
         this.doPrint(dataItem, tableName)
@@ -1091,15 +1104,13 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
   }
   onOpenRowActionMenu(dataItem: any, tableType: TableType) {
+    debugger;
     const a = this.rowActionMenu.find(a => a.text == ActionType.Remove);
     if (a) a.disabled = false;
+
     switch (tableType) {
       case TableType.Device:
-        const ac = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Remove);
-        if (ac) ac.disabled = false;
-        if (dataItem.deviceID) {
-          if (ac) ac.disabled = true;
-        }
+        this.enableDisableRowMenuItems(dataItem);
         break;
       case TableType.Hardware:
         if (dataItem.hardwareID) {
@@ -1111,8 +1122,69 @@ export class ReceiptComponent implements OnInit, OnDestroy {
           if (a) a.disabled = true;
         }
         break;
+        case TableType.Interim:
+          this.enableDisableRowMenuItems(dataItem);
+        break;
     }
   }
+  enableDisableRowMenuItems(dataItem:any){
+    const receiveMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Receive);
+        const undoRreceiveMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.UndoReceive);
+        const printMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Print);
+        const voidMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.VoidData);
+        const editMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.EditData);
+        const removeMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Remove);
+        const holdMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Hold);
+
+        if (dataItem.deviceID) {
+          if (removeMenuItem)
+            removeMenuItem.disabled = true;
+          if (printMenuItem)
+            printMenuItem.disabled = false;
+
+          if(dataItem.isReceived == true) {
+            if(undoRreceiveMenuItem)
+              undoRreceiveMenuItem.disabled = false
+            if(receiveMenuItem)
+              receiveMenuItem.disabled = true
+            if(editMenuItem)
+              editMenuItem.disabled = true
+            if(voidMenuItem)
+              voidMenuItem.disabled = true
+            if(holdMenuItem)
+              holdMenuItem.disabled = true;
+          }
+          else {
+            if(undoRreceiveMenuItem)
+              undoRreceiveMenuItem.disabled = true
+            if(receiveMenuItem)
+              receiveMenuItem.disabled = false
+            if(editMenuItem)
+              editMenuItem.disabled = false
+            if(voidMenuItem)
+              voidMenuItem.disabled = false
+            if(holdMenuItem)
+              holdMenuItem.disabled = false;
+          }
+        }
+        else {
+          if (removeMenuItem)
+            removeMenuItem.disabled = false;
+          if(printMenuItem)
+            printMenuItem.disabled = true;
+          if(undoRreceiveMenuItem)
+            undoRreceiveMenuItem.disabled = true
+          if(receiveMenuItem)
+            receiveMenuItem.disabled = true
+          if(editMenuItem)
+            editMenuItem.disabled = true
+          if(voidMenuItem)
+            voidMenuItem.disabled = true
+          if(holdMenuItem)
+            holdMenuItem.disabled = true;
+        }  
+  }
+
   private doRemoveRow(rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc'|'Interim') {
     switch (tableName) {
       case 'Device':
@@ -1441,5 +1513,79 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         }
       }
     })
+  }
+
+  canUndoReceive(dataItem:any, tableName: 'Device' | 'Hardware' | 'Misc' | 'Interim') {
+    if(!dataItem.inventoryId && dataItem.inventoryId < 0) {
+      return;
+    }
+
+    this.apiService.canUndoReceive(dataItem.inventoryId).subscribe({
+      next: (v:any) => {
+        if(v == true)
+        {
+          dataItem.recordStatus = 'U';
+          dataItem.isReceived = false;
+          if (dataItem.rowActionMenu) {
+            dataItem.rowActionMenu[0].disabled = false;
+            dataItem.rowActionMenu[1].disabled = true;
+          }
+        }
+        else
+        {
+          alert("You are not allowed to undo recieve this line item now.");
+        }
+      }})
+  }
+
+  private receiveRow(dataItem: any, tableName: 'Device' | 'Hardware' | 'Misc'|'Interim') {
+    switch (tableName) {
+      case 'Device':
+        const noOfCartons = this.gridData[0].noOfCartons;
+        if (!noOfCartons) {
+          this.appService.errorMessage("Please set No. of Cartons to receive");
+          this.noOfCartons?.nativeElement.scrollIntoView({ behavior: 'smooth' })
+          return;
+        }
+
+        if (dataItem.recordStatus != 'I') {
+          dataItem.recordStatus = 'U';
+        }
+        dataItem.isReceived = true;
+        dataItem.dateCode = parseInt(dataItem.dateCode) || '';
+        if (dataItem.rowActionMenu) {
+          dataItem.rowActionMenu[0].disabled = true;
+          dataItem.rowActionMenu[1].disabled = false;
+        }
+        break;
+      case 'Hardware':
+        
+        break;
+      case 'Misc':
+        
+        break;
+      case 'Interim':
+        dataItem.recordStatus = 'U';
+        if (dataItem.rowActionMenu) {
+          dataItem.rowActionMenu[0].disabled = true;
+          dataItem.rowActionMenu[1].disabled = false;
+        }
+      break;
+    }
+  }
+
+  doHoldUnHold(dataItem:any, tableName: 'Device' | 'Hardware' | 'Misc'|'Interim') {
+  
+    switch(tableName){
+    case 'Device':
+      dataItem.isHold = !dataItem.isHold
+      break;
+    case 'Hardware':
+      break;
+    case 'Misc':
+      break;
+    case 'Interim':
+      break;
+    }
   }
 }
