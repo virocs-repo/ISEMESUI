@@ -2,12 +2,11 @@
 <div class="k-d-flex k-align-items-center  k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
     <h4> Internal Tranfer Receiving</h4>
     <i class="k-ml-auto"></i>
-    <!--<kendo-label text="Status" class="k-font-size-sm">
+    <kendo-label text="Receipt Status" class="k-font-size-sm">
       <br />
-      <kendo-autocomplete [data]="areaList" placeholder="status"></kendo-autocomplete>
-    </kendo-label>-->
-    <!-- <div class="k-d-flex k-gap-4 k-align-items-center k-flex-1"> -->
-        <!-- Search Icon and Input -->
+      <kendo-combobox [data]="areaList" value="Pending Receive">
+      </kendo-combobox>
+    </kendo-label>
         <kendo-label text="Search" class="k-font-size-sm">
           <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
             rounded="full" (input)="onSearchMaster()" />

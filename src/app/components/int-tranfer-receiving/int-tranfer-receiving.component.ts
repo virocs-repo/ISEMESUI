@@ -179,14 +179,7 @@ export class IntTranferReceivingComponent implements OnDestroy {
     };
   }
   public areaList: Array<string> = [
-    "Boston",
-    "Chicago",
-    "Houston",
-    "Los Angeles",
-    "Miami",
-    "New York",
-    "Philadelphia",
-    "San Francisco",
-    "Seattle",
+    "Pending Receive",
+    "Received",
   ];
 }
