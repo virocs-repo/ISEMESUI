@@ -469,6 +469,7 @@ export interface PostDevice {
   LoginId: number;
   DeviceTypeID: number
   LotCategoryID: number
+  IsReceived:boolean
 }
 
 export const INIT_POST_DEVICE: PostDevice = {
@@ -489,7 +490,8 @@ export const INIT_POST_DEVICE: PostDevice = {
   Active: true,
   LoginId: 1,
   DeviceTypeID: 1,
-  LotCategoryID: 1
+  LotCategoryID: 1,
+  IsReceived:false
 }
 // interim
 export interface InterimLot {
@@ -500,7 +502,7 @@ export interface InterimItem extends DeviceItem {
   interimLotSelected: InterimLot | undefined
   receivedQTY: number
   goodQty: number
-  rejectQty: number
+  rejectedQty: number
 }
 export interface HardwareType {
   hardwareTypeID: number
@@ -733,8 +735,9 @@ export interface InterimDevice {
   UserID:number
   ReceivedQTY:number|null
   GoodQty:number|null
-  RejectQty:number|null
+  RejectedQty:number|null
   InterimStatusID:number
   RecordStatus: "I" | "U"
+  IsReceived:boolean
   IsHold:boolean
 }

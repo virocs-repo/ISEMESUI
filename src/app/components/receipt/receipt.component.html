@@ -221,23 +221,12 @@
           </kendo-grid-column>
           <kendo-grid-column field="deviceType" title="Device" [width]="70">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
-                <kendo-textbox [(ngModel)]="dataItem.deviceType" placeholder="Device Type"
-                  ></kendo-textbox>
-              </ng-container>
-              <ng-template #showValue>
                 <span>{{dataItem.deviceType}}</span>
-              </ng-template>
-            </ng-template></kendo-grid-column>
+            </ng-template>
+          </kendo-grid-column>
           <kendo-grid-column field="customerCount" title="Lot Qty" [width]="70">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
-                <kendo-textbox [(ngModel)]="dataItem.customerCount" (ngModelChange)="onCountUIChange($event)"
-                  placeholder="Lot Qty" [class.ng-touched]="dataItem.error" required></kendo-textbox>
-              </ng-container>
-              <ng-template #showValue>
                 <span>{{dataItem.customerCount}}</span>
-              </ng-template>
             </ng-template>
           </kendo-grid-column>
           
@@ -271,13 +260,7 @@
           </kendo-grid-column>-->
           <kendo-grid-column field="labelCount" title="Step Qty" [width]="80">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.recordStatus == 'U'; else showValue">
-                <kendo-textbox [(ngModel)]="dataItem.labelCount" placeholder="Step Qty">
-                </kendo-textbox>
-              </ng-container>
-              <ng-template #showValue>
                 <span>{{dataItem.labelCount}}</span>
-              </ng-template>
             </ng-template>
           </kendo-grid-column>
           <kendo-grid-column field="receivedQTY" title="Received Qty" [width]="80">
@@ -302,14 +285,14 @@
               </ng-template>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="rejectQty" title="Reject Qty" [width]="200">
+          <kendo-grid-column field="rejectedQty" title="Reject Qty" [width]="200">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
               <ng-container *ngIf="dataItem.isReceived; else showValue">
-                <kendo-textbox [(ngModel)]="dataItem.rejectQty" placeholder="Reject Qty"
+                <kendo-textbox [(ngModel)]="dataItem.rejectedQty" placeholder="Reject Qty"
                   [class.ng-touched]="dataItem.error" required></kendo-textbox>
               </ng-container>
               <ng-template #showValue>
-                <span>{{dataItem.rejectQty}}</span>
+                <span>{{dataItem.rejectedQty}}</span>
               </ng-template>
             </ng-template>
           </kendo-grid-column>
