@@ -4,9 +4,14 @@
   <i class="k-ml-auto"></i>
   <kendo-label text="Receipt Status" class="k-font-size-sm">
     <br />
-    <kendo-multiselect [data]="areaList">
+    <kendo-multiselect 
+        [data]="areaList" 
+        [(ngModel)]="selectedReceiptStatuses" 
+        [valuePrimitive]="true"
+        placeholder="Select Receipt Status">
     </kendo-multiselect>
   </kendo-label>
+  
   <kendo-label text="Search" class="k-font-size-sm">
     <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
       rounded="full" (input)="onSearchMaster()" />
@@ -78,8 +83,12 @@
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="receivingFacility" title="Receiving Facility" [width]="160"></kendo-grid-column>
-    <kendo-grid-column field="modifiedby" title="Created By" [width]="125"></kendo-grid-column>
-    <kendo-grid-column field="modifiedOn" title="Created On" [width]="125">
+    <kendo-grid-column field="modifiedby" title="Created By" [width]="125">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="minimal-text" [title]="dataItem.modifiedby">{{dataItem.modifiedby}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="modifiedOn" title="Created On" [width]="155">
       <ng-template kendoGridCellTemplate let-dataItem>
         {{ dataItem.modifiedOn | date:'MM/dd/yyyy HH:mm:ss' }}
       </ng-template>
