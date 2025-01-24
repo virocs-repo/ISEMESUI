@@ -28,6 +28,13 @@ export class ApiService {
     }
     return this.httpClient.get(`${API}v1/ise/inventory/receiptdata`, { params });
   }
+  getReceiptdataForReceiptStatus(receiptStatus?: string | null){
+    let params = new HttpParams();
+    if (receiptStatus) {
+      params = params.set('receiptStatus', receiptStatus);
+    }  
+    return this.httpClient.get(`${API}v1/ise/inventory/receiptdata`, { params });
+  }
   getDeviceData(receiptId: string) {
     return this.httpClient.get(`${API}v1/ise/inventory/devicedata?receiptId=${receiptId}`);
   }
