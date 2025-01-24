@@ -20,7 +20,7 @@
         </div>
       </div>
 
-      <div class="k-d-flex k-flex-wrap k-align-items-stretch k-gap-4 k-w-full label-fs">
+      <div class="k-d-flex k-flex-wrap k-align-items-stretch k-gap-4 k-w-full label-fs" [ngClass]="{'k-pointer-events-none':isDisableReceipt}">
         <kendo-card class="card-green k-flex-1 flex-auto-md">
           <kendo-card-body class="card-flex">
             <div class="k-d-flex k-align-items-center k-gap-4">
@@ -169,7 +169,7 @@
           <kendo-grid [kendoGridBinding]="gridData" class="bold-column-header cartons">
             <kendo-grid-column field="noOfCartons" title="No of Cartons" [width]="200">
               <ng-template kendoGridCellTemplate let-dataItem>
-                <kendo-numerictextbox [(ngModel)]="dataItem.noOfCartons" [format]="'n0'" placeholder="Enter cartons"
+                <kendo-numerictextbox [(ngModel)]="dataItem.noOfCartons" [format]="'n0'" placeholder="Enter cartons"  (change)="onCartonsChange($event)"
                   required></kendo-numerictextbox>
               </ng-template>
             </kendo-grid-column>
@@ -507,16 +507,20 @@
 
           <kendo-grid-column title="" [width]="50">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <button *ngIf="dataItem.recordStatus =='I'; else showActionsBtn" kendoButton type="button" rounded="large"
-                (click)="removeRow(gridDataHardware, rowIndex)" title="Remove Row" [svgIcon]="ICON.trashIcon"></button>
-              <ng-template #showActionsBtn>
                 <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
                   (click)="onOpenRowActionMenu(dataItem, TableType.Hardware)" #rowActionMenuTarget></button>
-                <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
+                <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="dataItem.rowActionMenu"
                   (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Hardware')"></kendo-contextmenu>
-              </ng-template>
             </ng-template>
           </kendo-grid-column>
+          <!--<kendo-grid-column title="" [width]="50">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
+                (click)="onOpenRowActionMenu(dataItem, TableType.Interim)" #rowActionMenuTarget></button>
+              <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="dataItem.rowActionMenu"
+                (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Interim')"></kendo-contextmenu>
+            </ng-template>
+          </kendo-grid-column> -->
         </kendo-grid>
       </div>
     </div>
@@ -546,12 +550,12 @@
               </ng-template>
             </ng-template>
           </kendo-grid-column>
-
           <kendo-grid-column title="" [width]="50">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <button *ngIf="dataItem.recordStatus =='I'" kendoButton type="button" rounded="large"
-                (click)="removeRow(gridDataMiscellaneous,rowIndex)" title="Remove Row"
-                [svgIcon]="ICON.trashIcon"></button>
+                <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
+                  (click)="onOpenRowActionMenu(dataItem, TableType.Misc)" #rowActionMenuTarget></button>
+                <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="dataItem.rowActionMenu"
+                  (select)="onSelectRowActionMenu($event, dataItem, rowIndex, 'Misc')"></kendo-contextmenu>
             </ng-template>
           </kendo-grid-column>
           <!-- <kendo-grid-column field="modifiedOn" title="Modified On">

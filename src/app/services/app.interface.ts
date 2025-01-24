@@ -98,11 +98,12 @@ export interface HardwareItem {
   hardwareTypeID: number;
 
   recordStatus: "I" | "U";
-
+  isReceived?: boolean
   // custom
   customerSelected: Customer | undefined
   hardwareTypeSelected: HardwareType | undefined
   error: boolean
+  rowActionMenu: MenuItem[]
 }
 
 export const INIT_HARDWARE_ITEM: HardwareItem = {
@@ -122,7 +123,8 @@ export const INIT_HARDWARE_ITEM: HardwareItem = {
 
   customerSelected: undefined,
   hardwareTypeSelected: undefined,
-  error: false
+  error: false,
+  rowActionMenu:[]
 }
 export interface MiscellaneousGoods {
   miscellaneousGoodsID: number | null;
@@ -136,8 +138,9 @@ export interface MiscellaneousGoods {
   modifiedOn: Date | string;
   active: boolean;
   recordStatus?: "I" | "U";
-
+  isReceived?: boolean
   error?: boolean
+  rowActionMenu: MenuItem[]
 }
 export const INIT_MISCELLANEOUS_GOODS: MiscellaneousGoods = {
   miscellaneousGoodsID: null,
@@ -150,7 +153,8 @@ export const INIT_MISCELLANEOUS_GOODS: MiscellaneousGoods = {
   createdOn: '',
   modifiedOn: '',
   active: true,
-  recordStatus: 'I'
+  recordStatus: 'I',
+  rowActionMenu:[]
 }
 export interface DeviceItem {
   deviceID: number;
@@ -439,6 +443,7 @@ export interface PostHardware {
   RecordStatus: "I" | "U";
   Active: boolean;
   LoginId: number;
+  IsReceived:boolean
 }
 export const INIT_POST_HARDWARE: PostHardware = {
   HardwareID: null,
@@ -448,7 +453,8 @@ export const INIT_POST_HARDWARE: PostHardware = {
   ExpectedQty: 0,
   RecordStatus: "I",
   Active: true,
-  LoginId: 1
+  LoginId: 1,
+  IsReceived: false
 }
 export interface PostDevice {
   DeviceID: number | null;
@@ -519,6 +525,7 @@ export interface PostMiscGoods {
   RecordStatus: "I" | "U"
   Active: boolean
   LoginId: number
+  IsReceived:boolean
 }
 export interface LotCategory {
   lotCategoryID: number,
@@ -740,4 +747,5 @@ export interface InterimDevice {
   RecordStatus: "I" | "U"
   IsReceived:boolean
   IsHold:boolean
+  Active:boolean
 }

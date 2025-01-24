@@ -1,5 +1,6 @@
 import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
+import { ActiveColorClickEvent } from '@progress/kendo-angular-inputs';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { PDFExportComponent } from '@progress/kendo-angular-pdf-export';
 import { FileRestrictions, FileSelectComponent } from '@progress/kendo-angular-upload';
@@ -185,6 +186,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   isDisableFTZ = false;
   isVisibleInterim = true;
   isDisableInterim = false;
+  isDisableReceipt = false;
+
   private initRoleBasedUI() {
     const appMenu = this.appService.userPreferences?.roles.appMenus.find(am => am.menuTitle == "Receiving Menu");
     if (!appMenu) {
@@ -290,6 +293,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         this.listInterimLots();
         this.fetchDataInterim();
       }
+
       if(this.appService.userName == 'PM') {
         this.isPMRole = true;
       }
@@ -299,6 +303,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       else {
         this.isPMRole = this.isReceiverOrMail = true;
       }
+
+      this.onCartonsChange(dataItem.noOfCartons);
+      this.disableReceipt();
 
     } else {
       this.appService.sharedData.receiving.isEditMode = false
@@ -416,13 +423,13 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.apiService.getHardwaredata(dataItem.receiptID).subscribe({
       next: (v: any) => {
         if (v) {
-          v.forEach((h: any) => {
-            h.hardwareTypeSelected = this.hardwareTypes.find(c => c.hardwareTypeID == h.hardwareTypeID)
-            h.customerSelected = this.customers.find(c => c.CustomerID == h.customerID)
+          this.gridDataHardware = v;
+          this.gridDataHardware.forEach((d: any) => {
+            d.hardwareTypeSelected = this.hardwareTypes.find(c => c.hardwareTypeID == d.hardwareTypeID)
+            d.rowActionMenu = this.RowActionMenuDevice.map(o => ({ ...o }))
+            d.rowActionMenu
           })
         }
-        this.gridDataHardware = v;
-        // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Hardware')        
       }
     });
   }
@@ -436,7 +443,10 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     this.apiService.getMiscellaneousGoods(dataItem.receiptID).subscribe({
       next: (v: any) => {
         this.gridDataMiscellaneous = v;
-        // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Miscellaneous Goods')
+        this.gridDataMiscellaneous.forEach((d:any) => {
+        d.rowActionMenu = this.RowActionMenuDevice.map(o=> ({...o}))
+        })
+        
       }
     });
   }
@@ -733,7 +743,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         RejectedQty:r.rejectedQty,
         InterimStatusID: r.isReceived == true ? 1 : 0,
         IsReceived: r.isReceived == undefined ? false : r.isReceived,
-        IsHold: r.isHold
+        IsHold: r.isHold,
+        Active: r.active
       }
 
       InterimDeviceDetails.push(postInterimDevice)
@@ -911,11 +922,15 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   }
   addHardwareRow() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
-    this.gridDataHardware.splice(0, 0, { ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID })
+    this.gridDataHardware.splice(0, 0, { ...INIT_HARDWARE_ITEM, receiptID: dataItem.receiptID, recordStatus:'I',
+      rowActionMenu: this.RowActionMenuDeviceAdd.map(o=> ({...o}))
+     })
   }
   addMiscellaneousRow() {
     const dataItem = this.appService.sharedData.receiving.dataItem;
-    this.gridDataMiscellaneous.splice(0, 0, { ...INIT_MISCELLANEOUS_GOODS, receiptID: dataItem.receiptID })
+    this.gridDataMiscellaneous.splice(0, 0, { ...INIT_MISCELLANEOUS_GOODS, receiptID: dataItem.receiptID, recordStatus:'I',
+      rowActionMenu: this.RowActionMenuDeviceAdd.map(o => ({...o}))
+     })
   }
 
   // addHardware
@@ -988,7 +1003,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         ExpectedQty: r.expectedQty || 1,
         RecordStatus: r.recordStatus,
         Active: r.active,
-        LoginId: this.appService.loginId
+        LoginId: this.appService.loginId,
+        IsReceived: r.isReceived == undefined ? false : r.isReceived
       }
       if (postHardware.RecordStatus == "I") {
         postHardware.HardwareID = null;
@@ -1021,7 +1037,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         AdditionalInfo: r.additionalInfo,
         RecordStatus: r.recordStatus || "U",
         Active: r.active,
-        LoginId: this.appService.loginId
+        LoginId: this.appService.loginId,
+        IsReceived: r.isReceived == undefined ? false : r.isReceived
       }
       MiscGoodsDetails.push(postMiscGoods);
     })
@@ -1080,8 +1097,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     debugger;
     switch (e.item.text) {
       case 'Edit Data': 
-        dataItem.recordStatus = 'U'
-        dataItem.dateCode = parseInt(dataItem.dateCode);
+      this.doEditRow(dataItem, tableName);
         break;
       case 'Receive':
         this.receiveRow(dataItem,tableName);
@@ -1111,25 +1127,9 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     const a = this.rowActionMenu.find(a => a.text == ActionType.Remove);
     if (a) a.disabled = false;
 
-    switch (tableType) {
-      case TableType.Device:
-        this.enableDisableRowMenuItems(dataItem, tableType);
-        break;
-      case TableType.Hardware:
-        if (dataItem.hardwareID) {
-          if (a) a.disabled = true;
-        }
-        break;
-      case TableType.Misc:
-        if (dataItem.miscellaneousGoodsID) {
-          if (a) a.disabled = true;
-        }
-        break;
-        case TableType.Interim:
-          this.enableDisableRowMenuItems(dataItem, tableType);
-        break;
-    }
+    this.enableDisableRowMenuItems(dataItem, tableType);
   }
+
   enableDisableRowMenuItems(dataItem:any, tableName: 'Device' | 'Hardware' | 'Misc' |'Interim'){
 
     const receiveMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Receive);
@@ -1203,6 +1203,18 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
   }
 
+  doEditRow(dataItem:any, tableName: 'Device' | 'Hardware' | 'Misc'|'Interim') {
+    switch(tableName){
+      case 'Device' :
+        dataItem.recordStatus = 'U'
+        dataItem.dateCode = parseInt(dataItem.dateCode);
+      break;
+      case 'Hardware':
+      case 'Misc':
+      case 'Interim':
+        dataItem.recordStatus = 'U'
+    }
+  }
   private doRemoveRow(rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc'|'Interim') {
     switch (tableName) {
       case 'Device':
@@ -1237,25 +1249,28 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   private doVoidData(r: any, rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc' | 'Interim') {
     switch (tableName) {
       case 'Device':
-        this.gridDataDevice[rowIndex].active = false;
-        this.gridDataDevice[rowIndex].recordStatus = "U";
+        this.setLineItemToVoid(this.gridDataDevice,rowIndex);
         this.saveDevices();
         break;
       case 'Hardware':
-        this.gridDataHardware[rowIndex].active = false;
-        this.gridDataHardware[rowIndex].recordStatus = "U";
+        this.setLineItemToVoid(this.gridDataHardware, rowIndex);
         this.saveHardwares();
         break;
       case 'Misc':
-        this.gridDataMiscellaneous[rowIndex].active = false;
-        this.gridDataMiscellaneous[rowIndex].recordStatus = "U";
+        this.setLineItemToVoid(this.gridDataMiscellaneous, rowIndex);
         this.saveMiscellaneous();
         break;
-
-      default:
-        break;
+      case 'Interim':
+        this.setLineItemToVoid(this.gridDataInterim, rowIndex);
+        this.saveInterim();
     }
   }
+
+  setLineItemToVoid(grid:any, rowIndex:number){
+    grid[rowIndex].active = false;
+    grid[rowIndex].recordStatus = "U";
+  }
+
   private updateKeysToTitleCase(jsonObj: any) {
     const updatedObj: any = {};
 
@@ -1501,9 +1516,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     // Return the UI value without leading zeros
     return value.replace(/^0+/, '');
   }
-  removeRow(gridData: Array<any>, index: number) {
-    gridData.splice(index, 1);
-  }
+  
   getInvUserByRole(){
     const dataItem = this.appService.sharedData.receiving.dataItem;
     const filterKey = 'PMReceiver'
@@ -1579,21 +1592,20 @@ export class ReceiptComponent implements OnInit, OnDestroy {
         }
         break;
       case 'Hardware':
-        
-        break;
       case 'Misc':
-        
-        break;
       case 'Interim':
-        if (dataItem.recordStatus != 'I') {
-          dataItem.recordStatus = 'U';
-        }
-        dataItem.isReceived = true;
-        if (dataItem.rowActionMenu) {
-          dataItem.rowActionMenu[0].disabled = true;
-          dataItem.rowActionMenu[1].disabled = false;
-        }
+        this.receiveLineItem(dataItem);
       break;
+    }
+  }
+  receiveLineItem(dataItem:any){
+    if (dataItem.recordStatus != 'I') {
+      dataItem.recordStatus = 'U';
+    }
+    dataItem.isReceived = true;
+    if (dataItem.rowActionMenu) {
+      dataItem.rowActionMenu[0].disabled = true;
+      dataItem.rowActionMenu[1].disabled = false;
     }
   }
 
@@ -1609,6 +1621,26 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       break;
     case 'Interim':
       break;
+    }
+  }
+
+  disableReceipt(){
+    //this.gridDataDevice.find()
+    const interimItemReceived: boolean  = this.gridDataInterim.find(o => o.isReceived == true) == undefined ? false : true
+    const deviceItemReceived: boolean  = this.gridDataDevice.find(o => o.isReceived == true) == undefined ? false : true
+    const hardwareItemReceived: boolean  = this.gridDataHardware.find(o => o.isReceived == true) == undefined ? false : true
+    const miscItemReceived: boolean  = this.gridDataMiscellaneous.find(o => o.isReceived == true) == undefined ? false : true
+
+    if(interimItemReceived == true || deviceItemReceived == true || hardwareItemReceived == true || miscItemReceived == true) {
+      this.isDisableHoldComments = true;
+      this.isDisableReceipt = true;
+    }
+  }
+  onCartonsChange(value:any){
+    const cartonsStr = value.toString() || ''
+    const noOfCarts = parseInt(cartonsStr);
+    if(noOfCarts && noOfCarts > 0) {
+      this.isDisableHoldComments = true;
     }
   }
 }
