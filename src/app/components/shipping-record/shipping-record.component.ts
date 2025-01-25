@@ -74,7 +74,15 @@ export class ShippingRecordComponent implements OnDestroy {
     Length:'',
     Attention:'',
     PackageType:'',
-    Residential:''
+    Residential:'',
+    NoOfPackages:'',
+    PackageDimension:'',
+    CIFromId:'',
+    AccountNumber:'',
+    Height:'',
+    TaxId:'',
+    HoldShip:'',
+    Phone:''
 
     
   };

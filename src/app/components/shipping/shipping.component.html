@@ -25,7 +25,7 @@
     [pageSize]="pageSize" [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
     class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
     [rowClass]="rowCallback">
-    <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+    <!-- <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column> -->
     <kendo-grid-column field="shipmentId" title="Shipment#" [hidden]="true" ></kendo-grid-column>
     <!-- <kendo-grid-column field="customerVendor" title="Customer/Vendor">
       <ng-template kendoGridCellTemplate let-dataItem>
