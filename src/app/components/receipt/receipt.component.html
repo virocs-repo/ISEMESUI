@@ -169,7 +169,7 @@
           <kendo-grid [kendoGridBinding]="gridData" class="bold-column-header cartons">
             <kendo-grid-column field="noOfCartons" title="No of Cartons" [width]="200">
               <ng-template kendoGridCellTemplate let-dataItem>
-                <kendo-numerictextbox [(ngModel)]="dataItem.noOfCartons" [format]="'n0'" placeholder="Enter cartons"  (change)="onCartonsChange($event)"
+                <kendo-numerictextbox [(ngModel)]="dataItem.noOfCartons" [format]="'n0'" placeholder="Enter cartons"  (valueChange)="onCartonsValueChange($event)"
                   required></kendo-numerictextbox>
               </ng-template>
             </kendo-grid-column>
@@ -397,7 +397,7 @@
           </kendo-grid-column>
           <kendo-grid-column field="labelCount" title="Label Count" [width]="80">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.isReceived; else showValue">
+              <ng-container *ngIf="dataItem.isReceived && dataItem.recordStatus == 'U'; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.labelCount" placeholder="Label Count"
                   [class.ng-touched]="dataItem.error" required></kendo-textbox>
               </ng-container>
@@ -408,7 +408,7 @@
           </kendo-grid-column>
           <kendo-grid-column field="dateCode" title="Date Code" [width]="80">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.isReceived; else showValue">
+              <ng-container *ngIf="dataItem.isReceived && dataItem.recordStatus == 'U'; else showValue">
                 <kendo-textbox [(ngModel)]="dataItem.dateCode" placeholder="Date Code"
                   [class.ng-touched]="dataItem.error" required></kendo-textbox>
                 <!-- <kendo-numerictextbox [min]="0" [(ngModel)]="dataItem.dateCode"
@@ -421,7 +421,7 @@
           </kendo-grid-column>
           <kendo-grid-column field="coo" title="COO" [width]="200">
             <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-              <ng-container *ngIf="dataItem.isReceived; else showValue">
+              <ng-container *ngIf="dataItem.isReceived && dataItem.recordStatus == 'U'; else showValue">
                 <!-- <kendo-textbox [(ngModel)]="dataItem.coo" placeholder="COO"></kendo-textbox> -->
                 <kendo-combobox [data]="countries" [(ngModel)]="dataItem.countrySelected" [textField]="'countryName'"
                   [valueField]="'countryID'" [kendoDropDownFilter]="filterSettings" placeholder="Select" rounded="large"
@@ -603,7 +603,7 @@
     </div>
     <!-- signature -->
     <kendo-card class="card-blue card-full k-mt-4"
-      *ngIf="gridDataHardware.length > 0 || gridDataMiscellaneous.length > 0 || gridDataDevice.length > 0">
+      *ngIf="gridDataHardware.length > 0 || gridDataMiscellaneous.length > 0 || gridDataDevice.length > 0 || gridDataInterim.length > 0">
       <kendo-card-body class="card-flex">
         <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-4 k-mt-3">
           <kendo-label text="Customer / Employee">
