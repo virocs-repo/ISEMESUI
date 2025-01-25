@@ -180,6 +180,8 @@ export class ShippingRecordComponent implements OnDestroy {
         this.shippingDetailsData.CustomerReference=res[0].customerReference;
         this.shippingDetailsData.InvoiceNumber=res[0].invoiceNumber;
         this.shippingDetailsData.BillDutiesTaxes=res[0].billDutyTaxFeesTo;
+        this.shippingDetailsData.BillTransportTo=res[0].billTransportationTo;
+        this.shippingDetailsData.CIFrom=res[0].ciFrom;
         this.shippingDetailsData.DutiesTaxes=res[0].billDutyTaxFeesAcct;
         this.shippingDetailsData.ECCN=res[0].eCCN;
         this.shippingDetailsData.COO=res[0].countryOfOrigin;
@@ -188,6 +190,20 @@ export class ShippingRecordComponent implements OnDestroy {
         this.shippingDetailsData.TotalValue=res[0].totalValue;
         this.shippingDetailsData.CIAdditionalInfo=res[0].commodityDescription;
         this.shippingDetailsData.ShipAlertEmail=res[0].shipAlertEmail;
+        this.shippingDetailsData.PackageDimension=res[0].packageDimentions;
+        this.shippingDetailsData.AccountNumber=res[0].accountNumber;
+        this.shippingDetailsData.ServiceType=res[0].serviceType;
+        this.shippingDetailsData.Weight=res[0].weight;
+        this.shippingDetailsData.Width=res[0].referenceNumber1;
+        this.shippingDetailsData.Length=res[0].referenceNumber2;
+        this.shippingDetailsData.TaxId=res[0].taxId;
+        this.shippingDetailsData.Email=res[0].email;
+        this.shippingDetailsData.Attention=res[0].attention;
+        this.shippingDetailsData.PackageType=res[0].packageType;
+        this.shippingDetailsData.Residential=res[0].residential;
+        this.shippingDetailsData.NoOfPackages=res[0].noOfPackages;
+        this.shippingDetailsData.BillTransportAcct=res[0].billTransportationAcct;
+        this.shippingDetailsData.TaxId=res[0].taxId;
 
         this.onShippingMethodChange(res[0].shippingMethod);
 

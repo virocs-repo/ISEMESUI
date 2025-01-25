@@ -11,24 +11,24 @@
                   <kendo-label text="Customer" class="k-w-full">
                     <b class="required-label"></b>
                     <kendo-combobox [data]="customers" [(ngModel)]="customerSelected" (ngModelChange)="onChangeCustomer()"
-                      [textField]="'CustomerName'" [valueField]="'CustomerID'" placeholder="Select"
+                      [textField]="'CustomerName'" [valueField]="'CustomerID'" 
                       rounded="large"  [disabled]="isEditMode" ></kendo-combobox>
                   </kendo-label>
                   <kendo-label text="Shipping No#" class="k-w-full">
                     <b class="required-label"></b>
-                    <kendo-textbox placeholder="Enter" rounded="large" [(ngModel)]="shipmentNumber"[disabled]="isEditMode">
+                    <kendo-textbox rounded="large" [(ngModel)]="shipmentNumber"[disabled]="isEditMode">
                     </kendo-textbox>
                   </kendo-label>
                 </div>
                 <div class="k-d-flex k-gap-6">
                   <kendo-label text="Sender Information" class="k-w-full">
                     <b class="required-label"></b>
-                    <kendo-textarea [(ngModel)]="senderInformation" [rows]="2" placeholder="Enter Info"
+                    <kendo-textarea [(ngModel)]="senderInformation" [rows]="2" 
                       rounded="large"></kendo-textarea>
                   </kendo-label>
                   <kendo-label text="Shipping Comments" class="k-w-full">
                     <b class="required-label"></b>
-                    <kendo-textarea [(ngModel)]="shipmentComments" [rows]="2" placeholder="Enter comments"
+                    <kendo-textarea [(ngModel)]="shipmentComments" [rows]="2"
                       rounded="large"></kendo-textarea>
                   </kendo-label>
                 </div>
@@ -40,13 +40,13 @@
                   <kendo-label text="Shipment Category" class="k-w-full">
                     <b class="required-label"></b>
                     <kendo-combobox [data]="shipmentCategories" [(ngModel)]="shipmentCategorySelected"
-                      [textField]="'shipmentCategoryName'" [valueField]="'shipmentCategoryID'" placeholder="Select"
+                      [textField]="'shipmentCategoryName'" [valueField]="'shipmentCategoryID'"
                       rounded="large"></kendo-combobox>
                   </kendo-label>
                   <kendo-label text="Current Location" class="k-w-full">
                     <b class="required-label"></b>
                     <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
-                      [textField]="'receivingFacilityName'" [valueField]="'receivingFacilityID'" placeholder="Select"
+                      [textField]="'receivingFacilityName'" [valueField]="'receivingFacilityID'"
                       rounded="large"></kendo-combobox>
                   </kendo-label>
                   <kendo-label text="Shipment" class="k-w-full">
@@ -146,14 +146,14 @@
                     <label for="contactPerson">Contact Person</label>
                   </div>
                   <div class="k-d-flex k-flex-col k-w-1-6">
-                    <input type="text" id="contactPerson" placeholder="Contact Person"  kendoTextBox name="ContactPerson" [(ngModel)]="shippingDetailsData.ContactPerson">
+                    <input type="text" id="contactPerson"  kendoTextBox name="ContactPerson" [(ngModel)]="shippingDetailsData.ContactPerson">
                   </div>
                   <div class="k-d-flex k-flex-col k-w-1-6">
                     <label for="shippingMethod">Shipping Method</label>
                   
                   </div>
                   <div class="k-d-flex k-flex-col k-w-1-6">
-                    <input type="text" id="shippingMethod" placeholder="Shipping Method" kendoTextBox name="ShippingMethod" [(ngModel)]="shippingDetailsData.ShippingMethod" readonly>  
+                    <input type="text" id="shippingMethod"  kendoTextBox name="ShippingMethod" [(ngModel)]="shippingDetailsData.ShippingMethod" readonly>  
 
                   
                   </div>
@@ -201,7 +201,7 @@
                             <input
                               type="text"
                               id="email"
-                              placeholder="Email"
+                              
                               kendoTextBox
                               name="Email"
                               [(ngModel)]="shippingDetailsData.Email"
@@ -214,7 +214,7 @@
                             <input
                               type="text"
                               id="shipAlertEmail"
-                              placeholder="Ship Alert Email"
+                              
                               kendoTextBox
                               name="ShipAlertEmail"
                               [(ngModel)]="shippingDetailsData.ShipAlertEmail"
@@ -255,7 +255,7 @@
                             <input
                               type="text"
                               id="destination"
-                              placeholder="Destination"
+                              
                               class="k-w-full"
                               kendoTextBox
                               name="Destination"
@@ -267,7 +267,7 @@
                             <input
                               type="text"
                               id="courierName"
-                              placeholder="Courier Name"
+                             
                               class="k-w-full"
                               kendoTextBox
                               name="CourierName"
@@ -279,7 +279,7 @@
                             <input
                               type="text"
                               id="CIFrom"
-                              placeholder="CI From"
+                             
                               class="k-w-full"
                               kendoTextBox
                               name="CIFrom"
@@ -291,7 +291,7 @@
                             <input
                               type="text"
                               id="weight"
-                              placeholder="Weight"
+                             
                               class="k-w-full"
                               kendoTextBox
                               name="Weight"
@@ -306,7 +306,7 @@
                             <input
                               type="text"
                               id="ServiceType"
-                              placeholder="Service Type"
+                              
                               class="k-w-full"
                               kendoTextBox
                               name="ServiceType"
@@ -318,7 +318,7 @@
                             <input
                               type="text"
                               id="PackageType"
-                              placeholder="Package Type"
+                            
                               class="k-w-full"
                               kendoTextBox
                               name="PackageType"
@@ -330,7 +330,7 @@
                             <input
                               type="text"
                               id="BillTransportTo"
-                              placeholder="Bill Transport To"
+                             
                               class="k-w-full"
                               kendoTextBox
                               name="BillTransportTo"
@@ -342,7 +342,7 @@
                             <input
                               type="text"
                               id="CustomerReference"
-                              placeholder="Customer Reference"
+                              
                               class="k-w-full"
                               kendoTextBox
                               name="CustomerReference"
@@ -357,7 +357,7 @@
                             <input
                               type="text"
                               id="BillTransportAcct"
-                              placeholder="Bill Transport Acct"
+                             
                               class="k-w-full"
                               kendoTextBox
                               name="BillTransportAcct"
@@ -369,7 +369,7 @@
                             <input
                               type="text"
                               id="NoOfPackages"
-                              placeholder="No Of Packages"
+                              
                               class="k-w-full"
                               kendoTextBox
                               name="NoOfPackages"
@@ -381,7 +381,7 @@
                             <input
                               type="text"
                               id="PackageDimension"
-                              placeholder="Package Dimension"
+                              
                               class="k-w-full"
                               kendoTextBox
                               name="PackageDimension"
@@ -408,7 +408,7 @@
                             <kendo-textarea
                               [rows]="1"
                               id="ShipAlertEmail"
-                              placeholder="Enter Ship Alert Email"
+                             
                               name="ShipAlertEmail"
                               [(ngModel)]="shippingDetailsData.ShipAlertEmail"
                             ></kendo-textarea>
@@ -437,7 +437,7 @@
                             <input
                               type="text"
                               id="destination"
-                              placeholder="Destination"
+                             
                               kendoTextBox
                               name="Destination"
                               [(ngModel)]="shippingDetailsData.Destination"
@@ -448,7 +448,7 @@
                             <input
                               type="text"
                               id="courierName"
-                              placeholder="Courier Name"
+                             
                               kendoTextBox
                               name="CourierName"
                               [(ngModel)]="shippingDetailsData.CourierName"
@@ -459,7 +459,7 @@
                             <input
                               type="text"
                               id="CIFromId"
-                              placeholder="Courier Name"
+                             
                              
                               kendoTextBox
                               name="CIFromId"
@@ -471,7 +471,7 @@
                             <input
                               type="text"
                               id="BillTransportTo"
-                              placeholder="BillTransportTo"
+                           
                               
                               kendoTextBox
                               name="BillTransportTo"
@@ -486,7 +486,7 @@
                             <input
                               type="text"
                               id="AccountNumber"
-                              placeholder="AccountNumber"
+                             
                               
                               kendoTextBox
                               name="AccountNumber"
@@ -498,7 +498,7 @@
                             <input
                               type="text"
                               id="ServiceType"
-                              placeholder="UPS Service"
+                              
                               
                               kendoTextBox
                               name="ServiceType"
@@ -510,7 +510,7 @@
                             <input
                               type="text"
                               id="weight"
-                              placeholder="Weight"
+                          
                               
                               kendoTextBox
                               name="Weight"
@@ -522,7 +522,7 @@
                             <input
                               type="text"
                               id="width"
-                              placeholder="Width"
+                            
                               
                               kendoTextBox
                               name="Width"
@@ -537,7 +537,7 @@
                             <input
                               type="text"
                               id="Length"
-                              placeholder="Length"
+                             
                               
                               kendoTextBox
                               name="Length"
@@ -549,7 +549,7 @@
                             <input
                               type="text"
                               id="Height"
-                              placeholder="Height"
+                              
                               
                               kendoTextBox
                               name="Height"
@@ -561,7 +561,7 @@
                             <input
                               type="text"
                               id="TaxId"
-                              placeholder="Tax ID"
+                            
                               
                               kendoTextBox
                               name="TaxId"
@@ -573,7 +573,7 @@
                             <input
                               type="text"
                               id="Email"
-                              placeholder="Email"
+                             
                               
                               kendoTextBox
                               name="Email"
@@ -588,7 +588,7 @@
                             <input
                               type="text"
                               id="Attention"
-                              placeholder="Attention"
+                            
                               
                               kendoTextBox
                               name="Attention"
@@ -600,7 +600,7 @@
                             <input
                               type="text"
                               id="PackageType"
-                              placeholder="Package Type"
+                             
                               
                               kendoTextBox
                               name="PackageType"
@@ -624,7 +624,7 @@
                             <kendo-textarea
                               [rows]="1"
                               id="shipAlertEmail"
-                              placeholder="Enter ship alert email"
+                             
                               
                               name="ShipAlertEmail"
                               [(ngModel)]="shippingDetailsData.ShipAlertEmail"
@@ -658,7 +658,7 @@
                           <input
                             type="text"
                             id="ContactPerson"
-                            placeholder="ContactPerson"
+                            
                             kendoTextBox
                             name="ContactPerson"
                             [(ngModel)]="shippingDetailsData.ContactPerson"
@@ -669,7 +669,7 @@
                           <input
                             type="text"
                             id="Phone"
-                            placeholder="Phone"
+                            
                             kendoTextBox
                             name="Phone"
                             [(ngModel)]="address.Telephone"
@@ -680,7 +680,7 @@
                           <input
                             type="text"
                             id="Email"
-                            placeholder="Email"
+                            
                            
                             kendoTextBox
                             name="Email"
@@ -692,8 +692,6 @@
                           <kendo-textarea
                             [rows]="1"
                             id="shipAlertEmail"
-                            placeholder="Enter ship alert email"
-                            
                             name="ShipAlertEmail"
                             [(ngModel)]="shippingDetailsData.ShipAlertEmail"
                           ></kendo-textarea>
@@ -706,7 +704,7 @@
                           <kendo-textarea
                             [rows]="3"
                             id="specialInstructions"
-                            placeholder="Enter special instructions"
+                           
                             name="SpecialInstructions"
                             [(ngModel)]="address.SpecialInstructions"
                           ></kendo-textarea>
@@ -716,7 +714,7 @@
                           <kendo-textarea
                             [rows]="3"
                             id="packingComments"
-                            placeholder="Enter packing comments"
+                            
                             name="PackingComments"
                             [(ngModel)]="address.PackingComments"
                           ></kendo-textarea>
@@ -726,7 +724,7 @@
                           <kendo-textarea
                             [rows]="3"
                             id="invoiceComments"
-                            placeholder="Enter invoice comments"
+                           
                             name="InvoiceComments"
                             [(ngModel)]="address.InvoiceComments"
                           ></kendo-textarea>
@@ -736,7 +734,7 @@
                           <kendo-textarea
                             [rows]="3"
                             id="comments"
-                            placeholder="Enter comments"
+                            
                             name="Comments"
                             [(ngModel)]="address.Comments"
                           ></kendo-textarea>
@@ -784,7 +782,7 @@
                           <input
                             type="text"
                             id="country"
-                            placeholder="Country"
+                         
                             kendoTextBox
                             name="Country"
                             [(ngModel)]="address.Country"
@@ -796,7 +794,7 @@
                           <input
                             type="text"
                             id="receiversName"
-                            placeholder="Receiver's Name"
+                           
                             kendoTextBox
                             name="ReceiversName"
                             [(ngModel)]="address.ReceiversName"
@@ -808,7 +806,7 @@
                           <input
                             type="text"
                             id="companyName"
-                            placeholder="Company Name"
+                         
                             kendoTextBox
                             name="CompanyName"
                             [(ngModel)]="address.CompanyName"
@@ -820,7 +818,7 @@
                           <input
                             type="text"
                             id="address1"
-                            placeholder="Address Line 1"
+                           
                             kendoTextBox
                             name="Address1"
                             [(ngModel)]="address.Address1"
@@ -835,7 +833,7 @@
                           <input
                             type="text"
                             id="address2"
-                            placeholder="Address Line 2"
+                          
                             kendoTextBox
                             name="Address2"
                             [(ngModel)]="address.Address2"
@@ -846,7 +844,7 @@
                           <input
                             type="text"
                             id="address3"
-                            placeholder="Address Line 3"
+                         
                             kendoTextBox
                             name="Address3"
                             [(ngModel)]="address.Address3"
@@ -857,7 +855,7 @@
                           <input
                             type="text"
                             id="telephone"
-                            placeholder="Telephone"
+                         
                             kendoTextBox
                             name="Telephone"
                             [(ngModel)]="address.Telephone"
@@ -870,7 +868,7 @@
                           <input
                             type="text"
                             id="state"
-                            placeholder="State/Province"
+                           
                             kendoTextBox
                             name="State"
                             [(ngModel)]="address.State"
@@ -885,7 +883,7 @@
                           <input
                             type="text"
                             id="city"
-                            placeholder="City"
+                         
                             kendoTextBox
                             name="City"
                             [(ngModel)]="address.City"
@@ -897,7 +895,7 @@
                           <input
                             type="text"
                             id="postCode"
-                            placeholder="Post Code"
+                           
                             kendoTextBox
                             name="PostCode"
                             [(ngModel)]="address.PostCode"
@@ -909,7 +907,7 @@
                           <input
                             type="text"
                             id="ext"
-                            placeholder="Ext"
+                          
                             
                             kendoTextBox
                             name="Ext"
@@ -927,7 +925,7 @@
                           <kendo-textarea
                             [rows]="3"
                             id="specialInstructions"
-                            placeholder="Enter special instructions"
+                           
                             name="SpecialInstructions"
                             [(ngModel)]="address.SpecialInstructions"
                           ></kendo-textarea>
@@ -937,7 +935,7 @@
                           <kendo-textarea
                             [rows]="3"
                             id="packingComments"
-                            placeholder="Enter packing comments"
+                            
                             name="PackingComments"
                             [(ngModel)]="address.PackingComments"
                           ></kendo-textarea>
@@ -947,7 +945,7 @@
                           <kendo-textarea
                             [rows]="3"
                             id="invoiceComments"
-                            placeholder="Enter invoice comments"
+                          
                             name="InvoiceComments"
                             [(ngModel)]="address.InvoiceComments"
                           ></kendo-textarea>
@@ -957,7 +955,7 @@
                           <kendo-textarea
                             [rows]="3"
                             id="comments"
-                            placeholder="Enter comments"
+                            
                             name="Comments"
                             [(ngModel)]="address.Comments"
                           ></kendo-textarea>
