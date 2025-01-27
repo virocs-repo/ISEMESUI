@@ -262,7 +262,6 @@ export class ReceivingComponent implements OnDestroy {
     // this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
     // this.toDate = moment(this.range.end).format('MM-DD-YYYY');
     this.fetchdata()
-    this.fetchdataforReceiptStatus()
   }
 
   onSearchMaster(): void {
@@ -302,9 +301,12 @@ export class ReceivingComponent implements OnDestroy {
     "Received",
   ];
   
-  public selectedReceiptStatuses: string[] = []; // To store selected receipt statuses
-  
-  // Method to format and send the request
+  public selectedReceiptStatuses: string[] = ["Pending Receive"];
+  onReceiptStatusChange(selectedValues: string[]) {
+    this.selectedReceiptStatuses = selectedValues;
+    this.fetchdataforReceiptStatus();
+  }
+ 
   private fetchdataforReceiptStatus() {
     const receiptStatus = this.selectedReceiptStatuses.length > 0 
     ? this.selectedReceiptStatuses.join(',') 

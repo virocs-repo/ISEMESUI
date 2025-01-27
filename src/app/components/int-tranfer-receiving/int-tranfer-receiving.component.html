@@ -2,10 +2,20 @@
 <div class="k-d-flex k-align-items-center  k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
     <h4> Internal Tranfer Receiving</h4>
     <i class="k-ml-auto"></i>
-    <kendo-label text="Receipt Status" class="k-font-size-sm">
+    <kendo-label text="Facility" class="k-font-size-sm">
+      <br/>
+      <kendo-combobox [data]="areaLists" [(ngModel)]="selectedFacility"
+        [valuePrimitive]="true" placeholder="Select"></kendo-combobox>
+    </kendo-label>
+    <kendo-label text="Status" class="k-font-size-sm">
       <br />
-      <kendo-combobox [data]="areaList" value="Pending Receive">
-      </kendo-combobox>
+      <kendo-multiselect 
+          [data]="areaList" 
+          [(ngModel)]="selectedStatuses" 
+          [valuePrimitive]="true"
+          placeholder="Select Status"
+          (valueChange)="onIntransferRecieveStatusChange($event)">
+      </kendo-multiselect>
     </kendo-label>
         <kendo-label text="Search" class="k-font-size-sm">
           <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"

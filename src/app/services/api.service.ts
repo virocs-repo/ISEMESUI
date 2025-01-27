@@ -451,6 +451,20 @@ export class ApiService {
     }
     return this.httpClient.get(`${API}v1/ise/inventory/inttransfer/search`, { params });
   }
+  getIntransferRecieveStatus(statusString?: string | null){
+    let params = new HttpParams();
+    if (statusString) {
+      params = params.set('statusString', statusString);
+    }  
+    return this.httpClient.get(`${API}v1/ise/inventory/inttransfer/search`, { params });
+  }
+  getIntransferRecieveFacility(facilityId?: number | null ){
+    let params = new HttpParams();
+    if (facilityId) {
+      params = params.set('facilityId', facilityId);
+    }  
+    return this.httpClient.get(`${API}v1/ise/inventory/inttransfer/search`, { params });
+  }
 
   getallIntransferRecieveLotsdata(customerId?: number) {
     let params = new HttpParams();

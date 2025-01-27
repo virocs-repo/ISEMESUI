@@ -616,6 +616,9 @@
               [valueField]="'EmployeeID'" [kendoDropDownFilter]="filterSettings" placeholder="Select"
               rounded="large"></kendo-combobox>
           </kendo-label>
+          <kendo-label text="Customer" *ngIf="signatureTypeSelected?.customerTypeName == 'Customer'">
+            <kendo-textbox placeholder=""></kendo-textbox>
+          </kendo-label>
           <kendo-label text="Date & Time" *ngIf="Signaturebase64Data">
             <kendo-dateinput format="eee dd MMMM yyyy, h:mm a" [value]="signatureDate"
               class="k-center"></kendo-dateinput>
