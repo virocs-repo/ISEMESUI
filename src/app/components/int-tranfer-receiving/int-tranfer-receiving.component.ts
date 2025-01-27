@@ -4,7 +4,7 @@ import { CellClickEvent, ColumnMenuSettings, GridDataResult, PageChangeEvent, Se
 import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import {  ICON } from 'src/app/services/app.interface';
+import {  ICON, ReceiptLocation } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 @Component({
   selector: 'app-int-tranfer-receiving',
@@ -22,9 +22,12 @@ export class IntTranferReceivingComponent implements OnDestroy {
   fromDate: Date | null = null;  // Variable to store the selected 'from' date
   toDate: Date | null = null;    // Variable to store the selected 'to' date
   public searchTerm: string = '';
+  readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation;
+  receiptLocationSelected: ReceiptLocation | undefined;
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
+    this.receiptLocationSelected = this.receiptLocation.find(e => e.receivingFacilityName == this.appService.facility)
     this.fetchdata();
     this.subscription.add(this.appService.eventEmitter.subscribe(e => {
       if (e.action == 'updates') {
@@ -67,7 +70,7 @@ export class IntTranferReceivingComponent implements OnDestroy {
          console.error('Error fetching CombinationLots', error);
      }
  });
-
+ this.getIntransferRecieveFacility();
   }
 
   onSearchMaster(): void {
@@ -182,4 +185,37 @@ export class IntTranferReceivingComponent implements OnDestroy {
     "Pending Receive",
     "Received",
   ];
+  public selectedStatuses: string[] = ["Pending Receive"];
+  onIntransferRecieveStatusChange(selectedValues: string[]) {
+    this.selectedStatuses = selectedValues;
+    this.fetchdataforIntransferRecieveStatus();
+  }
+ 
+  private fetchdataforIntransferRecieveStatus() {
+    const statusString = this.selectedStatuses.length > 0 
+    ? this.selectedStatuses.join(',') 
+    : null;    
+    this.apiService.getIntransferRecieveStatus(statusString).subscribe({
+      next: (v: any) => {
+        this.originalData = v;
+        this.pageData();
+      },
+      error: (v: any) => { }
+    });
+  }
+  public areaLists: Array<string> = [
+    "Fremont",
+    "SanJose",
+  ];
+  public selectedFacility: number =0;
+  private getIntransferRecieveFacility() {
+    const loginId = this.appService.loginId;    
+    this.apiService.getIntransferRecieveFacility(loginId).subscribe({
+      next: (v: any) => {
+        this.originalData = v;
+        this.pageData();
+      },
+      error: (v: any) => { }
+    });
+  }
 }

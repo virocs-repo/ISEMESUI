@@ -8,6 +8,7 @@
         [data]="areaList" 
         [(ngModel)]="selectedReceiptStatuses" 
         [valuePrimitive]="true"
+        (valueChange)="onReceiptStatusChange($event)"
         placeholder="Select Receipt Status">
     </kendo-multiselect>
   </kendo-label>
