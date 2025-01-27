@@ -396,6 +396,7 @@ export interface PostReceipt {
   LoginId: number;
   EmployeeDetail: Employee[];
   TrackingNumber: string | null;
+  SignaturePerson : string | null;
 }
 export const INIT_POST_RECEIPT: PostReceipt = {
   ReceiptID: null,
@@ -432,7 +433,8 @@ export const INIT_POST_RECEIPT: PostReceipt = {
   Active: true,
   LoginId: 1,
   EmployeeDetail: [],
-  TrackingNumber: null
+  TrackingNumber: null,
+  SignaturePerson : null
 }
 export interface PostHardware {
   HardwareID: number | null;

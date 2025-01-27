@@ -70,6 +70,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     { customerTypeID: 1, customerTypeName: 'Customer' }, { customerTypeID: 3, customerTypeName: 'Employee' },
   ]
   signatureEmployeeSelected: Employee | undefined;
+  signaturePerson : string |null = null;
   signatureTypeSelected: SignatureTypes | undefined;
   signatureDate: Date = new Date();
   expectedDateTime: Date = new Date();
@@ -99,7 +100,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     { name: 'TBD', id: 'TBD' },
   ]
   lotIdentifierSelected: { name: string; id: string } | undefined;
-
+  customerText: string = '';
   description: string = '';
 
   isHoldCheckboxEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
@@ -276,7 +277,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       this.gridData[0].holdComments = dataItem.holdComments
 
       this.signatureTypeSelected = this.signatureTypes.find(c => c.customerTypeName == dataItem.signaturePersonType);
-      this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeID == dataItem.signaturePersonID) || undefined
+      this.signatureEmployeeSelected = this.employees.find(e => e.EmployeeID == dataItem.signaturePersonID) || undefined;
+      this.signaturePerson = dataItem.signaturePerson || null;
       this.signatureName = dataItem.signature
       this.Signaturebase64Data = dataItem.signaturebase64Data
       if (dataItem.signatureDate) {
@@ -535,7 +537,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       RecordStatus: "I",
       Active: true,
       LoginId: this.appService.loginId,
-      TrackingNumber: this.tracking
+      TrackingNumber: this.tracking,
+      SignaturePerson: this.signaturePerson 
     }
     if (this.customerTypeSelected?.customerTypeName == 'Customer') {
       data.BehalfID = this.behalfOfCusotmerSelected?.CustomerID || null;
@@ -1066,6 +1069,8 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     checkboxOnly: true,
     mode: 'single',
   }
+  readonly customer : Customer[] = this.appService.masterData.entityMap.Customer
+  customerSelect: Customer[]=[];
   columnMenuSettings: any = {
     lock: false,
     stick: false,
