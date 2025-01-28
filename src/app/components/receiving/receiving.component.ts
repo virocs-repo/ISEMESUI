@@ -233,11 +233,7 @@ export class ReceivingComponent implements OnDestroy {
         this.openDialog()
         break;
       case 'Edit Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = true;
-        this.appService.sharedData.receiving.isViewMode = false;
-        // access the same in receipt component
-        this.openDialog()
+        this.checkIfEditable(dataItem);
         break;
 
       default:
@@ -319,4 +315,24 @@ export class ReceivingComponent implements OnDestroy {
       error: (v: any) => { }
     });
   }
+  private checkIfEditable(dataItem: Receipt): void {
+  this.apiService.checkingIsReceiptEditable(dataItem.receiptID, this.appService.loginId).subscribe({
+    next: (response: any) => {
+      if (response === 1) {
+        // If editable, fetch receipt details
+        this.appService.sharedData.receiving.dataItem = dataItem
+        this.appService.sharedData.receiving.isEditMode = true;
+        this.appService.sharedData.receiving.isViewMode = false;
+        // access the same in receipt component
+        this.openDialog()
+      } else {
+        // If not allowed, show an error message
+        this.appService.errorMessage('Editing is not allowed for this receipt.');
+      }
+    },
+    error: (err: any) => {
+      this.appService.errorMessage('Failed to check edit permissions.'); // Handle API errors
+    },
+  });
+}
 }
