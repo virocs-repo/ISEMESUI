@@ -528,4 +528,7 @@ export class ApiService {
   canUndoReceive(inventoryId:number){
     return this.httpClient.get(`${API}v1/ise/inventory/canUndoReceiveLot?inventoryId=${inventoryId}`)
   }
+  checkingIsReceiptEditable(receiptId:number, loginId: number){
+    return this.httpClient.get(`${API}v1/ise/inventory/isReceiptEditable?receiptId=${receiptId}&loginId=${loginId}`)
+  }
 }
