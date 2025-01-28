@@ -257,7 +257,8 @@ export class ReceivingComponent implements OnDestroy {
   search() {
     // this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
     // this.toDate = moment(this.range.end).format('MM-DD-YYYY');
-    this.fetchdata()
+    this.fetchdata();
+    this.getIntransferRecieveFacility();
   }
 
   onSearchMaster(): void {
@@ -319,20 +320,32 @@ export class ReceivingComponent implements OnDestroy {
   this.apiService.checkingIsReceiptEditable(dataItem.receiptID, this.appService.loginId).subscribe({
     next: (response: any) => {
       if (response === 1) {
-        // If editable, fetch receipt details
         this.appService.sharedData.receiving.dataItem = dataItem
         this.appService.sharedData.receiving.isEditMode = true;
         this.appService.sharedData.receiving.isViewMode = false;
-        // access the same in receipt component
         this.openDialog()
       } else {
-        // If not allowed, show an error message
         this.appService.errorMessage('Editing is not allowed for this receipt.');
       }
     },
     error: (err: any) => {
-      this.appService.errorMessage('Failed to check edit permissions.'); // Handle API errors
+      this.appService.errorMessage('Failed to check edit permissions.'); 
     },
+  });
+}
+public areaLists: Array<string> = [
+  "Fremont",
+  "SanJose",
+];
+public selectedFacility: number =0;
+private getIntransferRecieveFacility() {
+  const loginId = this.appService.loginId;    
+  this.apiService.getIntransferRecieveFacility(loginId).subscribe({
+    next: (v: any) => {
+      this.originalData = v;
+      this.pageData();
+    },
+    error: (v: any) => { }
   });
 }
 }
