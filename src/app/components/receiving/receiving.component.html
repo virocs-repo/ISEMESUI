@@ -2,6 +2,11 @@
 
   <h4>Receiving</h4>
   <i class="k-ml-auto"></i>
+  <kendo-label text="Facility" class="k-font-size-sm">
+    <br/>
+    <kendo-combobox [data]="areaLists" [(ngModel)]="selectedFacility"
+      [valuePrimitive]="true" placeholder="Select"></kendo-combobox>
+  </kendo-label>
   <kendo-label text="Receipt Status" class="k-font-size-sm">
     <br />
     <kendo-multiselect 
