@@ -237,7 +237,7 @@
               <div *ngIf="shippingDetailsData.ShippingMethod === 'Courier'" style="margin-top: 0%;">
               
 
-                <div *ngIf="shippingDetailsData.CourierName === 'Fedex'" >
+                <div *ngIf="shippingDetailsData.CourierName === 'Fedex'  &&  shippingDetailsData.Destination === 'Domestic' " >
                   <div>
                     <table style="width: 100%; table-layout: fixed;">
                       <tbody>
@@ -419,7 +419,7 @@
                   </div>
                 </div>
                 
-                <div *ngIf="shippingDetailsData.CourierName === 'UPS'">
+                <div *ngIf="shippingDetailsData.CourierName === 'UPS'  &&  shippingDetailsData.Destination === 'Domestic' ">
                   <div>
                     <table style="width: 100%; table-layout: fixed;">
                       <tbody>
@@ -486,8 +486,6 @@
                             <input
                               type="text"
                               id="AccountNumber"
-                             
-                              
                               kendoTextBox
                               name="AccountNumber"
                               [(ngModel)]="shippingDetailsData.AccountNumber"
@@ -635,7 +633,862 @@
                     </table>
                   </div>
                 </div>
-              
+
+                <div *ngIf="shippingDetailsData.CourierName === 'UPS'  &&  shippingDetailsData.Destination === 'International' ">
+                  <div>
+                    <table style="width: 100%; table-layout: fixed;">
+                      <tbody>
+                        <!-- Row 1 -->
+
+                        <tr>
+                          <td  colspan="4">
+                            <label style="font-weight: 700; color: maroon;">Courier Details  </label>
+                           
+                          </td>
+                        </tr>
+                        <tr>
+                          <td >
+                            <label for="destination">Destination</label>
+                            <input
+                              type="text"
+                              id="destination"
+                             
+                              kendoTextBox
+                              name="Destination"
+                              [(ngModel)]="shippingDetailsData.Destination"
+                            />
+                          </td>
+                          <td >
+                            <label for="courierName">Courier Name</label>
+                            <input
+                              type="text"
+                              id="courierName"
+                             
+                              kendoTextBox
+                              name="CourierName"
+                              [(ngModel)]="shippingDetailsData.CourierName"
+                            />
+                          </td>
+                          <td >
+                            <label for="CIFromId">CI From</label>
+                            <input
+                              type="text"
+                              id="CIFromId"
+                             
+                             
+                              kendoTextBox
+                              name="CIFromId"
+                              [(ngModel)]="shippingDetailsData.CIFromId"
+                            />
+                          </td>
+                          <td >
+                            <label for="BillTransportTo">Bill Transport To</label>
+                            <input
+                              type="text"
+                              id="BillTransportTo"
+                           
+                              
+                              kendoTextBox
+                              name="BillTransportTo"
+                              [(ngModel)]="shippingDetailsData.BillTransportTo"
+                            />
+                          </td>
+                          <td >
+                            <label for="AccountNumber">UPS Account Number</label>
+                            <input
+                              type="text"
+                              id="AccountNumber"
+                              kendoTextBox
+                              name="AccountNumber"
+                              [(ngModel)]="shippingDetailsData.AccountNumber"
+                            />
+                          </td>
+
+                          <td >
+                            <label for="ServiceType">UPS Service</label>
+                            <input
+                              type="text"
+                              id="ServiceType"
+                              
+                              
+                              kendoTextBox
+                              name="ServiceType"
+                              [(ngModel)]="shippingDetailsData.ServiceType"
+                            />
+                          </td>
+                        </tr>
+                        <!-- Row 2 -->
+                        <tr>
+                        
+                        
+                          <td >
+                            <label for="COO">COO</label>
+                            <input
+                              type="text"
+                              id="COO"
+                          
+                              
+                              kendoTextBox
+                              name="COO"
+                              [(ngModel)]="shippingDetailsData.COO"
+                            />
+                          </td>
+                          <td >
+                            <label for="LicenseType">LicenseType</label>
+                            <input
+                              type="text"
+                              id="LicenseType"
+                              kendoTextBox
+                              name="LicenseType"
+                              [(ngModel)]="shippingDetailsData.LicenseType"
+                            />
+                          </td>
+
+                          <td>
+                            <label for="Units">Units</label>
+                          <input
+                            type="text"
+                            id="Units"
+                            kendoTextBox
+                            name="Units"
+                            [(ngModel)]="shippingDetailsData.Units"
+                          />
+
+                          </td>
+
+                          <td>
+                            <label for="UnitValue">UnitValue</label>
+                          <input
+                            type="text"
+                            id="UnitValue"
+                            kendoTextBox
+                            name="UnitValue"
+                            [(ngModel)]="shippingDetailsData.UnitValue"
+                          />
+
+                          </td>
+                          <td >
+                            
+                            <label for="ECCN">ECCN</label>
+                            <input
+                              type="text"
+                              id="ECCN"
+                              kendoTextBox
+                              name="ECCN"
+                              [(ngModel)]="shippingDetailsData.ECCN"
+                            />
+                          </td>
+                          <td >
+                            <label for="ScheduleB">Schedule B#</label>
+                            <input
+                              type="text"
+                              id="ScheduleB"
+                            
+                              class="k-w-full"
+                              kendoTextBox
+                              name="ScheduleB"
+                              [(ngModel)]="shippingDetailsData.ScheduleB"
+                            />
+                          </td>
+                        </tr>
+                        <!-- Row 3 -->
+
+                        <tr>
+                        
+                        <td >
+                          <label for="Attention">Attention</label>
+                          <input
+                            type="text"
+                            id="Attention"
+                          
+                            
+                            kendoTextBox
+                            name="Attention"
+                            [(ngModel)]="shippingDetailsData.Attention"
+                          />
+                        </td>
+
+                        <td >
+                          <label for="Email">Email</label>
+                          <input
+                            type="text"
+                            id="Email"
+                           
+                            
+                            kendoTextBox
+                            name="Email"
+                            [(ngModel)]="shippingDetailsData.Email"
+                          />
+                        </td>
+                        <td >
+                          <label for="TaxId">Tax ID</label>
+                          <input
+                            type="text"
+                            id="TaxId"
+                          
+                            
+                            kendoTextBox
+                            name="TaxId"
+                            [(ngModel)]="shippingDetailsData.TaxId"
+                          />
+                        </td>
+                        <td >
+                            
+                          <input
+                            type="checkbox"
+                            id="residential"
+                            class="k-checkbox"
+                            name="Residential"
+                            [(ngModel)]="shippingDetailsData.Residential"
+                            kendoCheckBox
+                          />
+                          <label for="Residential">Residential</label>
+                        </td>
+
+                        <td >
+                          <label for="Weight">Weight</label>
+                          <input
+                            type="text"
+                            id="weight"
+                        
+                            
+                            kendoTextBox
+                            name="Weight"
+                            [(ngModel)]="shippingDetailsData.Weight"
+                          />
+                        </td>
+                        <td >
+                          <label for="AccountNumber">AccountNumber</label>
+                          <input
+                            type="text"
+                            id="AccountNumber"
+                           
+                            
+                            kendoTextBox
+                            name="AccountNumber"
+                            [(ngModel)]="shippingDetailsData.AccountNumber"
+                          />
+                        </td>
+                        </tr>
+                        <tr>
+                          <td >
+                            <label for="PackageType">Package Type</label>
+                            <input
+                              type="text"
+                              id="PackageType"
+                             
+                              
+                              kendoTextBox
+                              name="PackageType"
+                              [(ngModel)]="shippingDetailsData.PackageType"
+                            />
+                          </td>
+                        <td>
+                          
+
+                          <label for="InvoiceNumber">InvoiceNumber</label>
+                          <input
+                            type="text"
+                            id="InvoiceNumber"
+                           
+                            
+                            kendoTextBox
+                            name="InvoiceNumber"
+                            [(ngModel)]="shippingDetailsData.InvoiceNumber"
+                          />
+                        </td>
+                        <td >
+                          <label for="Length">Length</label>
+                          <input
+                            type="text"
+                            id="Length"
+                           
+                            
+                            kendoTextBox
+                            name="Length"
+                            [(ngModel)]="shippingDetailsData.Length"
+                          />
+                        </td>
+                        <td >
+                          <label for="Width">Width</label>
+                          <input
+                            type="text"
+                            id="Width"
+                            
+                            
+                            kendoTextBox
+                            name="Width"
+                            [(ngModel)]="shippingDetailsData.Width"
+                          />
+                        </td>
+                        <td >
+                          <label for="Height">Height</label>
+                          <input
+                            type="text"
+                            id="Height"
+                            
+                            
+                            kendoTextBox
+                            name="Height"
+                            [(ngModel)]="shippingDetailsData.Height"
+                          />
+                        </td>
+                        <td>
+                          
+                          <label for="PurchaseNo">PurchaseNo</label>
+                          <input
+                            type="text"
+                            id="PurchaseNo"
+                            
+                            
+                            kendoTextBox
+                            name="PurchaseNo"
+                            [(ngModel)]="shippingDetailsData.PurchaseNo"
+                          />
+                         </td>
+                        </tr>
+                        <!-- Row 5 -->
+                        <tr>
+                       
+                        
+                          <td >
+                            <label for="TotalValue">TotalValue</label>
+                            <input
+                              type="text"
+                              id="TotalValue"
+                              
+                              
+                              kendoTextBox
+                              name="TotalValue"
+                              [(ngModel)]="shippingDetailsData.TotalValue"
+                            />
+                          </td>
+                         
+                          <td  colspan="2">
+                            <label for="ShipAlertEmail">Ship Alert Email</label>
+                            <kendo-textarea
+                              [rows]="2"
+                              id="shipAlertEmail"
+                             
+                              
+                              name="ShipAlertEmail"
+                              [(ngModel)]="shippingDetailsData.ShipAlertEmail"
+                            ></kendo-textarea>
+                          </td>
+                          <td colspan="3">
+                            <label for="DescriptionOfGood">Description Of Good</label>
+                            <kendo-textarea
+                              [rows]="2"
+                              id="DescriptionOfGood"
+                             
+                              
+                              name="DescriptionOfGood"
+                              [(ngModel)]="shippingDetailsData.DescriptionOfGood"
+                            ></kendo-textarea>
+                          </td>
+
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                  
+                <div *ngIf="shippingDetailsData.CourierName === 'Fedex' &&  shippingDetailsData.Destination === 'International'" >
+                  <div>
+                    <table style="width: 100%; table-layout: fixed;">
+                      <tbody>
+                        <!-- Row 1 -->
+
+                        <tr>
+                          <td  colspan="4">
+                            <label style="font-weight: 700; color: maroon;">Courier Details  </label>
+                           
+                          </td>
+                        </tr>
+                        <tr>
+                          <td >
+                            <label for="destination">Destination</label>
+                            <input
+                              type="text"
+                              id="destination"
+                              
+                              class="k-w-full"
+                              kendoTextBox
+                              name="Destination"
+                              [(ngModel)]="shippingDetailsData.Destination"
+                            />
+                          </td>
+                          <td >
+                            <label for="courierName">Courier Name</label>
+                            <input
+                              type="text"
+                              id="courierName"
+                             
+                              class="k-w-full"
+                              kendoTextBox
+                              name="CourierName"
+                              [(ngModel)]="shippingDetailsData.CourierName"
+                            />
+                          </td>
+                          <td >
+                            <label for="CIFrom">CI From</label>
+                            <input
+                              type="text"
+                              id="CIFrom"
+                             
+                              class="k-w-full"
+                              kendoTextBox
+                              name="CIFrom"
+                              [(ngModel)]="shippingDetailsData.CIFrom"
+                            />
+                          </td>
+                          <td >
+                            <label for="ServiceType">Service Type</label>
+                            <input
+                              type="text"
+                              id="ServiceType"
+                              
+                              class="k-w-full"
+                              kendoTextBox
+                              name="ServiceType"
+                              [(ngModel)]="shippingDetailsData.ServiceType"
+                            />
+                          </td>
+                        </tr>
+                        <!-- Row 2 -->
+                        <tr>
+                          <td >
+                            <label for="BillTransportAcct">Bill Transport Acct</label>
+                            <input
+                              type="text"
+                              id="BillTransportAcct"
+                             
+                              class="k-w-full"
+                              kendoTextBox
+                              name="BillTransportAcct"
+                              [(ngModel)]="shippingDetailsData.BillTransportAcct"
+                            />
+                          </td>
+                          <td >
+                            <label for="ScheduleB">Schedule B#</label>
+                            <input
+                              type="text"
+                              id="ScheduleB"
+                            
+                              class="k-w-full"
+                              kendoTextBox
+                              name="ScheduleB"
+                              [(ngModel)]="shippingDetailsData.ScheduleB"
+                            />
+                          </td>
+                          <td >
+                            <label for="BillTransportTo">Bill Transport To</label>
+                            <input
+                              type="text"
+                              id="BillTransportTo"
+                             
+                              class="k-w-full"
+                              kendoTextBox
+                              name="BillTransportTo"
+                              [(ngModel)]="shippingDetailsData.BillTransportTo"
+                            />
+                          </td>
+                          <td >
+                            <label for="CustomerReference">Customer Reference</label>
+                            <input
+                              type="text"
+                              id="CustomerReference"
+                              
+                              class="k-w-full"
+                              kendoTextBox
+                              name="CustomerReference"
+                              [(ngModel)]="shippingDetailsData.CustomerReference"
+                            />
+                          </td>
+                        </tr>
+                        <!-- Row 3 -->
+                        <tr>
+                          <td >
+                            <label for="InvoiceNumber">InvoiceNumber</label>
+                            <input
+                              type="text"
+                              id="InvoiceNumber"
+                              kendoTextBox
+                              name="InvoiceNumber"
+                              [(ngModel)]="shippingDetailsData.InvoiceNumber"
+                            />
+                          </td>
+                          <td >
+                            <label for="BillDutiesTaxes">BillDutiesTaxes</label>
+                            <input
+                              type="text"
+                              id="BillDutiesTaxes"
+                              kendoTextBox
+                              name="BillDutiesTaxes"
+                              [(ngModel)]="shippingDetailsData.BillDutiesTaxes"
+                            />
+                          </td>
+                          <td >
+                            <label for="DutiesTaxes">DutiesTaxes</label>
+                            <input
+                              type="text"
+                              id="DutiesTaxes"
+                              kendoTextBox
+                              name="DutiesTaxes"
+                              [(ngModel)]="shippingDetailsData.DutiesTaxes"
+                            />
+                          </td>
+                          <td >
+                            
+                            <label for="ECCN">ECCN</label>
+                            <input
+                              type="text"
+                              id="ECCN"
+                              kendoTextBox
+                              name="ECCN"
+                              [(ngModel)]="shippingDetailsData.ECCN"
+                            />
+                          </td>
+                        </tr>
+                        <!-- Row 4 -->
+                        <tr>
+                          <td >
+                            <label for="COO">COO</label>
+                            <input
+                              type="text"
+                              id="COO"
+                              kendoTextBox
+                              name="COO"
+                              [(ngModel)]="shippingDetailsData.COO"
+                            />
+                          </td>
+                          <td >
+                            <label for="Quantity">Quantity</label>
+                            <input
+                              type="text"
+                              id="Quantity"
+                              kendoTextBox
+                              name="Quantity"
+                              [(ngModel)]="shippingDetailsData.Quantity"
+                            />
+                          </td>
+                          
+                          <td >
+                            <label for="UnitValue">UnitValue</label>
+                            <input
+                              type="text"
+                              id="UnitValue"
+                              kendoTextBox
+                              name="UnitValue"
+                              [(ngModel)]="shippingDetailsData.UnitValue"
+                            />
+                          </td>
+                          <td >
+                            <label for="TotalValue">TotalValue</label>
+                            <input
+                              type="text"
+                              id="TotalValue"
+                              kendoTextBox
+                              name="TotalValue"
+                              [(ngModel)]="shippingDetailsData.TotalValue"
+                            />
+
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <label for="LicenseException">License exception symbol</label>
+                            <input
+                              type="text"
+                              id="LicenseException"
+                              kendoTextBox
+                              name="LicenseException"
+                              [(ngModel)]="shippingDetailsData.LicenseException"
+                            />
+                          </td>
+
+                          <td >
+                            <label for="ShipAlertEmail">Ship Alert Email</label>
+                            <kendo-textarea
+                              [rows]="1"
+                              id="shipAlertEmail"
+                              name="ShipAlertEmail"
+                              [(ngModel)]="shippingDetailsData.ShipAlertEmail"
+                            ></kendo-textarea>
+                          </td>
+                          <td >
+                            <label for="CIAdditionalInfo">CIAdditionalInfo</label>
+                            <kendo-textarea
+                              [rows]="1"
+                              id="CIAdditionalInfo"
+                              name="CIAdditionalInfo"
+                              [(ngModel)]="shippingDetailsData.CIAdditionalInfo"
+                            ></kendo-textarea>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div *ngIf="shippingDetailsData.CourierName === 'DHL' &&  shippingDetailsData.Destination === 'International'" >
+                  <div>
+                    <table style="width: 100%; table-layout: fixed;">
+                      <tbody>
+                        <!-- Row 1 -->
+
+                        <tr>
+                          <td  colspan="4">
+                            <label style="font-weight: 700; color: maroon;">Courier Details  </label>
+                           
+                          </td>
+                        </tr>
+                        <tr>
+                          <td >
+                            <label for="destination">Destination</label>
+                            <input
+                              type="text"
+                              id="destination"
+                              
+                              class="k-w-full"
+                              kendoTextBox
+                              name="Destination"
+                              [(ngModel)]="shippingDetailsData.Destination"
+                            />
+                          </td>
+                          <td >
+                            <label for="courierName">Courier Name</label>
+                            <input
+                              type="text"
+                              id="courierName"
+                             
+                              class="k-w-full"
+                              kendoTextBox
+                              name="CourierName"
+                              [(ngModel)]="shippingDetailsData.CourierName"
+                            />
+                          </td>
+                          <td >
+                            <label for="CIFrom">CI From</label>
+                            <input
+                              type="text"
+                              id="CIFrom"
+                             
+                              class="k-w-full"
+                              kendoTextBox
+                              name="CIFrom"
+                              [(ngModel)]="shippingDetailsData.CIFrom"
+                            />
+                          </td>
+                          <td >
+                            <label for="Product">Product</label>
+                            <input
+                              type="text"
+                              id="Product"
+                              
+                              class="k-w-full"
+                              kendoTextBox
+                              name="Product"
+                              [(ngModel)]="shippingDetailsData.Product"
+                            />
+                          </td>
+                          <td >
+                            <label for="BillTransportTo">Bill To</label>
+                            <input
+                              type="text"
+                              id="BillTransportTo"
+                              
+                              class="k-w-full"
+                              kendoTextBox
+                              name="BillTransportTo"
+                              [(ngModel)]="shippingDetailsData.BillTransportTo"
+                            />
+                          </td>
+                        </tr>
+                        <!-- Row 2 -->
+                        <tr>
+                          
+                          
+                          <td >
+                            <label for="BillTransportAcct">Bill To Account</label>
+                            <input
+                              type="text"
+                              id="BillTransportAcct"
+                             
+                              class="k-w-full"
+                              kendoTextBox
+                              name="BillTransportAcct"
+                              [(ngModel)]="shippingDetailsData.BillTransportAcct"
+                            />
+                          </td>
+
+                          <td >
+                            <label for="BillDutiesTaxes">BillDutiesTaxes</label>
+                            <input
+                              type="text"
+                              id="BillDutiesTaxes"
+                              kendoTextBox
+                              name="BillDutiesTaxes"
+                              [(ngModel)]="shippingDetailsData.BillDutiesTaxes"
+                            />
+                          </td>
+                          <td >
+                            <label for="DutiesTaxes">DutiesTaxes</label>
+                            <input
+                              type="text"
+                              id="DutiesTaxes"
+                              kendoTextBox
+                              name="DutiesTaxes"
+                              [(ngModel)]="shippingDetailsData.DutiesTaxes"
+                            />
+                          </td>
+                          <td >
+                            <label for="ScheduleB">Schedule B#</label>
+                            <input
+                              type="text"
+                              id="ScheduleB"
+                            
+                              class="k-w-full"
+                              kendoTextBox
+                              name="ScheduleB"
+                              [(ngModel)]="shippingDetailsData.ScheduleB"
+                            />
+                          </td>
+                          <td >
+                            <label for="BillTransportTo">Bill Transport To</label>
+                            <input
+                              type="text"
+                              id="BillTransportTo"
+                             
+                              class="k-w-full"
+                              kendoTextBox
+                              name="BillTransportTo"
+                              [(ngModel)]="shippingDetailsData.BillTransportTo"
+                            />
+                          </td>
+                        </tr>
+                        <!-- Row 3 -->
+                        <tr>
+                         
+                          <td >
+                            <label for="COO">COO</label>
+                            <input
+                              type="text"
+                              id="COO"
+                              
+                              class="k-w-full"
+                              kendoTextBox
+                              name="COO"
+                              [(ngModel)]="shippingDetailsData.COO"
+                            />
+                          </td>
+                          <td>
+
+                          <label for="CommodityOrgin">CommodityOrgin</label>
+                          <input
+                            type="text"
+                            id="CommodityOrgin"
+                            
+                            class="k-w-full"
+                            kendoTextBox
+                            name="CommodityOrgin"
+                            [(ngModel)]="shippingDetailsData.CommodityOrgin"
+                          />
+                        </td>
+
+                        <td >
+                          <label for="Quantity">Quantity</label>
+                          <input
+                            type="text"
+                            id="Quantity"
+                            kendoTextBox
+                            name="Quantity"
+                            [(ngModel)]="shippingDetailsData.Quantity"
+                          />
+                        </td>
+                        <td >
+                          <label for="UnitValue">UnitValue</label>
+                          <input
+                            type="text"
+                            id="UnitValue"
+                            kendoTextBox
+                            name="UnitValue"
+                            [(ngModel)]="shippingDetailsData.UnitValue"
+                          />
+                        </td>
+                        <td >
+                          <label for="TotalValue">TotalValue</label>
+                          <input
+                            type="text"
+                            id="TotalValue"
+                            kendoTextBox
+                            name="TotalValue"
+                            [(ngModel)]="shippingDetailsData.TotalValue"
+                          />
+
+                        </td>
+                        </tr>
+                        <!-- Row 4 -->
+                        <tr>
+                          <td>
+                            
+                            
+                            <label for="ECCN">ECCN</label>
+                            <input
+                              type="text"
+                              id="ECCN"
+                              kendoTextBox
+                              name="ECCN"
+                              [(ngModel)]="shippingDetailsData.ECCN"
+                            />
+                          </td>
+                         
+                          <td >
+                            <label for="LicenseType">LicenseType</label>
+                            <input
+                              type="text"
+                              id="LicenseType"
+                              kendoTextBox
+                              name="LicenseType"
+                              [(ngModel)]="shippingDetailsData.LicenseType"
+                            />
+                          </td>
+                          <td>
+                            <label for="ShipmentReference"> Shipment Reference</label>
+                            <input
+                              type="text"
+                              id="ShipmentReference"
+                              kendoTextBox
+                              name="ShipmentReference"
+                              [(ngModel)]="shippingDetailsData.ShipmentReference"
+                            />
+                          </td>
+
+                          <td >
+                            <label for="ShipAlertEmail">Ship Alert Email</label>
+                            <kendo-textarea
+                              [rows]="1"
+                              id="shipAlertEmail"
+                              name="ShipAlertEmail"
+                              [(ngModel)]="shippingDetailsData.ShipAlertEmail"
+                            ></kendo-textarea>
+                          </td>
+                          <td>
+                            <label for="CustomTermTrade"> Custom Term of Trade </label>
+                            <input
+                              type="text"
+                              id="CustomTermTrade"
+                              kendoTextBox
+                              name="CustomTermTrade"
+                              [(ngModel)]="shippingDetailsData.CustomTermTrade"
+                            />
+                          </td>
+                        
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               
               </div>
 

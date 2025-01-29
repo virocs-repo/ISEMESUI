@@ -82,7 +82,17 @@ export class ShippingRecordComponent implements OnDestroy {
     Height:'',
     TaxId:'',
     HoldShip:'',
-    Phone:''
+    Phone:'',
+    ScheduleB:'',
+    LicenseException:'',
+    LicenseType:'',
+    Units:'',
+    PurchaseNo:'',
+    DescriptionOfGood:'',
+    Product:'',
+    CommodityOrgin:'',
+    ShipmentReference:'',
+    CustomTermTrade:''
 
     
   };
@@ -183,7 +193,7 @@ export class ShippingRecordComponent implements OnDestroy {
         this.shippingDetailsData.BillTransportTo=res[0].billTransportationTo;
         this.shippingDetailsData.CIFrom=res[0].ciFrom;
         this.shippingDetailsData.DutiesTaxes=res[0].billDutyTaxFeesAcct;
-        this.shippingDetailsData.ECCN=res[0].eCCN;
+        this.shippingDetailsData.ECCN=res[0].eccn;
         this.shippingDetailsData.COO=res[0].countryOfOrigin;
         this.shippingDetailsData.Quantity=res[0].qty;
         this.shippingDetailsData.UnitValue=res[0].unitValue;
@@ -204,7 +214,11 @@ export class ShippingRecordComponent implements OnDestroy {
         this.shippingDetailsData.NoOfPackages=res[0].noOfPackages;
         this.shippingDetailsData.BillTransportAcct=res[0].billTransportationAcct;
         this.shippingDetailsData.TaxId=res[0].taxId;
-
+        this.shippingDetailsData.Units=res[0].units;
+        this.shippingDetailsData.LicenseType=res[0].licenseType;
+        this.shippingDetailsData.InvoiceNumber=res[0].invoiceNumber;
+        this.shippingDetailsData.PurchaseNo=res[0].purchaseNumber;
+     
         this.onShippingMethodChange(res[0].shippingMethod);
 
 
