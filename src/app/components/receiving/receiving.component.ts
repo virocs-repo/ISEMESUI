@@ -2,11 +2,12 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CellClickEvent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
-import { Receipt, ICON, MESSAGES } from 'src/app/services/app.interface';
+import { Receipt, ICON, MESSAGES, ReceiptLocation } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { ContextMenuComponent } from '@progress/kendo-angular-menu';
 import { Subscription } from 'rxjs';
 import * as moment from 'moment';
+import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 
 @Component({
   selector: 'app-receiving',
@@ -23,6 +24,11 @@ export class ReceivingComponent implements OnDestroy {
   originalData: any[] = [];
   public searchTerm: string = '';
   isAddButtonEnabled: boolean = true;
+  receiptLocationSelected: ReceiptLocation | undefined;
+  readonly filterSettings: DropDownFilterSettings = {
+        caseSensitive: false,
+        operator: 'contains'
+      };
   isEditButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Edit")?.active ?? true;
   selectableSettings: any = {
     checkboxOnly: true,
@@ -109,16 +115,24 @@ export class ReceivingComponent implements OnDestroy {
       })
     }
   }
-  private fetchdata() {
-    this.apiService.getReceiptdata(this.fromDate, this.toDate).subscribe({
-      next: (v: any) => {
-        this.originalData = v;
+  public selectedFacilities: string[] = [];
+  public selectedReceiptStatuses: string[] = [];
+  private fetchdata(): void {
+    const facilityIDsStr = this.selectedFacilities.length > 0
+        ? this.selectedFacilities.join(',')
+        : null;
+
+    const receiptStatus = this.selectedReceiptStatuses.length > 0
+        ? this.selectedReceiptStatuses.join(',') 
+        : null;
+    this.apiService.getReceiptdatas(facilityIDsStr, receiptStatus, this.fromDate, this.toDate).subscribe({
+      next: (response: any) => {
+        this.originalData = response;
         this.pageData();
-        /*    this.gridDataResult.data = v;
-           this.gridDataResult.total = v.length */
-        // this.testReceiptEdit();
       },
-      error: (v: any) => { }
+      error: (error: any) => {
+        console.error("Error fetching data:", error);
+      }
     });
   }
   private testReceiptEdit() {
@@ -254,11 +268,15 @@ export class ReceivingComponent implements OnDestroy {
   canCloseDialog() {
     this.appService.sharedData.receiving.eventEmitter.emit('canCloseDialog?')
   }
+  
+  public areaList: Array<string> = [ 
+    "Pending Receive",
+    "Received",
+  ];
   search() {
     // this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
     // this.toDate = moment(this.range.end).format('MM-DD-YYYY');
     this.fetchdata();
-    this.getIntransferRecieveFacility();
   }
 
   onSearchMaster(): void {
@@ -293,59 +311,21 @@ export class ReceivingComponent implements OnDestroy {
     );
   }
 
-  public areaList: Array<string> = [
-    "Pending Receive",
-    "Received",
-  ];
-  
-  public selectedReceiptStatuses: string[] = ["Pending Receive"];
-  onReceiptStatusChange(selectedValues: string[]) {
-    this.selectedReceiptStatuses = selectedValues;
-    this.fetchdataforReceiptStatus();
-  }
- 
-  private fetchdataforReceiptStatus() {
-    const receiptStatus = this.selectedReceiptStatuses.length > 0 
-    ? this.selectedReceiptStatuses.join(',') 
-    : null;    
-    this.apiService.getReceiptdataForReceiptStatus(receiptStatus).subscribe({
-      next: (v: any) => {
-        this.originalData = v;
-        this.pageData();
-      },
-      error: (v: any) => { }
-    });
-  }
   private checkIfEditable(dataItem: Receipt): void {
   this.apiService.checkingIsReceiptEditable(dataItem.receiptID, this.appService.loginId).subscribe({
     next: (response: any) => {
       if (response === 1) {
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = true;
-        this.appService.sharedData.receiving.isViewMode = false;
-        this.openDialog()
-      } else {
+          this.appService.sharedData.receiving.dataItem = dataItem
+          this.appService.sharedData.receiving.isEditMode = true;
+          this.appService.sharedData.receiving.isViewMode = false;
+          this.openDialog()
+        } else {
         this.appService.errorMessage('Editing is not allowed for this receipt.');
-      }
-    },
-    error: (err: any) => {
-      this.appService.errorMessage('Failed to check edit permissions.'); 
-    },
-  });
-}
-public areaLists: Array<string> = [
-  "Fremont",
-  "SanJose",
-];
-public selectedFacility: number =0;
-private getIntransferRecieveFacility() {
-  const loginId = this.appService.loginId;    
-  this.apiService.getIntransferRecieveFacility(loginId).subscribe({
-    next: (v: any) => {
-      this.originalData = v;
-      this.pageData();
-    },
-    error: (v: any) => { }
-  });
-}
+        }
+      },
+      error: (err: any) => {
+        this.appService.errorMessage('Failed to check edit permissions.'); 
+      },
+    });
+  }
 }

@@ -28,6 +28,24 @@ export class ApiService {
     }
     return this.httpClient.get(`${API}v1/ise/inventory/receiptdata`, { params });
   }
+  getReceiptdatas(facilityIDStr?: string | null, receiptStatus?: string | null, fromDate?: Date | null, toDate?: Date | null) {
+    let params = new HttpParams();
+
+    if (facilityIDStr) {
+        params = params.set('facilityIDStr', facilityIDStr);
+    }
+    if (receiptStatus) {
+        params = params.set('receiptStatus', receiptStatus);
+    }
+    if (fromDate) {
+        params = params.set('fromDate', this.formatDate(fromDate));
+    }
+    if (toDate) {
+        params = params.set('toDate', this.formatDate(toDate));
+    }
+
+    return this.httpClient.get(`${API}v1/ise/inventory/receiptdata`, { params });
+  }
   getReceiptdataForReceiptStatus(receiptStatus?: string | null){
     let params = new HttpParams();
     if (receiptStatus) {

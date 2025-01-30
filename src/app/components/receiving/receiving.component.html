@@ -2,25 +2,30 @@
 
   <h4>Receiving</h4>
   <i class="k-ml-auto"></i>
-  <kendo-label text="Facility" class="k-font-size-sm">
-    <br/>
-    <kendo-combobox [data]="areaLists" [(ngModel)]="selectedFacility"
-      [valuePrimitive]="true" placeholder="Select"></kendo-combobox>
+  <kendo-label text="Search" class="k-font-size-sm">
+    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
+      rounded="full" (input)="onSearchMaster()" />
   </kendo-label>
   <kendo-label text="Receipt Status" class="k-font-size-sm">
     <br />
     <kendo-multiselect 
-        [data]="areaList" 
-        [(ngModel)]="selectedReceiptStatuses" 
-        [valuePrimitive]="true"
-        (valueChange)="onReceiptStatusChange($event)"
-        placeholder="Select Receipt Status">
+      [data]="areaList" 
+      [(ngModel)]="selectedReceiptStatuses" 
+      [valuePrimitive]="true"
+      placeholder="Select Receipt Status">
     </kendo-multiselect>
   </kendo-label>
   
-  <kendo-label text="Search" class="k-font-size-sm">
-    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
-      rounded="full" (input)="onSearchMaster()" />
+  <kendo-label text="Facility" class="k-font-size-sm">
+    <br />
+    <kendo-multiselect 
+      [data]="appService.masterData.receiptLocation || []" 
+      [(ngModel)]="selectedFacilities" 
+      [textField]="'receivingFacilityName'" 
+      [valueField]="'receivingFacilityID'" 
+      [valuePrimitive]="true" 
+      placeholder="Select Facilities">
+    </kendo-multiselect>
   </kendo-label>
 
 
