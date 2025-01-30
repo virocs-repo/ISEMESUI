@@ -1,5 +1,6 @@
 
 import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { CellClickEvent, ColumnMenuSettings, GridDataResult, PageChangeEvent, SelectableSettings } from '@progress/kendo-angular-grid';
 import { ContextMenuComponent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { Subscription } from 'rxjs';
@@ -22,12 +23,14 @@ export class IntTranferReceivingComponent implements OnDestroy {
   fromDate: Date | null = null;  // Variable to store the selected 'from' date
   toDate: Date | null = null;    // Variable to store the selected 'to' date
   public searchTerm: string = '';
-  readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation;
   receiptLocationSelected: ReceiptLocation | undefined;
+  readonly filterSettings: DropDownFilterSettings = {
+      caseSensitive: false,
+      operator: 'contains'
+    };
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
-    this.receiptLocationSelected = this.receiptLocation.find(e => e.receivingFacilityName == this.appService.facility)
     this.fetchdata();
     this.subscription.add(this.appService.eventEmitter.subscribe(e => {
       if (e.action == 'updates') {
@@ -54,6 +57,30 @@ export class IntTranferReceivingComponent implements OnDestroy {
     });
     
   }
+  public areaList: Array<string> = [
+    "Pending Receive",
+    "Received",
+  ];
+  public selectedFacilities: string[] = [];
+  public selectedReceiptStatuses: string[] = [];
+  private fetchdatas(): void {
+    const facilityIDsStr = this.selectedFacilities.length > 0
+        ? this.selectedFacilities.join(',')
+        : null;
+
+    const receiptStatus = this.selectedReceiptStatuses.length > 0
+        ? this.selectedReceiptStatuses.join(',') 
+        : null;
+    this.apiService.SearchIntTransferRecieving(this.fromDate, this.toDate, receiptStatus,facilityIDsStr).subscribe({
+      next: (response: any) => {
+        this.originalData = response;
+        this.pageData();
+      },
+      error: (error: any) => {
+        console.error("Error fetching data:", error);
+      }
+    });
+  }
   onSearch(): void {
  // Pass Date objects directly
  const from_date = this.fromDate ?? undefined;
@@ -70,7 +97,7 @@ export class IntTranferReceivingComponent implements OnDestroy {
          console.error('Error fetching CombinationLots', error);
      }
  });
- this.getIntransferRecieveFacility();
+ this.fetchdatas();
   }
 
   onSearchMaster(): void {
@@ -108,6 +135,7 @@ export class IntTranferReceivingComponent implements OnDestroy {
     this.skip = event.skip;
     console.log(event);
     this.fetchdata();
+    this.fetchdatas();
   }
   selectableSettings: SelectableSettings = {
     checkboxOnly: true,
@@ -128,6 +156,7 @@ export class IntTranferReceivingComponent implements OnDestroy {
   closeDialog() {
     this.isDialogOpen = false;
     this.fetchdata(); 
+    this.fetchdatas();
   }
 
   doTestEditMode() {
@@ -180,42 +209,5 @@ export class IntTranferReceivingComponent implements OnDestroy {
     return {
       'highlighted-row': context.index === this.selectedRowIndex
     };
-  }
-  public areaList: Array<string> = [
-    "Pending Receive",
-    "Received",
-  ];
-  public selectedStatuses: string[] = ["Pending Receive"];
-  onIntransferRecieveStatusChange(selectedValues: string[]) {
-    this.selectedStatuses = selectedValues;
-    this.fetchdataforIntransferRecieveStatus();
-  }
- 
-  private fetchdataforIntransferRecieveStatus() {
-    const statusString = this.selectedStatuses.length > 0 
-    ? this.selectedStatuses.join(',') 
-    : null;    
-    this.apiService.getIntransferRecieveStatus(statusString).subscribe({
-      next: (v: any) => {
-        this.originalData = v;
-        this.pageData();
-      },
-      error: (v: any) => { }
-    });
-  }
-  public areaLists: Array<string> = [
-    "Fremont",
-    "SanJose",
-  ];
-  public selectedFacility: number =0;
-  private getIntransferRecieveFacility() {
-    const loginId = this.appService.loginId;    
-    this.apiService.getIntransferRecieveFacility(loginId).subscribe({
-      next: (v: any) => {
-        this.originalData = v;
-        this.pageData();
-      },
-      error: (v: any) => { }
-    });
   }
 }
