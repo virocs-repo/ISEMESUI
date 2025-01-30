@@ -46,13 +46,6 @@ export class ApiService {
 
     return this.httpClient.get(`${API}v1/ise/inventory/receiptdata`, { params });
   }
-  getReceiptdataForReceiptStatus(receiptStatus?: string | null){
-    let params = new HttpParams();
-    if (receiptStatus) {
-      params = params.set('receiptStatus', receiptStatus);
-    }  
-    return this.httpClient.get(`${API}v1/ise/inventory/receiptdata`, { params });
-  }
   getDeviceData(receiptId: string) {
     return this.httpClient.get(`${API}v1/ise/inventory/devicedata?receiptId=${receiptId}`);
   }
@@ -454,6 +447,24 @@ export class ApiService {
   }
 
   //IntransferRecieve
+  SearchIntTransferRecieving(fromDate?: Date | null, toDate?: Date | null, statusString?: string | null, facilityId?: string | null)
+  {
+    
+    let params = new HttpParams();
+    if (fromDate != null) {
+      params = params.set('fromDate', this.formatDate(fromDate));
+    }
+    if (toDate != null) {
+      params = params.set('toDate', this.formatDate(toDate));
+    }
+    if (statusString != null){
+      params = params.set('statusString', statusString);
+    }
+    if (facilityId != null){
+      params = params.set('facilityId', facilityId);
+    }
+    return this.httpClient.get(`${API}v1/ise/inventory/inttransfer/Search`, { params });
+  }
   SearchIntransferRecieve() {
     return this.httpClient.get(`${API}v1/ise/inventory/inttransfer/search`);
   }
@@ -467,20 +478,6 @@ export class ApiService {
     if (toDate != null) {
       params = params.set('toDate', this.formatDate(toDate));
     }
-    return this.httpClient.get(`${API}v1/ise/inventory/inttransfer/search`, { params });
-  }
-  getIntransferRecieveStatus(statusString?: string | null){
-    let params = new HttpParams();
-    if (statusString) {
-      params = params.set('statusString', statusString);
-    }  
-    return this.httpClient.get(`${API}v1/ise/inventory/inttransfer/search`, { params });
-  }
-  getIntransferRecieveFacility(facilityId?: number | null ){
-    let params = new HttpParams();
-    if (facilityId) {
-      params = params.set('facilityId', facilityId);
-    }  
     return this.httpClient.get(`${API}v1/ise/inventory/inttransfer/search`, { params });
   }
 
