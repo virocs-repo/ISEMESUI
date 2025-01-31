@@ -63,6 +63,35 @@ export class IntTranferReceivingComponent implements OnDestroy {
   ];
   public selectedFacilities: string[] = [];
   public selectedReceiptStatuses: string[] = [];
+  toggleSelection(receivingFacilityID: any, type: string): void {
+    if (type === 'facility') {
+      const index = this.selectedFacilities.indexOf(receivingFacilityID);
+      if (index > -1) {
+        this.selectedFacilities.splice(index, 1);
+      } else {
+        this.selectedFacilities.push(receivingFacilityID);
+      }
+    } else if (type === 'receipt') {
+      const index = this.selectedReceiptStatuses.indexOf(receivingFacilityID);
+      if (index > -1) {
+        this.selectedReceiptStatuses.splice(index, 1);
+      } else {
+        this.selectedReceiptStatuses.push(receivingFacilityID);
+      }
+    }
+  }
+  tagDisplayLimit(tags: any[]): any[] {
+    const maxVisibleTags = 1;
+    return tags.length > maxVisibleTags
+      ? [...tags.slice(0, maxVisibleTags), { receivingFacilityName: `+${tags.length - maxVisibleTags} ` }]
+      : tags;
+  }
+  tagDisplayLimits(tags: any[]): any[] {
+    const maxVisibleTags = 1;
+    return tags.length > maxVisibleTags
+      ? [...tags.slice(0, maxVisibleTags), `+${tags.length - maxVisibleTags}`]
+      : tags;
+  }
   private fetchdatas(): void {
     const facilityIDsStr = this.selectedFacilities.length > 0
         ? this.selectedFacilities.join(',')
