@@ -92,7 +92,9 @@ export class ShippingRecordComponent implements OnDestroy {
     Product:'',
     CommodityOrgin:'',
     ShipmentReference:'',
-    CustomTermTrade:''
+    CustomTermTrade:'',
+    ShipDate:'',
+    UltimateConsignee:'',
 
     
   };
@@ -191,7 +193,11 @@ export class ShippingRecordComponent implements OnDestroy {
         this.shippingDetailsData.InvoiceNumber=res[0].invoiceNumber;
         this.shippingDetailsData.BillDutiesTaxes=res[0].billDutyTaxFeesTo;
         this.shippingDetailsData.BillTransportTo=res[0].billTransportationTo;
-        this.shippingDetailsData.CIFrom=res[0].ciFrom;
+        //this.shippingDetailsData.CIFrom=res[0].ciFrom;
+        
+        this.shippingDetailsData.CIFrom = res[0].ciFrom?.trim() ? res[0].ciFrom : 'NA';
+
+
         this.shippingDetailsData.DutiesTaxes=res[0].billDutyTaxFeesAcct;
         this.shippingDetailsData.ECCN=res[0].eccn;
         this.shippingDetailsData.COO=res[0].countryOfOrigin;
@@ -206,6 +212,8 @@ export class ShippingRecordComponent implements OnDestroy {
         this.shippingDetailsData.Weight=res[0].weight;
         this.shippingDetailsData.Width=res[0].referenceNumber1;
         this.shippingDetailsData.Length=res[0].referenceNumber2;
+        this.shippingDetailsData.Height=res[0].otherAccountNumber;
+
         this.shippingDetailsData.TaxId=res[0].taxId;
         this.shippingDetailsData.Email=res[0].email;
         this.shippingDetailsData.Attention=res[0].attention;
