@@ -97,7 +97,7 @@ readonly ICON = ICON;
     CustomTermTrade:'',
     ShipDate:'',
     UltimateConsignee:'',
-
+    CommodityDescription:''
     
   };
 
@@ -230,9 +230,12 @@ readonly ICON = ICON;
         this.shippingDetailsData.LicenseType=res[0].licenseType;
         this.shippingDetailsData.InvoiceNumber=res[0].invoiceNumber;
         this.shippingDetailsData.PurchaseNo=res[0].purchaseNumber;
-     
+        this.shippingDetailsData.ShipDate=res[0].shipDate;
+        this.shippingDetailsData.ScheduleB=res[0].scheduleBNumber;
+        this.shippingDetailsData.CommodityDescription=res[0].commodityDescription;
+        this.shippingDetailsData.UltimateConsignee=res[0].ultimateConsignee;
         this.onShippingMethodChange(res[0].shippingMethod);
-
+        
 
       },
       error: (err) => {

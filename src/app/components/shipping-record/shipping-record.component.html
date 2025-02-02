@@ -129,6 +129,18 @@
             <kendo-grid-column *ngIf="isEditMode" field="additionalInfo" title="Additional Info"></kendo-grid-column> -->
           </kendo-grid>
         </div>
+        <div class="shipping-record">
+
+
+          <div class="k-d-flex k-gap-3 k-mt-3">
+           
+            <button kendoButton type="button" rounded="full" themeColor="info" class="k-ml-auto" style="width:6rem" [disabled]="isDisabled.shipBtn"
+              (click)="shipItem()">Ship</button>
+            <button kendoButton type="button" rounded="full" themeColor="success" class="k-w-25" [disabled]="isDisabled.shipBtn"
+              (click)="saveShipment()">Save</button>
+          </div>
+        
+        </div>
       </ng-template>
     </kendo-tabstrip-tab>
     <kendo-tabstrip-tab title="Shipping & Address Info">
@@ -1701,22 +1713,22 @@
                           />
                         </td>
                         <td>
-                          <label for="LicenseException">License Exception Symbol</label>
+                          <label for="LicenseType">License Exception Symbol</label>
                           <input
                             type="text"
-                            id="LicenseException"
+                            id="LicenseType"
                             kendoTextBox
-                            name="LicenseException"
-                            [(ngModel)]="shippingDetailsData.LicenseException"
+                            name="LicenseType"
+                            [(ngModel)]="shippingDetailsData.LicenseType"
                           />
                         </td>
                         <td >
-                          <label for="DescriptionOfGood">Commodity Description</label>
+                          <label for="CommodityDescription">Commodity Description</label>
                           <kendo-textarea
                             [rows]="1"
-                            id="DescriptionOfGood"
-                            name="DescriptionOfGood"
-                            [(ngModel)]="shippingDetailsData.DescriptionOfGood"
+                            id="CommodityDescription"
+                            name="CommodityDescription"
+                            [(ngModel)]="shippingDetailsData.CommodityDescription"
                           ></kendo-textarea>
                         </td>
                           <td >
@@ -2037,15 +2049,3 @@
 </div>
 
 
-<div class="shipping-record">
-
-
-  <div class="k-d-flex k-gap-3 k-mt-3">
-   
-    <button kendoButton type="button" rounded="full" themeColor="info" class="k-ml-auto" style="width:6rem" [disabled]="isDisabled.shipBtn"
-      (click)="shipItem()">Ship</button>
-    <button kendoButton type="button" rounded="full" themeColor="success" class="k-w-25" [disabled]="isDisabled.shipBtn"
-      (click)="saveShipment()">Save</button>
-  </div>
-
-</div>
