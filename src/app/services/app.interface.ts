@@ -751,3 +751,14 @@ export interface InterimDevice {
   IsHold:boolean
   Active:boolean
 }
+
+export interface ShippingAttachment {
+  attachmentId: number,
+  objectID: number,
+  attachmentName: string,
+  path: string,
+  active: boolean,
+  loginId: number,
+  createdBY:string,
+  createdON:Date
+}

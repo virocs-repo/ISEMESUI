@@ -108,11 +108,20 @@ export class ApiService {
     const headers = new HttpHeaders({ 'Content-Type': 'multipart/form-data', 'Accept': '*/*' });
     return this.httpClient.post(`${API}v1/ise/inventory/upload?loginId=${loginId}&receiptId=${receiptNumber}`, formData);
   }
+  uploadFileById(file: File, inputFilename: string, Id: string, loginId: number,categoryname: string) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const headers = new HttpHeaders({ 'Content-Type': 'multipart/form-data', 'Accept': '*/*' });
+    return this.httpClient.post(`${API}v1/ise/inventory/uploadById?loginId=${loginId}&id=${Id}&categoryName=${categoryname}`, formData);
+  }
   downloadFile(fileName: string) {
     return this.httpClient.get(`${API}v1/ise/inventory/download/${fileName}`);
   }
   listFiles(receiptId: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/receipt-attachments?receiptId=${receiptId}`);
+  }
+  listFilesById(id: number,categoryname: string) {
+    return this.httpClient.get(`${API}v1/ise/inventory/get-attachmentslist?id=${id}&categoryName=${categoryname}`);
   }
   deleteFile(body: any) {
     return this.httpClient.delete(`${API}v1/ise/inventory/delete-attachment`, { body });

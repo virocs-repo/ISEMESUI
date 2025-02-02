@@ -1,8 +1,10 @@
 import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
 import { GridDataResult, SelectableSettings } from '@progress/kendo-angular-grid';
+import { FileSelectComponent } from '@progress/kendo-angular-upload';
 import { ApiService } from 'src/app/services/api.service';
-import { Customer, MESSAGES, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2 } from 'src/app/services/app.interface';
+import { Customer, ICON, MESSAGES, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2, ShippingAttachment } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-shipping-record',
@@ -14,7 +16,7 @@ export class ShippingRecordComponent implements OnDestroy {
   shipmentLocation: string = ''
   readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
   customerSelected: Customer | undefined;
-
+readonly ICON = ICON;
   readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
   receiptLocationSelected: ReceiptLocation | undefined;
   senderInformation: string = ''
@@ -148,6 +150,8 @@ export class ShippingRecordComponent implements OnDestroy {
       this.isDisabled.shipBtn = true;
       this.isDisabled.clearBtn = true;
     }
+
+    this.listFiles();
   }
   ngOnDestroy(): void {
     this.appService.sharedData.shipping.isEditMode = false
@@ -388,4 +392,79 @@ export class ShippingRecordComponent implements OnDestroy {
     this.shipmentLocation = '';
     this.customerInformation = ''
   }
+
+  onUpload(event: any): void {
+    // Send selected files to API
+    const formData = new FormData();
+    event.files.forEach((file: any) => {
+      formData.append('files', file.rawFile);
+    });
+    // Call API
+  }
+
+shippingAttachments: ShippingAttachment[] = [];
+ readonly downloadFileApi = environment.apiUrl + 'v1/ise/inventory/download/'
+   uploadFilesById(upFiles: FileSelectComponent) {
+      const dataItem = this.appService.sharedData.shipping.dataItem;
+      
+      debugger;
+      if (!dataItem.shipmentId) {
+        // this is for new form
+        return;
+      }
+      const files = upFiles.fileList.files;
+      if (files && files.length) {
+        const file = files[0][0].rawFile;
+        if (!file) {
+          this.appService.errorMessage('Error while selecting file');
+          return;
+        }
+  
+        const inputFilename = file.name.replace(/\.[^/.]+$/, ''); // Remove file extension
+        const shipmentNumber = dataItem.shipmentId; // You can generate or get this value dynamically
+  
+        this.apiService.uploadFileById(file, inputFilename, shipmentNumber, this.appService.loginId,'ShipAlert').subscribe({
+          next: (v: any) => {
+            this.appService.successMessage('Success: File uploaded!');
+            upFiles.clearFiles();
+            this.listFiles();
+          },
+          error: (v: any) => {
+            this.appService.errorMessage('Error while uploading file')
+          }
+        });
+      } else {
+        this.appService.errorMessage('Please select file to upload')
+      }
+    }
+
+
+    private listFiles() {
+      const dataItem = this.appService.sharedData.shipping.dataItem;
+      if (!dataItem.shipmentId) {
+        // this is for new form
+        return;
+      }
+      this.apiService.listFilesById(dataItem.shipmentId,'ShipAlert').subscribe({
+        next: (v: any) => {
+          this.shippingAttachments = v;
+        }
+      })
+    }
+
+    downloadFile(d: ShippingAttachment) {
+        this.apiService.downloadFile(d.path).subscribe();
+      }
+      deleteFile(d: ShippingAttachment) {
+        d.active = false;
+        this.apiService.deleteFile(d).subscribe({
+          next: (v: any) => {
+            this.appService.successMessage('Success: File deleted!')
+            this.listFiles();
+          },
+          error: (v: any) => {
+            this.appService.errorMessage('Error: Unable to delete file')
+          }
+        })
+      }
 }
