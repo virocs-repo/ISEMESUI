@@ -1243,17 +1243,139 @@ export class ReceiptComponent implements OnInit, OnDestroy {
   private doPrint(r: any, tableName: 'Device' | 'Hardware' | 'Misc' | 'Interim') {
     switch (tableName) {
       case 'Device':
-        const text = this.appService.formatJson(r);
-        this.printPreview(text);
+        const filteredData = this.getFilteredPrintData(r);
+        const formattedHTML = this.generatePrintHTML(filteredData);
+        this.printPreview(formattedHTML);
         break;
     }
+  }  
+
+  private generatePrintHTML(data: any): string {  
+    return `
+      <html>
+        <head>
+           <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          .container { max-width: 600px; margin: auto; padding: 20px; }
+          h2, h3 {
+            text-align: center;
+            margin-bottom: 10px;
+          }
+          .header {
+            text-align: right;
+            margin-left: 20px;
+          }
+          .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 40%;
+            text-align: left;
+          }
+          .value {
+            display: inline-block;
+            width: 55%;
+            text-align: left;
+          }
+          .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            font-size: 18px;
+          }
+          .footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 14px;
+          }
+        </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="row"><img src="assets/lotcard.PNG"></div>
+            <div class="row"><span class="label">ISE Lot#:</span> ${data.ISE_Lot}</div>
+            <div class="row"><span class="label">Customer Lot#:</span> ${data.Cust_Lot}</div>
+            <div class="row"><span class="label">Customer Count:</span> ${data.Cust_Cnt}</div>
+            <div class="row"><span class="label">Expedite:</span> ${data.Expedite}</div>
+            <div class="row"><span class="label">IQA Optional:</span> ${data.IQA_Optional}</div>
+            <div class="row"><span class="label">Device Type Name:</span> ${data.deviceTypes}</div>
+            <div class="row"><span class="label">Device:</span> ${data.device}</div>
+            <div class="row"><span class="label">Lot Owner:</span> ${data.Lot_Owner}</div>
+            <div class="row"><span class="label">Lot Identifier:</span> ${data.Lot_Identifier}</div>
+            <div class="row"><span class="label">Label Count:</span> ${data.Label_Count}</div>
+            <div class="row"><span class="label">Date Code:</span> ${data.Date_Code}</div>
+            <div class="row"><span class="label">COO:</span> ${data.COO}</div>
+          </div>
+        </body>
+      </html>
+    `;
+  }  
+  
+  private getFilteredPrintData(dataItem: any) {
+    return {
+      ISE_Lot: dataItem.iseLotNumber,  
+      Cust_Lot: dataItem.customerLotNumber,  
+      Cust_Cnt: dataItem.customerCount,  
+      Expedite: dataItem.expedite,  
+      Device_Type_Name : dataItem.deviceType,
+      Device: dataItem.devi,  
+      Lot_Owner: dataItem.lot,  
+      Lot_Identifier: dataItem.lotIdentifier,  
+      Label_Count: dataItem.labelCount,  
+      Date_Code: dataItem.dateCode,  
+      COO: dataItem.coo
+    };
   }
+  
   private printPreview(textToPrint: string) {
-    const printWindow: any = window.open('', '_blank');
-    printWindow.document.write(textToPrint);
-    printWindow.print();
-    // printWindow.close();
-  }
+    // Hide background elements (popup or overlay)
+    const popupElement = document.querySelector('.popup-container') as HTMLElement | null;
+    if (popupElement) {
+      popupElement.style.display = 'none';
+    }
+  
+    // Open print window
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert("Popup blocked! Please allow popups and try again.");
+      return;
+    }
+  
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Print Preview</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .container { max-width: 600px; margin: auto; padding: 20px; }
+            h2, h3 { text-align: center; margin-bottom: 10px; }
+            .row { display: flex; justify-content: space-between; padding: 10px 0; font-size: 18px; }
+            .label { font-weight: bold; width: 40%; text-align: left; }
+            .value { width: 55%; text-align: left; }
+            .footer { text-align: center; margin-top: 50px; font-size: 14px; }
+            @media print {
+              body { visibility: visible !important; }
+              .container { visibility: visible !important; }
+            }
+          </style>
+        </head>
+        <body>
+          ${textToPrint}
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+  
+      // Restore background elements after printing
+      if (popupElement) {
+        popupElement.style.display = 'block';
+      }
+    }, 500);
+  }  
+  
   private doVoidData(r: any, rowIndex: number, tableName: 'Device' | 'Hardware' | 'Misc' | 'Interim') {
     switch (tableName) {
       case 'Device':
