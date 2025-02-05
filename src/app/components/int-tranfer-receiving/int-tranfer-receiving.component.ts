@@ -62,7 +62,7 @@ export class IntTranferReceivingComponent implements OnDestroy {
     "Received",
   ];
   public selectedFacilities: string[] = [];
-  public selectedReceiptStatuses: string[] = [];
+  public selectedReceiptStatuses: string[] = ["Pending Receive"];
   toggleSelection(receivingFacilityID: any, type: string): void {
     if (type === 'facility') {
       const index = this.selectedFacilities.indexOf(receivingFacilityID);

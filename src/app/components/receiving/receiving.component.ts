@@ -24,6 +24,7 @@ export class ReceivingComponent implements OnDestroy {
   originalData: any[] = [];
   public searchTerm: string = '';
   isAddButtonEnabled: boolean = true;
+  readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation;
   receiptLocationSelected: ReceiptLocation | undefined;
   readonly filterSettings: DropDownFilterSettings = {
         caseSensitive: false,
@@ -59,6 +60,7 @@ export class ReceivingComponent implements OnDestroy {
   }
   closeDialog() {
     this.isDialogOpen = false;
+    this.fetchData()
     this.fetchdata(); // because there might be changes from dialog
     this.appService.eventEmitter.emit({ action: 'refreshVendors', data: { m: 'masterData' } })
   }
@@ -67,6 +69,7 @@ export class ReceivingComponent implements OnDestroy {
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
+    this.fetchData();
     this.search();
     this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
       switch (v) {
@@ -115,8 +118,25 @@ export class ReceivingComponent implements OnDestroy {
       })
     }
   }
-  public selectedFacilities: string[] = [];
-  public selectedReceiptStatuses: string[] = [];
+  private fetchData() {
+    this.apiService.getReceiptdatas().subscribe({
+      next: (v: any) => {
+        /* this.gridDataResult.data = v;
+        this.gridDataResult.total = v.length */
+        this.originalData = v;
+        this.pageData();
+        
+      },
+      error: (v: any) => { }
+    });
+    
+  }
+  public areaList: Array<string> = [ 
+    "Pending Receive",
+    "Received",
+  ];
+  public selectedFacilities: string[] = ['1393'];
+  public selectedReceiptStatuses: string[] = ["Pending Receive"];
   toggleSelection(receivingFacilityID: any, type: string): void {
     if (type === 'facility') {
       const index = this.selectedFacilities.indexOf(receivingFacilityID);
@@ -175,6 +195,7 @@ export class ReceivingComponent implements OnDestroy {
   }
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;
+    this.fetchData();
     this.fetchdata();
   }
   rowActionMenu: MenuItem[] = [
@@ -298,10 +319,6 @@ export class ReceivingComponent implements OnDestroy {
     this.appService.sharedData.receiving.eventEmitter.emit('canCloseDialog?')
   }
   
-  public areaList: Array<string> = [ 
-    "Pending Receive",
-    "Received",
-  ];
   search() {
     // this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
     // this.toDate = moment(this.range.end).format('MM-DD-YYYY');
