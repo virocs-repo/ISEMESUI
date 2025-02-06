@@ -26,10 +26,8 @@
 <kendo-label text="Facility" class="k-font-size-sm">
     <br />
     <kendo-multiselect 
-      [data]="appService.masterData.receiptLocation || []" 
+      [data]="receiptLocation" 
       [(ngModel)]="selectedFacilities"
-      [textField]="'receivingFacilityName'"
-      [valueField]="'receivingFacilityID'"
       [valuePrimitive]="true"
       [tagMapper]="tagDisplayLimit"
       placeholder="Select Facilities">
