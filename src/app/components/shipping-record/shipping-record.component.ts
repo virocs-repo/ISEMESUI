@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
 import { GridDataResult, SelectableSettings } from '@progress/kendo-angular-grid';
 import { FileSelectComponent } from '@progress/kendo-angular-upload';
 import { ApiService } from 'src/app/services/api.service';
-import { Customer, ICON, MESSAGES, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2, ShippingAttachment } from 'src/app/services/app.interface';
+import { Customer, ICON, MESSAGES, Package, PackageUpdate, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2, ShippingAttachment, UpsertShipPackageDimensionReq } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { environment } from 'src/environments/environment';
 
@@ -23,9 +23,16 @@ readonly ICON = ICON;
   shipmentComments: string = ''
   shipmentCategories: ShipmentCategory[] = []
   shipmentCategorySelected: ShipmentCategory | undefined;
-  isShipped = false
-  customerInformation = ''
-
+  isShipped = false;
+  customerInformation = '';
+ // The number of rows the user wants to create
+ numberOfPackages: number=0;
+shipId :number =0;
+ // Array holding the grid's package data
+ packages: Package[] = [];
+ packagesupdate: PackageUpdate[] = [];
+ // List for package dimensions that will populate the dropdown
+ packageDimensionsList: string[] = [];
   gridDataResult: GridDataResult = { data: [], total: 0 };
   customerID: number = 0;
   shipDeliveryDetailInfo :any =[];
@@ -101,7 +108,7 @@ readonly ICON = ICON;
     
   };
 
-  
+ 
 
   isDisabled: any = {
     shipBtn: false,
@@ -112,7 +119,7 @@ readonly ICON = ICON;
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
-    this.shipmentCategories = this.appService.shipmentCategories
+    this.shipmentCategories = this.appService.shipmentCategories;
 
     if (this.appService.sharedData.shipping.isViewMode || this.appService.sharedData.shipping.isEditMode) {
       this.isEditMode = true;
@@ -125,7 +132,7 @@ readonly ICON = ICON;
       this.senderInformation = dataItem.senderInfo
       this.shipmentComments = dataItem.shippmentInfo
       this.isShipped = dataItem.isShipped
-
+      this.shipId=dataItem.shipmentId
       this.customerSelected = this.customers.find(c => c.CustomerID == dataItem.customerID);
       // this.shipmentCategorySelected = this.shipmentCategories.find(c => c.shipmentCategoryID == dataItem.shipmentTypeID);
 
@@ -152,6 +159,8 @@ readonly ICON = ICON;
     }
 
     this.listFiles();
+    this.fetchpackageDimensions();
+    this.fetchpackageByShipmentId(this.shipId);
   }
   ngOnDestroy(): void {
     this.appService.sharedData.shipping.isEditMode = false
@@ -410,7 +419,7 @@ shippingAttachments: ShippingAttachment[] = [];
    uploadFilesById(upFiles: FileSelectComponent) {
       const dataItem = this.appService.sharedData.shipping.dataItem;
       
-      debugger;
+     
       if (!dataItem.shipmentId) {
         // this is for new form
         return;
@@ -470,4 +479,98 @@ shippingAttachments: ShippingAttachment[] = [];
           }
         })
       }
+
+      // Called when the user enters a number and clicks the "Create Rows" button.
+  onCreateRows(): void {
+    // Clear any previous data
+    // this.packages = [];
+
+    // // Create as many package rows as entered
+    // for (let i = 0; i < this.numberOfPackages; i++) {
+    //   this.packages.push({
+    //     PackageId: '', // default empty, can be modified later
+    //     PackageNo: i + 1,
+    //     CIPackageDimentions: this.packageDimensionsList.length > 0 ? this.packageDimensionsList[0] : '',
+    //     CIWeight: 0,  // default weight; user can edit
+    //     Active: true  // default active state
+    //   });
+    // }
+
+    const newPackageNo = this.packages.length > 0 
+      ? Math.max(...this.packages.map(p => p.packageNo)) + 1 
+      : 1;
+      
+    // Push a new row with default values
+    this.packages.push({
+      packageNo: newPackageNo,
+      packageId:'',
+      ciPackageDimentions: this.packageDimensionsList.length > 0 
+                              ? this.packageDimensionsList[0] 
+                              : '',
+      ciWeight: 0,
+      active: true
+    });
+  }
+
+  onSave(): void {
+
+    const dataItem: Shipment = this.appService.sharedData.shipping.dataItem;
+   for (let i = 0; i < this.packages.length; i++) {
+       this.packagesupdate.push({
+         PackageId: String(this.packages[i].packageId), // default empty, can be modified later
+         PackageNo: this.packages[i].packageNo,
+         CIPackageDimentions:this.packages[i].ciPackageDimentions,
+         CIWeight:this.packages[i].ciWeight,
+        Active: this.packages[i].active
+       });
+     }
+
+    const payload: UpsertShipPackageDimensionReq = {
+      ShipmentID: String(dataItem.shipmentId),
+      LoginID: String(this.appService.loginId),
+      Packages: this.packagesupdate
+    };
+    debugger;
+    this.apiService.saveShipmentpackagesRecord(payload).subscribe({
+      next: (response: any) => {
+        this.appService.successMessage('saved successfully!');
+
+        this.fetchpackageByShipmentId(this.shipId);
+      },
+      error: (error: any) => {
+        this.appService.errorMessage('Failed to create shipment record.');
+        console.error('API error:', error);
+      },
+    });
+  }
+
+  private fetchpackageDimensions() {
+   
+    this.apiService.fetchpackageDimensions().subscribe({
+      next: (res: any) => {
+        if (Array.isArray(res)) {
+          this.packageDimensionsList = res.map(item => item.ciPackageDimentions);
+        }
+      },
+      error: (err) => {
+      }
+    });
+
+  }
+
+  private fetchpackageByShipmentId(shipmentNumber:number) {
+   
+    this.apiService.fetchpackageByShipmentId(shipmentNumber).subscribe({
+      next: (res: any) => {
+        if (res && res.length > 0) {
+          this.packages = res;
+        } else {
+          this.packages = []; // No API data: allow manual entry.
+        }
+      },
+      error: (err) => {
+      }
+    });
+
+  }
 }

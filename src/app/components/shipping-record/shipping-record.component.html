@@ -2003,8 +2003,8 @@
             </div>
          <kendo-fileselect #upFiles  (upload)="onUpload($event)"
               [multiple]="false"   ></kendo-fileselect>
-            <button kendoButton type="button" rounded="large" themeColor="secondary" style="margin-top: 1%;width:6rem"
-              (click)="uploadFilesById(upFiles)">Upload</button>  
+            <button kendoButton type="button" rounded="large" themeColor="secondary" style="margin-top: 1%;width:6rem;"
+              (click)="uploadFilesById(upFiles)" [disabled]="isDisabled.shipBtn" >Upload</button>  
           <div>
             <kendo-grid [data]="shippingAttachments" class="receipt-attachments" style="margin-top: 5%;">
               <kendo-grid-column title="#" [width]="40">
@@ -2035,11 +2035,62 @@
               
               <kendo-grid-column title="Actions" [width]="100">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <button kendoButton [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteFile(dataItem)"></button>
+                  <button kendoButton [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteFile(dataItem)" [disabled]="isDisabled.shipBtn"></button>
                 </ng-template>
               </kendo-grid-column>
             </kendo-grid>
           </div>
+          </kendo-card-body>
+        </kendo-card>
+
+        <kendo-card class="card-blue card-full" style="margin-top: 1%;">
+          <kendo-card-body>
+            <div>
+              
+              <label style="font-weight: 700; color: maroon;">Commercial Invoice Info  </label>
+            </div>
+
+            <div style="margin-bottom: 20px; text-align: right;">
+             <!--  <label for="numPackages">Enter number of packages: </label>
+              <kendo-numerictextbox 
+              id="numPackages" 
+              [(ngModel)]="numberOfPackages" 
+              [format]="'n0'" 
+              [min]="1" style="margin-top: 1%;width:6rem" > 
+            </kendo-numerictextbox>-->
+              <button kendoButton type="button" rounded="large" themeColor="info" style="margin-top: 1%;width:6rem" (click)="onCreateRows()" [disabled]="isDisabled.shipBtn">Add Rows</button>
+            </div>
+            
+            <kendo-grid [data]="packages" [height]="200" >
+              <!-- Package # Column (read-only) -->
+              <kendo-grid-column field="packageNo" title="Package #">
+              </kendo-grid-column>
+            
+              <!-- Package Weight Column (editable textbox) -->
+              <kendo-grid-column field="ciWeight" title="Package Weight">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <input type="number"  min="0" [(ngModel)]="dataItem.ciWeight" style="width: 80px;" />
+                </ng-template>
+              </kendo-grid-column>
+            
+              <!-- Package Dimensions Column (editable dropdown) -->
+              <kendo-grid-column field="ciPackageDimentions" title="Package Dimensions">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <kendo-combobox 
+                  [data]="packageDimensionsList" 
+                  [(ngModel)]="dataItem.ciPackageDimentions">
+              </kendo-combobox>
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid>
+            
+          
+            <div style=" margin-top: 1%; text-align: right;">
+              <button kendoButton type="button" rounded="full" themeColor="success" class="k-w-25" [disabled]="isDisabled.shipBtn" 
+              (click)="onSave()">Save</button>
+             
+            </div>
+          
           </kendo-card-body>
         </kendo-card>
       </ng-template>

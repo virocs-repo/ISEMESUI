@@ -555,4 +555,18 @@ export class ApiService {
   checkingIsReceiptEditable(receiptId:number, loginId: number){
     return this.httpClient.get(`${API}v1/ise/inventory/isReceiptEditable?receiptId=${receiptId}&loginId=${loginId}`)
   }
+
+  fetchpackageDimensions()
+  {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventorydata/GetPackageDimension`)
+  }
+  fetchpackageByShipmentId(shipmentNumber:number)
+  {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventorydata/PackageShipmentdataById?shipmentId=${shipmentNumber}`)
+  }
+
+
+  saveShipmentpackagesRecord(data: any): Observable<any> {
+    return this.httpClient.post(`${API}v1/ise/inventory/inventorydata/UpsertShipPackDim`, data);
+  }
 }
