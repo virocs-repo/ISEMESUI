@@ -305,7 +305,7 @@ export interface Shipment {
   customerTypeSelected: CustomerType | undefined;
   holdComments: string;
   deliveryInfoId:number;
-  ClientAccountNumber :string;
+  clientAccountNumber :string;
 }
 export interface CustomerOrderDetail {
   CustomerOrderDetailID: number | null;

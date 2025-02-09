@@ -314,6 +314,9 @@ shipId :number =0;
       return;
     }
     const dataItem: Shipment = this.appService.sharedData.shipping.dataItem;
+    // dataItem.clientAccountNumber="345345345"
+    dataItem.clientAccountNumber=this.shippingDetailsData.AccountNumber;
+   
     const body = { ...sd, ...dataItem }
     this.appService.isLoading = true;
     this.apiService.createShipment(body).subscribe({
