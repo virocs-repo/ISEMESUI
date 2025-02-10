@@ -1,0 +1,43 @@
+<div class="attachment-container">
+    <!-- Receiving Info -->
+    <div class="info-section">
+      <label>Receiving Info:</label>
+    </div>
+  
+    <!-- File Upload -->
+    <div class="file-upload-section">
+      <label>File Upload:</label>
+      <kendo-upload
+        [multiple]="false"
+        [autoUpload]="false"
+        (select)="onFileSelect($event)">
+      </kendo-upload>
+      <button kendoButton (click)="attachFile()">Attach</button>
+    </div>
+  
+    <!-- Uploaded Files Grid -->
+    <kendo-grid [data]="uploadedFiles" [pageSize]="5" [pageable]="true">
+      <kendo-grid-column field="fileName" title="Attached File"></kendo-grid-column>
+      <kendo-grid-column field="attachedBy" title="Attached By"></kendo-grid-column>
+      <kendo-grid-column field="attachedOn" title="Attached On"></kendo-grid-column>
+      
+      <!-- Delete Button -->
+      <kendo-grid-column title="Delete">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <button kendoButton icon="trash" (click)="deleteFile(dataItem)">Delete</button>
+        </ng-template>
+      </kendo-grid-column>
+  
+      <!-- View Button -->
+      <kendo-grid-column title="View">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <button kendoButton icon="eye" (click)="viewFile(dataItem)">View</button>
+        </ng-template>
+      </kendo-grid-column>
+    </kendo-grid>
+    <div class="button-container">
+        <button kendoButton (click)="saveAttachments()" [disabled]="uploadedFiles.length === 0" themeColor="info">Save</button>
+        <button kendoButton (click)="cancelAttachments()">Cancel</button>
+      </div>
+  </div>
+  

@@ -74,20 +74,33 @@
   </div>
   <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'58%'">
     <div class="k-d-flex k-align-items-center k-mb-6">
-        <h2 class="k-m-0">Hold Details</h2>
-        <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
-            (click)="closeDialog()"></button>
+      <h2 class="k-m-0">Hold Information</h2>
+      <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small" (click)="closeDialog()"></button>
     </div>
-    <app-add-hold
-      (cancel)="closeDialog()"
-      [mode]="viewOrEdit"
-      [lotNumber]="selectedRowData?.iseLotNumber || ''"
-      [noOfHolds]="gridDataResult.total.toString()"
-      [customerName]="customerName"
-      [device]="device"
-      [inventoryId]="selectedRowData?.inventoryID || 0"
-      [selectedGridData]="selectedRowDat"
-      (dataUpdated)="onDataUpdated()">
-    </app-add-hold>
-  </kendo-dialog>
+  
+    <kendo-tabstrip (tabSelect)="selectedTabIndex = $event.index">
+      <kendo-tabstrip-tab title="Hold Details" [selected]="selectedTabIndex === 0">
+        <ng-template kendoTabContent>
+          <app-add-hold
+            (cancel)="closeDialog()"
+            [mode]="viewOrEdit"
+            [lotNumber]="selectedRowData?.iseLotNumber || ''"
+            [noOfHolds]="gridDataResult.total.toString()"
+            [customerName]="customerName"
+            [device]="device"
+            [inventoryId]="selectedRowData?.inventoryID || 0"
+            [selectedGridData]="selectedRowData"
+            (dataUpdated)="onDataUpdated()">
+          </app-add-hold>
+        </ng-template>
+      </kendo-tabstrip-tab>
+  
+      <kendo-tabstrip-tab title="Hold Attachments" [selected]="selectedTabIndex === 1">
+        <ng-template kendoTabContent>
+          <app-hold-attachments>
+          </app-hold-attachments>
+        </ng-template>
+      </kendo-tabstrip-tab>
+    </kendo-tabstrip>
+  </kendo-dialog>    
 </div>
