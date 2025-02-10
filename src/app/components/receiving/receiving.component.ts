@@ -70,14 +70,15 @@ export class ReceivingComponent implements OnDestroy {
       this.receiptLocationSelected = this.appService.masterData.receiptLocation.find(
         e => e.receivingFacilityName === this.appService.facility
       );
-      if (this.receiptLocationSelected) {
-        this.selectedFacilities = [this.receiptLocationSelected.receivingFacilityName]; // Ensure ID is stored
-        console.log("Selected Facility ID:", this.selectedFacilities);
-      }
+      this.appService.masterData.receiptLocation.forEach(e =>{
+        if(e.receivingFacilityName === this.appService.facility)
+        {
+          this.selectedFacilities.push(e);
+        }
+      })
+      this.search();
     }, 500);
-  
-    this.fetchdatas();
-  
+    
     this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
       if (v === 'closeDialog') {
         this.closeDialog();
@@ -87,19 +88,6 @@ export class ReceivingComponent implements OnDestroy {
     this.initRoleBasedUI();
   }
   
-  private fetchdatas() {
-    this.apiService.getReceiptdata().subscribe({
-      next: (v: any) => {
-        /* this.gridDataResult.data = v;
-        this.gridDataResult.total = v.length */
-        this.originalData = v;
-        this.pageData();
-        
-      },
-      error: (v: any) => { }
-    });
-    
-  }
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
@@ -140,25 +128,29 @@ export class ReceivingComponent implements OnDestroy {
     "Pending Receive",
     "Received",
   ];
-  public selectedFacilities: string[] = [];
+  public selectedFacilities: ReceiptLocation[] = [];
   public selectedReceiptStatuses: string[] = ["Pending Receive"];
-  toggleSelection(receivingFacilityID: any, type: string): void {
+  isSelectedFacility(receivingFacilityID: any): boolean {
+    return this.selectedFacilities.some(facility => facility.receivingFacilityID === receivingFacilityID);
+  }  
+  toggleSelection(item: any, type: string): void {
     if (type === 'facility') {
-      const index = this.selectedFacilities.indexOf(receivingFacilityID);
+      const index = this.selectedFacilities.findIndex(facility => facility.receivingFacilityID === item.receivingFacilityID);
       if (index > -1) {
         this.selectedFacilities.splice(index, 1);
       } else {
-        this.selectedFacilities.push(receivingFacilityID);
+        this.selectedFacilities.push(item); // Store full object to maintain reference
       }
     } else if (type === 'receipt') {
-      const index = this.selectedReceiptStatuses.indexOf(receivingFacilityID);
+      const index = this.selectedReceiptStatuses.indexOf(item);
       if (index > -1) {
         this.selectedReceiptStatuses.splice(index, 1);
       } else {
-        this.selectedReceiptStatuses.push(receivingFacilityID);
+        this.selectedReceiptStatuses.push(item);
       }
     }
   }
+  
   tagDisplayLimit(tags: any[]): any[] {
     const maxVisibleTags = 1;
     return tags.length > maxVisibleTags
@@ -174,7 +166,7 @@ export class ReceivingComponent implements OnDestroy {
   private fetchdata(): void {
     // Convert facility names to IDs
     const facilityIDs = this.selectedFacilities
-        .map(name => this.appService.masterData.receiptLocation.find(facility => facility.receivingFacilityName === name)?.receivingFacilityID)
+        .map(name => this.appService.masterData.receiptLocation.find(facility => facility.receivingFacilityName === name.receivingFacilityName)?.receivingFacilityID)
         .filter(id => id !== undefined); // Filter out undefined values in case no match is found
 
     const facilityIDsStr = facilityIDs.length > 0 && this.isSearchClicked

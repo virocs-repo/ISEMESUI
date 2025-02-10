@@ -11,7 +11,6 @@
     <kendo-multiselect 
       [data]="areaList"
       [(ngModel)]="selectedReceiptStatuses"
-      [valuePrimitive]="true"
       placeholder="Select Receipt Status"
       [tagMapper]="tagDisplayLimits">
       <ng-template kendoMultiSelectItemTemplate let-dataItem>
@@ -28,13 +27,14 @@
     <kendo-multiselect 
       [data]="appService.masterData.receiptLocation || []" 
       [(ngModel)]="selectedFacilities"
-      [valuePrimitive]="true"
       [tagMapper]="tagDisplayLimit"
+      [textField]="'receivingFacilityName'"
+      [valueField]="'receivingFacilityID'"
       placeholder="Select Facilities">
       <ng-template kendoMultiSelectItemTemplate let-dataItem>
         <input type="checkbox" 
-               [checked]="selectedFacilities.includes(dataItem.receivingFacilityID)" 
-               (change)="toggleSelection(dataItem.receivingFacilityID, 'facility')"> 
+        [checked]="isSelectedFacility(dataItem.receivingFacilityID)" 
+        (change)="toggleSelection(dataItem, 'facility')">
         {{ dataItem.receivingFacilityName }}
       </ng-template>
     </kendo-multiselect>

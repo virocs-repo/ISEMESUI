@@ -305,6 +305,7 @@ export interface Shipment {
   customerTypeSelected: CustomerType | undefined;
   holdComments: string;
   deliveryInfoId:number;
+  clientAccountNumber :string;
 }
 export interface CustomerOrderDetail {
   CustomerOrderDetailID: number | null;
@@ -761,4 +762,25 @@ export interface ShippingAttachment {
   loginId: number,
   createdBY:string,
   createdON:Date
+}
+// Define the interface for each package
+export interface Package {
+  packageId: string,
+  packageNo: number,
+  ciPackageDimentions: string,
+  ciWeight: number,
+  active: boolean
+}
+export interface PackageUpdate {
+  PackageId: string,
+  PackageNo: number,
+  CIPackageDimentions: string,
+  CIWeight: number,
+  Active: boolean
+}
+// Define the interface for the overall upsert request
+export interface UpsertShipPackageDimensionReq {
+  ShipmentID: string,
+  LoginID: string,
+  Packages: PackageUpdate[]
 }
