@@ -24,6 +24,7 @@ readonly ICON = ICON;
   shipmentCategories: ShipmentCategory[] = []
   shipmentCategorySelected: ShipmentCategory | undefined;
   isShipped = false;
+  AttachementVerified=false;
   customerInformation = '';
  // The number of rows the user wants to create
  numberOfPackages: number=0;
@@ -52,7 +53,17 @@ shipId :number =0;
     SpecialInstructions:'',
     PackingComments:'',
     InvoiceComments:'',
-    contactPerson:''
+    contactPerson:'',
+    BillToCountry: '',
+    BillToAddress1: '',
+    BillToAddress2: '',
+    BillToAddress3: '',
+    BillToTelephone: '',
+    BillToState: '',
+    BillToCity: '',
+    BillToPostCode: '',
+    BillToExt:'',
+    TrackingId:''
 
 
   };
@@ -184,6 +195,7 @@ shipId :number =0;
         console.log(res);
         this.shipDeliveryDetailInfo=res[0];
         this.address.Address1=res[0].address1;
+        this.address.BillToAddress1=res[0].billToaddress1;
         this.address.CompanyName=res[0].companyName;
         this.address.Address2=res[0].address2;
         this.address.Address3=res[0].address3;
@@ -193,11 +205,20 @@ shipId :number =0;
         this.address.City=res[0].city;
         this.address.Telephone=res[0].phone;
         this.address.Ext=res[0].ext;
+        this.address.BillToAddress2=res[0].billToaddress2;
+        this.address.BillToAddress3=res[0].billToaddress3;
+        this.address.BillToCountry=res[0].billTocountry;
+        this.address.BillToPostCode=res[0].billTopostCode;
+        this.address.BillToState=res[0].billTostateProvince;
+        this.address.BillToCity=res[0].billTocity;
+        this.address.BillToTelephone=res[0].billTophone;
+        this.address.BillToExt=res[0].billToext;
         this.address.Comments=res[0].shippingComments;
         this.address.SpecialInstructions=res[0].specialInstructionforShipping;
         this.address.PackingComments=res[0].commentsforPackingSlip;
         this.address.InvoiceComments=res[0].commentsforCommericalInvoice;
-
+        this.address.ReceiversName=res[0].contactPerson;
+        
         this.shippingDetailsData.ShippingMethod=res[0].shippingMethod;
         this.shippingDetailsData.ContactPerson=res[0].contactPerson;
         this.shippingDetailsData.Destination=res[0].destination;
@@ -301,6 +322,18 @@ shipId :number =0;
   }
   gridSelectedKeys: number[] = [];
   shipItem() {
+
+    if(this.shippingDetailsData.ShippingMethod === 'Forwarder')
+    {
+
+    }
+    else if(!this.AttachementVerified)
+      {
+        this.appService.errorMessage('Please have the attachments verified ');
+        return;
+      }
+   
+   
     if (!this.gridSelectedKeys) {
       this.appService.errorMessage('Please select atleast one record');
       return;
@@ -516,6 +549,13 @@ shippingAttachments: ShippingAttachment[] = [];
   }
 
   onSave(): void {
+if(this.packages.length<=0)
+{
+  this.appService.errorMessage('please add atleast one package by clicking Add Rows.');
+
+  return;
+}
+  
 
     const dataItem: Shipment = this.appService.sharedData.shipping.dataItem;
    for (let i = 0; i < this.packages.length; i++) {
@@ -533,7 +573,7 @@ shippingAttachments: ShippingAttachment[] = [];
       LoginID: String(this.appService.loginId),
       Packages: this.packagesupdate
     };
-    debugger;
+    
     this.apiService.saveShipmentpackagesRecord(payload).subscribe({
       next: (response: any) => {
         this.appService.successMessage('saved successfully!');
