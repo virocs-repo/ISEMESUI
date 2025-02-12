@@ -1,6 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FileSelectComponent } from '@progress/kendo-angular-upload';
 import { ApiService } from 'src/app/services/api.service';
+import { ShippingAttachment, ICON } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-add-hold',
@@ -39,6 +42,7 @@ export class AddHoldComponent implements OnInit {
   constructor(private appService: AppService, private apiService: ApiService) {}
 
   ngOnInit(): void {
+    this.listFiles();
     this.fetchHoldCodes();
     this.fetchHoldTypes();
    //this.fetchHoldComments();
@@ -163,5 +167,74 @@ export class AddHoldComponent implements OnInit {
     this.reason = '';
     this.offHoldComments = '';
     this.cancel.emit();
+  }
+  // For Attachements
+  readonly ICON = ICON;
+  isDisabled: any = {
+    shipBtn: false,
+    clearBtn: false
+  }
+  onUpload(event: any): void {
+    const formData = new FormData();
+    event.files.forEach((file: any) => {
+      formData.append('files', file.rawFile);
+    });
+  }
+
+  shippingAttachments: ShippingAttachment[] = [];
+  readonly downloadFileApi = environment.apiUrl + 'v1/ise/inventory/download/'
+  uploadFilesById(upFiles: FileSelectComponent) {       
+    if (!this.inventoryId) {
+      return;
+    }
+    const files = upFiles.fileList.files;
+    if (files && files.length) {
+      const file = files[0][0].rawFile;
+      if (!file) {
+        this.appService.errorMessage('Error while selecting file');
+        return;
+      }
+      const inputFilename = file.name.replace(/\.[^/.]+$/, '');
+      const inventoryID = this.inventoryId;    
+      this.apiService.uploadFileByIds(file, inputFilename, inventoryID, this.appService.loginId,'ShipAlert').subscribe({
+        next: (v: any) => {
+          this.appService.successMessage('Success: File uploaded!');
+          upFiles.clearFiles();
+            this.listFiles();
+          },
+          error: (v: any) => {
+            this.appService.errorMessage('Error while uploading file')
+        }
+      });
+    } else {
+      this.appService.errorMessage('Please select file to upload')
+    }
+  }
+
+  private listFiles() {
+    if (!this.inventoryId) {
+      return;
+    }
+    this.apiService.listFilesById(this.inventoryId,'ShipAlert').subscribe({
+      next: (v: any) => {
+        this.shippingAttachments = v;
+      }
+    })
+  }
+
+  downloadFile(d: ShippingAttachment) {
+    this.apiService.downloadFile(d.path).subscribe();
+  }
+  deleteFile(d: ShippingAttachment) {
+    d.active = false;
+    this.apiService.deleteFile(d).subscribe({
+      next: (v: any) => {
+        this.appService.successMessage('Success: File deleted!')
+        this.listFiles();
+      },
+      error: (v: any) => {
+        this.appService.errorMessage('Error: Unable to delete file')
+      }
+    })
   }
 }
