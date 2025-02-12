@@ -23,6 +23,7 @@ export class IntTranferReceivingComponent implements OnDestroy {
   fromDate: Date | null = null;  // Variable to store the selected 'from' date
   toDate: Date | null = null;    // Variable to store the selected 'to' date
   public searchTerm: string = '';
+  readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
   receiptLocationSelected: ReceiptLocation | undefined;
   readonly filterSettings: DropDownFilterSettings = {
       caseSensitive: false,
@@ -31,7 +32,18 @@ export class IntTranferReceivingComponent implements OnDestroy {
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
-    this.fetchdata();
+    setTimeout(() => {
+      this.receiptLocationSelected = this.appService.masterData.receiptLocation.find(
+        e => e.receivingFacilityName === this.appService.facility
+      );
+      this.appService.masterData.receiptLocation.forEach(e =>{
+        if(e.receivingFacilityName === this.appService.facility)
+        {
+          this.selectedFacilities.push(e);
+        }
+      })
+      this.onSearch();
+    }, 500);
     this.subscription.add(this.appService.eventEmitter.subscribe(e => {
       if (e.action == 'updates') {
         this.init()
@@ -44,42 +56,33 @@ export class IntTranferReceivingComponent implements OnDestroy {
   private init() {
    
   }
-  private fetchdata() {
-    this.apiService.SearchIntransferRecieve().subscribe({
-      next: (v: any) => {
-        /* this.gridDataResult.data = v;
-        this.gridDataResult.total = v.length */
-        this.originalData = v;
-        this.pageData();
-        
-      },
-      error: (v: any) => { }
-    });
-    
-  }
   public areaList: Array<string> = [
     "Pending Receive",
     "Received",
   ];
-  public selectedFacilities: string[] = [];
+  public selectedFacilities: ReceiptLocation[] = [];
   public selectedReceiptStatuses: string[] = ["Pending Receive"];
-  toggleSelection(receivingFacilityID: any, type: string): void {
+  isSelectedFacility(receivingFacilityID: any): boolean {
+    return this.selectedFacilities.some(facility => facility.receivingFacilityID === receivingFacilityID);
+  }
+  toggleSelection(item: any, type: string): void {
     if (type === 'facility') {
-      const index = this.selectedFacilities.indexOf(receivingFacilityID);
+      const index = this.selectedFacilities.findIndex(facility => facility.receivingFacilityID === item.receivingFacilityID);
       if (index > -1) {
         this.selectedFacilities.splice(index, 1);
       } else {
-        this.selectedFacilities.push(receivingFacilityID);
+        this.selectedFacilities.push(item); // Store full object to maintain reference
       }
     } else if (type === 'receipt') {
-      const index = this.selectedReceiptStatuses.indexOf(receivingFacilityID);
+      const index = this.selectedReceiptStatuses.indexOf(item);
       if (index > -1) {
         this.selectedReceiptStatuses.splice(index, 1);
       } else {
-        this.selectedReceiptStatuses.push(receivingFacilityID);
+        this.selectedReceiptStatuses.push(item);
       }
     }
   }
+  
   tagDisplayLimit(tags: any[]): any[] {
     const maxVisibleTags = 1;
     return tags.length > maxVisibleTags
@@ -91,16 +94,22 @@ export class IntTranferReceivingComponent implements OnDestroy {
     return tags.length > maxVisibleTags
       ? [...tags.slice(0, maxVisibleTags), `+${tags.length - maxVisibleTags}`]
       : tags;
-  }
+  }  
   private fetchdatas(): void {
-    const facilityIDsStr = this.selectedFacilities.length > 0
-        ? this.selectedFacilities.join(',')
+    // Convert facility names to IDs
+    const facilityIDs = this.selectedFacilities
+        .map(name => this.appService.masterData.receiptLocation.find(facility => facility.receivingFacilityName === name.receivingFacilityName)?.receivingFacilityID)
+        .filter(id => id !== undefined); // Filter out undefined values in case no match is found
+
+    const facilityIDsStr = facilityIDs.length > 0 && this.isSearchClicked
+        ? facilityIDs.join(',')
         : null;
 
-    const receiptStatus = this.selectedReceiptStatuses.length > 0
-        ? this.selectedReceiptStatuses.join(',') 
+    const receiptStatus = this.selectedReceiptStatuses.length > 0 && this.isSearchClicked
+        ? this.selectedReceiptStatuses.join(',')
         : null;
-    this.apiService.SearchIntTransferRecieving(this.fromDate, this.toDate, receiptStatus,facilityIDsStr).subscribe({
+
+    this.apiService.SearchIntTransferRecieving(this.fromDate, this.toDate, receiptStatus, facilityIDsStr).subscribe({
       next: (response: any) => {
         this.originalData = response;
         this.pageData();
@@ -109,24 +118,12 @@ export class IntTranferReceivingComponent implements OnDestroy {
         console.error("Error fetching data:", error);
       }
     });
-  }
-  onSearch(): void {
- // Pass Date objects directly
- const from_date = this.fromDate ?? undefined;
- const to_date = this.toDate ?? undefined;
+}
 
- this.apiService.SearchIntransferRecievewithDates(from_date, to_date).subscribe({
-     next: (v: any) => {
-/*          this.gridDataResult.data = v;
-         this.gridDataResult.total = v.length; */
-         this.originalData = v;
-         this.pageData();
-     },
-     error: (error: any) => {
-         console.error('Error fetching CombinationLots', error);
-     }
- });
- this.fetchdatas();
+  private isSearchClicked = false;
+  onSearch(): void {
+    this.isSearchClicked = true;
+    this.fetchdatas();
   }
 
   onSearchMaster(): void {
@@ -163,7 +160,6 @@ export class IntTranferReceivingComponent implements OnDestroy {
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;
     console.log(event);
-    this.fetchdata();
     this.fetchdatas();
   }
   selectableSettings: SelectableSettings = {
@@ -184,7 +180,6 @@ export class IntTranferReceivingComponent implements OnDestroy {
   }
   closeDialog() {
     this.isDialogOpen = false;
-    this.fetchdata(); 
     this.fetchdatas();
   }
 

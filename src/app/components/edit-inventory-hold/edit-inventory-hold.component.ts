@@ -12,7 +12,6 @@ export class EditInventoryHoldComponent implements OnInit {
   @Output() cancel = new EventEmitter<void>();
   @Input() selectedRowData: any;
   selectedRowDat:any;
-  selectedTabIndex: number = 0;
   gridDataResult: GridDataResult = { data: [], total: 0 };
   readonly ICON = ICON;
   public selectedLocation: number = 0;

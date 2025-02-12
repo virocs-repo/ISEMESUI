@@ -99,7 +99,14 @@ export class ApiService {
   generateLineItem() {
     return this.httpClient.get(`${API}v1/ise/inventory/lineItem`);
   }
-
+  uploadFiles(file: File, inputFilename: string, inventoryId: string, loginId: number) {
+    const formData = new FormData();
+    formData.append('file', file);
+    // formData.append('inputfilename', inputFilename);
+    // formData.append('reciptnumber', receiptNumber);
+    const headers = new HttpHeaders({ 'Content-Type': 'multipart/form-data', 'Accept': '*/*' });
+    return this.httpClient.post(`${API}v1/ise/inventory/upload?loginId=${loginId}&receiptId=${inventoryId}`, formData);
+  }
   uploadFile(file: File, inputFilename: string, receiptNumber: string, loginId: number) {
     const formData = new FormData();
     formData.append('file', file);
@@ -109,6 +116,12 @@ export class ApiService {
     return this.httpClient.post(`${API}v1/ise/inventory/upload?loginId=${loginId}&receiptId=${receiptNumber}`, formData);
   }
   uploadFileById(file: File, inputFilename: string, Id: string, loginId: number,categoryname: string) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const headers = new HttpHeaders({ 'Content-Type': 'multipart/form-data', 'Accept': '*/*' });
+    return this.httpClient.post(`${API}v1/ise/inventory/uploadById?loginId=${loginId}&id=${Id}&categoryName=${categoryname}`, formData);
+  }
+  uploadFileByIds(file: File, inputFilename: string, Id: number, loginId: number,categoryname: string) {
     const formData = new FormData();
     formData.append('file', file);
     const headers = new HttpHeaders({ 'Content-Type': 'multipart/form-data', 'Accept': '*/*' });
