@@ -25,6 +25,7 @@ readonly ICON = ICON;
   shipmentCategorySelected: ShipmentCategory | undefined;
   isShipped = false;
   AttachementVerified=false;
+  SliDetailsVerified =false;
   customerInformation = '';
  // The number of rows the user wants to create
  numberOfPackages: number=0;
@@ -37,6 +38,7 @@ shipId :number =0;
   gridDataResult: GridDataResult = { data: [], total: 0 };
   customerID: number = 0;
   shipDeliveryDetailInfo :any =[];
+
   address = {
     Country: '',
     ReceiversName: '',
@@ -63,6 +65,8 @@ shipId :number =0;
     BillToCity: '',
     BillToPostCode: '',
     BillToExt:'',
+    BillToReceiversName:'',
+    BillToCompanyName:'',
     TrackingId:''
 
 
@@ -115,7 +119,11 @@ shipId :number =0;
     CustomTermTrade:'',
     ShipDate:'',
     UltimateConsignee:'',
-    CommodityDescription:''
+    CommodityDescription:'',
+    Dateexportation:'',
+    TransportationRef:'',
+    shipVia:'',
+    ShipAlertInfo:''
     
   };
 
@@ -325,6 +333,11 @@ shipId :number =0;
 
     if(this.shippingDetailsData.ShippingMethod === 'Forwarder')
     {
+      if(!this.SliDetailsVerified)
+      {
+        this.appService.errorMessage('Please have the SLI Details verified ');
+        return;
+      }
 
     }
     else if(!this.AttachementVerified)
@@ -549,6 +562,7 @@ shippingAttachments: ShippingAttachment[] = [];
   }
 
   onSave(): void {
+    this.packagesupdate=[];
 if(this.packages.length<=0)
 {
   this.appService.errorMessage('please add atleast one package by clicking Add Rows.');
@@ -573,7 +587,7 @@ if(this.packages.length<=0)
       LoginID: String(this.appService.loginId),
       Packages: this.packagesupdate
     };
-    
+    debugger;
     this.apiService.saveShipmentpackagesRecord(payload).subscribe({
       next: (response: any) => {
         this.appService.successMessage('saved successfully!');
@@ -606,6 +620,8 @@ if(this.packages.length<=0)
     this.apiService.fetchpackageByShipmentId(shipmentNumber).subscribe({
       next: (res: any) => {
         if (res && res.length > 0) {
+          this.packages = [];
+          this.packagesupdate=[];
           this.packages = res;
         } else {
           this.packages = []; // No API data: allow manual entry.
