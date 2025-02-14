@@ -26,7 +26,21 @@
         (pageChange)="pageChange($event)"
         (cellClick)="onCellClick($event)"
         class="grid-header-sm grid-header-bold">
-        <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title"></kendo-grid-column>
+        <kendo-grid-column field="iseLotNumber" title="Lot/Serial#" [width]="50"></kendo-grid-column>
+        <kendo-grid-column field="customerName" title="Customer Name" [width]="135"></kendo-grid-column>
+        <kendo-grid-column field="device" title="Device" [width]="135"></kendo-grid-column>
+        <kendo-grid-column field="status" title="Status" [width]="65"></kendo-grid-column>
+        <kendo-grid-column field="commitSOD" title="Commit SOD" [width]="70">
+            <ng-template kendoGridCellTemplate let-dataItem>
+                {{ dataItem.commitSOD | date:'MM/dd/yyyy HH:mm:ss' }}
+              </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="holdDate" title="Hold Date" [width]="70"></kendo-grid-column>
+        <kendo-grid-column field="elapsedTimeOfHold" title="Elapsed Time Of Hold" [width]="50">
+            <ng-template kendoGridCellTemplate let-dataItem>
+                {{ dataItem.elapsedTimeOfHold | date:'HH:mm:ss' }}
+            </ng-template>
+        </kendo-grid-column>
     </kendo-grid>
 </div>
 <kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" #gridContextMenu></kendo-contextmenu>
