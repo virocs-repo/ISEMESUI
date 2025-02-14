@@ -2235,17 +2235,8 @@
             <div>
               
               <label style="font-weight: 700; color: maroon;">Commercial Invoice Info  </label>
-              <div style="margin-top: 1%;" *ngIf="shippingDetailsData.ShippingMethod === 'Drop-Off' || shippingDetailsData.ShippingMethod === 'Courier' ||shippingDetailsData.ShippingMethod === 'Pickup'">
-                <label for="ShipAlertInfo">Ship Alert Info </label>
-                          <input
-                            type="text"
-                            id="ShipAlertInfo"
-                            kendoTextBox
-                            name="ShipAlertInfo"
-                            [(ngModel)]="shippingDetailsData.ShipAlertInfo" style="width:30%;"
-                          />
-              </div>
-              <div style="margin-top: 1%;" *ngIf="shippingDetailsData.ShippingMethod === 'Forwarder'">
+
+              <div style="margin-top: 1%;">
                 <label for="Tracking#/AWB">Tracking #/AWB  </label>
                           <input
                             type="text"
@@ -2346,6 +2337,13 @@
               </kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
+              <kendo-grid-column title="Actions" [width]="80">
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                  <button kendoButton type="button"  [svgIcon]="ICON.trashIcon" themeColor="error" (click)="onDeleteRow(rowIndex)">
+                  </button>
+                </ng-template>
+              </kendo-grid-column>
+
             </kendo-grid>
             
           

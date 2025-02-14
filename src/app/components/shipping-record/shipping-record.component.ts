@@ -254,7 +254,7 @@ shipId :number =0;
         this.shippingDetailsData.Weight=res[0].weight;
         this.shippingDetailsData.Width=res[0].referenceNumber1;
         this.shippingDetailsData.Length=res[0].referenceNumber2;
-        this.shippingDetailsData.Height=res[0].otherAccountNumber;
+        this.shippingDetailsData.Height=res[0].otherAccNo;
 
         this.shippingDetailsData.TaxId=res[0].taxId;
         this.shippingDetailsData.Email=res[0].email;
@@ -331,6 +331,13 @@ shipId :number =0;
   gridSelectedKeys: number[] = [];
   shipItem() {
 
+    if(this.shippingAttachments.length<=0)
+      {
+        this.appService.errorMessage('please add atleast one attachment.');
+      
+        return;
+      }
+
     if(this.shippingDetailsData.ShippingMethod === 'Forwarder')
     {
       if(!this.SliDetailsVerified)
@@ -346,6 +353,7 @@ shipId :number =0;
         return;
       }
    
+
    
     if (!this.gridSelectedKeys) {
       this.appService.errorMessage('Please select atleast one record');
@@ -531,20 +539,6 @@ shippingAttachments: ShippingAttachment[] = [];
 
       // Called when the user enters a number and clicks the "Create Rows" button.
   onCreateRows(): void {
-    // Clear any previous data
-    // this.packages = [];
-
-    // // Create as many package rows as entered
-    // for (let i = 0; i < this.numberOfPackages; i++) {
-    //   this.packages.push({
-    //     PackageId: '', // default empty, can be modified later
-    //     PackageNo: i + 1,
-    //     CIPackageDimentions: this.packageDimensionsList.length > 0 ? this.packageDimensionsList[0] : '',
-    //     CIWeight: 0,  // default weight; user can edit
-    //     Active: true  // default active state
-    //   });
-    // }
-
     const newPackageNo = this.packages.length > 0 
       ? Math.max(...this.packages.map(p => p.packageNo)) + 1 
       : 1;
@@ -569,7 +563,8 @@ if(this.packages.length<=0)
 
   return;
 }
-  
+
+
 
     const dataItem: Shipment = this.appService.sharedData.shipping.dataItem;
    for (let i = 0; i < this.packages.length; i++) {
@@ -600,7 +595,14 @@ if(this.packages.length<=0)
       },
     });
   }
-
+  onDeleteRow(rowIndex: number): void {
+    if (rowIndex >= 0 && rowIndex < this.packages.length) {
+      // Update the active flag to false instead of deleting the row.
+      this.packages[rowIndex].active = false;
+    }
+    this.onSave();
+  }
+  
   private fetchpackageDimensions() {
    
     this.apiService.fetchpackageDimensions().subscribe({
