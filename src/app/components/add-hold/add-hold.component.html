@@ -44,7 +44,10 @@
                     <kendo-combobox
                       [(ngModel)]="selectedHoldType"
                       [data]="holdTypes"
+                      [textField]="'holdType'"
+                      [valueField]="'holdTypeId'"
                       placeholder="Select Hold Type"
+                      (selectionChange)="onHoldTypeChange($event)"
                       [disabled]="isReadOnly">
                     </kendo-combobox>
                   </div>
@@ -128,7 +131,7 @@
             <button kendoButton type="button" rounded="large" themeColor="secondary" style="margin-top: 1%;width:6rem;"
               (click)="uploadFilesById(upFiles)" [disabled]="isDisabled.shipBtn" >Upload</button>
               <div>
-                <kendo-grid [data]="shippingAttachments" class="receipt-attachments" style="margin-top: 5%;">
+                <kendo-grid [data]="shippingAttachments" class="receipt-attachments">
                   <kendo-grid-column title="#" [width]="40">
                     <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
                       {{ rowIndex + 1 }}
@@ -156,6 +159,56 @@
                     </ng-template>
                   </kendo-grid-column>
                 </kendo-grid>
+              </div>
+            
+              <div style="margin-top: 3%;">
+                <div>
+                  <label style="font-weight: 700; color: maroon;">Operater Attachements Info  </label>
+                </div>
+                  <kendo-grid [data]="operaterAttachments" [resizable]="true" [reorderable]="true">
+                    <kendo-grid-column title="#" [width]="50">
+                      <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+                        {{ rowIndex + 1 }}
+                      </ng-template>
+                    </kendo-grid-column> 
+                    <kendo-grid-column field="attachedFile" title="File" [width]="200">
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <a class="minimal-text link" [href]="downloadFileApi + dataItem.AttachedFile" target="_blank">
+                          {{ dataItem.attachedFile }}
+                        </a>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column field="attachmentType" title="Attachment Type" [width]="120">
+                    </kendo-grid-column>
+                    <kendo-grid-column field="attachedBy" title="Attached By" [width]="150">
+                    </kendo-grid-column>
+                    <kendo-grid-column field="attachedOn" title="Attached On" [width]="180">
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        {{ dataItem.attachedOn | date: 'dd-MMM-yyyy HH:mm' }}
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column field="updatedBy" title="Updated By" [width]="150">
+                    </kendo-grid-column>
+                    <kendo-grid-column field="updatedOn" title="Updated On" [width]="180">
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        {{ dataItem.updatedOn | date: 'dd-MMM-yyyy HH:mm' }}
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column field="active" title="Status" [width]="100">
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <span [class]="dataItem.Active ? 'active-status' : 'inactive-status'">
+                          {{ dataItem.active ? 'Active' : 'Inactive' }}
+                        </span>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column title="Actions" [width]="100">
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <button kendoButton [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteFile(dataItem)"></button>
+                      </ng-template>
+                    </kendo-grid-column>
+                  
+                  </kendo-grid>
+                  
               </div>
           </kendo-card-body>
         </kendo-card>
