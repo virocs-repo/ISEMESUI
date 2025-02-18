@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FileSelectComponent } from '@progress/kendo-angular-upload';
 import { ApiService } from 'src/app/services/api.service';
-import { ShippingAttachment, ICON } from 'src/app/services/app.interface';
+import { ShippingAttachment, ICON, OperaterAttachments } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { environment } from 'src/environments/environment';
 
@@ -21,10 +21,10 @@ export class AddHoldComponent implements OnInit {
   @Output() cancel = new EventEmitter<void>();
   @Input() mode: string = 'add';
   @Input() selectedGridData: any;
-  holdTypes: string[] = [];
+  holdTypes: any[] = [];
   holdComment: string[] = [];
   isHold: boolean = true;
-  selectedHoldType: string = '';
+  selectedHoldType: any ={};
   selectedHoldComment: string = '';
   holdComments: string = '';
   reason: string = '';
@@ -43,8 +43,8 @@ export class AddHoldComponent implements OnInit {
 
   ngOnInit(): void {
     this.listFiles();
-    this.fetchHoldCodes();
     this.fetchHoldTypes();
+    this.loadOperatorAttachments();
    //this.fetchHoldComments();
     if (this.mode === 'edit') {
       this.populateFields();
@@ -86,8 +86,28 @@ export class AddHoldComponent implements OnInit {
     //this.isReadOnly = !!this.offHoldComments;
   }
 
+  fetchHoldTypes(): void {
+    this.apiService.getHoldType(this.inventoryId).subscribe(
+      (response: any[]) => {
+        this.holdTypes = response; 
+        if (this.mode === 'edit' && this.selectedGridData?.length > 0) {
+          this.selectedHoldType.holdType = this.selectedGridData[0].holdType;
+        }
+      },
+      () => this.appService.errorMessage('Failed to fetch hold codes.')
+    );
+  }
+
+  onHoldTypeChange(selectedItem: any): void {
+    if (selectedItem) {
+      this.selectedHoldType.holdType = selectedItem.holdType;
+      this.selectedHoldType.holdTypeId = selectedItem.holdTypeId;
+    }
+    this.fetchHoldCodes();
+  }
+  
   fetchHoldCodes(): void {
-    this.apiService.getHoldCodes(this.inventoryId).subscribe(
+    this.apiService.getHoldCodes(this.inventoryId,this.selectedHoldType.holdTypeId).subscribe(
       (response: any) => {
         this.treeNodes = response;
           if (this.mode === 'edit' && this.selectedHoldType && !this.holdTypes.includes(this.selectedHoldType)) {
@@ -97,36 +117,12 @@ export class AddHoldComponent implements OnInit {
       (error) => this.appService.errorMessage('Failed to load hold codes.')
     );
   }
-
-  fetchHoldTypes(): void {
-    this.apiService.getHoldType(this.inventoryId).subscribe(
-      (response: any) => {
-          this.holdTypes = response.map((item: any) => item.holdType);
-          if (this.mode === 'edit' && this.selectedGridData?.length > 0) {
-            this.selectedHoldType = this.selectedGridData[0].holdType || '';
-          }
-        },
-      () => this.appService.errorMessage('Failed to fetch hold codes.')
-    );
-  }
-
- /* fetchHoldComments(): void {
-    this.apiService.getHoldComments().subscribe(
-      (response: any) => {
-          this.holdComment = response.map((item: any) => item.holdComments);
-          if (this.mode === 'edit' && this.selectedGridData?.length > 0) {
-            this.selectedHoldComment = this.selectedGridData[0].holdComment || '';
-          }
-        },
-      () => this.appService.errorMessage('Failed to fetch hold codes.')
-    );
-  }*/
-
+  
   onSelectionChange(event: any): void {
     const selectedNode = event.dataItem;
     if (selectedNode) {
       this.reason = selectedNode.holdCode || selectedNode.groupName;
-      this.selectedIds = [selectedNode.holdCodeId];
+      this.selectedIds.push(selectedNode.holdCodeId);
     }
   }  
 
@@ -135,17 +131,18 @@ export class AddHoldComponent implements OnInit {
       this.appService.errorMessage('Please fill in the required fields.');
       return;
     }
-    const groupName = this.treeNodes?.[0]?.groupName || null;
+    
+    const groupName = this.treeNodes?.[2]?.groupName || null;
     const payload = {
       InventoryXHoldId: this.inventoryXHoldId || null,
       InventoryId: this.inventoryId,
       Reason: this.reason,
       HoldComments: this.holdComments,
-      HoldType: this.selectedHoldType,
+      HoldType: this.selectedHoldType.holdType,
       GroupName: groupName,
-      HoldCodeId: 10,//this.selectedIds[0] || null,
+      HoldCodeId: this.selectedIds.length>0?this.selectedIds[0]:null,
       OffHoldComments: this.isHold ? null : this.offHoldComments,
-      UserId: 1
+      UserId: this.appService.loginId
     };
     this.apiService.upsertInventoryHold(payload, { responseType: 'text' }).subscribe(
       () => {
@@ -236,5 +233,17 @@ export class AddHoldComponent implements OnInit {
         this.appService.errorMessage('Error: Unable to delete file')
       }
     })
+  }
+  operaterAttachments: OperaterAttachments[] = [];
+  TFSHoldId: number = 63034; // This should be dynamically set
+
+  loadOperatorAttachments() {
+    this.apiService.getOperaterAttachments(this.TFSHoldId).subscribe(
+        (data) => {
+            console.log("API Response:", data); // Debugging
+            this.operaterAttachments = Array.isArray(data) ? data : [];
+        },
+        (error) => console.error("Error:", error)
+    );
   }
 }
