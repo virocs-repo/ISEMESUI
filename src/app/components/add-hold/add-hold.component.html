@@ -201,14 +201,7 @@
                         </span>
                       </ng-template>
                     </kendo-grid-column>
-                    <kendo-grid-column title="Actions" [width]="100">
-                      <ng-template kendoGridCellTemplate let-dataItem>
-                        <button kendoButton [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteFile(dataItem)"></button>
-                      </ng-template>
-                    </kendo-grid-column>
-                  
                   </kendo-grid>
-                  
               </div>
           </kendo-card-body>
         </kendo-card>

@@ -235,10 +235,8 @@ export class AddHoldComponent implements OnInit {
     })
   }
   operaterAttachments: OperaterAttachments[] = [];
-  TFSHoldId: number = 63034; // This should be dynamically set
-
   loadOperatorAttachments() {
-    this.apiService.getOperaterAttachments(this.TFSHoldId).subscribe(
+    this.apiService.getOperaterAttachments(this.selectedGridData[0]?.tfsHold).subscribe(
         (data) => {
             console.log("API Response:", data); // Debugging
             this.operaterAttachments = Array.isArray(data) ? data : [];
