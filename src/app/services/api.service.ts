@@ -396,8 +396,8 @@ export class ApiService {
   getHoldType(inventoryId: number): Observable<any[]> {
     return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getHoldType?inventoryId=${inventoryId}`);
   }
-  getHoldCodes(inventoryId: number): Observable<any[]> {
-    return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getHold?inventoryId=${inventoryId}`);
+  getHoldCodes(inventoryId: number,holdTypeId: number): Observable<any[]> {
+    return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getHold?inventoryId=${inventoryId}&holdTypeId=${holdTypeId}`);
   }
   getAllHolds(inventoryId: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getAllHolds?inventoryId=${inventoryId}`);
@@ -410,6 +410,9 @@ export class ApiService {
   }
   getHoldComments() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getHoldComments`);
+  }
+  getOperaterAttachments(TFSHoldId:number){
+    return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getOperaterAttachments?TFSHoldId=${TFSHoldId}`);
   }
   getCustomerDetails(inventoryID: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getCustomerDetails?inventoryID=${inventoryID}`);

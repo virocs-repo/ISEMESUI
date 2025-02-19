@@ -752,7 +752,20 @@ export interface InterimDevice {
   IsHold:boolean
   Active:boolean
 }
-
+export interface OperaterAttachments{
+  AttachmentId : number
+  TRVStepId : number
+  TransactionId : number
+  AttachedFile : string
+  AttachmentTypeId : number
+  AttachmentType : string
+  AttachedById :number
+  AttachedBy : string
+  UpdatedBy : string
+  AttachedOn : Date
+  UpdatedOn : Date
+  Active : boolean
+}
 export interface ShippingAttachment {
   attachmentId: number,
   objectID: number,
