@@ -58,7 +58,7 @@
       class="grid-header-sm grid-header-bold" 
       [rowClass]="rowCallback"
       style="height: 40vh;">
-      <kendo-grid-column [width]="80">
+      <kendo-grid-column [width]="30">
         <ng-template kendoGridCellTemplate let-dataItem>
           <button kendoButton *ngIf="!dataItem.offHoldComments; else viewButtonTemplate" (click)="openEditDialog(dataItem)" themeColor="info">Edit</button>
           <ng-template #viewButtonTemplate>
@@ -66,7 +66,22 @@
           </ng-template>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title"></kendo-grid-column>
+      <kendo-grid-column field="holdCode" title="Code" [width]="60"></kendo-grid-column>
+      <kendo-grid-column field="holdComments" title="Hold Comments" [width]="55"></kendo-grid-column>
+      <kendo-grid-column field="reason" title="Reason" [width]="70"></kendo-grid-column>
+      <kendo-grid-column field="offHoldComments" title="Off Hold Comments" [width]="60"></kendo-grid-column>
+      <kendo-grid-column field="holdBy" title="Hold By" [width]="60"></kendo-grid-column>
+      <kendo-grid-column field="holdDate" title="Hold Date" [width]="65">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.holdDate | date:'MM/dd/yyyy HH:mm:ss' }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="offHoldBy" title="Off Hold By" [width]="60"></kendo-grid-column>
+      <kendo-grid-column field="offHoldDate" title="Off Hold Date" [width]="65">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.offHoldDate | date:'MM/dd/yyyy HH:mm:ss' }}
+        </ng-template>
+      </kendo-grid-column>
     </kendo-grid>
   </div>
   <div class="k-d-flex k-gap-3 k-mt-2">

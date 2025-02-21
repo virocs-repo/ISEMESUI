@@ -402,8 +402,14 @@ export class ApiService {
   getAllHolds(inventoryId: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getAllHolds?inventoryId=${inventoryId}`);
   }
-  upsertInventoryHold(request: any, options: { responseType: 'text' }): Observable<any> {
-    return this.httpClient.post(`${API}v1/ise/inventory/inventoryHold/UpsertHold`, request, options);
+  upsertInventoryHold(request: any,options: { responseType: 'text' },file?: File): Observable<any> {
+    const formData = new FormData();
+    if(file)
+    {
+      formData.append('file', file);
+    }
+    formData.append('input', JSON.stringify(request));
+    return this.httpClient.post(`${API}v1/ise/inventory/inventoryHold/UpsertHold`, formData, options);
   }
   getHoldDetails(inventoryXHoldId: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getHoldDetails?inventoryXHoldId=${inventoryXHoldId}`);

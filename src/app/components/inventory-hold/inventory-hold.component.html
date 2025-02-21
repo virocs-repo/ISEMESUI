@@ -36,11 +36,7 @@
               </ng-template>
         </kendo-grid-column>
         <kendo-grid-column field="holdDate" title="Hold Date" [width]="70"></kendo-grid-column>
-        <kendo-grid-column field="elapsedTimeOfHold" title="Elapsed Time Of Hold" [width]="50">
-            <ng-template kendoGridCellTemplate let-dataItem>
-                {{ dataItem.elapsedTimeOfHold | date:'HH:mm:ss' }}
-            </ng-template>
-        </kendo-grid-column>
+        <kendo-grid-column field="elapsedTimeOfHold" title="Elapsed Time Of Hold" [width]="50"></kendo-grid-column>
     </kendo-grid>
 </div>
 <kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" #gridContextMenu></kendo-contextmenu>

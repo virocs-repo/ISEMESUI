@@ -4,6 +4,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { ShippingAttachment, ICON, OperaterAttachments } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { environment } from 'src/environments/environment';
+import { SelectEvent } from '@progress/kendo-angular-upload';
 
 @Component({
   selector: 'app-add-hold',
@@ -39,12 +40,13 @@ export class AddHoldComponent implements OnInit {
   isReadOnly: boolean = false;
   isView: boolean = false;
   showHoldFields:boolean = false;
+  fileToUpload: File | undefined;
   constructor(private appService: AppService, private apiService: ApiService) {}
 
   ngOnInit(): void {
-    this.listFiles();
     this.fetchHoldTypes();
     this.loadOperatorAttachments();
+    this.listFiles();
    //this.fetchHoldComments();
     if (this.mode === 'edit') {
       this.populateFields();
@@ -72,7 +74,7 @@ export class AddHoldComponent implements OnInit {
 
   populateFields(): void {
     if (this.selectedGridData) {
-      this.selectedHoldType = this.selectedGridData[0]?.holdType || '';
+      //this.selectedHoldType = this.holdTypes.find(e => e.holdType==  this.selectedGridData[0]?.holdType);
       this.holdComments = this.selectedGridData[0]?.holdComments || '';
       this.reason = this.selectedGridData[0]?.reason || '';
       this.offHoldComments = this.selectedGridData[0]?.offHoldComments || '';
@@ -82,6 +84,7 @@ export class AddHoldComponent implements OnInit {
       this.holdTime = this.selectedGridData[0]?.createdOn || null;
       this.offHoldBy = this.selectedGridData[0]?.offHoldBy || null;
       this.offHoldTime = this.selectedGridData[0]?.offHoldDate || null;
+      this.listFiles();
     }
     //this.isReadOnly = !!this.offHoldComments;
   }
@@ -91,7 +94,7 @@ export class AddHoldComponent implements OnInit {
       (response: any[]) => {
         this.holdTypes = response; 
         if (this.mode === 'edit' && this.selectedGridData?.length > 0) {
-          this.selectedHoldType.holdType = this.selectedGridData[0].holdType;
+          this.selectedHoldType = this.holdTypes.find(e=> e.holdType == this.selectedGridData[0].holdType);
         }
       },
       () => this.appService.errorMessage('Failed to fetch hold codes.')
@@ -99,10 +102,8 @@ export class AddHoldComponent implements OnInit {
   }
 
   onHoldTypeChange(selectedItem: any): void {
-    if (selectedItem) {
-      this.selectedHoldType.holdType = selectedItem.holdType;
-      this.selectedHoldType.holdTypeId = selectedItem.holdTypeId;
-    }
+    this.selectedHoldType.holdType = selectedItem.holdType;
+    this.selectedHoldType.holdTypeId= selectedItem.holdTypeId;
     this.fetchHoldCodes();
   }
   
@@ -110,7 +111,7 @@ export class AddHoldComponent implements OnInit {
     this.apiService.getHoldCodes(this.inventoryId,this.selectedHoldType.holdTypeId).subscribe(
       (response: any) => {
         this.treeNodes = response;
-          if (this.mode === 'edit' && this.selectedHoldType && !this.holdTypes.includes(this.selectedHoldType)) {
+          if (this.mode === 'edit' && this.selectedHoldType.holdType && !this.holdTypes.includes(this.selectedHoldType.holdType)) {
           this.holdTypes.push(this.selectedHoldType);
         }
       },
@@ -127,12 +128,23 @@ export class AddHoldComponent implements OnInit {
   }  
 
   save(): void {
-    if (!this.holdComments || !this.selectedHoldType || !this.reason ) {
+    if (!this.holdComments || !this.selectedHoldType ) {
       this.appService.errorMessage('Please fill in the required fields.');
       return;
     }
+    var holdCodeId = 0;
+    var groupName = null;
+    if(this.mode=== "edit")
+    {
+      holdCodeId = this.selectedGridData[0].holdCodeId;
+      groupName = this.selectedGridData[0].groupName;
+    }
+    else
+    {
+      holdCodeId = this.selectedIds.length>0?this.selectedIds[0]:null;
+      groupName = this.treeNodes?.[2]?.groupName || null;
+    }
     
-    const groupName = this.treeNodes?.[2]?.groupName || null;
     const payload = {
       InventoryXHoldId: this.inventoryXHoldId || null,
       InventoryId: this.inventoryId,
@@ -140,21 +152,41 @@ export class AddHoldComponent implements OnInit {
       HoldComments: this.holdComments,
       HoldType: this.selectedHoldType.holdType,
       GroupName: groupName,
-      HoldCodeId: this.selectedIds.length>0?this.selectedIds[0]:null,
+      HoldCodeId: holdCodeId,
       OffHoldComments: this.isHold ? null : this.offHoldComments,
-      UserId: this.appService.loginId
+      UserId: this.appService.loginId,
+      CategoryName: 'Hold',
     };
-    this.apiService.upsertInventoryHold(payload, { responseType: 'text' }).subscribe(
-      () => {
-        this.appService.successMessage('Hold details have been saved successfully!');
-        this.dataUpdated.emit();
-        this.cancel.emit();
-      },
-      () => 
-        {
-          this.appService.errorMessage('Failed to save hold details.')
-        }
-    );
+    if(this.fileToUpload)
+      {
+        this.apiService.upsertInventoryHold(payload, { responseType: 'text' },this.fileToUpload).subscribe(
+          () => {
+            this.appService.successMessage('Hold details have been saved successfully!');
+            this.dataUpdated.emit();
+            this.cancel.emit();
+            this.listFiles();
+          },
+          () => 
+            {
+              this.appService.errorMessage('Failed to save hold details.')
+            }
+        );
+
+      } 
+      else{
+        this.apiService.upsertInventoryHold(payload, { responseType: 'text' }).subscribe(
+          () => {
+            this.appService.successMessage('Hold details have been saved successfully!');
+            this.dataUpdated.emit();
+            this.cancel.emit();
+            this.listFiles();
+          },
+          () => 
+            {
+              this.appService.errorMessage('Failed to save hold details.')
+            }
+        );
+      }
   }  
 
   resetForm(): void {
@@ -171,11 +203,9 @@ export class AddHoldComponent implements OnInit {
     shipBtn: false,
     clearBtn: false
   }
-  onUpload(event: any): void {
+  onUpload(event: SelectEvent): void {
     const formData = new FormData();
-    event.files.forEach((file: any) => {
-      formData.append('files', file.rawFile);
-    });
+    this.fileToUpload = event.files[0].rawFile;
   }
 
   shippingAttachments: ShippingAttachment[] = [];
@@ -192,8 +222,8 @@ export class AddHoldComponent implements OnInit {
         return;
       }
       const inputFilename = file.name.replace(/\.[^/.]+$/, '');
-      const inventoryID = this.inventoryId;    
-      this.apiService.uploadFileByIds(file, inputFilename, inventoryID, this.appService.loginId,'ShipAlert').subscribe({
+      const inventoryID = this.selectedGridData[0].inventoryXHoldId;    
+      this.apiService.uploadFileByIds(file, inputFilename, inventoryID, this.appService.loginId,'Hold').subscribe({
         next: (v: any) => {
           this.appService.successMessage('Success: File uploaded!');
           upFiles.clearFiles();
@@ -212,7 +242,7 @@ export class AddHoldComponent implements OnInit {
     if (!this.inventoryId) {
       return;
     }
-    this.apiService.listFilesById(this.inventoryId,'ShipAlert').subscribe({
+    this.apiService.listFilesById(this.selectedGridData[0]?.inventoryXHoldId,'Hold').subscribe({
       next: (v: any) => {
         this.shippingAttachments = v;
       }
