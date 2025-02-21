@@ -1,5 +1,5 @@
 <div>
-  <kendo-tabstrip>
+  <kendo-tabstrip [keepTabContent]="true">
     <kendo-tabstrip-tab title="Lot Info" [selected]="true">
       <ng-template kendoTabContent>
         <div class="k-m-2 k-overflow-y-auto" style="height: auto">
@@ -125,11 +125,11 @@
             <div>
               <label style="font-weight: 700; color: maroon;">Hold Alert Info  </label>
             </div>
-            <kendo-fileselect #upFiles  (upload)="onUpload($event)"
+            <kendo-fileselect #upFiles  (select)="onUpload($event)"
               [multiple]="false">
             </kendo-fileselect>
-            <button kendoButton type="button" rounded="large" themeColor="secondary" style="margin-top: 1%;width:6rem;"
-              (click)="uploadFilesById(upFiles)" [disabled]="isDisabled.shipBtn" >Upload</button>
+          <!--<button kendoButton type="button" rounded="large" themeColor="secondary" style="margin-top: 1%;width:6rem;"
+              (click)="uploadFilesById(upFiles)" [disabled]="isDisabled.shipBtn" >Upload</button> -->
               <div>
                 <kendo-grid [data]="shippingAttachments" class="receipt-attachments">
                   <kendo-grid-column title="#" [width]="40">
@@ -205,6 +205,10 @@
               </div>
           </kendo-card-body>
         </kendo-card>
+        <div class="k-d-flex k-gap-3 k-mt-3">
+          <button kendoButton type="button" rounded="full" themeColor="info" class="k-ml-auto" style="width:6rem" (click)="save()" [hidden]="isView">Save</button>
+          <button kendoButton type="button" rounded="full" themeColor="error" style="width:6rem" (click)="resetForm()" [hidden]="true">Cancel</button>
+        </div>
       </ng-template>
       </kendo-tabstrip-tab>
   </kendo-tabstrip>
