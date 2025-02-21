@@ -2,7 +2,7 @@ import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
 import { GridDataResult, SelectableSettings } from '@progress/kendo-angular-grid';
 import { FileSelectComponent } from '@progress/kendo-angular-upload';
 import { ApiService } from 'src/app/services/api.service';
-import { Customer, ICON, MESSAGES, Package, PackageUpdate, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2, ShippingAttachment, UpsertShipPackageDimensionReq } from 'src/app/services/app.interface';
+import { Customer, ICON, MESSAGES, Package, PackageUpdate, ParcelRequest, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2, ShippingAttachment, UpsertShipPackageDimensionReq } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { environment } from 'src/environments/environment';
 
@@ -330,7 +330,7 @@ shipId :number =0;
   }
   gridSelectedKeys: number[] = [];
   shipItem() {
-
+debugger;
     if(this.shippingAttachments.length<=0)
       {
         this.appService.errorMessage('please add atleast one attachment.');
@@ -370,7 +370,8 @@ shipId :number =0;
     const dataItem: Shipment = this.appService.sharedData.shipping.dataItem;
     // dataItem.clientAccountNumber="345345345"
     dataItem.clientAccountNumber=this.shippingDetailsData.AccountNumber;
-   
+    this.packages.sort((a, b) => a.packageNo - b.packageNo);
+    dataItem.Parcels=this.convertPackagesToParcels(this.packages);
     const body = { ...sd, ...dataItem }
     this.appService.isLoading = true;
     this.apiService.createShipment(body).subscribe({
@@ -392,15 +393,31 @@ shipId :number =0;
       }
     });
   }
+   convertPackagesToParcels(packages: Package[]): ParcelRequest[] {
+    return packages.map(pkg => {
+      const [length, width, height] = pkg.ciPackageDimentions.split("x").map(Number);
+      return {
+        length,
+        width,
+        height,
+        distanceUnit: "in", // Default unit
+        weight: pkg.ciWeight,
+        massUnit: "lb" // Default unit
+      };
+    });
+  }
+
   saveShipment() {
+
+    this.onSavefromship();
     if (!this.customerSelected) {
       this.appService.errorMessage('Please select customer');
       return;
     }
     const requiredFields = [
       this.shipmentNumber, this.shipmentCategorySelected, this.shipmentLocation,
-      this.receiptLocationSelected, this.senderInformation, this.customerInformation,
-      this.shipmentComments
+      this.receiptLocationSelected, this.customerInformation
+      
     ]
     const isValid = !requiredFields.some(v => !v);
     if (!isValid) {
@@ -582,15 +599,53 @@ if(this.packages.length<=0)
       LoginID: String(this.appService.loginId),
       Packages: this.packagesupdate
     };
-    debugger;
+   
     this.apiService.saveShipmentpackagesRecord(payload).subscribe({
       next: (response: any) => {
-        this.appService.successMessage('saved successfully!');
+        this.appService.successMessage('saved package info successfully!');
 
         this.fetchpackageByShipmentId(this.shipId);
       },
       error: (error: any) => {
-        this.appService.errorMessage('Failed to create shipment record.');
+        this.appService.errorMessage('Failed to save.');
+        console.error('API error:', error);
+      },
+    });
+  }
+  onSavefromship(): void {
+    this.packagesupdate=[];
+if(this.packages.length<=0)
+{
+  this.appService.errorMessage('please add atleast one package by clicking Add Rows.');
+
+  return;
+}
+
+
+
+    const dataItem: Shipment = this.appService.sharedData.shipping.dataItem;
+   for (let i = 0; i < this.packages.length; i++) {
+       this.packagesupdate.push({
+         PackageId: String(this.packages[i].packageId), // default empty, can be modified later
+         PackageNo: this.packages[i].packageNo,
+         CIPackageDimentions:this.packages[i].ciPackageDimentions,
+         CIWeight:this.packages[i].ciWeight,
+        Active: this.packages[i].active
+       });
+     }
+
+    const payload: UpsertShipPackageDimensionReq = {
+      ShipmentID: String(dataItem.shipmentId),
+      LoginID: String(this.appService.loginId),
+      Packages: this.packagesupdate
+    };
+   
+    this.apiService.saveShipmentpackagesRecord(payload).subscribe({
+      next: (response: any) => {
+        this.fetchpackageByShipmentId(this.shipId);
+      },
+      error: (error: any) => {
+        this.appService.errorMessage('Failed to save.');
         console.error('API error:', error);
       },
     });

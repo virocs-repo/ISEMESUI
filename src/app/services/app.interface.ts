@@ -1,5 +1,5 @@
 import { MenuItem } from "@progress/kendo-angular-menu";
-import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, kpiStatusHoldIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, printIcon, selectBoxIcon, trashIcon, userIcon, windowRestoreIcon, xIcon } from "@progress/kendo-svg-icons";
+import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, kpiStatusHoldIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, printIcon, selectBoxIcon, trashIcon, userIcon, windowRestoreIcon, xIcon ,saveIcon} from "@progress/kendo-svg-icons";
 
 export interface CustomerType {
   customerTypeID: number;
@@ -240,7 +240,8 @@ export const ICON = {
   logoutIcon,
   printIcon,
   kpiStatusHoldIcon,
-  trashIcon
+  trashIcon,
+  saveIcon
 }
 
 export const MESSAGES = {
@@ -306,6 +307,7 @@ export interface Shipment {
   holdComments: string;
   deliveryInfoId:number;
   clientAccountNumber :string;
+  Parcels :ParcelRequest[];
 }
 export interface CustomerOrderDetail {
   CustomerOrderDetailID: number | null;
@@ -796,4 +798,13 @@ export interface UpsertShipPackageDimensionReq {
   ShipmentID: string,
   LoginID: string,
   Packages: PackageUpdate[]
+}
+
+export interface ParcelRequest {
+  length: number;
+  width: number;
+  height: number;
+  distanceUnit: string; // Default "in"
+  weight: number;
+  massUnit: string; // Default "lb"
 }

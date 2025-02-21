@@ -22,12 +22,12 @@
                 </div>
                 <div class="k-d-flex k-gap-6">
                   <kendo-label text="Sender Information" class="k-w-full">
-                    <b class="required-label"></b>
+                    <b ></b>
                     <kendo-textarea [(ngModel)]="senderInformation" [rows]="2" 
                       rounded="large"></kendo-textarea>
                   </kendo-label>
                   <kendo-label text="Shipping Comments" class="k-w-full">
-                    <b class="required-label"></b>
+                    <b ></b>
                     <kendo-textarea [(ngModel)]="shipmentComments" [rows]="2"
                       rounded="large"></kendo-textarea>
                   </kendo-label>
@@ -2337,21 +2337,27 @@
               </kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column title="Actions" [width]="80">
+              <kendo-grid-column title="Actions" [width]="160">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <button kendoButton type="button"  [svgIcon]="ICON.trashIcon" themeColor="error" (click)="onDeleteRow(rowIndex)">
                   </button>
+                  <button kendoButton type="button"  [svgIcon]="ICON.saveIcon" themeColor="success" (click)="onSave()" style="margin-left: 10%;">
+                  </button>
                 </ng-template>
+               
               </kendo-grid-column>
+
+              <!-- <kendo-grid-column title="Actions" [width]="80">
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                   <button kendoButton type="button"  [svgIcon]="ICON.saveIcon" themeColor="success" (click)="onSave()">
+                  </button>
+                </ng-template>
+              </kendo-grid-column> -->
 
             </kendo-grid>
             
           
-            <div style=" margin-top: 1%; text-align: right;">
-              <button kendoButton type="button" rounded="full" themeColor="success" class="k-w-25" [disabled]="isDisabled.shipBtn" 
-              (click)="onSave()">Save</button>
-             
-            </div>
+        
           
           </kendo-card-body>
         </kendo-card>
