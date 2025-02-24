@@ -2,3 +2,23 @@
     pointer-events: none;
     opacity: 0.5;
   }
+
+  fieldset.hold-details .k-label
+  {
+      color: black;
+  }
+
+  fieldset.hold-details .checkbox,
+  fieldset.hold-details .combobox,
+  fieldset.hold-details .checkbox,
+  fieldset.hold-details .textbox,
+  fieldset.hold-details .textarea,
+  fieldset.hold-details .value-text {
+    color: black;
+    border-color: black;
+    opacity: 1 !important;
+  }
+  ::ng-deep .checkbox .k-checkbox {
+    border: 2px solid black !important;
+  }
+  

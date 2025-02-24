@@ -22,6 +22,7 @@ export class EditInventoryHoldComponent implements OnInit {
   public numberOfHolds: number = 0;
   customerName: string = '';
   device: string = '';
+  editholdDate : string ='';
   public columnData = [
     { field: 'holdCode', title: 'Code' },
     { field: 'reason', title: 'Reason' },
@@ -78,6 +79,7 @@ export class EditInventoryHoldComponent implements OnInit {
       next: (data: any) => {
         this.customerName = data[0].customerName;
         this.device = data[0].device;
+        this.editholdDate = data[0].holdTime;
       },
       error: (err) => {
         console.error('Error fetching inventory details', err);

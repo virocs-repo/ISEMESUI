@@ -26,6 +26,7 @@ export class AddHoldComponent implements OnInit {
   holdComment: string[] = [];
   isHold: boolean = true;
   selectedHoldType: any ={};
+  selectedHoldCode: string = '';
   selectedHoldComment: string = '';
   holdComments: string = '';
   reason: string = '';
@@ -48,6 +49,7 @@ export class AddHoldComponent implements OnInit {
     this.loadOperatorAttachments();
     this.listFiles();
    //this.fetchHoldComments();
+   setTimeout(() => {
     if (this.mode === 'edit') {
       this.populateFields();
       this.isReadOnly = true;
@@ -65,6 +67,7 @@ export class AddHoldComponent implements OnInit {
       this.isReadOnly = false;
     }
     //this.isReadOnly = !!this.offHoldComments;
+  }, 500);
   }
 
   onHoldChanged(){
@@ -84,16 +87,18 @@ export class AddHoldComponent implements OnInit {
       this.holdTime = this.selectedGridData[0]?.createdOn || null;
       this.offHoldBy = this.selectedGridData[0]?.offHoldBy || null;
       this.offHoldTime = this.selectedGridData[0]?.offHoldDate || null;
+      this.selectedHoldCode = this.selectedGridData[0]?.holdCode || ''; 
       this.listFiles();
     }
     //this.isReadOnly = !!this.offHoldComments;
   }
+  
 
   fetchHoldTypes(): void {
     this.apiService.getHoldType(this.inventoryId).subscribe(
       (response: any[]) => {
         this.holdTypes = response; 
-        if (this.mode === 'edit' && this.selectedGridData?.length > 0) {
+        if (this.selectedGridData?.length > 0) {
           this.selectedHoldType = this.holdTypes.find(e=> e.holdType == this.selectedGridData[0].holdType);
         }
       },
