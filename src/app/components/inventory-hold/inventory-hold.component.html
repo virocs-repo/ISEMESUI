@@ -32,10 +32,14 @@
         <kendo-grid-column field="status" title="Status" [width]="65"></kendo-grid-column>
         <kendo-grid-column field="commitSOD" title="Commit SOD" [width]="70">
             <ng-template kendoGridCellTemplate let-dataItem>
-                {{ dataItem.commitSOD | date:'MM/dd/yyyy HH:mm:ss' }}
+                {{ dataItem.commitSOD | date: 'MM-dd-yyyy HH:mm a' }}
               </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="holdDate" title="Hold Date" [width]="70"></kendo-grid-column>
+        <kendo-grid-column field="holdDate" title="Hold Date" [width]="70">
+            <ng-template kendoGridCellTemplate let-dataItem>
+                {{ dataItem.holdDate | date: 'MM-dd-yyyy HH:mm a' }}
+              </ng-template>
+        </kendo-grid-column>
         <kendo-grid-column field="elapsedTimeOfHold" title="Elapsed Time Of Hold" [width]="50"></kendo-grid-column>
     </kendo-grid>
 </div>
