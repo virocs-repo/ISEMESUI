@@ -108,14 +108,14 @@
                   <kendo-label class="k-mb-0" style="min-width: 150px;">Hold By:</kendo-label>
                   <span class="value-text">{{ holdBy || '......' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                   <kendo-label class="k-mb-0" style="min-width: 150px;">Hold Time:</kendo-label>
-                  <span class="value-text">{{ holdTime || '......' }}</span>
+                  <span class="value-text">{{ holdTime ? (holdTime | date: 'MM-dd-yyyy HH:mm a') : '......' }}</span>
                 </div>
             
                 <div *ngIf="mode === 'view'" class="k-d-flex k-align-items-center k-gap-3">
                   <kendo-label class="k-mb-0" style="min-width: 150px;">Off Hold By:</kendo-label>
                   <span class="value-text">{{ offHoldBy || '......' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                   <kendo-label class="k-mb-0" style="min-width: 150px;">Off Hold Time:</kendo-label>
-                  <span class="value-text">{{ offHoldTime || '......' }}</span>
+                  <span class="value-text">{{ offHoldTime ? (offHoldTime | date: 'MM-dd-yyyy HH:mm a') : '......' }}</span>
                 </div>
               </div>
             </fieldset>
@@ -158,7 +158,7 @@
                   </kendo-grid-column>
                   <kendo-grid-column field="createdON" title="Attached On">
                     <ng-template kendoGridCellTemplate let-dataItem>
-                      <a class="minimal-text" [title]="dataItem.createdON">{{dataItem.createdON}}</a>
+                      <a class="minimal-text" [title]="dataItem.createdON">{{dataItem.createdON | date: 'MM-dd-yyyy HH:mm a'}}</a>
                     </ng-template>
                   </kendo-grid-column>
                   
@@ -193,14 +193,14 @@
                     </kendo-grid-column>
                     <kendo-grid-column field="attachedOn" title="Attached On" [width]="180">
                       <ng-template kendoGridCellTemplate let-dataItem>
-                        {{ dataItem.attachedOn | date: 'dd-MMM-yyyy HH:mm' }}
+                        {{ dataItem.attachedOn | date: 'MM-dd-yyyy HH:mm a' }}
                       </ng-template>
                     </kendo-grid-column>
                     <kendo-grid-column field="updatedBy" title="Updated By" [width]="150">
                     </kendo-grid-column>
                     <kendo-grid-column field="updatedOn" title="Updated On" [width]="180">
                       <ng-template kendoGridCellTemplate let-dataItem>
-                        {{ dataItem.updatedOn | date: 'dd-MMM-yyyy HH:mm' }}
+                        {{ dataItem.updatedOn | date: 'MM-dd-yyyy HH:mm a' }}
                       </ng-template>
                     </kendo-grid-column>
                     <kendo-grid-column field="active" title="Status" [width]="100">

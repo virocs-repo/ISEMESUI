@@ -16,7 +16,7 @@
         </div>
         <div class="field-container" style="flex: 1; display: flex; align-items: center;">
           <kendo-label [for]="'editholdDate'" class="label-text">
-            <strong>Hold Date:</strong>
+            <strong>Cumulative Hold Time:</strong>
           </kendo-label>
           <span class="value-text" style="margin-left: 0.5rem;">{{ editholdDate }}</span>
         </div>
@@ -66,7 +66,7 @@
       class="grid-header-sm grid-header-bold" 
       [rowClass]="rowCallback"
       style="height: 40vh;">
-      <kendo-grid-column [width]="30">
+      <kendo-grid-column [width]="30" [columnMenu]="false">
         <ng-template kendoGridCellTemplate let-dataItem>
           <button kendoButton *ngIf="!dataItem.offHoldComments; else viewButtonTemplate" (click)="openEditDialog(dataItem)" themeColor="info">Edit</button>
           <ng-template #viewButtonTemplate>
@@ -78,16 +78,17 @@
       <kendo-grid-column field="holdComments" title="Hold Comments" [width]="55"></kendo-grid-column>
       <kendo-grid-column field="reason" title="Reason" [width]="70"></kendo-grid-column>
       <kendo-grid-column field="offHoldComments" title="Off Hold Comments" [width]="60"></kendo-grid-column>
+      <kendo-grid-column field="source" title="Source" [width]="60"></kendo-grid-column>
       <kendo-grid-column field="holdBy" title="Hold By" [width]="60"></kendo-grid-column>
       <kendo-grid-column field="holdDate" title="Hold Date" [width]="65">
         <ng-template kendoGridCellTemplate let-dataItem>
-          {{ dataItem.holdDate | date:'MM/dd/yyyy HH:mm:ss' }}
+          {{ dataItem.holdDate | date: 'MM-dd-yyyy HH:mm a' }}
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column field="offHoldBy" title="Off Hold By" [width]="60"></kendo-grid-column>
       <kendo-grid-column field="offHoldDate" title="Off Hold Date" [width]="65">
         <ng-template kendoGridCellTemplate let-dataItem>
-          {{ dataItem.offHoldDate | date:'MM/dd/yyyy HH:mm:ss' }}
+          {{ dataItem.offHoldDate | date: 'MM-dd-yyyy HH:mm a' }}
         </ng-template>
       </kendo-grid-column>
     </kendo-grid>

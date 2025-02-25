@@ -126,11 +126,14 @@ export class AddHoldComponent implements OnInit {
   
   onSelectionChange(event: any): void {
     const selectedNode = event.dataItem;
-    if (selectedNode) {
-      this.reason = selectedNode.holdCode || selectedNode.groupName;
+    if (selectedNode && selectedNode.holdCode) {
+      this.reason = selectedNode.holdCode;
       this.selectedIds.push(selectedNode.holdCodeId);
+    } else {
+      this.appService.errorMessage('Please select a valid Hold Code.');
     }
-  }  
+  }
+  
 
   save(): void {
     if (!this.holdComments || !this.selectedHoldType ) {
