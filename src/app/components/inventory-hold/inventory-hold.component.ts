@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { GridDataResult, PageChangeEvent } from "@progress/kendo-angular-grid";
+import { CellClickEvent, GridDataResult, PageChangeEvent } from "@progress/kendo-angular-grid";
 import { ContextMenuComponent, ContextMenuSelectEvent } from "@progress/kendo-angular-menu";
 import { ApiService } from "src/app/services/api.service";
 import { ICON } from 'src/app/services/app.interface';
+import { AppService } from "src/app/services/app.service";
 
 @Component({
   selector: 'app-inventory-hold',
@@ -17,6 +18,17 @@ export class InventoryHoldComponent implements OnInit {
   private originalData: any[] = [];
   public isEditMode: boolean = true;
   public searchTerm: string = '';
+  selectableSettings: any = {
+    checkboxOnly: true,
+    mode: 'single',
+  }
+  columnMenuSettings: any = {
+    lock: false,
+    stick: false,
+    setColumnPosition: { expanded: true },
+    autoSizeColumn: true,
+    autoSizeAllColumns: true,
+  }
   public gridDataResult: GridDataResult = { data: [], total: 0 };
   format: string = 'yyyy-MM-dd'; 
   fromDate: Date | null = null;
@@ -39,7 +51,7 @@ export class InventoryHoldComponent implements OnInit {
   public selectedRowIndex: number = -1;
   public dataItemSelected: any;
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService,public appService: AppService) { }
 
   ngOnInit(): void {
     this.loadGridData();
@@ -86,13 +98,25 @@ export class InventoryHoldComponent implements OnInit {
   openDialog() {
     this.isDialogOpen = true;
   }
-  onCellClick(event: any): void {
-    const originalEvent = event.originalEvent;
-    originalEvent.preventDefault();
-    this.dataItemSelected = event.dataItem;
-    this.selectedRowIndex = event.rowIndex;
-    this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
-  }
+ 
+  onCellClick(e: CellClickEvent): void {
+      if (e.type === 'contextmenu') {
+        this.showContextMenu(e);
+      } else {
+        if (e.type == 'click') {
+          if (['Mac', 'iOS'].includes(this.appService.deviceDetectorService.os)) {
+            this.showContextMenu(e);
+          }
+        }
+      }
+    }
+    private showContextMenu(e: CellClickEvent) {
+      const originalEvent = e.originalEvent;
+      originalEvent.preventDefault();
+      this.dataItemSelected = e.dataItem;
+      this.selectedRowIndex = e.rowIndex;
+      this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
+    }
 
   onSelectRowActionMenu(e: ContextMenuSelectEvent): void {
     const dataItem = this.dataItemSelected;

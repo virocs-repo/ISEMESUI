@@ -175,35 +175,35 @@
                   <label style="font-weight: 700; color: maroon;">Operater Attachements Info  </label>
                 </div>
                   <kendo-grid [data]="operaterAttachments" [resizable]="true" [reorderable]="true">
-                    <kendo-grid-column title="#" [width]="50">
+                    <kendo-grid-column title="#" [width]="10">
                       <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
                         {{ rowIndex + 1 }}
                       </ng-template>
                     </kendo-grid-column> 
-                    <kendo-grid-column field="attachedFile" title="File" [width]="200">
+                    <kendo-grid-column field="attachedFile" title="File" [width]="90">
                       <ng-template kendoGridCellTemplate let-dataItem>
                         <a class="minimal-text link" [href]="downloadFileApi + dataItem.AttachedFile" target="_blank">
                           {{ dataItem.attachedFile }}
                         </a>
                       </ng-template>
                     </kendo-grid-column>
-                    <kendo-grid-column field="attachmentType" title="Attachment Type" [width]="120">
+                    <kendo-grid-column field="attachmentType" title="Attachment Type" [width]="40">
                     </kendo-grid-column>
-                    <kendo-grid-column field="attachedBy" title="Attached By" [width]="150">
+                    <kendo-grid-column field="attachedBy" title="Attached By" [width]="60">
                     </kendo-grid-column>
-                    <kendo-grid-column field="attachedOn" title="Attached On" [width]="180">
+                    <kendo-grid-column field="attachedOn" title="Attached On" [width]="70">
                       <ng-template kendoGridCellTemplate let-dataItem>
                         {{ dataItem.attachedOn | date: 'MM-dd-yyyy HH:mm a' }}
                       </ng-template>
                     </kendo-grid-column>
-                    <kendo-grid-column field="updatedBy" title="Updated By" [width]="150">
+                    <kendo-grid-column field="updatedBy" title="Updated By" [width]="60">
                     </kendo-grid-column>
-                    <kendo-grid-column field="updatedOn" title="Updated On" [width]="180">
+                    <kendo-grid-column field="updatedOn" title="Updated On" [width]="70">
                       <ng-template kendoGridCellTemplate let-dataItem>
                         {{ dataItem.updatedOn | date: 'MM-dd-yyyy HH:mm a' }}
                       </ng-template>
                     </kendo-grid-column>
-                    <kendo-grid-column field="active" title="Status" [width]="100">
+                    <kendo-grid-column field="active" title="Status" [width]="40">
                       <ng-template kendoGridCellTemplate let-dataItem>
                         <span [class]="dataItem.Active ? 'active-status' : 'inactive-status'">
                           {{ dataItem.active ? 'Active' : 'Inactive' }}
