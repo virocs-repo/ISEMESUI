@@ -49,6 +49,7 @@ export class EditInventoryHoldComponent implements OnInit {
       this.loadHoldData(this.selectedRowData.inventoryID);
     }
   }
+  
   openEditDialog(dataItem: any): void {
     this.apiService.getHoldDetails(dataItem.inventoryXHoldId).subscribe({
       next: (data) => {

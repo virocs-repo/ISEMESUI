@@ -51,7 +51,7 @@
     </div>
   </kendo-card-body>
   
-  <div class="k-my-2">
+  <div class="page-body k-m-4">
     <kendo-grid 
       [kendoGridBinding]="gridDataResult.data"  
       [selectable]="selectableSettings" 
@@ -74,19 +74,47 @@
           </ng-template>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="holdCode" title="Code" [width]="60"></kendo-grid-column>
-      <kendo-grid-column field="holdComments" title="Hold Comments" [width]="55"></kendo-grid-column>
-      <kendo-grid-column field="reason" title="Reason" [width]="70"></kendo-grid-column>
-      <kendo-grid-column field="offHoldComments" title="Off Hold Comments" [width]="60"></kendo-grid-column>
-      <kendo-grid-column field="source" title="Source" [width]="60"></kendo-grid-column>
-      <kendo-grid-column field="holdBy" title="Hold By" [width]="60"></kendo-grid-column>
-      <kendo-grid-column field="holdDate" title="Hold Date" [width]="65">
+      <kendo-grid-column field="holdCode" title="Code" [width]="55">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.holdCode">{{dataItem.holdCode}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="holdComments" title="Hold Comments" [width]="55">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.holdComments">{{dataItem.holdComments}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="reason" title="Reason" [width]="55">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.reason">{{dataItem.reason}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="offHoldComments" title="Off Hold Comments" [width]="55">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.offHoldComments">{{dataItem.offHoldComments}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="source" title="Source" [width]="55">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.source">{{dataItem.source}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="holdBy" title="Hold By" [width]="55">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.holdBy">{{dataItem.holdBy}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="holdDate" title="Hold Date" [width]="70">
         <ng-template kendoGridCellTemplate let-dataItem>
           {{ dataItem.holdDate | date: 'MM-dd-yyyy HH:mm a' }}
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="offHoldBy" title="Off Hold By" [width]="60"></kendo-grid-column>
-      <kendo-grid-column field="offHoldDate" title="Off Hold Date" [width]="65">
+      <kendo-grid-column field="offHoldBy" title="Off Hold By" [width]="55">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.offHoldBy">{{dataItem.offHoldBy}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="offHoldDate" title="Off Hold Date" [width]="70">
         <ng-template kendoGridCellTemplate let-dataItem>
           {{ dataItem.offHoldDate | date: 'MM-dd-yyyy HH:mm a' }}
         </ng-template>
