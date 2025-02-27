@@ -99,24 +99,24 @@
           <div class="truncate-text" [title]="dataItem.source">{{dataItem.source}}</div>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="holdBy" title="Hold By" [width]="55">
+      <kendo-grid-column field="holdBy" title="Hold By" [width]="45">
         <ng-template kendoGridCellTemplate let-dataItem>
           <div class="truncate-text" [title]="dataItem.holdBy">{{dataItem.holdBy}}</div>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="holdDate" title="Hold Date" [width]="70">
+      <kendo-grid-column field="holdDate" title="Hold Date" [width]="80">
         <ng-template kendoGridCellTemplate let-dataItem>
-          {{ dataItem.holdDate | date: 'MM-dd-yyyy HH:mm a' }}
+          <div class="truncate-text" >{{ dataItem.holdDate | date: 'MM-dd-yyyy HH:mm a' }}</div>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="offHoldBy" title="Off Hold By" [width]="55">
+      <kendo-grid-column field="offHoldBy" title="Off Hold By" [width]="45">
         <ng-template kendoGridCellTemplate let-dataItem>
           <div class="truncate-text" [title]="dataItem.offHoldBy">{{dataItem.offHoldBy}}</div>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="offHoldDate" title="Off Hold Date" [width]="70">
+      <kendo-grid-column field="offHoldDate" title="Off Hold Date" [width]="80">
         <ng-template kendoGridCellTemplate let-dataItem>
-          {{ dataItem.offHoldDate | date: 'MM-dd-yyyy HH:mm a' }}
+          <div class="truncate-text" >{{ dataItem.offHoldDate | date: 'MM-dd-yyyy HH:mm a' }}</div>
         </ng-template>
       </kendo-grid-column>
     </kendo-grid>
