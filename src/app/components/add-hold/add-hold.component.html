@@ -182,7 +182,7 @@
                     </kendo-grid-column> 
                     <kendo-grid-column field="attachedFile" title="File" [width]="90">
                       <ng-template kendoGridCellTemplate let-dataItem>
-                        <a class="minimal-text link" [href]="downloadFileApi + dataItem.AttachedFile" target="_blank">
+                        <a class="minimal-text link" [href]="downloadFileApi + dataItem.attachedFile" target="_blank">
                           {{ dataItem.attachedFile }}
                         </a>
                       </ng-template>
