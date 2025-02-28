@@ -1,23 +1,30 @@
 <div class="k-m-2 k-overflow-y-auto" style="height: auto;">
   <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
     <div class="k-d-flex k-flex-column k-gap-3">
-      <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
+      <div class="k-d-flex k-align-items-end k-gap-3" style="display: flex; flex-wrap: wrap; width: 100%;">
         <div class="field-container" style="flex: 1; display: flex; align-items: center;">
           <kendo-label [for]="'lotNumber'" class="label-text">
             <strong>Lot/ Mail/ FGI Pull #:</strong>
           </kendo-label>
           <span class="value-text" style="margin-left: 0.5rem;">{{ selectedLotNumber }}</span>
         </div>
-        <div class="field-container" style="flex: 2; display: flex; align-items: center;">
+        <div class="field-container" style="flex: 1; display: flex; align-items: center;">
           <kendo-label [for]="'customerName'" class="label-text">
             <strong>Customer:</strong>
           </kendo-label>
           <span class="value-text" style="margin-left: 0.5rem;">{{ customerName }}</span>
         </div>
+        <div class="field-container" style="flex: 1; display: flex; align-items: center;">
+          <kendo-label [for]="'editholdDate'" class="label-text">
+            <strong>Cumulative Hold Time:</strong>
+          </kendo-label>
+          <span class="value-text" style="margin-left: 0.5rem;">{{ editholdDate }}</span>
+        </div>
       </div>
     </div>
+  
     <div class="k-d-flex k-flex-column k-gap-3">
-      <div class="k-d-flex k-align-items-end k-gap-3 k-justify-content-between">
+      <div class="k-d-flex k-align-items-end k-gap-3" style="display: flex; flex-wrap: wrap; width: 100%;">
         <div class="field-container" style="flex: 1; display: flex; align-items: center;">
           <kendo-label [for]="'device'" class="label-text">
             <strong>Device:</strong>
@@ -43,7 +50,8 @@
       </div>
     </div>
   </kendo-card-body>
-  <div class="k-my-2">
+  
+  <div class="page-body k-m-4">
     <kendo-grid 
       [kendoGridBinding]="gridDataResult.data"  
       [selectable]="selectableSettings" 
@@ -58,7 +66,7 @@
       class="grid-header-sm grid-header-bold" 
       [rowClass]="rowCallback"
       style="height: 40vh;">
-      <kendo-grid-column [width]="80">
+      <kendo-grid-column [width]="30" [columnMenu]="false">
         <ng-template kendoGridCellTemplate let-dataItem>
           <button kendoButton *ngIf="!dataItem.offHoldComments; else viewButtonTemplate" (click)="openEditDialog(dataItem)" themeColor="info">Edit</button>
           <ng-template #viewButtonTemplate>
@@ -66,7 +74,51 @@
           </ng-template>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title"></kendo-grid-column>
+      <kendo-grid-column field="holdCode" title="Code" [width]="55">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.holdCode">{{dataItem.holdCode}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="holdComments" title="Hold Comments" [width]="55">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.holdComments">{{dataItem.holdComments}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="reason" title="Reason" [width]="55">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.reason">{{dataItem.reason}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="offHoldComments" title="Off Hold Comments" [width]="55">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.offHoldComments">{{dataItem.offHoldComments}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="source" title="Source" [width]="55">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.source">{{dataItem.source}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="holdBy" title="Hold By" [width]="45">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.holdBy">{{dataItem.holdBy}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="holdDate" title="Hold Date" [width]="80">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" >{{ dataItem.holdDate | date: 'MM-dd-yyyy HH:mm a' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="offHoldBy" title="Off Hold By" [width]="45">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.offHoldBy">{{dataItem.offHoldBy}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="offHoldDate" title="Off Hold Date" [width]="80">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" >{{ dataItem.offHoldDate | date: 'MM-dd-yyyy HH:mm a' }}</div>
+        </ng-template>
+      </kendo-grid-column>
     </kendo-grid>
   </div>
   <div class="k-d-flex k-gap-3 k-mt-2">
@@ -74,20 +126,18 @@
   </div>
   <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'58%'">
     <div class="k-d-flex k-align-items-center k-mb-6">
-        <h2 class="k-m-0">Hold Details</h2>
-        <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
-            (click)="closeDialog()"></button>
-    </div>
-    <app-add-hold
-      (cancel)="closeDialog()"
-      [mode]="viewOrEdit"
-      [lotNumber]="selectedRowData?.iseLotNumber || ''"
-      [noOfHolds]="gridDataResult.total.toString()"
-      [customerName]="customerName"
-      [device]="device"
-      [inventoryId]="selectedRowData?.inventoryID || 0"
-      [selectedGridData]="selectedRowDat"
-      (dataUpdated)="onDataUpdated()">
-    </app-add-hold>
-  </kendo-dialog>
-</div>
+      <h2 class="k-m-0">Hold Details</h2>
+      <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small" (click)="closeDialog()"></button>
+  </div>
+  <app-add-hold
+    (cancel)="closeDialog()"
+    [mode]="viewOrEdit"
+    [lotNumber]="selectedRowData?.iseLotNumber || ''"
+    [noOfHolds]="gridDataResult.total.toString()"
+    [customerName]="customerName"
+    [device]="device"
+    [inventoryId]="selectedRowData?.inventoryID || 0"
+    [selectedGridData]="selectedRowDat"
+    (dataUpdated)="onDataUpdated()">
+  </app-add-hold>
+</kendo-dialog>

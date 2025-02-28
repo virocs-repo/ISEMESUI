@@ -1,5 +1,6 @@
 import { MenuItem } from "@progress/kendo-angular-menu";
-import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, kpiStatusHoldIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, printIcon, selectBoxIcon, trashIcon, userIcon, windowRestoreIcon, xIcon,mapMarkerIcon } from "@progress/kendo-svg-icons";
+
+import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, kpiStatusHoldIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, printIcon, selectBoxIcon, trashIcon, userIcon, windowRestoreIcon, xIcon, saveIcon, mapMarkerIcon } from "@progress/kendo-svg-icons";
 
 export interface CustomerType {
   customerTypeID: number;
@@ -241,7 +242,8 @@ export const ICON = {
   printIcon,
   kpiStatusHoldIcon,
   trashIcon,
-  mapMarkerIcon  
+  saveIcon,
+  mapMarkerIcon
 }
 
 export const MESSAGES = {
@@ -306,6 +308,8 @@ export interface Shipment {
   customerTypeSelected: CustomerType | undefined;
   holdComments: string;
   deliveryInfoId:number;
+  clientAccountNumber :string;
+  Parcels :ParcelRequest[];
 }
 export interface CustomerOrderDetail {
   CustomerOrderDetailID: number | null;
@@ -814,4 +818,58 @@ export interface InterimDevice {
   IsReceived:boolean
   IsHold:boolean
   Active:boolean
+}
+export interface OperaterAttachments{
+  AttachmentId : number
+  TRVStepId : number
+  TransactionId : number
+  AttachedFile : string
+  AttachmentTypeId : number
+  AttachmentType : string
+  AttachedById :number
+  AttachedBy : string
+  UpdatedBy : string
+  AttachedOn : Date
+  UpdatedOn : Date
+  Active : boolean
+}
+export interface ShippingAttachment {
+  attachmentId: number,
+  objectID: number,
+  attachmentName: string,
+  path: string,
+  active: boolean,
+  loginId: number,
+  createdBY:string,
+  createdON:Date
+}
+// Define the interface for each package
+export interface Package {
+  packageId: string,
+  packageNo: number,
+  ciPackageDimentions: string,
+  ciWeight: number,
+  active: boolean
+}
+export interface PackageUpdate {
+  PackageId: string,
+  PackageNo: number,
+  CIPackageDimentions: string,
+  CIWeight: number,
+  Active: boolean
+}
+// Define the interface for the overall upsert request
+export interface UpsertShipPackageDimensionReq {
+  ShipmentID: string,
+  LoginID: string,
+  Packages: PackageUpdate[]
+}
+
+export interface ParcelRequest {
+  length: number;
+  width: number;
+  height: number;
+  distanceUnit: string; // Default "in"
+  weight: number;
+  massUnit: string; // Default "lb"
 }

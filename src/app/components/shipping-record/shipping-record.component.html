@@ -22,12 +22,12 @@
                 </div>
                 <div class="k-d-flex k-gap-6">
                   <kendo-label text="Sender Information" class="k-w-full">
-                    <b class="required-label"></b>
+                    <b ></b>
                     <kendo-textarea [(ngModel)]="senderInformation" [rows]="2" 
                       rounded="large"></kendo-textarea>
                   </kendo-label>
                   <kendo-label text="Shipping Comments" class="k-w-full">
-                    <b class="required-label"></b>
+                    <b ></b>
                     <kendo-textarea [(ngModel)]="shipmentComments" [rows]="2"
                       rounded="large"></kendo-textarea>
                   </kendo-label>
@@ -128,6 +128,18 @@
             </kendo-grid-column>
             <kendo-grid-column *ngIf="isEditMode" field="additionalInfo" title="Additional Info"></kendo-grid-column> -->
           </kendo-grid>
+        </div>
+        <div class="shipping-record">
+
+
+          <div class="k-d-flex k-gap-3 k-mt-3">
+           
+            <button kendoButton type="button" rounded="full" themeColor="info" class="k-ml-auto" style="width:6rem" [disabled]="isDisabled.shipBtn"
+              (click)="shipItem()">Ship</button>
+            <button kendoButton type="button" rounded="full" themeColor="success" class="k-w-25" [disabled]="isDisabled.shipBtn"
+              (click)="saveShipment()">Save</button>
+          </div>
+        
         </div>
       </ng-template>
     </kendo-tabstrip-tab>
@@ -1656,6 +1668,10 @@
                           />
                         </td>
                         
+                        
+                      </tr>
+
+                      <tr>
                         <td >
                           <label for="TotalValue">Total Custom Value</label>
                           <input
@@ -1676,9 +1692,6 @@
                             [(ngModel)]="shippingDetailsData.Quantity"
                           />
                         </td>
-                      </tr>
-
-                      <tr>
                         <td >
                           <label for="ECCN">ECCN</label>
                           <input
@@ -1700,45 +1713,50 @@
                             [(ngModel)]="shippingDetailsData.ScheduleB"
                           />
                         </td>
+                        
+                        
+                      </tr>
+                      <tr>
                         <td>
-                          <label for="LicenseException">License Exception Symbol</label>
+                          <label for="LicenseType">License Exception Symbol</label>
                           <input
                             type="text"
-                            id="LicenseException"
+                            id="LicenseType"
                             kendoTextBox
-                            name="LicenseException"
-                            [(ngModel)]="shippingDetailsData.LicenseException"
+                            name="LicenseType"
+                            [(ngModel)]="shippingDetailsData.LicenseType"
+                          />
+                        </td>
+                        <td>
+                          <label for="UltimateConsignee">UltimateConsignee</label>
+                          <input
+                            type="text"
+                            id="UltimateConsignee"
+                            kendoTextBox
+                            name="UltimateConsignee"
+                            [(ngModel)]="shippingDetailsData.UltimateConsignee"
                           />
                         </td>
                         <td >
-                          <label for="DescriptionOfGood">Commodity Description</label>
+                          <label for="CommodityDescription">Commodity Description</label>
                           <kendo-textarea
-                            [rows]="1"
-                            id="DescriptionOfGood"
-                            name="DescriptionOfGood"
-                            [(ngModel)]="shippingDetailsData.DescriptionOfGood"
+                            [rows]="3"
+                            id="CommodityDescription"
+                            name="CommodityDescription"
+                            [(ngModel)]="shippingDetailsData.CommodityDescription"
                           ></kendo-textarea>
                         </td>
                           <td >
                             <label for="ShipAlertEmail">Ship Alert Email</label>
                             <kendo-textarea
-                              [rows]="1"
+                              [rows]="3"
                               id="shipAlertEmail"
                               name="ShipAlertEmail"
                               [(ngModel)]="shippingDetailsData.ShipAlertEmail"
                             ></kendo-textarea>
                           </td>
 
-                          <td>
-                            <label for="UltimateConsignee">UltimateConsignee</label>
-                            <input
-                              type="text"
-                              id="UltimateConsignee"
-                              kendoTextBox
-                              name="UltimateConsignee"
-                              [(ngModel)]="shippingDetailsData.UltimateConsignee"
-                            />
-                          </td>
+                         
                       </tr>
                     </tbody>
                   </table>
@@ -1761,9 +1779,13 @@
           </kendo-card>
         </div>
       
-        <div style="margin-top:1%;" *ngIf="shippingDetailsData.ShippingMethod === 'Drop-Off' || shippingDetailsData.ShippingMethod === 'Courier'">
+        <div style="margin-top:1%;" *ngIf="shippingDetailsData.ShippingMethod === 'Drop-Off' || shippingDetailsData.ShippingMethod === 'Courier' ||shippingDetailsData.ShippingMethod === 'Forwarder'">
           <kendo-card class="card-blue card-full">
             <kendo-card-body>
+              <kendo-tabstrip>
+
+              <kendo-tabstrip-tab title="Ship To" [selected]="true">
+                <ng-template kendoTabContent>
             
                   <table style="width: 100%; table-layout: fixed;">
                     <tbody>
@@ -1963,8 +1985,171 @@
                     </tbody>
                   </table>
                
-              
-           
+                </ng-template>
+              </kendo-tabstrip-tab>
+              <kendo-tabstrip-tab title="Bill To" >
+                <ng-template kendoTabContent>
+                  <table style="width: 100%; table-layout: fixed;">
+                    <tbody>
+                      <!-- Row 1 -->
+
+                      
+                      <tr>
+                        <td >
+                          <label for="receiversName">Receiver's Name</label>
+                          <input
+                            type="text"
+                            id="receiversName"
+                           
+                            kendoTextBox
+                            name="ReceiversName"
+                            [(ngModel)]="address.BillToReceiversName"
+                            required
+                          />
+                        </td>
+                        <td >
+                          <label for="companyName">Company Name</label>
+                          <input
+                            type="text"
+                            id="companyName"
+                         
+                            kendoTextBox
+                            name="CompanyName"
+                            [(ngModel)]="address.BillToCompanyName"
+                            required
+                          />
+                        </td>
+                        <td >
+                          <label for="country">Country</label>
+                          <input
+                            type="text"
+                            id="country"
+                         
+                            kendoTextBox
+                            name="Country"
+                            [(ngModel)]="address.BillToCountry"
+                            required
+                          />
+                        </td>
+                       
+                        <td >
+                          <label for="address1">Address Line 1</label>
+                          <input
+                            type="text"
+                            id="address1"
+                           
+                            kendoTextBox
+                            name="Address1"
+                            [(ngModel)]="address.BillToAddress1"
+                            required
+                          />
+                        </td>
+                        <td >
+                          <label for="address2">Address Line 2</label>
+                          <input
+                            type="text"
+                            id="address2"
+                          
+                            kendoTextBox
+                            name="Address2"
+                            [(ngModel)]="address.BillToAddress2"
+                          />
+                        </td>
+                        <td >
+                          <label for="address3">Address Line 3</label>
+                          <input
+                            type="text"
+                            id="address3"
+                         
+                            kendoTextBox
+                            name="Address3"
+                            [(ngModel)]="address.BillToAddress3"
+                          />
+                        </td>
+                      </tr>
+                      <!-- Row 2 -->
+                      <tr>
+                        
+                       
+                        <td >
+                          <label for="telephone">Telephone</label>
+                          <input
+                            type="text"
+                            id="telephone"
+                         
+                            kendoTextBox
+                            name="Telephone"
+                            [(ngModel)]="address.BillToTelephone"
+                            required
+                            pattern="[0-9]{10}"
+                          />
+                        </td>
+                        <td >
+                          <label for="state">State/Province</label>
+                          <input
+                            type="text"
+                            id="state"
+                           
+                            kendoTextBox
+                            name="State"
+                            [(ngModel)]="address.BillToState"
+                            required
+                          />
+                        </td>
+                        <td >
+                          <label for="city">City</label>
+                          <input
+                            type="text"
+                            id="city"
+                         
+                            kendoTextBox
+                            name="City"
+                            [(ngModel)]="address.BillToCity"
+                            required
+                          />
+                        </td>
+                        <td >
+                          <label for="postCode">Post Code</label>
+                          <input
+                            type="text"
+                            id="postCode"
+                           
+                            kendoTextBox
+                            name="PostCode"
+                            [(ngModel)]="address.BillToPostCode"
+                            required
+                          />
+                        </td>
+                        <td >
+                          <label for="ext">Ext</label>
+                          <input
+                            type="text"
+                            id="ext"
+                          
+                            
+                            kendoTextBox
+                            name="Ext"
+                            [(ngModel)]="address.BillToExt"
+                          />
+                        </td>
+                        
+                      </tr>
+                      <!-- Row 3 -->
+                      <tr>
+                       
+                      
+                        <td >
+                         
+                        </td>
+                      </tr>
+                      
+                    </tbody>
+                  </table>
+               
+
+                </ng-template>
+              </kendo-tabstrip-tab>
+            </kendo-tabstrip>
 
             </kendo-card-body>
           </kendo-card>
@@ -1989,10 +2174,190 @@
               
               <label style="font-weight: 700; color: maroon;">Ship Alert Info  </label>
             </div>
-        <!-- <kendo-fileselect #upFiles (select)="onSelect($event)" (upload)="onUpload($event)"
-              [multiple]="false"></kendo-fileselect>
-            <button kendoButton type="button" rounded="large" themeColor="secondary" style="width:6rem"
-              (click)="uploadFiles(upFiles)">Upload</button>  -->
+         <kendo-fileselect #upFiles  (upload)="onUpload($event)"
+              [multiple]="false"   ></kendo-fileselect>
+            <button kendoButton type="button" rounded="large" themeColor="secondary" style="margin-top: 1%;width:6rem;"
+              (click)="uploadFilesById(upFiles)" [disabled]="isDisabled.shipBtn" >Upload</button>  
+
+             
+          <div>
+            
+            <kendo-grid [data]="shippingAttachments" class="receipt-attachments" style="margin-top: 1%;">
+              <kendo-grid-column title="#" [width]="40">
+                <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+                  {{ rowIndex + 1 }}
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column field="attachmentName" title="File Name">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <a class="minimal-text link" [href]="downloadFileApi+dataItem.path" target="_blank">{{dataItem.path}}</a>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column field="createdBY" title="Attachment By">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <a class="minimal-text" [title]="dataItem.createdBY">{{dataItem.createdBY}}</a>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column field="attachmentName" title="Attachment In">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <a class="minimal-text" [title]="dataItem.attachmentName">{{dataItem.attachmentName}}</a>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column field="createdON" title="Attached On">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <a class="minimal-text" [title]="dataItem.createdON">{{dataItem.createdON}}</a>
+                </ng-template>
+              </kendo-grid-column>
+              
+              <kendo-grid-column title="Actions" [width]="100">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <button kendoButton [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteFile(dataItem)" [disabled]="isDisabled.shipBtn"></button>
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid>
+
+           
+
+
+        
+          </div>
+          <div style="margin-top: 1%;">
+            <input type="checkbox" kendoCheckBox [(ngModel)]="AttachementVerified"
+            style="border: 1px solid black;  border-radius: 4px;">
+            <label for="AttachementVerified">Attachement Verified</label>
+          </div>
+          
+          </kendo-card-body>
+        </kendo-card>
+
+        <kendo-card class="card-blue card-full" style="margin-top: 1%;">
+          <kendo-card-body>
+            <div>
+              
+              <label style="font-weight: 700; color: maroon;">Commercial Invoice Info  </label>
+
+              <div style="margin-top: 1%;">
+                <label for="Tracking#/AWB">Tracking #/AWB  </label>
+                          <input
+                            type="text"
+                            id="TrackingId"
+                            kendoTextBox
+                            name="TrackingId"
+                            [(ngModel)]="address.TrackingId" style="width:30%;"
+                          />
+              </div>
+              <div *ngIf="shippingDetailsData.ShippingMethod === 'Forwarder'" style="margin-top: 1%;">
+                
+
+                <table style="width: 100%; table-layout: fixed;">
+                  <tbody>
+                  
+                    <tr>
+                      <td>
+                        <input type="checkbox" kendoCheckBox [(ngModel)]="SliDetailsVerified"
+                style="border: 1px solid black;  border-radius: 4px;">
+                <label for="SliDetailsVerified">SLI Details </label>
+                      </td>
+                      <td >
+                        <label for="TransportationRef">Transportation Ref#</label>
+                        <input
+                          type="text"
+                          id="TransportationRef"
+                          
+                          kendoTextBox
+                          name="TransportationRef"
+                          [(ngModel)]="shippingDetailsData.TransportationRef"
+                        />
+                      </td>
+                      <td >
+                        <label for="Dateexportation"> Date Of exportation</label>
+                        <input
+                          type="text"
+                          id="Dateexportation"
+                          
+                          kendoTextBox
+                          name="Dateexportation"
+                          [(ngModel)]="shippingDetailsData.Dateexportation"
+                        />
+                      </td>
+                      
+                      <td>
+                        <label>Ship Via :</label>
+                        <label>
+                          <input
+                            type="radio"
+                            name="shipVia"
+                            [(ngModel)]="shippingDetailsData.shipVia"
+                            value="Air" />
+                          Air
+                        </label>
+
+                        <label>
+                          <input
+                            type="radio"
+                            name="shipVia"
+                            [(ngModel)]="shippingDetailsData.shipVia"
+                            value="Ocean" />
+                          Ocean
+                        </label>
+                      </td>
+                      
+                      
+
+                      
+                      </tr>
+                      </tbody>
+                      </table>
+              </div>
+              <div style="text-align: right;">
+                 <button kendoButton type="button" rounded="large" themeColor="info" style="margin-top: 1%;width:6rem" (click)="onCreateRows()" [disabled]="isDisabled.shipBtn">Add Rows</button>
+               </div>
+            </div>
+
+            
+            
+            <kendo-grid [data]="packages" [height]="200" >
+              <!-- Package # Column (read-only) -->
+              <kendo-grid-column field="packageNo" title="Package #">
+              </kendo-grid-column>
+            
+              <!-- Package Weight Column (editable textbox) -->
+              <kendo-grid-column field="ciWeight" title="Package Weight">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <input type="number"  min="0" [(ngModel)]="dataItem.ciWeight" style="width: 80px;" />
+                </ng-template>
+              </kendo-grid-column>
+            
+              <!-- Package Dimensions Column (editable dropdown) -->
+              <kendo-grid-column field="ciPackageDimentions" title="Package Dimensions">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <kendo-combobox 
+                  [data]="packageDimensionsList" 
+                  [(ngModel)]="dataItem.ciPackageDimentions">
+              </kendo-combobox>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column title="Actions" [width]="160">
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                  <button kendoButton type="button"  [svgIcon]="ICON.trashIcon" themeColor="error" (click)="onDeleteRow(rowIndex)">
+                  </button>
+                  <button kendoButton type="button"  [svgIcon]="ICON.saveIcon" themeColor="success" (click)="onSave()" style="margin-left: 10%;">
+                  </button>
+                </ng-template>
+               
+              </kendo-grid-column>
+
+              <!-- <kendo-grid-column title="Actions" [width]="80">
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                   <button kendoButton type="button"  [svgIcon]="ICON.saveIcon" themeColor="success" (click)="onSave()">
+                  </button>
+                </ng-template>
+              </kendo-grid-column> -->
+
+            </kendo-grid>
+            
+          
+        
           
           </kendo-card-body>
         </kendo-card>
@@ -2003,15 +2368,3 @@
 </div>
 
 
-<div class="shipping-record">
-
-
-  <div class="k-d-flex k-gap-3 k-mt-3">
-   
-    <button kendoButton type="button" rounded="full" themeColor="info" class="k-ml-auto" style="width:6rem" [disabled]="isDisabled.shipBtn"
-      (click)="shipItem()">Ship</button>
-    <button kendoButton type="button" rounded="full" themeColor="success" class="k-w-25" [disabled]="isDisabled.shipBtn"
-      (click)="saveShipment()">Save</button>
-  </div>
-
-</div>

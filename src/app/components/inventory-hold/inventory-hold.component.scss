@@ -1,0 +1,9 @@
+a.minimal-text {
+    pointer-events: none;
+  }
+
+  .truncate-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }

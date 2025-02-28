@@ -24,6 +24,7 @@ export class ReceivingComponent implements OnDestroy {
   originalData: any[] = [];
   public searchTerm: string = '';
   isAddButtonEnabled: boolean = true;
+  readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
   receiptLocationSelected: ReceiptLocation | undefined;
   readonly filterSettings: DropDownFilterSettings = {
         caseSensitive: false,
@@ -47,11 +48,9 @@ export class ReceivingComponent implements OnDestroy {
     start: this.oneMonthAgo,
     end: this.today
   };
-  // fromDate = '';
-  // toDate = '';
-  format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker
-  fromDate: Date | null = null;  // Variable to store the selected 'from' date
-  toDate: Date | null = null;    // Variable to store the selected 'to' date
+  format: string = 'yyyy-MM-dd'; 
+  fromDate: Date | null = null;  
+  toDate: Date | null = null;
 
   isDialogOpen = false;
   openDialog() {
@@ -59,27 +58,36 @@ export class ReceivingComponent implements OnDestroy {
   }
   closeDialog() {
     this.isDialogOpen = false;
-    this.fetchdata(); // because there might be changes from dialog
+    this.fetchdata(); 
     this.appService.eventEmitter.emit({ action: 'refreshVendors', data: { m: 'masterData' } })
   }
   readonly subscription = new Subscription()
 
   constructor(public appService: AppService, private apiService: ApiService) { }
 
-  ngOnInit(): void {
-    this.search();
+  ngOnInit(): void { 
+    setTimeout(() => {
+      this.receiptLocationSelected = this.appService.masterData.receiptLocation.find(
+        e => e.receivingFacilityName === this.appService.facility
+      );
+      this.appService.masterData.receiptLocation.forEach(e =>{
+        if(e.receivingFacilityName === this.appService.facility)
+        {
+          this.selectedFacilities.push(e);
+        }
+      })
+      this.search();
+    }, 500);
+    
     this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
-      switch (v) {
-        case 'closeDialog':
-          this.closeDialog();
-          break;
-        default:
-          break;
+      if (v === 'closeDialog') {
+        this.closeDialog();
       }
     }));
 
     this.initRoleBasedUI();
   }
+  
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
@@ -115,16 +123,60 @@ export class ReceivingComponent implements OnDestroy {
       })
     }
   }
-  public selectedFacilities: string[] = [];
-  public selectedReceiptStatuses: string[] = [];
+
+  public areaList: Array<string> = [ 
+    "Pending Receive",
+    "Received",
+  ];
+  public selectedFacilities: ReceiptLocation[] = [];
+  public selectedReceiptStatuses: string[] = ["Pending Receive"];
+  isSelectedFacility(receivingFacilityID: any): boolean {
+    return this.selectedFacilities.some(facility => facility.receivingFacilityID === receivingFacilityID);
+  }  
+  toggleSelection(item: any, type: string): void {
+    if (type === 'facility') {
+      const index = this.selectedFacilities.findIndex(facility => facility.receivingFacilityID === item.receivingFacilityID);
+      if (index > -1) {
+        this.selectedFacilities.splice(index, 1);
+      } else {
+        this.selectedFacilities.push(item); // Store full object to maintain reference
+      }
+    } else if (type === 'receipt') {
+      const index = this.selectedReceiptStatuses.indexOf(item);
+      if (index > -1) {
+        this.selectedReceiptStatuses.splice(index, 1);
+      } else {
+        this.selectedReceiptStatuses.push(item);
+      }
+    }
+  }
+  
+  tagDisplayLimit(tags: any[]): any[] {
+    const maxVisibleTags = 1;
+    return tags.length > maxVisibleTags
+      ? [...tags.slice(0, maxVisibleTags), { receivingFacilityName: `+${tags.length - maxVisibleTags} ` }]
+      : tags;
+  }
+  tagDisplayLimits(tags: any[]): any[] {
+    const maxVisibleTags = 1;
+    return tags.length > maxVisibleTags
+      ? [...tags.slice(0, maxVisibleTags), `+${tags.length - maxVisibleTags}`]
+      : tags;
+  }  
   private fetchdata(): void {
-    const facilityIDsStr = this.selectedFacilities.length > 0
-        ? this.selectedFacilities.join(',')
+    // Convert facility names to IDs
+    const facilityIDs = this.selectedFacilities
+        .map(name => this.appService.masterData.receiptLocation.find(facility => facility.receivingFacilityName === name.receivingFacilityName)?.receivingFacilityID)
+        .filter(id => id !== undefined); // Filter out undefined values in case no match is found
+
+    const facilityIDsStr = facilityIDs.length > 0 && this.isSearchClicked
+        ? facilityIDs.join(',')
         : null;
 
-    const receiptStatus = this.selectedReceiptStatuses.length > 0
-        ? this.selectedReceiptStatuses.join(',') 
+    const receiptStatus = this.selectedReceiptStatuses.length > 0 && this.isSearchClicked
+        ? this.selectedReceiptStatuses.join(',')
         : null;
+
     this.apiService.getReceiptdatas(facilityIDsStr, receiptStatus, this.fromDate, this.toDate).subscribe({
       next: (response: any) => {
         this.originalData = response;
@@ -134,7 +186,7 @@ export class ReceivingComponent implements OnDestroy {
         console.error("Error fetching data:", error);
       }
     });
-  }
+}
   private testReceiptEdit() {
     setTimeout(() => {
       this.appService.sharedData.receiving.dataItem = this.gridDataResult.data[0]
@@ -152,7 +204,6 @@ export class ReceivingComponent implements OnDestroy {
     { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
     { text: 'Edit Data', icon: 'edit', disabled: !this.isEditButtonEnabled, svgIcon: ICON.pencilIcon },
     { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
-    // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
   ];
   doTestEditMode() {
     // this.onSelectRowActionMenuV1({ item: { text: 'Edit Data' } } as any, this.gridDataResult.data[0]);
@@ -269,37 +320,23 @@ export class ReceivingComponent implements OnDestroy {
     this.appService.sharedData.receiving.eventEmitter.emit('canCloseDialog?')
   }
   
-  public areaList: Array<string> = [ 
-    "Pending Receive",
-    "Received",
-  ];
+  private isSearchClicked = false; // Track search button click
+
   search() {
-    // this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
-    // this.toDate = moment(this.range.end).format('MM-DD-YYYY');
+    this.isSearchClicked = true; // Only apply filtering when search is clicked
     this.fetchdata();
   }
 
   onSearchMaster(): void {
-    this.skip = 0;  // Reset pagination when searching
-    this.pageData();  // Apply search and pagination
+    this.skip = 0;
+    this.pageData();
   }
 
   pageData(): void {
-    /*    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
-   
-       // Paginate the data
-       const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
-       this.gridDataResult.data = paginatedData;
-           this.gridDataResult.total =filteredData.length ; */
-
     const filteredData = this.filterData(this.originalData);
     const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
     this.gridDataResult.data = filteredData;
     this.gridDataResult.total = filteredData.length;
-
-
-
-
   }
   filterData(data: any[]): any[] {
     if (!this.searchTerm) {
@@ -307,14 +344,15 @@ export class ReceivingComponent implements OnDestroy {
     }
     const term = this.searchTerm.toLowerCase();
     return data.filter(item =>
-      Object.values(item).some(val => String(val).toLowerCase().includes(term))
+        (this.selectedReceiptStatuses.length === 0 || this.selectedReceiptStatuses.includes(item.receiptStatus)) &&
+        Object.values(item).some(val => String(val).toLowerCase().includes(term))
     );
   }
 
   private checkIfEditable(dataItem: Receipt): void {
-  this.apiService.checkingIsReceiptEditable(dataItem.receiptID, this.appService.loginId).subscribe({
-    next: (response: any) => {
-      if (response === 1) {
+    this.apiService.checkingIsReceiptEditable(dataItem.receiptID, this.appService.loginId).subscribe({
+      next: (response: any) => {
+        if (response === 1) {
           this.appService.sharedData.receiving.dataItem = dataItem
           this.appService.sharedData.receiving.isEditMode = true;
           this.appService.sharedData.receiving.isViewMode = false;

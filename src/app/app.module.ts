@@ -66,7 +66,6 @@ import { IntTranferReceivingComponent } from './components/int-tranfer-receiving
 import { IntTranferReceivingAddComponent } from './components/int-tranfer-receiving-add/int-tranfer-receiving-add.component';
 
 
-
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1;
 const MSAL_VARS = [environment.msalConfig.auth.clientId, environment.msalConfig.auth.authority, environment.msalConfig.auth.redirectUri];
 

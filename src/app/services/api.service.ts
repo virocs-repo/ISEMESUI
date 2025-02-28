@@ -99,7 +99,14 @@ export class ApiService {
   generateLineItem() {
     return this.httpClient.get(`${API}v1/ise/inventory/lineItem`);
   }
-
+  uploadFiles(file: File, inputFilename: string, inventoryId: string, loginId: number) {
+    const formData = new FormData();
+    formData.append('file', file);
+    // formData.append('inputfilename', inputFilename);
+    // formData.append('reciptnumber', receiptNumber);
+    const headers = new HttpHeaders({ 'Content-Type': 'multipart/form-data', 'Accept': '*/*' });
+    return this.httpClient.post(`${API}v1/ise/inventory/upload?loginId=${loginId}&receiptId=${inventoryId}`, formData);
+  }
   uploadFile(file: File, inputFilename: string, receiptNumber: string, loginId: number) {
     const formData = new FormData();
     formData.append('file', file);
@@ -108,11 +115,26 @@ export class ApiService {
     const headers = new HttpHeaders({ 'Content-Type': 'multipart/form-data', 'Accept': '*/*' });
     return this.httpClient.post(`${API}v1/ise/inventory/upload?loginId=${loginId}&receiptId=${receiptNumber}`, formData);
   }
+  uploadFileById(file: File, inputFilename: string, Id: string, loginId: number,categoryname: string) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const headers = new HttpHeaders({ 'Content-Type': 'multipart/form-data', 'Accept': '*/*' });
+    return this.httpClient.post(`${API}v1/ise/inventory/uploadById?loginId=${loginId}&id=${Id}&categoryName=${categoryname}`, formData);
+  }
+  uploadFileByIds(file: File, inputFilename: string, Id: number, loginId: number,categoryname: string) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const headers = new HttpHeaders({ 'Content-Type': 'multipart/form-data', 'Accept': '*/*' });
+    return this.httpClient.post(`${API}v1/ise/inventory/uploadById?loginId=${loginId}&id=${Id}&categoryName=${categoryname}`, formData);
+  }
   downloadFile(fileName: string) {
     return this.httpClient.get(`${API}v1/ise/inventory/download/${fileName}`);
   }
   listFiles(receiptId: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/receipt-attachments?receiptId=${receiptId}`);
+  }
+  listFilesById(id: number,categoryname: string) {
+    return this.httpClient.get(`${API}v1/ise/inventory/get-attachmentslist?id=${id}&categoryName=${categoryname}`);
   }
   deleteFile(body: any) {
     return this.httpClient.delete(`${API}v1/ise/inventory/delete-attachment`, { body });
@@ -374,20 +396,29 @@ export class ApiService {
   getHoldType(inventoryId: number): Observable<any[]> {
     return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getHoldType?inventoryId=${inventoryId}`);
   }
-  getHoldCodes(inventoryId: number): Observable<any[]> {
-    return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getHold?inventoryId=${inventoryId}`);
+  getHoldCodes(inventoryId: number,holdTypeId: number): Observable<any[]> {
+    return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getHold?inventoryId=${inventoryId}&holdTypeId=${holdTypeId}`);
   }
   getAllHolds(inventoryId: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getAllHolds?inventoryId=${inventoryId}`);
   }
-  upsertInventoryHold(request: any, options: { responseType: 'text' }): Observable<any> {
-    return this.httpClient.post(`${API}v1/ise/inventory/inventoryHold/UpsertHold`, request, options);
+  upsertInventoryHold(request: any,options: { responseType: 'text' },file?: File): Observable<any> {
+    const formData = new FormData();
+    if(file)
+    {
+      formData.append('file', file);
+    }
+    formData.append('input', JSON.stringify(request));
+    return this.httpClient.post(`${API}v1/ise/inventory/inventoryHold/UpsertHold`, formData, options);
   }
   getHoldDetails(inventoryXHoldId: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getHoldDetails?inventoryXHoldId=${inventoryXHoldId}`);
   }
   getHoldComments() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getHoldComments`);
+  }
+  getOperaterAttachments(TFSHoldId:number){
+    return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getOperaterAttachments?TFSHoldId=${TFSHoldId}`);
   }
   getCustomerDetails(inventoryID: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getCustomerDetails?inventoryID=${inventoryID}`);
@@ -546,6 +577,20 @@ export class ApiService {
   checkingIsReceiptEditable(receiptId:number, loginId: number){
     return this.httpClient.get(`${API}v1/ise/inventory/isReceiptEditable?receiptId=${receiptId}&loginId=${loginId}`)
   }
+  fetchpackageDimensions()
+  {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventorydata/GetPackageDimension`)
+  }
+  fetchpackageByShipmentId(shipmentNumber:number)
+  {
+    return this.httpClient.get(`${API}v1/ise/inventory/inventorydata/PackageShipmentdataById?shipmentId=${shipmentNumber}`)
+  }
+
+
+  saveShipmentpackagesRecord(data: any): Observable<any> {
+    return this.httpClient.post(`${API}v1/ise/inventory/inventorydata/UpsertShipPackDim`, data);
+  }
+
   getMasterListItems(listName:string, serviceId:number|null) {
     let url = `${API}v1/ise/inventory/customerorder/getMasterListItems?listName=${listName}`;
   if (serviceId !== null) {

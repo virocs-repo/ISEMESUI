@@ -1,8 +1,10 @@
 import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
 import { GridDataResult, SelectableSettings } from '@progress/kendo-angular-grid';
+import { FileSelectComponent } from '@progress/kendo-angular-upload';
 import { ApiService } from 'src/app/services/api.service';
-import { Customer, MESSAGES, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2 } from 'src/app/services/app.interface';
+import { Customer, ICON, MESSAGES, Package, PackageUpdate, ParcelRequest, PostShipment, ReceiptLocation, Shipment, ShipmentCategory, ShipmentDetails, ShipmentDetails2, ShippingAttachment, UpsertShipPackageDimensionReq } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-shipping-record',
@@ -14,19 +16,29 @@ export class ShippingRecordComponent implements OnDestroy {
   shipmentLocation: string = ''
   readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
   customerSelected: Customer | undefined;
-
+readonly ICON = ICON;
   readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
   receiptLocationSelected: ReceiptLocation | undefined;
   senderInformation: string = ''
   shipmentComments: string = ''
   shipmentCategories: ShipmentCategory[] = []
   shipmentCategorySelected: ShipmentCategory | undefined;
-  isShipped = false
-  customerInformation = ''
-
+  isShipped = false;
+  AttachementVerified=false;
+  SliDetailsVerified =false;
+  customerInformation = '';
+ // The number of rows the user wants to create
+ numberOfPackages: number=0;
+shipId :number =0;
+ // Array holding the grid's package data
+ packages: Package[] = [];
+ packagesupdate: PackageUpdate[] = [];
+ // List for package dimensions that will populate the dropdown
+ packageDimensionsList: string[] = [];
   gridDataResult: GridDataResult = { data: [], total: 0 };
   customerID: number = 0;
   shipDeliveryDetailInfo :any =[];
+
   address = {
     Country: '',
     ReceiversName: '',
@@ -43,7 +55,19 @@ export class ShippingRecordComponent implements OnDestroy {
     SpecialInstructions:'',
     PackingComments:'',
     InvoiceComments:'',
-    contactPerson:''
+    contactPerson:'',
+    BillToCountry: '',
+    BillToAddress1: '',
+    BillToAddress2: '',
+    BillToAddress3: '',
+    BillToTelephone: '',
+    BillToState: '',
+    BillToCity: '',
+    BillToPostCode: '',
+    BillToExt:'',
+    BillToReceiversName:'',
+    BillToCompanyName:'',
+    TrackingId:''
 
 
   };
@@ -95,11 +119,15 @@ export class ShippingRecordComponent implements OnDestroy {
     CustomTermTrade:'',
     ShipDate:'',
     UltimateConsignee:'',
-
+    CommodityDescription:'',
+    Dateexportation:'',
+    TransportationRef:'',
+    shipVia:'',
+    ShipAlertInfo:''
     
   };
 
-  
+ 
 
   isDisabled: any = {
     shipBtn: false,
@@ -110,7 +138,7 @@ export class ShippingRecordComponent implements OnDestroy {
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
-    this.shipmentCategories = this.appService.shipmentCategories
+    this.shipmentCategories = this.appService.shipmentCategories;
 
     if (this.appService.sharedData.shipping.isViewMode || this.appService.sharedData.shipping.isEditMode) {
       this.isEditMode = true;
@@ -123,7 +151,7 @@ export class ShippingRecordComponent implements OnDestroy {
       this.senderInformation = dataItem.senderInfo
       this.shipmentComments = dataItem.shippmentInfo
       this.isShipped = dataItem.isShipped
-
+      this.shipId=dataItem.shipmentId
       this.customerSelected = this.customers.find(c => c.CustomerID == dataItem.customerID);
       // this.shipmentCategorySelected = this.shipmentCategories.find(c => c.shipmentCategoryID == dataItem.shipmentTypeID);
 
@@ -148,6 +176,10 @@ export class ShippingRecordComponent implements OnDestroy {
       this.isDisabled.shipBtn = true;
       this.isDisabled.clearBtn = true;
     }
+
+    this.listFiles();
+    this.fetchpackageDimensions();
+    this.fetchpackageByShipmentId(this.shipId);
   }
   ngOnDestroy(): void {
     this.appService.sharedData.shipping.isEditMode = false
@@ -171,6 +203,7 @@ export class ShippingRecordComponent implements OnDestroy {
         console.log(res);
         this.shipDeliveryDetailInfo=res[0];
         this.address.Address1=res[0].address1;
+        this.address.BillToAddress1=res[0].billToaddress1;
         this.address.CompanyName=res[0].companyName;
         this.address.Address2=res[0].address2;
         this.address.Address3=res[0].address3;
@@ -180,11 +213,23 @@ export class ShippingRecordComponent implements OnDestroy {
         this.address.City=res[0].city;
         this.address.Telephone=res[0].phone;
         this.address.Ext=res[0].ext;
+        this.address.BillToReceiversName=res[0].billToContactPerson;
+        this.address.BillToCompanyName=res[0].billToCompanyName;
+        this.address.BillToAddress1=res[0].billToAddress1;
+        this.address.BillToAddress2=res[0].billToAddress2;
+        this.address.BillToAddress3=res[0].billToAddress3;
+        this.address.BillToCountry=res[0].billToCountry;
+        this.address.BillToPostCode=res[0].billToPostCode;
+        this.address.BillToState=res[0].billToStateProvince;
+        this.address.BillToCity=res[0].billToCity;
+        this.address.BillToTelephone=res[0].billToPhone;
+        this.address.BillToExt=res[0].billToExt;
         this.address.Comments=res[0].shippingComments;
         this.address.SpecialInstructions=res[0].specialInstructionforShipping;
         this.address.PackingComments=res[0].commentsforPackingSlip;
         this.address.InvoiceComments=res[0].commentsforCommericalInvoice;
-
+        this.address.ReceiversName=res[0].contactPerson;
+        
         this.shippingDetailsData.ShippingMethod=res[0].shippingMethod;
         this.shippingDetailsData.ContactPerson=res[0].contactPerson;
         this.shippingDetailsData.Destination=res[0].destination;
@@ -212,7 +257,7 @@ export class ShippingRecordComponent implements OnDestroy {
         this.shippingDetailsData.Weight=res[0].weight;
         this.shippingDetailsData.Width=res[0].referenceNumber1;
         this.shippingDetailsData.Length=res[0].referenceNumber2;
-        this.shippingDetailsData.Height=res[0].otherAccountNumber;
+        this.shippingDetailsData.Height=res[0].otherAccNo;
 
         this.shippingDetailsData.TaxId=res[0].taxId;
         this.shippingDetailsData.Email=res[0].email;
@@ -226,9 +271,12 @@ export class ShippingRecordComponent implements OnDestroy {
         this.shippingDetailsData.LicenseType=res[0].licenseType;
         this.shippingDetailsData.InvoiceNumber=res[0].invoiceNumber;
         this.shippingDetailsData.PurchaseNo=res[0].purchaseNumber;
-     
+        this.shippingDetailsData.ShipDate=res[0].shipDate;
+        this.shippingDetailsData.ScheduleB=res[0].scheduleBNumber;
+        this.shippingDetailsData.CommodityDescription=res[0].commodityDescription;
+        this.shippingDetailsData.UltimateConsignee=res[0].ultimateConsignee;
         this.onShippingMethodChange(res[0].shippingMethod);
-
+        
 
       },
       error: (err) => {
@@ -285,6 +333,31 @@ export class ShippingRecordComponent implements OnDestroy {
   }
   gridSelectedKeys: number[] = [];
   shipItem() {
+debugger;
+    if(this.shippingAttachments.length<=0)
+      {
+        this.appService.errorMessage('please add atleast one attachment.');
+      
+        return;
+      }
+
+    if(this.shippingDetailsData.ShippingMethod === 'Forwarder')
+    {
+      if(!this.SliDetailsVerified)
+      {
+        this.appService.errorMessage('Please have the SLI Details verified ');
+        return;
+      }
+
+    }
+    else if(!this.AttachementVerified)
+      {
+        this.appService.errorMessage('Please have the attachments verified ');
+        return;
+      }
+   
+
+   
     if (!this.gridSelectedKeys) {
       this.appService.errorMessage('Please select atleast one record');
       return;
@@ -298,6 +371,10 @@ export class ShippingRecordComponent implements OnDestroy {
       return;
     }
     const dataItem: Shipment = this.appService.sharedData.shipping.dataItem;
+    // dataItem.clientAccountNumber="345345345"
+    dataItem.clientAccountNumber=this.shippingDetailsData.AccountNumber;
+    this.packages.sort((a, b) => a.packageNo - b.packageNo);
+    dataItem.Parcels=this.convertPackagesToParcels(this.packages);
     const body = { ...sd, ...dataItem }
     this.appService.isLoading = true;
     this.apiService.createShipment(body).subscribe({
@@ -319,15 +396,31 @@ export class ShippingRecordComponent implements OnDestroy {
       }
     });
   }
+   convertPackagesToParcels(packages: Package[]): ParcelRequest[] {
+    return packages.map(pkg => {
+      const [length, width, height] = pkg.ciPackageDimentions.split("x").map(Number);
+      return {
+        length,
+        width,
+        height,
+        distanceUnit: "in", // Default unit
+        weight: pkg.ciWeight,
+        massUnit: "lb" // Default unit
+      };
+    });
+  }
+
   saveShipment() {
+
+    this.onSavefromship();
     if (!this.customerSelected) {
       this.appService.errorMessage('Please select customer');
       return;
     }
     const requiredFields = [
       this.shipmentNumber, this.shipmentCategorySelected, this.shipmentLocation,
-      this.receiptLocationSelected, this.senderInformation, this.customerInformation,
-      this.shipmentComments
+      this.receiptLocationSelected, this.customerInformation
+      
     ]
     const isValid = !requiredFields.some(v => !v);
     if (!isValid) {
@@ -387,5 +480,216 @@ export class ShippingRecordComponent implements OnDestroy {
     this.receiptLocationSelected = undefined;
     this.shipmentLocation = '';
     this.customerInformation = ''
+  }
+
+  onUpload(event: any): void {
+    // Send selected files to API
+    const formData = new FormData();
+    event.files.forEach((file: any) => {
+      formData.append('files', file.rawFile);
+    });
+    // Call API
+  }
+
+shippingAttachments: ShippingAttachment[] = [];
+ readonly downloadFileApi = environment.apiUrl + 'v1/ise/inventory/download/'
+   uploadFilesById(upFiles: FileSelectComponent) {
+      const dataItem = this.appService.sharedData.shipping.dataItem;
+      
+     
+      if (!dataItem.shipmentId) {
+        // this is for new form
+        return;
+      }
+      const files = upFiles.fileList.files;
+      if (files && files.length) {
+        const file = files[0][0].rawFile;
+        if (!file) {
+          this.appService.errorMessage('Error while selecting file');
+          return;
+        }
+  
+        const inputFilename = file.name.replace(/\.[^/.]+$/, ''); // Remove file extension
+        const shipmentNumber = dataItem.shipmentId; // You can generate or get this value dynamically
+  
+        this.apiService.uploadFileById(file, inputFilename, shipmentNumber, this.appService.loginId,'ShipAlert').subscribe({
+          next: (v: any) => {
+            this.appService.successMessage('Success: File uploaded!');
+            upFiles.clearFiles();
+            this.listFiles();
+          },
+          error: (v: any) => {
+            this.appService.errorMessage('Error while uploading file')
+          }
+        });
+      } else {
+        this.appService.errorMessage('Please select file to upload')
+      }
+    }
+
+
+    private listFiles() {
+      const dataItem = this.appService.sharedData.shipping.dataItem;
+      if (!dataItem.shipmentId) {
+        // this is for new form
+        return;
+      }
+      this.apiService.listFilesById(dataItem.shipmentId,'ShipAlert').subscribe({
+        next: (v: any) => {
+          this.shippingAttachments = v;
+        }
+      })
+    }
+
+    downloadFile(d: ShippingAttachment) {
+        this.apiService.downloadFile(d.path).subscribe();
+      }
+      deleteFile(d: ShippingAttachment) {
+        d.active = false;
+        this.apiService.deleteFile(d).subscribe({
+          next: (v: any) => {
+            this.appService.successMessage('Success: File deleted!')
+            this.listFiles();
+          },
+          error: (v: any) => {
+            this.appService.errorMessage('Error: Unable to delete file')
+          }
+        })
+      }
+
+      // Called when the user enters a number and clicks the "Create Rows" button.
+  onCreateRows(): void {
+    const newPackageNo = this.packages.length > 0 
+      ? Math.max(...this.packages.map(p => p.packageNo)) + 1 
+      : 1;
+      
+    // Push a new row with default values
+    this.packages.push({
+      packageNo: newPackageNo,
+      packageId:'',
+      ciPackageDimentions: this.packageDimensionsList.length > 0 
+                              ? this.packageDimensionsList[0] 
+                              : '',
+      ciWeight: 0,
+      active: true
+    });
+  }
+
+  onSave(): void {
+    this.packagesupdate=[];
+if(this.packages.length<=0)
+{
+  this.appService.errorMessage('please add atleast one package by clicking Add Rows.');
+
+  return;
+}
+
+
+
+    const dataItem: Shipment = this.appService.sharedData.shipping.dataItem;
+   for (let i = 0; i < this.packages.length; i++) {
+       this.packagesupdate.push({
+         PackageId: String(this.packages[i].packageId), // default empty, can be modified later
+         PackageNo: this.packages[i].packageNo,
+         CIPackageDimentions:this.packages[i].ciPackageDimentions,
+         CIWeight:this.packages[i].ciWeight,
+        Active: this.packages[i].active
+       });
+     }
+
+    const payload: UpsertShipPackageDimensionReq = {
+      ShipmentID: String(dataItem.shipmentId),
+      LoginID: String(this.appService.loginId),
+      Packages: this.packagesupdate
+    };
+   
+    this.apiService.saveShipmentpackagesRecord(payload).subscribe({
+      next: (response: any) => {
+        this.appService.successMessage('saved package info successfully!');
+
+        this.fetchpackageByShipmentId(this.shipId);
+      },
+      error: (error: any) => {
+        this.appService.errorMessage('Failed to save.');
+        console.error('API error:', error);
+      },
+    });
+  }
+  onSavefromship(): void {
+    this.packagesupdate=[];
+if(this.packages.length<=0)
+{
+  this.appService.errorMessage('please add atleast one package by clicking Add Rows.');
+
+  return;
+}
+
+
+
+    const dataItem: Shipment = this.appService.sharedData.shipping.dataItem;
+   for (let i = 0; i < this.packages.length; i++) {
+       this.packagesupdate.push({
+         PackageId: String(this.packages[i].packageId), // default empty, can be modified later
+         PackageNo: this.packages[i].packageNo,
+         CIPackageDimentions:this.packages[i].ciPackageDimentions,
+         CIWeight:this.packages[i].ciWeight,
+        Active: this.packages[i].active
+       });
+     }
+
+    const payload: UpsertShipPackageDimensionReq = {
+      ShipmentID: String(dataItem.shipmentId),
+      LoginID: String(this.appService.loginId),
+      Packages: this.packagesupdate
+    };
+   
+    this.apiService.saveShipmentpackagesRecord(payload).subscribe({
+      next: (response: any) => {
+        this.fetchpackageByShipmentId(this.shipId);
+      },
+      error: (error: any) => {
+        this.appService.errorMessage('Failed to save.');
+        console.error('API error:', error);
+      },
+    });
+  }
+  onDeleteRow(rowIndex: number): void {
+    if (rowIndex >= 0 && rowIndex < this.packages.length) {
+      // Update the active flag to false instead of deleting the row.
+      this.packages[rowIndex].active = false;
+    }
+    this.onSave();
+  }
+  
+  private fetchpackageDimensions() {
+   
+    this.apiService.fetchpackageDimensions().subscribe({
+      next: (res: any) => {
+        if (Array.isArray(res)) {
+          this.packageDimensionsList = res.map(item => item.ciPackageDimentions);
+        }
+      },
+      error: (err) => {
+      }
+    });
+
+  }
+
+  private fetchpackageByShipmentId(shipmentNumber:number) {
+   
+    this.apiService.fetchpackageByShipmentId(shipmentNumber).subscribe({
+      next: (res: any) => {
+        if (res && res.length > 0) {
+          this.packages = [];
+          this.packagesupdate=[];
+          this.packages = res;
+        } else {
+          this.packages = []; // No API data: allow manual entry.
+        }
+      },
+      error: (err) => {
+      }
+    });
+
   }
 }

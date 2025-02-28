@@ -6,28 +6,38 @@
       <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
         rounded="full" (input)="onSearchMaster()" />
     </kendo-label>
-    <kendo-label text="Status" class="k-font-size-sm">
+    <kendo-label text="Receipt Status" class="k-font-size-sm">
       <br />
       <kendo-multiselect 
-        [data]="areaList" 
-        [(ngModel)]="selectedReceiptStatuses" 
-        [valuePrimitive]="true"
-        placeholder="Select Receipt Status">
+        [data]="areaList"
+        [(ngModel)]="selectedReceiptStatuses"
+        placeholder="Select Receipt Status"
+        [tagMapper]="tagDisplayLimits">
+        <ng-template kendoMultiSelectItemTemplate let-dataItem>
+          <input type="checkbox" 
+                 [checked]="selectedReceiptStatuses.includes(dataItem)" 
+                 (change)="toggleSelection(dataItem, 'receipt')"> 
+          {{ dataItem }}
+        </ng-template>
       </kendo-multiselect>
     </kendo-label>
     <kendo-label text="Facility" class="k-font-size-sm">
       <br />
       <kendo-multiselect 
         [data]="appService.masterData.receiptLocation || []" 
-        [(ngModel)]="selectedFacilities" 
-        [textField]="'receivingFacilityName'" 
-        [valueField]="'receivingFacilityID'" 
-        [valuePrimitive]="true" 
+        [(ngModel)]="selectedFacilities"
+        [tagMapper]="tagDisplayLimit"
+        [textField]="'receivingFacilityName'"
+        [valueField]="'receivingFacilityID'"
         placeholder="Select Facilities">
+        <ng-template kendoMultiSelectItemTemplate let-dataItem>
+          <input type="checkbox" 
+          [checked]="isSelectedFacility(dataItem.receivingFacilityID)" 
+          (change)="toggleSelection(dataItem, 'facility')">
+          {{ dataItem.receivingFacilityName }}
+        </ng-template>
       </kendo-multiselect>
-        </kendo-label>
-      
-
+    </kendo-label>
         <kendo-label text="From Date" class="k-font-size-sm">
           <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
         </kendo-label>

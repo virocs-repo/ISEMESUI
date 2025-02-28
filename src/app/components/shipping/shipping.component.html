@@ -81,16 +81,69 @@
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="trackingnum" title="Tracking #">
+
       <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.trackingnum">{{dataItem.trackingnum}}</a>
+        <ng-container *ngIf="dataItem.trackingnum && dataItem.trackingnum.includes(';;'); else singleTracking">
+          <div *ngFor="let tn of dataItem.trackingnum.split(';;')">
+            <a class="minimal-text" [title]="tn" [href]="tn" target="_blank">{{ tn }}</a>
+          </div>
+        </ng-container>
+        <ng-template #singleTracking>
+          <a class="minimal-text" [title]="dataItem.trackingnum" [href]="dataItem.trackingnum" target="_blank">
+            {{ dataItem.trackingnum }}
+          </a>
+        </ng-template>
       </ng-template>
+      
+      
+  <!--     <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.trackingnum">{{dataItem.trackingnum}}</a>
+      </ng-template> -->
     </kendo-grid-column>
-    <kendo-grid-column field="trackingurl" title="Tracking URL">
+    <!-- <kendo-grid-column field="trackingurl" title="Tracking URL">
       <ng-template kendoGridCellTemplate let-dataItem>
         <a class="minimal-text link" [title]="dataItem.trackingurl" [href]="dataItem.trackingurl"
           target="_blank">{{"Shipment Label"}}</a>
       </ng-template>
+    </kendo-grid-column> -->
+
+<!--     <kendo-grid-column field="trackingurl" title="Tracking URL">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <ng-container *ngIf="dataItem.trackingurl && dataItem.trackingurl.includes(';;'); else singleLink">
+          <ng-container *ngFor="let url of dataItem.trackingurl.split(';;')">
+            <a class="minimal-text link" [title]="url" [href]="url" target="_blank">Shipment Label</a><br/>
+          </ng-container>
+        </ng-container>
+        <ng-template #singleLink>
+          <a class="minimal-text link" [title]="dataItem.trackingurl" [href]="dataItem.trackingurl" target="_blank">Shipment Label</a>
+        </ng-template>
+      </ng-template>
+    </kendo-grid-column> -->
+
+    <kendo-grid-column field="trackingurl" title="Tracking URL">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <ng-container *ngIf="dataItem.trackingurl && dataItem.trackingurl.includes(';;'); else singleLink">
+          <ng-container *ngFor="let url of dataItem.trackingurl.split(';;'); let i = index">
+            <a class="minimal-text link" 
+               [title]="url" 
+               [href]="url" 
+               target="_blank">
+              Package{{ i + 1 }}
+            </a><br/>
+          </ng-container>
+        </ng-container>
+        <ng-template #singleLink>
+          <a class="minimal-text link" 
+             [title]="dataItem.trackingurl" 
+             [href]="dataItem.trackingurl" 
+             target="_blank">
+            Package1
+          </a>
+        </ng-template>
+      </ng-template>
     </kendo-grid-column>
+    
+    
   </kendo-grid>
 </div>
 

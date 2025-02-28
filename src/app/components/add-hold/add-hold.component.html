@@ -1,111 +1,224 @@
-<div class="k-m-2 k-overflow-y-auto" style="height: auto">
-  <legend><b>Lot Info</b></legend>
-  <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
-    <div class="k-d-flex k-flex-wrap k-gap-3">
-      <div class="field-container k-d-flex k-align-items-center">
-        <kendo-label [for]="'lotNumber'" class="label-text">
-          <strong>Lot/ Mail/ FGI Pull #:</strong>
-        </kendo-label>&nbsp;&nbsp;
-        <span class="value-text">{{ lotNumber }}</span>
-      </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <div class="field-container k-d-flex k-align-items-center">
-        <kendo-label [for]="'customerName'" class="label-text">
-          <strong>Customer:</strong>
-        </kendo-label>&nbsp;&nbsp;
-        <span class="value-text">{{ customerName }}</span>
-      </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <div class="field-container k-d-flex k-align-items-center">
-        <kendo-label [for]="'device'" class="label-text">
-          <strong>Device:</strong>
-        </kendo-label>&nbsp;&nbsp;
-        <span class="value-text">{{ device }}</span>
-      </div>
-    </div>
-  </kendo-card-body>
-    <fieldset class="k-mt-1">
-      <legend><b>Hold Details</b></legend>
-      <div class="k-d-flex k-flex-column k-gap-3">
-        <div class="k-d-flex k-align-items-center k-gap-3">
-          <label class="k-label k-mb-0" style="min-width: 150px;">Hold:<b class="required-label"></b></label>
-          <kendo-checkbox 
-            [(ngModel)]="isHold" 
-            label="Hold"
-            [disabled]="isView"
-            (change) ="onHoldChanged()" >
-          </kendo-checkbox>
-        </div>
+<div>
+  <kendo-tabstrip [keepTabContent]="true">
+    <kendo-tabstrip-tab title="Lot Info" [selected]="true">
+      <ng-template kendoTabContent>
+        <div class="k-m-2 k-overflow-y-auto" style="height: auto">
+          <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
+            <div class="k-d-flex k-flex-column k-gap-3">
+              <div class="k-d-flex k-align-items-end k-gap-3" style="display: flex; flex-wrap: wrap; width: 100%;">
+                <div class="field-container" style="flex: 1; display: flex; align-items: center;">
+                  <kendo-label [for]="'lotNumber'" class="label-text">
+                    <strong>Lot/ Mail/ FGI Pull #:</strong>
+                  </kendo-label>
+                  <span class="value-text" style="margin-left: 0.5rem;">{{ lotNumber }}</span>
+                </div>
+                <div class="field-container" style="flex: 1; display: flex; align-items: center;">
+                  <kendo-label [for]="'customerName'" class="label-text">
+                    <strong>Customer:</strong>
+                  </kendo-label>
+                  <span class="value-text" style="margin-left: 0.5rem;">{{ customerName }}</span>
+                </div>
+                <div class="field-container" style="flex: 1; display: flex; align-items: center;">
+                  <kendo-label [for]="'editholdDate'" class="label-text">
+                    <strong>Device:</strong>
+                  </kendo-label>
+                  <span class="value-text" style="margin-left: 0.5rem;">{{ device }}</span>
+                </div>
+              </div>
+            </div>
+          </kendo-card-body>
+          <fieldset class="k-mt-1 hold-details">
+              <legend><b>Hold Details</b></legend>
+              <div class="k-d-flex k-flex-column k-gap-3">
+                <div class="k-d-flex k-align-items-center k-gap-3">
+                  <label class="k-label k-mb-0" style="min-width: 150px;">Hold:<b class="required-label"></b></label>
+                  <kendo-checkbox 
+                    class="checkbox"
+                    [(ngModel)]="isHold" 
+                    label="Hold"
+                    [disabled]="isView"
+                    (change) ="onHoldChanged()" >
+                  </kendo-checkbox>
+                </div>
 
-        <div class="k-d-flex k-flex-wrap k-gap-3">
-          <label class="k-label" style="min-width: 150px;">Hold Type:<b class="required-label"></b></label>
-          <div>
-            <kendo-combobox
-              [(ngModel)]="selectedHoldType"
-              [data]="holdTypes"
-              placeholder="Select Hold Type"
-              [disabled]="isReadOnly">
-            </kendo-combobox>
-          </div>
-        </div>
+                <div class="k-d-flex k-flex-wrap k-gap-3">
+                  <label class="k-label" style="min-width: 150px;">Hold Type:<b class="required-label"></b></label>
+                  <div>
+                    <kendo-combobox
+                      class="combobox"
+                      [(ngModel)]="selectedHoldType"
+                      [data]="holdTypes"
+                      [textField]="'holdType'"
+                      [valueField]="'holdTypeId'"
+                      placeholder="Select Hold Type"
+                      (selectionChange)="onHoldTypeChange($event)"
+                      [disabled]="isReadOnly">
+                    </kendo-combobox>
+                  </div>
+                </div>
 
-        <div class="k-d-flex k-align-items-center k-gap-3">
-          <label class="k-label k-mb-0" style="min-width: 150px;">Hold Code:<b class="required-label"></b></label>
-          <div [class.disabled]="isReadOnly">
-            <kendo-treeview
-              [nodes]="treeNodes"
-              [textField]="['groupName', 'holdCode']"
-              kendoTreeViewExpandable
-              kendoTreeViewHierarchyBinding
-              kendoTreeViewSelectable
-              childrenField="holdGroupDetails"
-              (selectionChange)="onSelectionChange($event)">
-            </kendo-treeview>
-          </div>
-        </div>
+                <div class="k-d-flex k-align-items-center k-gap-3">
+                  <label class="k-label k-mb-0" style="min-width: 150px;">Hold Code:<b class="required-label"></b></label>
+                  <kendo-textbox class="textbox" *ngIf="mode === 'edit'" [(ngModel)]="selectedHoldCode" [disabled]="isReadOnly" style="width: 250px;"></kendo-textbox>
+                  <kendo-textbox class="textbox" *ngIf="mode === 'view'" [(ngModel)]="selectedHoldCode" [disabled]="isReadOnly" style="width: 250px;"></kendo-textbox>
+                  <div *ngIf="mode !== 'edit'" [class.disabled]="isReadOnly">
+                    <kendo-treeview
+                      [nodes]="treeNodes"
+                      [textField]="['groupName', 'holdCode']"
+                      kendoTreeViewExpandable
+                      kendoTreeViewHierarchyBinding
+                      kendoTreeViewSelectable
+                      childrenField="holdGroupDetails"
+                      (selectionChange)="onSelectionChange($event)">
+                    </kendo-treeview>
+                  </div>
+                </div>
 
-        <div class="k-d-flex k-align-items-center k-gap-3">
-          <label class="k-label k-mb-0" style="min-width: 150px;">Reason:<b class="required-label"></b></label>
-          <kendo-textarea
-            [(ngModel)]="reason"
-            style="flex: 1;"
-            [disabled]="isReadOnly">
-          </kendo-textarea>
-        </div>
+                <div class="k-d-flex k-align-items-center k-gap-3">
+                  <label class="k-label k-mb-0" style="min-width: 150px;">Reason:<b class="required-label"></b></label>
+                  <kendo-textarea
+                  class="textarea"
+                    [(ngModel)]="reason"
+                    style="flex: 1;"
+                    [disabled]="isReadOnly">
+                  </kendo-textarea>
+                </div>
 
-        <div class="k-d-flex k-align-items-center k-gap-3">
-          <label class="k-label k-mb-0" style="min-width: 150px;">Hold Comments:<b class="required-label"></b></label>
-          <kendo-textarea
-            [(ngModel)]="holdComments"
-            style="flex: 1;"
-            [disabled]="isReadOnly">
-          </kendo-textarea>
-        </div>
+                <div class="k-d-flex k-align-items-center k-gap-3">
+                  <label class="k-label k-mb-0" style="min-width: 150px;">Hold Comments:<b class="required-label"></b></label>
+                  <kendo-textarea
+                  class="textarea"
+                    [(ngModel)]="holdComments"
+                    style="flex: 1;"
+                    [disabled]="isReadOnly">
+                  </kendo-textarea>
+                </div>
 
-        <div *ngIf="showHoldFields" class="k-d-flex k-align-items-center k-gap-3">
-          <label class="k-label k-mb-0" style="min-width: 150px;">Off Hold Comments:<b class="required-label"></b></label>
-          <kendo-textarea
-            [(ngModel)]="offHoldComments"
-            style="flex: 1;"
-            [disabled]="isView">
-          </kendo-textarea>
-        </div>
+                <div *ngIf="showHoldFields" class="k-d-flex k-align-items-center k-gap-3">
+                  <label class="k-label k-mb-0" style="min-width: 150px;">Off Hold Comments:<b class="required-label"></b></label>
+                  <kendo-textarea
+                  class="textarea"
+                    [(ngModel)]="offHoldComments"
+                    style="flex: 1;"
+                    [disabled]="isView">
+                  </kendo-textarea>
+                </div>
 
-        <div *ngIf="showHoldFields" class="k-d-flex k-align-items-center k-gap-3">
-          <kendo-label class="k-mb-0" style="min-width: 150px;">Hold By:</kendo-label>
-          <span class="value-text">{{ holdBy || '......' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <kendo-label class="k-mb-0" style="min-width: 150px;">Hold Time:</kendo-label>
-          <span class="value-text">{{ holdTime || '......' }}</span>
+                <div class="k-d-flex k-align-items-center k-gap-3">
+                  <kendo-label class="k-mb-0" style="min-width: 150px;">Hold By:</kendo-label>
+                  <span class="value-text">{{ holdBy || '......' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <kendo-label class="k-mb-0" style="min-width: 150px;">Hold Time:</kendo-label>
+                  <span class="value-text">{{ holdTime ? (holdTime | date: 'MM-dd-yyyy HH:mm a') : '......' }}</span>
+                </div>
+            
+                <div *ngIf="mode === 'view'" class="k-d-flex k-align-items-center k-gap-3">
+                  <kendo-label class="k-mb-0" style="min-width: 150px;">Off Hold By:</kendo-label>
+                  <span class="value-text">{{ offHoldBy || '......' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <kendo-label class="k-mb-0" style="min-width: 150px;">Off Hold Time:</kendo-label>
+                  <span class="value-text">{{ offHoldTime ? (offHoldTime | date: 'MM-dd-yyyy HH:mm a') : '......' }}</span>
+                </div>
+              </div>
+            </fieldset>
+            <div class="k-d-flex k-gap-3 k-mt-3">
+              <button kendoButton type="button" rounded="full" themeColor="info" class="k-ml-auto" style="width:6rem" (click)="save()" [hidden]="isView">Save</button>
+              <button kendoButton type="button" rounded="full" themeColor="error" style="width:6rem" (click)="resetForm()" [hidden]="true">Cancel</button>
+            </div>
         </div>
-    
-        <div *ngIf="showHoldFields" class="k-d-flex k-align-items-center k-gap-3">
-          <kendo-label class="k-mb-0" style="min-width: 150px;">Off Hold By:</kendo-label>
-          <span class="value-text">{{ offHoldBy || '......' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <kendo-label class="k-mb-0" style="min-width: 150px;">Off Hold Time:</kendo-label>
-          <span class="value-text">{{ offHoldTime || '......' }}</span>
+      </ng-template>
+    </kendo-tabstrip-tab>
+    <kendo-tabstrip-tab title="Hold Attachments">
+      <ng-template kendoTabContent>
+
+        <kendo-card class="card-green card-full">
+          <kendo-card-body>
+            <div>
+              <label style="font-weight: 700; color: maroon;">Hold Alert Info  </label>
+            </div>
+            <kendo-fileselect #upFiles  (select)="onUpload($event)"
+              [multiple]="false">
+            </kendo-fileselect>
+          <!--<button kendoButton type="button" rounded="large" themeColor="secondary" style="margin-top: 1%;width:6rem;"
+              (click)="uploadFilesById(upFiles)" [disabled]="isDisabled.shipBtn" >Upload</button> -->
+              <div>
+                <kendo-grid [data]="shippingAttachments" class="receipt-attachments">
+                  <kendo-grid-column title="#" [width]="40">
+                    <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+                      {{ rowIndex + 1 }}
+                    </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column field="attachmentName" title="File Name">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                      <a class="minimal-text link" [href]="downloadFileApi+dataItem.path" target="_blank">{{dataItem.path}}</a>
+                    </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column field="createdBY" title="Attachment By">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                      <a class="minimal-text" [title]="dataItem.createdBY">{{dataItem.createdBY}}</a>
+                    </ng-template>
+                  </kendo-grid-column>
+                  <kendo-grid-column field="createdON" title="Attached On">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                      <a class="minimal-text" [title]="dataItem.createdON">{{dataItem.createdON | date: 'MM-dd-yyyy HH:mm a'}}</a>
+                    </ng-template>
+                  </kendo-grid-column>
+                  
+                  <kendo-grid-column title="Actions" [width]="100">
+                    <ng-template kendoGridCellTemplate let-dataItem>
+                      <button kendoButton [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteFile(dataItem)" [disabled]="isDisabled.shipBtn"></button>
+                    </ng-template>
+                  </kendo-grid-column>
+                </kendo-grid>
+              </div>
+            
+              <div style="margin-top: 3%;">
+                <div>
+                  <label style="font-weight: 700; color: maroon;">Operater Attachements Info  </label>
+                </div>
+                  <kendo-grid [data]="operaterAttachments" [resizable]="true" [reorderable]="true">
+                    <kendo-grid-column title="#" [width]="10">
+                      <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+                        {{ rowIndex + 1 }}
+                      </ng-template>
+                    </kendo-grid-column> 
+                    <kendo-grid-column field="attachedFile" title="File" [width]="90">
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <a class="minimal-text link" [href]="downloadFileApi + dataItem.attachedFile" target="_blank">
+                          {{ dataItem.attachedFile }}
+                        </a>
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column field="attachmentType" title="Attachment Type" [width]="40">
+                    </kendo-grid-column>
+                    <kendo-grid-column field="attachedBy" title="Attached By" [width]="60">
+                    </kendo-grid-column>
+                    <kendo-grid-column field="attachedOn" title="Attached On" [width]="70">
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        {{ dataItem.attachedOn | date: 'MM-dd-yyyy HH:mm a' }}
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column field="updatedBy" title="Updated By" [width]="60">
+                    </kendo-grid-column>
+                    <kendo-grid-column field="updatedOn" title="Updated On" [width]="70">
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        {{ dataItem.updatedOn | date: 'MM-dd-yyyy HH:mm a' }}
+                      </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-column field="active" title="Status" [width]="40">
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <span [class]="dataItem.Active ? 'active-status' : 'inactive-status'">
+                          {{ dataItem.active ? 'Active' : 'Inactive' }}
+                        </span>
+                      </ng-template>
+                    </kendo-grid-column>
+                  </kendo-grid>
+              </div>
+          </kendo-card-body>
+        </kendo-card>
+        <div class="k-d-flex k-gap-3 k-mt-3">
+          <button kendoButton type="button" rounded="full" themeColor="info" class="k-ml-auto" style="width:6rem" (click)="save()" [hidden]="isView">Save</button>
+          <button kendoButton type="button" rounded="full" themeColor="error" style="width:6rem" (click)="resetForm()" [hidden]="true">Cancel</button>
         </div>
-      </div>
-    </fieldset>
-    <div class="k-d-flex k-gap-3 k-mt-3">
-      <button kendoButton type="button" rounded="full" themeColor="info" class="k-ml-auto" style="width:6rem" (click)="save()" [hidden]="isView">Save</button>
-      <button kendoButton type="button" rounded="full" themeColor="error" style="width:6rem" (click)="resetForm()" [hidden]="true">Cancel</button>
-    </div>
-    
+      </ng-template>
+      </kendo-tabstrip-tab>
+  </kendo-tabstrip>
+</div>
