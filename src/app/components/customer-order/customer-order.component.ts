@@ -30,7 +30,8 @@ export class CustomerOrderComponent implements OnInit {
   };
   isEditButtonEnabled: boolean=true;
   public customerOrd: any = {}; 
-  public formOrdData: any = {}; 
+  public formOrdData: any = {};
+  public deliveryInfo: any = {}; 
   public searchTerm: string = '';
   format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker
   fromDate: Date | null = null;  // Variable to store the selected 'from' date
@@ -183,12 +184,7 @@ export class CustomerOrderComponent implements OnInit {
     }
   }
   onSelectRowActionMenu(e: ContextMenuSelectEvent) {
-
-
 const dataItem = this.dataItemSelected;
-console.log(e);
-console.log(dataItem);
-// Split the address into parts
 const addressParts = dataItem.address.split(':');
 this.formOrdData = {
   CustomerOrderID: dataItem.customerOrderID,
@@ -210,64 +206,64 @@ this.formOrdData = {
   
   Active: dataItem.active
 };
+this.apiService.getShipmentdeliveryInfo(dataItem.deliveryInfoId).subscribe({
+  next: (deliveryInfo:any) => {
+    console.log(deliveryInfo);
+    this.deliveryInfo = deliveryInfo;
+  },
+  error: (err) => {
+    console.error('Error fetching shipment delivery info:', err);
+  },
+});
 
 switch (e.item.text) {
-
-  
   case 'View Data':
     // access the same in receipt component
-    this.isEditMode = false;  // Set to view mode
+    this.isEditMode = false;  
     this.addCustomerMode=false;
     this.apiService.viewEditCustomerOrder(dataItem.customerOrderID,false).subscribe({
       next: (v: any) => {
         // this.receipts = v;
-        this.customerOrd = v;
-       
+        this.customerOrd = v;       
         this.openDialog()
       },
       error: (v: any) => { }
     });
-
-   
     break;
   case 'Edit Data':
-    // access the same in receipt component
-    this.isEditMode = true;  // Set to edit mode
+    this.isEditMode = true;  
     this.addCustomerMode=false;
     this.apiService.viewEditCustomerOrder(dataItem.customerOrderID,true).subscribe({
       next: (v: any) => {
         // this.receipts = v;
-        this.customerOrd = v;
-        
+        this.customerOrd = v;        
         this.openDialog()
       },
       error: (v: any) => { }
     });
-   
     break;
     case 'Void Data':
-      // access the same in receipt component
-    
       const customervoidOrder: CustomerOrder = {
         CustomerOrderID: dataItem.customerOrderID,
         CustomerId: dataItem.customerId,
-        CustomerOrderType:dataItem.customerOrderType,
+        CustomerOrderType: dataItem.customerOrderType,
         OQA: dataItem.oqa,
         Bake: dataItem.bake,
         PandL: dataItem.pandL,
         CompanyName: dataItem.companyName,
         ContactPerson: dataItem.contactPerson,
         ContactPhone: dataItem.contactPhone,
-        Address1: addressParts[0],  // First part of the address
-        Address2: addressParts[1],  // Second part of the address
-        City: addressParts[2],      // Third part is the city
-        Zip: addressParts[3],       // Fourth part is the zip code
-        State: addressParts[4],     // Fifth part is the state
-        Country: addressParts[5],   // Sixth part is the country
+        Address1: addressParts[0], // First part of the address
+        Address2: addressParts[1], // Second part of the address
+        City: addressParts[2], // Third part is the city
+        Zip: addressParts[3], // Fourth part is the zip code
+        State: addressParts[4], // Fifth part is the state
+        Country: addressParts[5], // Sixth part is the country
         OrderStatus: dataItem.orderStatus,
         Active: false,
         RecordStatus: 'D',
-        CustomerOrderDetails: []
+        CustomerOrderDetails: [],
+        CustomerAddress:[]
       };
    
       const payload: OrderRequest = {

@@ -1,5 +1,6 @@
 import { MenuItem } from "@progress/kendo-angular-menu";
-import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, kpiStatusHoldIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, printIcon, selectBoxIcon, trashIcon, userIcon, windowRestoreIcon, xIcon ,saveIcon} from "@progress/kendo-svg-icons";
+
+import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, kpiStatusHoldIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, printIcon, selectBoxIcon, trashIcon, userIcon, windowRestoreIcon, xIcon, saveIcon, mapMarkerIcon } from "@progress/kendo-svg-icons";
 
 export interface CustomerType {
   customerTypeID: number;
@@ -241,7 +242,8 @@ export const ICON = {
   printIcon,
   kpiStatusHoldIcon,
   trashIcon,
-  saveIcon
+  saveIcon,
+  mapMarkerIcon
 }
 
 export const MESSAGES = {
@@ -316,6 +318,68 @@ export interface CustomerOrderDetail {
   RecordStatus: string;
 }
 
+export interface CustomerAddress {
+  ShippingMethodId:number;
+  IsForwarder: boolean;
+  ContactPerson: string;
+  Phone: string;
+  ShipAlertEmail: string;
+  ExpectedTime: string|null;
+  Comments: string; 
+  SpecialInstructionforShipping: string;
+  PackingSlipComments: string;
+  CIComments: string;
+  AddressId:number;  
+  Email:string;
+  Country:string;
+  CompanyName:string;
+  Address1:string;
+  Address2:string;
+  Address3:string;
+  Zip:string;
+  StateProvince:string;
+  City:string;
+  Extension:string;
+  ShipDate:string|null;
+  CountryOfOrigin:string;
+  CIFromId:number;
+  UnitValue:number| undefined;
+  TotalValue:number| undefined;
+  Units:number| undefined;
+  ECCN:string;
+  ScheduleBNumber:number| undefined;
+  LicenseType:string;
+  CommidityDescription:string;
+  UltimateConsignee:string;
+  DestinationId:number;
+  CourierId:number;
+  ServiceType:string;
+  PackageType:string;
+  BillTransportationTo:string;
+  BillTransportationAcct:string;
+  CustomerReference:string;
+  NoOfPackages:string;
+  Weight:number;
+  PackageDimentions:string;
+  IsResidential:boolean;
+  AccountNumber:string;
+  ReferenceNumber1:string;
+  ReferenceNumber2:string;
+  OtherAccountNumber:number;
+  TaxId:string;
+  Attention:string;
+  InvoiceNumber:string;
+  BillDutyTaxFeesTo:string;
+  BillDutyTaxFeesAcct:string;
+  CommodityDescription:string;
+  ScheduleBUnits1:number;
+  PurchaseNumber:string;
+  ShipmentReference:string;
+  CustomsTermsOfTradeid:number;
+  Qty:number;
+  CommodityOrigin:string;
+}
+
 export interface CustomerOrder {
   CustomerOrderID: number | null;
   CustomerId: number;
@@ -336,6 +400,7 @@ export interface CustomerOrder {
   RecordStatus: string;
   Active: boolean;
   CustomerOrderDetails: CustomerOrderDetail[];
+  CustomerAddress :CustomerAddress[];
 }
 
 export interface OrderRequest {
