@@ -2,7 +2,7 @@ trigger:
   - main
 
 pool:
-  name: 'Default' # Replace with your custom pool if needed
+  name: 'Default'
   demands:
     - agent.name -equals viroc-agent1
 
@@ -15,33 +15,24 @@ steps:
 - script: dir /s
   displayName: 'List all files'
 
-# Step 2: Clean node_modules (Prevent Infinite Nesting)
-- script: |
-    if exist node_modules ( rmdir /s /q node_modules )
-  displayName: 'Clean node_modules (Fix Tar Error)'
-
-# Step 3: Use Cached Node Modules (Speeds up Build)
-- task: Cache@2
-  inputs:
-    key: 'npm | "$(Agent.OS)" | package-lock.json'
-    path: 'node_modules'
-    cacheHitVar: 'CACHE_RESTORED'
-  displayName: 'Cache Node Modules'
-
-# Step 4: Install Node.js (Only Needed Once)
+# Step 2: Install Node.js
 - task: UseNode@1
   inputs:
-    version: '18.x' # Ensure compatibility with your Angular project
+    version: '18.x'
 
-# Step 5: Install Dependencies (Skip if Cached)
+# Step 3: Install Angular CLI
+- script: npm install -g @angular/cli
+  displayName: 'Install Angular CLI'
+
+# Step 4: Install Dependencies (Fix Missing Packages)
 - script: |
-    if not defined CACHE_RESTORED (
-      echo "Cache not found, running npm ci"
-      npm ci
-    ) else (
-      echo "Using cached node_modules"
-    )
+    npm ci
+    npm install --save-dev @angular-devkit/build-angular
   displayName: 'Install Dependencies'
+
+# Step 5: Debug Angular CLI Version
+- script: ng version
+  displayName: 'Debug Angular CLI Version'
 
 # Step 6: Build Angular Application
 - script: ng build --configuration=$(buildConfiguration) --output-path=$(buildDirectory)
