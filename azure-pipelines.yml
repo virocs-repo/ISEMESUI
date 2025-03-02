@@ -15,28 +15,39 @@ steps:
 - script: dir /s
   displayName: 'List all files'
 
-# Step 2: Use Cached Node Modules (Speeds up Build)
+# Step 2: Clean node_modules (Prevent Infinite Nesting)
+- script: |
+    if exist node_modules ( rmdir /s /q node_modules )
+  displayName: 'Clean node_modules (Fix Tar Error)'
+
+# Step 3: Use Cached Node Modules (Speeds up Build)
 - task: Cache@2
   inputs:
     key: 'npm | "$(Agent.OS)" | package-lock.json'
-    path: './node_modules'
+    path: 'node_modules'
+    cacheHitVar: 'CACHE_RESTORED'
   displayName: 'Cache Node Modules'
 
-
-# Step 3: Install Node.js (Only Needed Once)
+# Step 4: Install Node.js (Only Needed Once)
 - task: UseNode@1
   inputs:
     version: '18.x' # Ensure compatibility with your Angular project
 
-# Step 4: Install Dependencies (Skip if Cached)
-- script: npm ci
+# Step 5: Install Dependencies (Skip if Cached)
+- script: |
+    if not defined CACHE_RESTORED (
+      echo "Cache not found, running npm ci"
+      npm ci
+    ) else (
+      echo "Using cached node_modules"
+    )
   displayName: 'Install Dependencies'
 
-# Step 5: Build Angular Application
+# Step 6: Build Angular Application
 - script: ng build --configuration=$(buildConfiguration) --output-path=$(buildDirectory)
   displayName: 'Build Angular Application'
 
-# Step 6: Archive Build Output into ZIP
+# Step 7: Archive Build Output into ZIP
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(buildDirectory)'
@@ -46,7 +57,7 @@ steps:
     replaceExistingArchive: true
   displayName: 'Create ZIP package'
 
-# Step 7: Publish Build Artifacts (ZIP)
+# Step 8: Publish Build Artifacts (ZIP)
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)/angular-app.zip'
