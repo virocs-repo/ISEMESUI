@@ -19,8 +19,9 @@ steps:
 - task: Cache@2
   inputs:
     key: 'npm | "$(Agent.OS)" | package-lock.json'
-    path: 'node_modules'
+    path: './node_modules'
   displayName: 'Cache Node Modules'
+
 
 # Step 3: Install Node.js (Only Needed Once)
 - task: UseNode@1
