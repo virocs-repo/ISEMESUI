@@ -1,0 +1,68 @@
+
+<div class="k-d-flex k-align-items-center k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
+  
+  <h4>Ticket</h4>
+  <div class="k-d-flex k-gap-3 k-ml-auto">
+    <kendo-label text="Search" class="k-font-size-sm">
+      <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
+        rounded="full" (input)="onSearchMaster()" />
+    </kendo-label>
+    <kendo-label text="From Date" class="k-font-size-sm">
+    <kendo-datepicker [format]="format" [(value)]="fromDate" ></kendo-datepicker>
+    </kendo-label>
+    <kendo-label text="To Date" class="k-font-size-sm">
+    <kendo-datepicker [format]="format" [(value)]="toDate" ></kendo-datepicker>
+    </kendo-label>
+</div>
+    <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="fetchdata()">Search</button>
+    <button kendoButton *ngIf="showhideAddTicketButton == true" rounded="full" themeColor="info" class="k-w-25" (click)="addTicket()">Add</button>
+</div>
+<div class="page-body k-m-4">
+  <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
+    [pageSize]="pageSize" [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
+    [filterable]="true" (cellClick)="onCellClick($event)" class="grid-header-sm grid-header-bold"
+    [rowClass]="rowCallback">
+    <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+    <kendo-grid-column field="ticketID" title="Ticket ID" [hidden]="true"></kendo-grid-column>
+    <kendo-grid-column field="ticketTypeID" title="TicketTypeID" [hidden]="true" ></kendo-grid-column>
+    <kendo-grid-column field="requestorID" title="RequestorID"[hidden]="true" ></kendo-grid-column>
+    <kendo-grid-column field="id" title="Ticket #"></kendo-grid-column>
+    <kendo-grid-column field="ticketType" title="Ticket Type"></kendo-grid-column>
+    <kendo-grid-column field="requestor" title="Requestor"></kendo-grid-column>
+    <kendo-grid-column field="createdOn" title="Created On"></kendo-grid-column>
+    <kendo-grid-column field="dueDate" title="Due Date"></kendo-grid-column>
+    <kendo-grid-column field="requestDetails" title="Request Details">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.requestDetails">{{dataItem.requestDetails}}</a>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="asLotString" title="ISELot #">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <a class="minimal-text" [title]="dataItem.asLotString">{{dataItem.asLotString}}</a>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="ticketStatus" title="Status"></kendo-grid-column>
+    <kendo-grid-column field="acceptedTime" title="Accepted Time"></kendo-grid-column>
+  </kendo-grid>
+</div>
+
+<kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
+  #gridContextMenu></kendo-contextmenu>
+
+<kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'78%'"
+  class="dialog-round receipt-dialog">
+  <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
+    <h3 class="k-m-0">Ticket</h3>
+    <small *ngIf="appService.sharedData.addTicket.isViewMode">(View Mode)</small>
+    <small *ngIf="appService.sharedData.addTicket.isEditMode">(Edit Mode)</small>
+    <small *ngIf="appService.sharedData.addTicket.dataItem?.ticketID">Tkt-
+      {{appService.sharedData.addTicket.dataItem?.ticketID}}</small>
+    
+      <i class="k-ml-auto"></i>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+      (click)="canCloseDialog()"></button>
+  </div>
+  <div class="dialog-body k-overflow-y-auto">
+    <app-add-ticket (onClose)="closeDialog()"></app-add-ticket>
+  </div>
+</kendo-dialog>

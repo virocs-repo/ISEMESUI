@@ -64,6 +64,8 @@ import { AddInventoryMoveComponent } from './components/add-inventory-move/add-i
 import { TooltipsModule } from '@progress/kendo-angular-tooltip';
 import { IntTranferReceivingComponent } from './components/int-tranfer-receiving/int-tranfer-receiving.component';
 import { IntTranferReceivingAddComponent } from './components/int-tranfer-receiving-add/int-tranfer-receiving-add.component';
+import { TicketComponent } from './components/ticket/ticket.component';
+import { AddTicketComponent } from './components/add-ticket/add-ticket.component';
 
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1;
@@ -142,7 +144,9 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     InventoryMoveComponent,
     AddInventoryMoveComponent,
     IntTranferReceivingComponent,
-    IntTranferReceivingAddComponent
+    IntTranferReceivingAddComponent,
+    TicketComponent,
+    AddTicketComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,175 @@
+<div class="k-m-4" id="addReceiptForm">
+    <div>
+      <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
+        <span style="margin-left: auto;"></span>
+          <button kendoButton type="button" *ngIf="showHideAcceptRequestButton == true" rounded="large" themeColor="info" (click)="acceptRequest()"
+          [disabled]="isDisabled.reviewButtons">Accept Request</button>
+          <button kendoButton type="button" *ngIf="showHideNeedClarificationtButton == true" rounded="large" themeColor="info" (click)="needClarification()"
+          [disabled]="isDisabled.reviewButtons">Need Clarification</button>
+        
+      </div>
+      <div class="k-d-flex k-flex-wrap k-align-items-stretch k-gap-4 k-w-full k">
+        <kendo-card class="card-green k-flex-1 flex-auto-md" [ngClass]="{'k-pointer-events-none':isDisableRequestDetail}">
+          <kendo-card-body class="card-flex">
+            <div class="k-d-flex k-align-items-center k-gap-4">
+              <kendo-label text="Request Type" class="k-w-full">
+                <b class="required-label"></b>
+                <kendo-combobox [data]="ticketTypes" [(ngModel)]="ticketTypeSelected" [textField]="'ticketTypeName'"
+                  [valueField]="'ticketTypeID'" [kendoDropDownFilter]="filterSettings" placeholder="Select"
+                  rounded="large" (valueChange)="onRequestTypeChange($event)"></kendo-combobox>
+              </kendo-label>
+              <kendo-label text="ISE Lot #" class="k-w-full">
+                <b class="required-label"></b>
+                <kendo-multiselect #multiselect [checkboxes]="true" [autoClose]="false" [data]="ticketLots" [(ngModel)]="lotsSelected"
+                [textField]="'lotNum'" [valueField]="'inventoryID'" [kendoDropDownFilter]="filterSettings" placeholder="Select" (valueChange)="onLotsChange($event)">
+                </kendo-multiselect>
+              </kendo-label>
+            </div>
+            <div class="k-d-flex k-align-items-center k-gap-4">
+              <kendo-label text="Due Date" class="k-font-size-sm">
+                <kendo-datetimepicker [format]="format" [(value)]="dueDate" ></kendo-datetimepicker>
+                </kendo-label>
+            </div>
+            <div class="k-d-flex k-align-items-center k-gap-4">
+              <kendo-label text="Request Detail" class="k-w-full">
+                <kendo-textarea [(ngModel)]="requestDetail" [rows]="4" placeholder="Enter text"
+                  rounded="large"></kendo-textarea>
+              </kendo-label>
+            </div>
+          </kendo-card-body>
+        </kendo-card>
+        
+        <kendo-card class="card-blue k-flex-1 flex-auto-md">
+          <kendo-card-body class="card-flex">
+            <div class="k-d-flex k-align-items-center k-gap-4" *ngIf="showHideAcceptRequestSaveButtons == true">
+              <kendo-label text="Scan Lot #" class="k-w-full">
+                <b class="required-label"></b>
+                <kendo-textbox [(ngModel)]="scanLot" (keydown)="onScanLotEnterPress($event)"></kendo-textbox>
+              </kendo-label>
+              <kendo-label class="k-w-full">
+                <button kendoButton type="button" rounded="large" themeColor="info" (click)="addScanLot()">+</button>
+              </kendo-label>
+            </div>
+            <div class="k-d-flex k-align-items-center k-gap-4" *ngIf="showHideAcceptRequestSaveButtons == true || showHideSubmitClarificationtButton == true">
+              <kendo-label text="Comments" class="k-w-full">
+                <kendo-textarea [(ngModel)]="reviewerComments" [rows]="4" placeholder="Enter text"
+                  rounded="large"></kendo-textarea>
+              </kendo-label>
+            </div>
+            <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3" *ngIf="appService.roleName != 'Reviewer' || showHideAcceptRequestSaveButtons == true || showHideSubmitClarificationtButton == true">
+              <kendo-label [text]="attachmentLabelName">
+              <kendo-fileselect #upFiles (select)="onSelect($event)" (upload)="onUpload($event)"
+                [multiple]="false"></kendo-fileselect>
+              </kendo-label>
+            </div>
+            
+      </kendo-card-body>
+      </kendo-card>
+      </div>
+      
+    </div>
+   
+      <div>
+      <div class="k-d-flex k-align-items-center k-gap-3">
+        <h3 class="k-my-2">Lot Details</h3>
+      </div>
+      <div class="page-body k-m-4">
+        <kendo-grid [kendoGridBinding]="lotDetailGrid" [selectable]="selectableSettings" [resizable]="true">
+          <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+          <kendo-grid-column field="inventoryID" title="TicketID" [hidden]="true" ></kendo-grid-column>
+          <kendo-grid-column field="customerName" title="Customer Name"></kendo-grid-column>
+          <kendo-grid-column field="customerLot" title="Customer Lot"></kendo-grid-column>
+          <kendo-grid-column field="deviceType" title="Device Type"></kendo-grid-column>
+          <kendo-grid-column field="iseLot" title="ISE Lot"></kendo-grid-column>
+          <kendo-grid-column field="qty" title="Qty"></kendo-grid-column>
+          <kendo-grid-column field="icrLocation" title="ICR Location"></kendo-grid-column>
+          <kendo-grid-column field="scanLotNum" title="Scan LotNum"></kendo-grid-column>
+        </kendo-grid>
+      </div>
+      <div class="k-d-flex k-align-items-center k-gap-3">
+        <h3 class="k-my-2">Previous Clarifications/Comments</h3>
+      </div>
+      <div class="page-body k-m-4">
+        <kendo-grid [kendoGridBinding]="commentsGrid" [selectable]="selectableSettings" [resizable]="true">
+          <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+          <kendo-grid-column field="commentId" title="CommentId" [hidden]="true" ></kendo-grid-column>
+          <kendo-grid-column field="createdOn" title="Created On"></kendo-grid-column>
+          <kendo-grid-column field="createdBy" title="Created By"></kendo-grid-column>
+          <kendo-grid-column field="reviewerComments" title="Reviewer Comments"></kendo-grid-column>
+          <kendo-grid-column field="requestorComments" title="Requestor Comments">
+            <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+              <ng-container *ngIf="dataItem.isEditable == true; else showValue">
+                <kendo-textbox [(ngModel)]="dataItem.requestorComments" placeholder="Requestor Comments" (valueChange)="onRequestorCommentsChange($event, dataItem)"></kendo-textbox>
+              </ng-container>
+              <ng-template #showValue>
+                <span>{{dataItem.requestorComments}}</span>
+              </ng-template>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="reviewerAttachments" title="ReviewerAttachments"></kendo-grid-column>
+        </kendo-grid>
+      </div>
+      <div class="k-d-flex k-align-items-center k-gap-3">
+        <h3 class="k-my-2">Reviewer Attachments</h3>
+      </div>
+      <div class="k-mt-2">
+        <kendo-grid [data]="ticketAttachments" class="receipt-attachments" (cellClick)="onCellClick($event)" [selectable]="selectableSettings" [resizable]="true">
+          <kendo-grid-column title="#" [width]="40">
+            <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+              {{ rowIndex + 1 }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="attachmentName" title="File Name">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <a class="minimal-text link" [href]="downloadFileApi+dataItem.attachmentName" target="_blank">{{dataItem.attachmentName}}</a>
+            </ng-template>
+          </kendo-grid-column>
+          <!--<kendo-grid-column title="Actions" [width]="100">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <button kendoButton [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteReviewerFile(dataItem)"></button>
+            </ng-template>
+          </kendo-grid-column>-->
+        </kendo-grid>
+      </div>
+   
+      <div class="k-d-flex k-align-items-center k-gap-3">
+        <h3 class="k-my-2">Ticket Attachments</h3>
+      </div>
+      <div class="k-mt-2">
+        <kendo-grid [data]="ticketAttachments" class="receipt-attachments" [selectable]="selectableSettings" [resizable]="true">
+          <kendo-grid-column title="#" [width]="40">
+            <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+              {{ rowIndex + 1 }}
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="attachmentName" title="File Name">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <a class="minimal-text link" [href]="downloadFileApi+dataItem.attachmentName" target="_blank">{{dataItem.attachmentName}}</a>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column title="Actions" [width]="100">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <button kendoButton [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteTicketFile(dataItem)"></button>
+            </ng-template>
+          </kendo-grid-column>
+        </kendo-grid>
+      </div>
+    </div>
+  <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
+    <span style="margin-left: auto;"></span>
+    <button kendoButton type="button" rounded="large" themeColor="primary" style="width:6rem" [hidden]="true"
+      [disabled]="isDisabled.clearAddTicket" (click)="onClearForm()">Clear</button>
+      <button kendoButton type="button" *ngIf="showHideRequestSaveButtons == true" rounded="large" themeColor="success" style="width:6rem" (click)="submitRequest()"
+      [disabled]="isDisabled.addTicket">Submit</button>  
+    <button kendoButton type="button" *ngIf="showHideRequestSaveButtons == true" rounded="large" themeColor="success" style="width:8rem" (click)="draftRequest()"
+      [disabled]="isDisabled.addTicket">Save as Draft</button>
+    <button kendoButton type="button" *ngIf="showHideAcceptRequestSaveButtons == true" rounded="large" themeColor="success" style="width:10rem" (click)="saveAcceptRequest()"
+      [disabled]="isDisabled.addTicket">Save/Accept Request</button>
+    <button kendoButton type="button" *ngIf="showHideAcceptRequestSaveButtons == true" rounded="large" themeColor="success" style="width:10rem" (click)="completeRequest()"
+      [disabled]="isDisabled.addTicket">Complete Request</button>
+      <button kendoButton type="button" *ngIf="showHideSubmitClarificationtButton == true" rounded="large" themeColor="success" style="width:10rem" (click)="submitNeedClarification()"
+      [disabled]="isDisabled.addTicket">Submit Clarification</button>
+    
+  </div>
+  </div>
+  

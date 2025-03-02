@@ -591,4 +591,53 @@ export class ApiService {
   saveShipmentpackagesRecord(data: any): Observable<any> {
     return this.httpClient.post(`${API}v1/ise/inventory/inventorydata/UpsertShipPackDim`, data);
   }
+
+  //Ticket API calls starts here
+  searchTickets(fromDate: Date | null, toDate: Date | null) {
+    const url = `${API}v1/ise/inventory/ticket/searchTickets?fromDate=${fromDate?.toDateString()}&toDate=${toDate?.toDateString()}`;
+    return this.httpClient.get(url);
+  }
+
+  getTicketTypes() {
+    const url = `${API}v1/ise/inventory/ticket/getTicketType`;
+    return this.httpClient.get(url);
+  }
+  getTicketLots() {
+    const url = `${API}v1/ise/inventory/ticket/getTicketLots`;
+    return this.httpClient.get(url);
+  }
+  getTicketLotLineItems(lotNumbers:string) {
+    const url = `${API}v1/ise/inventory/ticket/getTicketLineItemLots?lotNumbers=${lotNumbers}`;
+    return this.httpClient.get(url);
+  }
+ upsertTicket(file: File, inputJson: string, ticketAttachments: string, attachmentType:string, tktId: number|null) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upsertJson', inputJson);
+  if (ticketAttachments !== '') {
+    formData.append('ticketAttachments', ticketAttachments);
+  }
+  if (attachmentType !== '') {
+    formData.append('attachmentType', attachmentType);
+  }
+  if (tktId !== null) {
+    formData.append('tktId', tktId.toString());
+  }
+
+  const headers = new HttpHeaders({ 'Accept': '*/*' });
+  return this.httpClient.post(`${API}v1/ise/inventory/ticket/upsertTicket`, formData, { headers });
+
 }
+
+  getTicketDetail(ticketId:number) {
+    const url = `${API}v1/ise/inventory/ticket/getTicketDetail?ticketId=${ticketId}`;
+    return this.httpClient.get(url);
+  }
+  
+  voidTicket(ticketID: number) {
+    const url = `${API}v1/ise/inventory/ticket/voidTicket?ticketID=${ticketID}`;
+    return this.httpClient.get(url);
+  }
+  //Ticket API calls ends here
+}
+

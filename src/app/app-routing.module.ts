@@ -17,6 +17,7 @@ import { AnotherShippingComponent } from './components/another-shipping/another-
 import { CombinedLotComponent } from './components/combined-lot/combined-lot.component';
 import { InventoryMoveComponent } from './components/inventory-move/inventory-move.component';
 import { IntTranferReceivingComponent } from './components/int-tranfer-receiving/int-tranfer-receiving.component';
+import { TicketComponent } from './components/ticket/ticket.component';
 
 const routes: Routes = [
   { path: 'receiving', component: ReceivingComponent, canActivate: [authGuard] },
@@ -32,6 +33,7 @@ const routes: Routes = [
   { path: 'int-transfer-receiving', component: IntTranferReceivingComponent, canActivate: [authGuard] },
   { path: 'receipt', component: ReceiptComponent, canActivate: [authGuard] },
   { path: 'add-device', component: AddDeviceComponent, canActivate: [authGuard] },
+  { path: 'ticket', component: TicketComponent, canActivate: [authGuard] },
   { path: 'home', component: HomeComponent, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent },
   { path: '', component: ReceivingComponent, canActivate: [authGuard] },

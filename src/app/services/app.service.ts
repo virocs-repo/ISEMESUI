@@ -81,6 +81,7 @@ export class AppService {
     Inttransfer:SharedInfo
     anotherShipping:SharedInfo
     addshipping:SharedInfo
+    addTicket:SharedInfo
 
   } = {
       receiving: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
@@ -89,7 +90,8 @@ export class AppService {
       Invmove: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
       Inttransfer: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
       addshipping: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
-      anotherShipping : {isEditMode:false, isViewMode:false, dataItem: {}, eventEmitter: new EventEmitter() }
+      anotherShipping : {isEditMode:false, isViewMode:false, dataItem: {}, eventEmitter: new EventEmitter() },
+      addTicket: {isEditMode:false, isViewMode:false, dataItem: {}, eventEmitter: new EventEmitter()}
     }
   hardwareTypes: HardwareType[] = []
   userData: UserData = { email: '', name: '', firstName: '' }

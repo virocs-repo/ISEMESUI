@@ -808,3 +808,116 @@ export interface ParcelRequest {
   weight: number;
   massUnit: string; // Default "lb"
 }
+
+export interface TicketType {
+  ticketTypeID:number
+  ticketTypeName:string
+  multiSelect:boolean
+}
+
+export interface TicketLot
+{
+  inventoryID:number
+  lotNum:string
+}
+
+export interface TicketAttachment
+{
+  AttachmentPath:string
+}
+
+export interface ScanLot
+{
+  InventoryID:number
+  LotNum:string
+}
+export interface TicketDetail
+{
+  ticketID:number|null
+  ticketTypeID:number
+  requestorID:number
+  requestDetails:string
+  dueDate:Date 
+  userID:number
+  active:number
+  statusID:number
+  comments:TicketComments[]
+  lotDetails:TicketLotDetail[]
+}
+
+export interface AddEditTicket
+{
+  TicketID:number|null
+  TicketTypeID:number
+  TicketType:string
+  RequestorID:number
+  RequestDetails:string
+  LotString:string
+  TicketStatus:string
+  DueDate:string
+  UserID:number
+  Active:number
+  StatusID:number
+  RecordStatus:string
+  ReviewerComment:string
+  RequestorComment:string
+  CommentID:number|null
+  ReviewerAttachments:TicketAttachment[]
+  ScanLots:ScanLot[]
+}
+export interface TicketComments
+{
+  commentId:number
+  reviewerComments:string
+  requestorComments:string
+  createdOn:Date | string
+  createdBy:string
+  isEditable:boolean
+}
+export interface TicketLotDetail
+{
+  inventoryID:number
+  iseLot:string
+  customerLot:string
+  deviceType:string
+  qty:number
+  icrLocation:string
+  customerName:string
+  scanLotNum:string
+}
+
+export const INIT_TICKET : AddEditTicket = 
+{
+  TicketID:null,
+  TicketTypeID:0,
+  TicketType:'',
+  RequestorID:0,
+  RequestDetails:'',
+  LotString:'',
+  TicketStatus:'',
+  DueDate:'',
+  UserID:0,
+  Active:0,
+  StatusID:0,
+  RecordStatus:'',
+  ReviewerComment:'',
+  RequestorComment:'',
+  CommentID:null,
+  ReviewerAttachments:[],
+  ScanLots:[]
+}
+export interface CommentsRow
+{
+  commentId:number
+  reviewerComments:string
+  requestorComments:string
+}
+export interface TicketAttachment {
+  attachmentName:string
+  active:boolean
+}
+export interface CommentsAttachment {
+  commentID:number
+  attachmentName:string
+  active:boolean
+}
