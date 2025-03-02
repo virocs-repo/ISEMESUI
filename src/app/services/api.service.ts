@@ -577,7 +577,6 @@ export class ApiService {
   checkingIsReceiptEditable(receiptId:number, loginId: number){
     return this.httpClient.get(`${API}v1/ise/inventory/isReceiptEditable?receiptId=${receiptId}&loginId=${loginId}`)
   }
-
   fetchpackageDimensions()
   {
     return this.httpClient.get(`${API}v1/ise/inventory/inventorydata/GetPackageDimension`)
@@ -626,9 +625,39 @@ export class ApiService {
 
   const headers = new HttpHeaders({ 'Accept': '*/*' });
   return this.httpClient.post(`${API}v1/ise/inventory/ticket/upsertTicket`, formData, { headers });
-
 }
+  getMasterListItems(listName:string, serviceId:number|null) {
+    let url = `${API}v1/ise/inventory/customerorder/getMasterListItems?listName=${listName}`;
+  if (serviceId !== null) {
+    url += `&serviceId=${serviceId}`;
+  }
+    return this.httpClient.get(url);
+  }
+  getListItems(listName:string, parentId:number|null) {
+    let url = `${API}v1/ise/inventory/customerorder/getListItems?listName=${listName}`;
+  if (parentId !== null) {
+    url += `&parentId=${parentId}`;
+  }
+    return this.httpClient.get(url);
+  }
+getShippingAddressData(
+  customerId: number| null,
+  isBilling: boolean,
+  vendorId: number | null,
+  courierId: number | null,
+  isDomestic: boolean
+): Observable<any[]> {
+  let url = `${API}v1/ise/inventory/customerorder/getShippingAddresses?customerId=${customerId}&isBilling=${isBilling}&isDomestic=${isDomestic}`;
+  
+  if (vendorId !== null) {
+    url += `&vendorId=${vendorId}`;
+  }
+  if (courierId !== null) {
+    url += `&courierId=${courierId}`;
+  }
 
+  return this.httpClient.get<any[]>(url);
+}
   getTicketDetail(ticketId:number) {
     const url = `${API}v1/ise/inventory/ticket/getTicketDetail?ticketId=${ticketId}`;
     return this.httpClient.get(url);
