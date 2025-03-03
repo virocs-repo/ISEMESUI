@@ -2,7 +2,7 @@ trigger:
   - main
 
 pool:
-  name: 'Default' # Replace with your custom pool if needed
+  name: 'Default'
   demands:
     - agent.name -equals viroc-agent1
 
@@ -18,23 +18,40 @@ steps:
 # Step 2: Install Node.js
 - task: UseNode@1
   inputs:
-    version: '18.x' # Ensure compatibility with your Angular project
+    version: '18.x'
 
-# Step 3: Install Angular CLI (if not already installed)
+# Step 3: Install Angular CLI
 - script: npm install -g @angular/cli
   displayName: 'Install Angular CLI'
 
-# Step 4: Install Dependencies
-- script: npm install
+# Step 4: Install Dependencies (Fix Missing Packages)
+- script: |
+    npm ci
+    npm install --save-dev @angular-devkit/build-angular
   displayName: 'Install Dependencies'
 
-# Step 5: Build Angular Application
+# Step 5: Debug Angular CLI Version
+- script: ng version
+  displayName: 'Debug Angular CLI Version'
+
+# Step 6: Build Angular Application
 - script: ng build --configuration=$(buildConfiguration) --output-path=$(buildDirectory)
   displayName: 'Build Angular Application'
 
-# Step 6: Publish Build Artifacts (for deployment)
+# Step 7: Archive Build Output into ZIP
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(buildDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/angular-app.zip'
+    replaceExistingArchive: true
+  displayName: 'Create ZIP package'
+
+# Step 8: Publish Build Artifacts (ZIP)
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(buildDirectory)'
-    ArtifactName: 'angular-app'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/angular-app.zip'
+    ArtifactName: 'drop'
     publishLocation: 'Container'
+  displayName: 'Publish Angular Build ZIP'

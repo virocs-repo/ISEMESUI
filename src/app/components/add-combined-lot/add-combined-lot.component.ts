@@ -59,7 +59,8 @@ export class AddCombinedLotComponent implements OnDestroy {
         next: (res: any[]) => {
           console.log(res);
           // Find all records that match the comboLotID
-          const allresdata = res.filter((s: { comboLotID: number }) => s.comboLotID === dataItem.comboLotID);
+          const allresdata = res.filter((s: { comboLotID: number }) => s.comboLotID == dataItem.comboLotID);
+          console.log('Filtered Data (allresdata):', allresdata);        
       
           if (this.appService.sharedData.combolot.isViewMode)
         {
@@ -85,11 +86,13 @@ export class AddCombinedLotComponent implements OnDestroy {
         // Automatically select the primary lot in the dropdown
         const primaryLot = allresdata.find((row: any) => row.isPrimaryAddress === true);
         if (primaryLot) {
-          this.selectedDropdownValue = primaryLot.inventoryID; // Select the primary lot by inventoryID
+          this.selectedDropdownValue = {
+            iseLotNum: primaryLot.iseLotNum,
+            inventoryID: primaryLot.inventoryID
+          }; 
         } else {
-          this.selectedDropdownValue = null; // Reset if no primary lot is found
-        }
-    
+          this.selectedDropdownValue = null;
+        } 
 
 
          // Pre-fill comboName and ComboComments
@@ -128,11 +131,15 @@ export class AddCombinedLotComponent implements OnDestroy {
             }));
       // Automatically select the primary lot in the dropdown
       const primaryLot = allresdata.find((row: any) => row.isPrimaryAddress === true);
-      if (primaryLot) {
-        this.selectedDropdownValue = primaryLot.inventoryID; // Select the primary lot by inventoryID
-      } else {
-        this.selectedDropdownValue = null; // Reset if no primary lot is found
-      }
+        if (primaryLot) {
+          this.selectedDropdownValue = {
+            iseLotNum: primaryLot.iseLotNum,
+            inventoryID: primaryLot.inventoryID
+          }; 
+        } else {
+          this.selectedDropdownValue = null;
+        }
+
 
       // Pre-fill comboName and ComboComments
       this.comboLotName = primaryLot?.comboName || '';
