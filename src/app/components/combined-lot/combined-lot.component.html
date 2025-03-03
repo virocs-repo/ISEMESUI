@@ -30,43 +30,53 @@
       <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
     </div>
   </div>
-  <div class="k-m-4" *ngIf="!false">
-    <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"
-      [pageSize]="pageSize" [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
-      class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
-      [rowClass]="rowCallback">
+  <div class="page-body k-m-4" *ngIf="!false">
+    <kendo-grid 
+    [kendoGridBinding]="gridDataResult.data" 
+    [selectable]="selectableSettings" 
+    [columnMenu]="columnMenuSettings"
+    [filterable]="true"
+    [sortable]="true" 
+    [resizable]="true"
+    [pageSize]="pageSize" 
+    [skip]="skip" 
+    [pageable]="true" 
+    (pageChange)="pageChange($event)"
+    class="grid-header-sm grid-header-bold" 
+    (cellClick)="onCellClick($event)"
+    [rowClass]="rowCallback">
       <!-- <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column> -->
       
    
 <!--       <kendo-grid-column field="receiptID" title="receipt #"></kendo-grid-column>
       <kendo-grid-column field="customerVendorID" title="customerVendorID"  [hidden]="true" ></kendo-grid-column> -->
-      <kendo-grid-column field="comboLotID" title="Combo Lot#"></kendo-grid-column>
+      <kendo-grid-column field="comboLotID" title="Combo Lot#" [width]="130"></kendo-grid-column>
       <kendo-grid-column field="comboName" title="Combo Name"> 
          <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.comboName">{{dataItem.comboName}}</a>
+        <a class="truncate-text" [title]="dataItem.comboName">{{dataItem.comboName}}</a>
       </ng-template></kendo-grid-column>
       <kendo-grid-column field="customer" title="Customer">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="minimal-text" [title]="dataItem.customer">{{dataItem.customer}}</a>
+          <a class="truncate-text" [title]="dataItem.customer">{{dataItem.customer}}</a>
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column field="iseLotNumber" title="Ise Lot#">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="minimal-text" [title]="dataItem.iseLotNumber">{{dataItem.iseLotNumber}}</a>
+          <a class="truncate-text" [title]="dataItem.iseLotNumber">{{dataItem.iseLotNumber}}</a>
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column field="customerLotNumber" title="Cus Lot#">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="minimal-text" [title]="dataItem.customerLotNumber">{{dataItem.customerLotNumber}}</a>
+          <a class="truncate-text" [title]="dataItem.customerLotNumber">{{dataItem.customerLotNumber}}</a>
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column field="deviceType" title="Device Type">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="minimal-text" [title]="dataItem.deviceType">{{dataItem.deviceType}}</a>
+          <a class="truncate-text" [title]="dataItem.deviceType">{{dataItem.deviceType}}</a>
         </ng-template>
       </kendo-grid-column>
      <!-- <kendo-grid-column field="isPrimaryAddress" title="Is Primary Address"></kendo-grid-column>-->
-      <kendo-grid-column field="status" title="Status"></kendo-grid-column>
+      <kendo-grid-column field="status" title="Status" [width]="150"></kendo-grid-column>
     </kendo-grid>
   </div>
   
