@@ -591,7 +591,6 @@ export class ApiService {
     return this.httpClient.post(`${API}v1/ise/inventory/inventorydata/UpsertShipPackDim`, data);
   }
 
-  //Ticket API calls starts here
   searchTickets(fromDate: Date | null, toDate: Date | null) {
     const url = `${API}v1/ise/inventory/ticket/searchTickets?fromDate=${fromDate?.toDateString()}&toDate=${toDate?.toDateString()}`;
     return this.httpClient.get(url);
@@ -667,6 +666,5 @@ getShippingAddressData(
     const url = `${API}v1/ise/inventory/ticket/voidTicket?ticketID=${ticketID}`;
     return this.httpClient.get(url);
   }
-  //Ticket API calls ends here
 }
 
