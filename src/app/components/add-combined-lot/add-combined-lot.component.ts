@@ -273,7 +273,7 @@ saveCombineLots(): void {
   if (this.isEditMode) {
     const dataItem: CombineLot = this.appService.sharedData.combolot.dataItem;
     payload.comboLotID=dataItem.comboLotID;
-    payload.primary_InventoryId=this.selectedDropdownValue;
+    payload.primary_InventoryId=this.selectedDropdownValue.inventoryID;
 
   }
   console.log('Payload:', payload);
