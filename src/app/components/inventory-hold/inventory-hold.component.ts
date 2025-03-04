@@ -140,4 +140,9 @@ export class InventoryHoldComponent implements OnInit {
     this.isDialogOpen = false;
     this.loadGridData();
   }
+  rowCallback = (context: any) => {
+    return {
+      'highlighted-row': context.index === this.selectedRowIndex
+    };
+  }
 }

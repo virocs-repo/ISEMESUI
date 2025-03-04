@@ -314,7 +314,12 @@ onSelectionChange(event: SelectionEvent): void {
     inventoryID: row.inventoryID,
   }));
 
-  
+  if (
+    this.selectedDropdownValue &&
+    !this.gridSelectedKeys.includes(this.selectedDropdownValue.inventoryID)
+  ) {
+    this.selectedDropdownValue = null;
+  }
 
   this.isDisabled.shipBtn =false;
 
