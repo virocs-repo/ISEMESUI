@@ -274,7 +274,7 @@ export class AddHoldComponent implements OnInit {
   }
   operaterAttachments: OperaterAttachments[] = [];
   loadOperatorAttachments() {
-    this.apiService.getOperaterAttachments(this.selectedGridData[0].tfsHold).subscribe(
+    this.apiService.getOperaterAttachments(this.selectedGridData[0]?.tfsHold).subscribe(
         (data) => {
             console.log("API Response:", data); // Debugging
             this.operaterAttachments = Array.isArray(data) ? data : [];
