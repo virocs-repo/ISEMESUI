@@ -298,13 +298,16 @@ showHideButtons(){
     }
 
     
-    var file:any;
+    var files:any[] = [];
     if (this.selectedFiles && this.selectedFiles.length) {
-      file = this.selectedFiles[0].rawFile;
-      if (!file) {
+      if (this.selectedFiles.length < 1) {
         this.appService.errorMessage('Error while selecting file');
         return;
       }
+
+      this.selectedFiles.forEach((file:any) => {
+        files.push(file.rawFile);
+      })
     }
 
     if(this.vDataItem.ticketID) {
@@ -354,7 +357,7 @@ showHideButtons(){
 
     debugger;
   
-    this.apiService.upsertTicket(file, ticketJson, tAttachments, this.attachmentType, ticket.TicketID).subscribe({
+    this.apiService.upsertTicket(files, ticketJson, tAttachments, this.attachmentType, ticket.TicketID).subscribe({
       next : (v: any) => {
         this.onClose.emit();
         this.appService.successMessage(MESSAGES.DataSaved);

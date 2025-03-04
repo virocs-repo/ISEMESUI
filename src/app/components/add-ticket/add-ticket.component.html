@@ -59,7 +59,7 @@
             <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3" *ngIf="appService.roleName != 'Reviewer' || showHideAcceptRequestSaveButtons == true || showHideSubmitClarificationtButton == true">
               <kendo-label [text]="attachmentLabelName">
               <kendo-fileselect #upFiles (select)="onSelect($event)" (upload)="onUpload($event)"
-                [multiple]="false"></kendo-fileselect>
+                [multiple]="true"></kendo-fileselect>
               </kendo-label>
             </div>
             

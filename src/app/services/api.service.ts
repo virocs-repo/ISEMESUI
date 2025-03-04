@@ -608,9 +608,13 @@ export class ApiService {
     const url = `${API}v1/ise/inventory/ticket/getTicketLineItemLots?lotNumbers=${lotNumbers}`;
     return this.httpClient.get(url);
   }
- upsertTicket(file: File, inputJson: string, ticketAttachments: string, attachmentType:string, tktId: number|null) {
+ upsertTicket(files: File[], inputJson: string, ticketAttachments: string, attachmentType:string, tktId: number|null) {
   const formData = new FormData();
-  formData.append('file', file);
+
+  for (let i = 0; i < files.length; i++) {
+    formData.append('files', files[i]); // 'files' is the key name for the file field
+  }
+  
   formData.append('upsertJson', inputJson);
   if (ticketAttachments !== '') {
     formData.append('ticketAttachments', ticketAttachments);
