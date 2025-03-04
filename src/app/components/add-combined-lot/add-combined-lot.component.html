@@ -109,6 +109,7 @@
           <div class="k-d-flex k-align-items-center k-gap-4">
             <div>
               <kendo-label text="Select Primary Lot Shipping Address">
+                <b class="required-label"></b>
               <kendo-combobox
               
                 [data]="dropdownData"
@@ -136,7 +137,7 @@
       </kendo-card>
     </div>
     <div class="k-d-flex k-gap-3 k-mt-3">
-      <button kendoButton type="button" rounded="large" themeColor="error" class="k-ml-auto" style="width:6rem"
+      <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem"
       (click)="cancelRequest()">Cancel</button>
       <button kendoButton type="button" rounded="full" themeColor="info" class="k-w-25" [disabled]="isDisabled.shipBtn"
         (click)="saveCombineLots()">Save</button>
