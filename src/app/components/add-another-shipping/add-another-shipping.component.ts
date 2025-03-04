@@ -29,62 +29,62 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   //readonly TableType = TableType;
   @Output() onClose = new EventEmitter<void>();
 
-  readonly customerTypes: CustomerType[] = this.appService.masterData.customerType;
-  customerTypeSelected: CustomerType | undefined;
-  readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
-  receiptLocationSelected: ReceiptLocation | undefined;
-  readonly goodsType: GoodsType[] = this.appService.masterData.goodsType;
-  goodsTypeSelected: GoodsType | undefined;
-  isDisabledGoodsType = false;
-  readonly deliveryMode: DeliveryMode[] = this.appService.masterData.deliveryMode;
-  deliveryModeSelected: DeliveryMode | undefined;
+  //readonly customerTypes: CustomerType[] = this.appService.masterData.customerType;
+  //customerTypeSelected: CustomerType | undefined;
+  //readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
+  //receiptLocationSelected: ReceiptLocation | undefined;
+  //readonly goodsType: GoodsType[] = this.appService.masterData.goodsType;
+  //goodsTypeSelected: GoodsType | undefined;
+  //isDisabledGoodsType = false;
+  //readonly deliveryMode: DeliveryMode[] = this.appService.masterData.deliveryMode;
+  //deliveryModeSelected: DeliveryMode | undefined;
 
-  behalfOfCusotmerSelected: Customer | undefined;
-  behalfOfVendorSelected: Vendor | undefined;
-  contactPhone = '';
-  contactPerson = ''
+  //behalfOfCusotmerSelected: Customer | undefined;
+  //behalfOfVendorSelected: Vendor | undefined;
+  //contactPhone = '';
+  //contactPerson = ''
 
-  name: string = '';
+  //name: string = '';
   //email: string = '';
-  comments: string = '';
-  deliveryComments: string = '';
-  address: any;
-  readonly addresses: Address[] = this.appService.masterData.addresses;
-  addressSelected: Address | undefined;
+  //comments: string = '';
+  //deliveryComments: string = '';
+  //address: any;
+  //readonly addresses: Address[] = this.appService.masterData.addresses;
+  //addressSelected: Address | undefined;
   
   
-  readonly couriers = this.appService.masterData.courierDetails
-  courierSelected: CourierDetails | undefined
-  readonly lotCategories = this.appService.masterData.lotCategory;
-  lotCategorySelected: LotCategory | undefined;
-  readonly deviceTypes = this.appService.masterData.deviceType;
-  deviceTypeSelected: DeviceType | undefined;
-  readonly lotIdentifiers = [
-    { name: 'Test', id: 'Test' },
-    { name: 'Test&Rel', id: 'Test&Rel' },
-    { name: 'Rel', id: 'Rel' },
-    { name: 'Customer Lot', id: 'Customer Lot' },
-    { name: 'TBD', id: 'TBD' },
-  ]
-  lotIdentifierSelected: { name: string; id: string } | undefined;
+  //readonly couriers = this.appService.masterData.courierDetails
+  //courierSelected: CourierDetails | undefined
+  //readonly lotCategories = this.appService.masterData.lotCategory;
+  //lotCategorySelected: LotCategory | undefined;
+  //readonly deviceTypes = this.appService.masterData.deviceType;
+  //deviceTypeSelected: DeviceType | undefined;
+  // readonly lotIdentifiers = [
+  //   { name: 'Test', id: 'Test' },
+  //   { name: 'Test&Rel', id: 'Test&Rel' },
+  //   { name: 'Rel', id: 'Rel' },
+  //   { name: 'Customer Lot', id: 'Customer Lot' },
+  //   { name: 'TBD', id: 'TBD' },
+  // ]
+  // lotIdentifierSelected: { name: string; id: string } | undefined;
 
-  description: string = '';
+  //description: string = '';
 
-  isHoldCheckboxEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
-    featureField?.find(o => o.featureFieldName == 'HoldCheckbox')?.active ?? true;
-  isHoldCommentEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
-    featureField?.find(o => o.featureFieldName == "HoldComments")?.active ?? true;
+  // isHoldCheckboxEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
+  //   featureField?.find(o => o.featureFieldName == 'HoldCheckbox')?.active ?? true;
+  // isHoldCommentEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
+  //   featureField?.find(o => o.featureFieldName == "HoldComments")?.active ?? true;
 
-  expectedOrNot: 'Expected' | 'Unexpected' = 'Expected'
-  isFTZ: boolean = false;
-  isInterim: boolean = false;
+  //expectedOrNot: 'Expected' | 'Unexpected' = 'Expected'
+  //isFTZ: boolean = false;
+  //isInterim: boolean = false;
   isDisabled: any = {
     clearAnotherShipping: false,
     addAnotherShipping: false,
     addLineIem: false,
   }
   
-  tracking = ''
+  //tracking = ''
   
   readonly subscription = new Subscription()
   readonly filterSettings: DropDownFilterSettings = {
@@ -124,7 +124,7 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   readonly employees: Employee[] = this.appService.masterData.entityMap.Employee
   signatureEmployeeSelected: Employee | undefined;
   
-  expectedDateTime: Date = new Date();
+  //expectedDateTime: Date = new Date();
   format = "MM/dd/yyyy HH:mm";
   public lineItemsGrid: AnotherShippingLineitem[] = [];
   isViewOrEdit:boolean = false;
@@ -166,7 +166,6 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   private init() {
     
     if (this.appService.sharedData.anotherShipping.isViewMode || this.appService.sharedData.anotherShipping.isEditMode) {
-      //this.appService.sharedData.anotherShipping.dataItem.anotherShipmentID = 1;
       this.isViewOrEdit = true;
       this.getOtherInventoryShipment(this.appService.sharedData.anotherShipping.dataItem.anotherShipmentID);
     if (this.appService.sharedData.anotherShipping.isViewMode) {
@@ -456,15 +455,8 @@ if (invalidValueItems.length > 0) {
   rowActionMenu: MenuItem[] = [
     { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
     { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
-    // { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
-    // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
     { text: 'Remove', svgIcon: ICON.trashIcon },
   ];
-  // rowActionMenuDevice: MenuItem[] = [
-  //   { text: 'Edit Data', svgIcon: ICON.pencilIcon },
-  //   { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
-  //   { text: 'Remove', svgIcon: ICON.trashIcon },
-  // ]
 
   onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, rowIndex: number) {
     switch (e.item.text) {
@@ -543,33 +535,33 @@ if (invalidValueItems.length > 0) {
   }));
  
   onClearForm() {
-    this.isFTZ = false;
-    this.isInterim = false;
-    this.expectedOrNot = 'Unexpected';
+    // this.isFTZ = false;
+    // this.isInterim = false;
+    // this.expectedOrNot = 'Unexpected';
 
-    this.customerTypeSelected = undefined
+    //this.customerTypeSelected = undefined
     this.customerSelected = undefined
-    this.receiptLocationSelected = undefined
-    this.behalfOfCusotmerSelected = undefined
+    //this.receiptLocationSelected = undefined
+    //this.behalfOfCusotmerSelected = undefined
 
-    this.comments = '';
-    this.deliveryModeSelected = undefined
-    this.tracking = ''
-    this.courierSelected = undefined
+    //this.comments = '';
+    //this.deliveryModeSelected = undefined
+    //this.tracking = ''
+    //this.courierSelected = undefined
     this.countrySelected = undefined
-    this.expectedDateTime = new Date();
-    this.deliveryComments = ''
+    //this.expectedDateTime = new Date();
+    //this.deliveryComments = ''
 
-    this.addressSelected = undefined
+    //this.addressSelected = undefined
 
     this.signatureEmployeeSelected = undefined
     this.signatureName = ''
 
-    this.goodsTypeSelected = undefined
-    this.address = ''
+    //this.goodsTypeSelected = undefined
+    //this.address = ''
     
-    this.contactPhone = ''
-    this.contactPerson = ''
+    //this.contactPhone = ''
+    //this.contactPerson = ''
     this.employeesSelected = [];
   }
   private areThereAnyChanges() {
@@ -581,49 +573,49 @@ if (invalidValueItems.length > 0) {
     } else {
       // new form
       const valuesToCheck = [
-        this.customerTypeSelected,
+        //this.customerTypeSelected,
         this.customerSelected,
-        this.receiptLocationSelected,
-        this.behalfOfCusotmerSelected,
+        //this.receiptLocationSelected,
+        //this.behalfOfCusotmerSelected,
 
-        this.comments,
-        this.deliveryModeSelected,
-        this.tracking,
-        this.courierSelected,
+        //this.comments,
+        //this.deliveryModeSelected,
+        //this.tracking,
+        //this.courierSelected,
         this.countrySelected,
-        this.deliveryComments,
+        //this.deliveryComments,
 
-        this.addressSelected,
+        //this.addressSelected,
         
         this.signatureEmployeeSelected,
         this.signatureName,
 
-        this.address,
+        //this.address,
         
-        this.contactPhone,
-        this.contactPerson
+        //this.contactPhone,
+        //this.contactPerson
       ]
       const hasTruthyValue = valuesToCheck.some(v => v);
       return hasTruthyValue
     }
   }
-  fileRestrictions: FileRestrictions = {
-    allowedExtensions: [".jpg", ".png", ".jpeg"],
-    minFileSize: 1024 // in bytes , 1024*1024 1MB
-  };
-  onSelect(event: any): void {
-    // Get selected files count
-    console.log('Selected Files:', event.files);
-  }
+  // fileRestrictions: FileRestrictions = {
+  //   allowedExtensions: [".jpg", ".png", ".jpeg"],
+  //   minFileSize: 1024 // in bytes , 1024*1024 1MB
+  // };
+  // onSelect(event: any): void {
+  //   // Get selected files count
+  //   console.log('Selected Files:', event.files);
+  // }
 
-  onUpload(event: any): void {
-    // Send selected files to API
-    const formData = new FormData();
-    event.files.forEach((file: any) => {
-      formData.append('files', file.rawFile);
-    });
-    // Call API
-  }
+  // onUpload(event: any): void {
+  //   // Send selected files to API
+  //   const formData = new FormData();
+  //   event.files.forEach((file: any) => {
+  //     formData.append('files', file.rawFile);
+  //   });
+  //   // Call API
+  // }
   // print
   @ViewChild('pdfExport', { static: true }) pdfExportComponent!: PDFExportComponent;
   printSection() {
