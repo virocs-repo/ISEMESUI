@@ -113,15 +113,15 @@
         <h3 class="k-my-2">Reviewer Attachments</h3>
       </div>
       <div class="k-mt-2">
-        <kendo-grid [data]="ticketAttachments" class="receipt-attachments" (cellClick)="onCellClick($event)" [selectable]="selectableSettings" [resizable]="true">
+        <kendo-grid [data]="commentsAttachments" class="receipt-attachments" (cellClick)="onCellClick($event)" [selectable]="selectableSettings" [resizable]="true">
           <kendo-grid-column title="#" [width]="40">
             <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
               {{ rowIndex + 1 }}
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="attachmentName" title="File Name">
+          <kendo-grid-column field="fileName" title="File Name">
             <ng-template kendoGridCellTemplate let-dataItem>
-              <a class="minimal-text link" [href]="downloadFileApi+dataItem.attachmentName" target="_blank">{{dataItem.attachmentName}}</a>
+              <a class="minimal-text link" [href]="downloadFileApi+dataItem.fileName" target="_blank">{{dataItem.fileName}}</a>
             </ng-template>
           </kendo-grid-column>
           <!--<kendo-grid-column title="Actions" [width]="100">
@@ -136,20 +136,20 @@
         <h3 class="k-my-2">Ticket Attachments</h3>
       </div>
       <div class="k-mt-2">
-        <kendo-grid [data]="ticketAttachments" class="receipt-attachments" [selectable]="selectableSettings" [resizable]="true">
+        <kendo-grid [data]="filteredTicketAttachments" class="receipt-attachments" [selectable]="selectableSettings" [resizable]="true">
           <kendo-grid-column title="#" [width]="40">
             <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
               {{ rowIndex + 1 }}
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column field="attachmentName" title="File Name">
+          <kendo-grid-column field="fileName" title="File Name">
             <ng-template kendoGridCellTemplate let-dataItem>
-              <a class="minimal-text link" [href]="downloadFileApi+dataItem.attachmentName" target="_blank">{{dataItem.attachmentName}}</a>
+              <a class="minimal-text link" [href]="downloadFileApi+dataItem.fileName" target="_blank">{{dataItem.fileName}}</a>
             </ng-template>
           </kendo-grid-column>
-          <kendo-grid-column title="Actions" [width]="100">
+          <kendo-grid-column title="Actions" [width]="100" *ngIf="showHideRequestSaveButtons == true">
             <ng-template kendoGridCellTemplate let-dataItem>
-              <button kendoButton [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteTicketFile(dataItem)"></button>
+              <button kendoButton [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteTicketFile(dataItem)" ></button>
             </ng-template>
           </kendo-grid-column>
         </kendo-grid>

@@ -978,11 +978,11 @@ export interface CommentsRow
   requestorComments:string
 }
 export interface TicketAttachment {
-  attachmentName:string
+  fileName:string
   active:boolean
 }
 export interface CommentsAttachment {
   commentID:number
-  attachmentName:string
+  fileName:string
   active:boolean
 }

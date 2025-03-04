@@ -68,6 +68,7 @@ export class AddTicketComponent implements OnInit, OnDestroy {
   attachmentLabelName:string = 'Ticket Attachments';
   attachmentType:string ='';
   ticketAttachments:TicketAttachment[] = []
+  filteredTicketAttachments:TicketAttachment[] = []
   commentsAttachments:CommentsAttachment[] = []
   filteredCommentsAttachments:CommentsAttachment[] = []
   readonly downloadFileApi = environment.apiUrl + 'v1/ise/inventory/ticket/download/'
@@ -180,24 +181,6 @@ showHideButtons(){
     setColumnPosition: { expanded: true },
     autoSizeColumn: true,
     autoSizeAllColumns: true,
-  }
-  rowActionMenu: MenuItem[] = [
-    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
-    { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
-    // { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
-    // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
-    { text: 'Remove', svgIcon: ICON.trashIcon },
-  ];
-  
-  private updateKeysToTitleCase(jsonObj: any) {
-    const updatedObj: any = {};
-
-    for (const key in jsonObj) {
-      const updatedKey = key.charAt(0).toUpperCase() + key.slice(1);
-      updatedObj[updatedKey] = jsonObj[key];
-    }
-
-    return updatedObj;
   }
   
   disabledAllBtns() {
@@ -363,23 +346,15 @@ showHideButtons(){
       })
     }
 
-    var ticketAttachments : string = JSON.stringify(this.ticketAttachments);
-
-    // this.ticketAttachments.forEach((att) => {
-    //   if(att.active == true){
-    //     if(ticketAttachments.length > 0){
-    //       ticketAttachments = ticketAttachments + "," + att.attachmentName;
-    //     }
-    //     else{
-    //       ticketAttachments = att.attachmentName;
-    //     }
-    //   }
-    // })
+    var tAttachments : string = '';
+    if(this.ticketAttachments.length > 0)
+      tAttachments = JSON.stringify(this.ticketAttachments);
+    
     const ticketJson = JSON.stringify(ticket);
 
     debugger;
   
-    this.apiService.upsertTicket(file, ticketJson, ticketAttachments, this.attachmentType, ticket.TicketID).subscribe({
+    this.apiService.upsertTicket(file, ticketJson, tAttachments, this.attachmentType, ticket.TicketID).subscribe({
       next : (v: any) => {
         this.onClose.emit();
         this.appService.successMessage(MESSAGES.DataSaved);
@@ -463,6 +438,7 @@ showHideButtons(){
         this.lotDetailGrid = v.lotDetails;
         this.commentsGrid = v.comments;
         this.ticketAttachments = v.ticketAttachments;
+        this.filteredTicketAttachments = v.ticketAttachments;
         this.commentsAttachments = v.commentsAttachments;
         this.bindData();
       },
@@ -478,12 +454,6 @@ showHideButtons(){
       this.requestDetail = this.ticketDetail?.requestDetails;
       this.setLotSelectedItems(); 
 
-      // var commentsCount = this.ticketDetail.comments.length;
-      // if(commentsCount > 0) {
-      //   var recentComment = this.commentsGrid[commentsCount-1];
-      //   this.reviewerComments = recentComment.reviewerComments;
-      // }
-      
       this.commentsGrid.forEach((d)=> {
         if(this.vDataItem.ticketStatusID == 4) {
           if(d.requestorComments == undefined || d.requestorComments == ''){
@@ -516,14 +486,7 @@ showHideButtons(){
         this.lotsSelected = [{ inventoryID: this.lotDetailGrid[0].inventoryID, lotNum: this.lotDetailGrid[0].iseLot }]
       return;
     }
-
-      // this.lotsSelected.forEach((l) => {
-      //   const lot = this.lotDetailGrid.find(row => row.inventoryID === l.inventoryID )
-      //   if(lot == undefined){
-      //     selectedLots.push(l);
-      //   }
-      // })
-
+      
       this.lotDetailGrid =[];
       const commaSeparatedIds = this.lotsSelected.map(item => item.lotNum).join(',');
       this.apiService.getTicketLotLineItems(commaSeparatedIds).subscribe({
@@ -587,22 +550,17 @@ showHideButtons(){
   
   downloadFile(d: CommentsAttachment) {
     debugger;
-    this.apiService.downloadFile(d.attachmentName).subscribe();
+    this.apiService.downloadFile(d.fileName).subscribe();
   }
-
-  deleteReviewerFile(dataItem: CommentsAttachment) {
-    debugger;
-    dataItem.active = false;
-    var attachment =  this.commentsAttachments.find(a => a.attachmentName === dataItem.attachmentName);
-    if(attachment != undefined)
-      attachment.active = false;
-  }
+  
   deleteTicketFile(dataItem: TicketAttachment) {
     debugger;
     dataItem.active = false;
-    var attachment =  this.ticketAttachments.find(a => a.attachmentName === dataItem.attachmentName);
+    var attachment =  this.ticketAttachments.find(a => a.fileName === dataItem.fileName);
     if(attachment != undefined)
       attachment.active = false;
+
+    this.filteredTicketAttachments = this.ticketAttachments.filter(a => a.active == true)
   }
   // print
   @ViewChild('pdfExport', { static: true }) pdfExportComponent!: PDFExportComponent;
