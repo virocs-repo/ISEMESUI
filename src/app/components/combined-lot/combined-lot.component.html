@@ -1,7 +1,7 @@
 <div class="k-d-flex k-align-items-center  k-gap-1 k-py-0 k-px-4 page-header">
     <h4>Combined Lot</h4>
     <i class="k-ml-auto"></i>
-    <div style="margin-left: 20%;">
+    <div style="margin-left: 45%;">
       <kendo-label text="Search" class="k-font-size-sm">
         <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
           rounded="full" (input)="onSearchMaster()" />
@@ -21,9 +21,7 @@
     
         </div>
     </div>
-        
- 
-    <div>
+   <div>
       <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="onSearch()">Search</button>
     </div>
     <div>
@@ -53,26 +51,26 @@
       <kendo-grid-column field="comboLotID" title="Combo Lot#" [width]="130"></kendo-grid-column>
       <kendo-grid-column field="comboName" title="Combo Name"> 
          <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="truncate-text" [title]="dataItem.comboName">{{dataItem.comboName}}</a>
+        <div class="truncate-text" [title]="dataItem.comboName">{{dataItem.comboName}}</div>
       </ng-template></kendo-grid-column>
       <kendo-grid-column field="customer" title="Customer">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="truncate-text" [title]="dataItem.customer">{{dataItem.customer}}</a>
+          <div class="truncate-text" [title]="dataItem.customer">{{dataItem.customer}}</div>
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column field="iseLotNumber" title="Ise Lot#">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="truncate-text" [title]="dataItem.iseLotNumber">{{dataItem.iseLotNumber}}</a>
+          <div class="truncate-text" [title]="dataItem.iseLotNumber">{{dataItem.iseLotNumber}}</div>
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column field="customerLotNumber" title="Cus Lot#">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="truncate-text" [title]="dataItem.customerLotNumber">{{dataItem.customerLotNumber}}</a>
+          <div class="truncate-text" [title]="dataItem.customerLotNumber">{{dataItem.customerLotNumber}}</div>
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column field="deviceType" title="Device Type">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="truncate-text" [title]="dataItem.deviceType">{{dataItem.deviceType}}</a>
+          <div class="truncate-text" [title]="dataItem.deviceType">{{dataItem.deviceType}}</div>
         </ng-template>
       </kendo-grid-column>
      <!-- <kendo-grid-column field="isPrimaryAddress" title="Is Primary Address"></kendo-grid-column>-->

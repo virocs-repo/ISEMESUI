@@ -27,7 +27,8 @@
         [pageable]="true"
         (pageChange)="pageChange($event)"
         (cellClick)="onCellClick($event)"
-        class="grid-header-sm grid-header-bold">
+        class="grid-header-sm grid-header-bold"
+        [rowClass]="rowCallback">
         <kendo-grid-column field="iseLotNumber" title="Lot/Serial#" [width]="50">
             <ng-template kendoGridCellTemplate let-dataItem>
                 <div class="truncate-text" [title]="dataItem.iseLotNumber">{{dataItem.iseLotNumber}}</div>
