@@ -872,6 +872,7 @@ export interface ParcelRequest {
   distanceUnit: string; // Default "in"
   weight: number;
   massUnit: string; // Default "lb"
+  pno:number;
 }
 
 export interface TicketType {
