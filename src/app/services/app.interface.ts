@@ -359,24 +359,24 @@ export interface CustomerAddress {
   BillTransportationAcct:string;
   CustomerReference:string;
   NoOfPackages:string;
-  Weight:number;
+  Weight:number|null;
   PackageDimentions:string;
   IsResidential:boolean;
   AccountNumber:string;
   ReferenceNumber1:string;
   ReferenceNumber2:string;
-  OtherAccountNumber:number;
+  OtherAccountNumber:number | null;
   TaxId:string;
   Attention:string;
   InvoiceNumber:string;
   BillDutyTaxFeesTo:string;
   BillDutyTaxFeesAcct:string;
   CommodityDescription:string;
-  ScheduleBUnits1:number;
+  ScheduleBUnits1:number|null;
   PurchaseNumber:string;
   ShipmentReference:string;
-  CustomsTermsOfTradeid:number;
-  Qty:number;
+  CustomsTermsOfTradeId:number;
+  Qty:number|null;
   CommodityOrigin:string;
 }
 

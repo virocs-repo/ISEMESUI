@@ -66,6 +66,9 @@ export class AddCustomerRequestComponent implements OnInit {
   ScheduleB:number| undefined;
   Height:number| undefined;
   format: string = 'yyyy-MM-dd';
+  ExpectedPickUpDate:Date | null = null;
+  ShipDate:Date | null = null;
+
 
   allLotNumbers: string[] = []; // F
   // below code can be changed/removed
@@ -113,8 +116,6 @@ export class AddCustomerRequestComponent implements OnInit {
     TaxId:'',
     HoldShip:'',
     Forwarder:false,
-    ExpectedDate:'',
-    ExpectedTime:'',
     Phone:'',
     LicenseException:'',
     LicenseType:'',
@@ -126,8 +127,8 @@ export class AddCustomerRequestComponent implements OnInit {
     ShipmentReference:'',
     CustomTermTrade:'',
     UltimateConsignee:'',
-    ShipDate:'',
     ShippingTime:'',
+    ExpectedTime:'',
     CommodityDescription:''
   };
   address = {
@@ -157,13 +158,13 @@ export class AddCustomerRequestComponent implements OnInit {
     TrasportationAcct:'',
     CustomerReference:'',
     NumberOfPackages:'',
-    Weight:0,
+    Weight:null as number | null,
     PackageDimension:'',
     Residential:false,
     UPSAccountNumber:'',
     Length:'',
     Width:'',
-    Height:0,
+    Height:null as number | null,
     Taxid:'',
     Attention:'',
     PackageType:'',
@@ -171,8 +172,8 @@ export class AddCustomerRequestComponent implements OnInit {
     Duties:'',
     BillDutyTaxFeesAcct:'',
     PurchaseNumber:'',
-    ScheduleBUnits1:0,
-    Qty:0,
+    ScheduleBUnits1:null as number | null,
+    Qty:null as number | null,
 
   }
   
@@ -197,8 +198,10 @@ export class AddCustomerRequestComponent implements OnInit {
       this.gridDataResult.data = this.customerOrd;
       this.formData=this.formOrdData;
       this.initializeSelectedRows();
-      console.log(this.deliveryInfo);
       if (this.deliveryInfo) {
+        this.ExpectedPickUpDate = this.deliveryInfo[0]?.expectedTime? new Date(new Date(this.deliveryInfo[0].expectedTime.split('T')[0]).getTime() + new Date().getTimezoneOffset() * 60000) : null;
+        this.ShipDate = this.deliveryInfo[0]?.shipDate? new Date(new Date(this.deliveryInfo[0].shipDate.split('T')[0]).getTime() + new Date().getTimezoneOffset() * 60000) : null;
+
         this.selectedShippingMethod = {};
         this.selectedShippingMethod.masterListItemId = this.deliveryInfo[0]?.shippingMethodId || '';
         this.selectedShippingMethod.itemText = this.deliveryInfo[0]?.shippingMethod||'';
@@ -222,12 +225,11 @@ export class AddCustomerRequestComponent implements OnInit {
         }
         this.selectedCommodityOrigin={};//need to check
         if(this.COOList.length>0){
-          this.selectedCommodityOrigin = this.COOList.find(a=>a.itemText == this.deliveryInfo[0]?.countryOfOrigin)
+          this.selectedCommodityOrigin = this.COOList.find(a=>a.itemText == this.deliveryInfo[0]?.commodityOrigin)
         }
-        this.selectedCustomeTT={};//need to check
-        if(this.CustomeTTList.length>0){
-          this.selectedCustomeTT = this.CustomeTTList.find(a=>a.itemText == this.deliveryInfo[0]?.CustomsTermsOfTrade)
-        }
+        this.selectedCustomeTT={};
+        this.selectedCustomeTT.masterListItemId = this.deliveryInfo[0]?.customsTermsOfTradeId||'';
+        this.selectedCustomeTT.itemText = this.deliveryInfo[0]?.customsTermsOfTrade||'';
 
         this.selectedDestination = {};
         this.selectedDestination.masterListItemId = this.deliveryInfo[0]?.destinationId || '';
@@ -288,8 +290,8 @@ export class AddCustomerRequestComponent implements OnInit {
           HoldShip: this.deliveryInfo[0]?.holdShip || '',
           Forwarder: this.deliveryInfo[0]?.isForwarder || false,
 
-          ExpectedDate: this.deliveryInfo[0]?.expectedTime||'' ,
-          ExpectedTime: this.deliveryInfo[0]?.expectedTime|| '',
+          ExpectedTime: this.deliveryInfo[0]?.expectedTime ? this.deliveryInfo[0].expectedTime.slice(11, 16) : '',
+          ShippingTime: this.deliveryInfo[0]?.shipDate ? this.deliveryInfo[0].shipDate.slice(11, 16) : '',
 
           Phone: this.deliveryInfo[0]?.phone || '',//leave
           LicenseException: this.deliveryInfo[0]?.licenseException || '',//leave
@@ -302,8 +304,6 @@ export class AddCustomerRequestComponent implements OnInit {
           ShipmentReference: this.deliveryInfo[0]?.shipmentReference || '',//leave
           CustomTermTrade: this.deliveryInfo[0]?.customTermTrade || '',//leave
           UltimateConsignee: this.deliveryInfo[0]?.ultimateConsignee || '',
-          ShipDate: this.deliveryInfo[0]?.shipDate || '',
-          ShippingTime: this.deliveryInfo[0]?.shippingTime || '',
           CommodityDescription: this.deliveryInfo[0]?.commodityDescription || ''
         };
         this.address = {
@@ -350,11 +350,7 @@ export class AddCustomerRequestComponent implements OnInit {
           ScheduleBUnits1: this.deliveryInfo[0]?.scheduleBUnits1 || 0,
           Qty: this.deliveryInfo[0]?.qty || 0
         };
-        // if (this.deliveryInfo[0]?.expectedTime) {
-        //   const dateTime = new Date(this.deliveryInfo[0].expectedTime);
-        //   this.shippingDetailsData.ExpectedDate = dateTime.toISOString().split('T')[0]; // "YYYY-MM-DD"
-        //   this.shippingDetailsData.ExpectedTime = dateTime.toTimeString().split(' ')[0]; // "HH:mm:ss"
-        // }        
+            
       }
       
      
@@ -392,7 +388,125 @@ export class AddCustomerRequestComponent implements OnInit {
   onClose(): void {
     this.onPopupClose();
   }
-  
+
+  showMsg: boolean = false;
+  popupMessage: string = "";
+validateWeightInput(event: any): void {
+  let inputValue = event.target.value;
+  inputValue = inputValue.replace(/[^0-9.]/g, '');
+  const decimalCount = (inputValue.match(/\./g) || []).length;
+  if (decimalCount > 1) {
+    inputValue = inputValue.substring(0, inputValue.lastIndexOf('.'));
+  }
+  const numericValue = parseFloat(inputValue);
+  if (isNaN(numericValue)) {
+    this.showMsg = true;
+    this.popupMessage = "Please enter decimal values.";
+  } else if (numericValue > 999.99) {
+    this.showMsg = true;
+    this.popupMessage = "Value cannot be greater than 999.99.";
+  } else {
+    this.showMsg = false;
+    this.popupMessage = "";
+  }
+  this.Courier.Weight = inputValue;
+}
+showMsgClose(): void {
+  this.showMsg = false;
+  this.Courier.Weight=null;
+}
+onCloseMsg(): void {
+  this.showMsgClose();
+}
+
+emailError: boolean = false;
+emailMessage: string = "";
+validateEmailOnSubmit(): boolean {
+  const inputValue = this.shippingDetailsData.Email ? this.shippingDetailsData.Email.trim() : "";
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  const multipleEmails = inputValue.includes(",") || inputValue.includes(";") || inputValue.split(" ").length > 1;
+  if (!inputValue) {
+    return true;
+  }
+  if (multipleEmails) {
+    this.emailError = true;
+    this.emailMessage = "Please enter valid Email Address - Shipping Info";
+    return false;
+  } else if (!emailPattern.test(inputValue)) {
+    this.emailError = true;
+    this.emailMessage = "Please enter valid Email Address - Shipping Info";
+    return false;
+  }
+  return true; 
+}
+onemailErrorClose(): void {
+  this.emailError = false;
+}
+onErrorClose(): void {
+  this.onemailErrorClose();
+}
+totalValueError: boolean = false;
+totalValueMessage: string = "";
+validateTotalValue(): boolean {
+  const totalValue = this.TotalValue ?? 0;
+  if (totalValue > 50000) {
+    this.totalValueError = true;
+    this.totalValueMessage = "Total Value cannot be greater than 50,000.00. Please Check Unit Value and units.";
+    return false;
+  }
+  return true;
+}
+onTotalValueErrorClose(): void {
+  this.totalValueError = false;
+}
+shipAlertEmailError: boolean = false;
+shipAlertEmailMessage: string = "";
+
+validateShipAlertEmail(): boolean {
+  const inputValue = this.shippingDetailsData.ShipAlertEmail ? this.shippingDetailsData.ShipAlertEmail.trim() : "";
+  if (!inputValue) return true; 
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  const emailList = inputValue.split(/[,;\s]+/).filter(email => email.length > 0);
+  for (const email of emailList) {
+    if (!emailPattern.test(email)) {
+      this.shipAlertEmailError = true;
+      this.shipAlertEmailMessage = "Please enter valid Ship Alert Email Id(s) - Shipping Info.";
+      return false;
+    }
+  }
+  const uniqueEmails = new Set(emailList);
+  if (uniqueEmails.size !== emailList.length) {
+    this.shipAlertEmailError = true;
+    this.shipAlertEmailMessage = "Duplicate Ship Alert Email Exist - Shipping Info.";
+    return false;
+  }
+  return true;
+}
+
+onShipAlertEmailErrorClose(): void {
+  this.shipAlertEmailError = false;
+}
+unitValueError: boolean = false;
+unitValueMessage: string = "";
+
+// Validate Unit Value
+validateUnitValue(): boolean {
+  const unitValue = this.UnitValue ?? 0; // Default to 0 if undefined
+
+  if (unitValue > 999999999.9999) {
+    this.unitValueError = true;
+    this.unitValueMessage = "Unit Value cannot be greater than 999999999.9999.";
+    return false;
+  }
+  return true;
+}
+onUnitValueErrorClose(): void {
+  this.unitValueError = false;
+}
+onShippingMethodChange(): void {
+  this.selectedCourier = null;
+  this.selectedDestination = null;
+}
   generateTimes(): any[] {
     const times = [];
     let hours = 0;
@@ -870,15 +984,33 @@ export class AddCustomerRequestComponent implements OnInit {
       return;
     } 
     if (!this.selectedShippingMethod?.masterListItemId) {
-      
       this.appService.errorMessage('Please select ShippingMethod');
       return;
     } 
-    if (this.selectedShippingMethod?.masterListItemId === 1448 && !this.shippingDetailsData.ContactPerson) {
-      this.appService.errorMessage('Please enter contact person');
-      return;
+    if (this.selectedShippingMethod?.masterListItemId === 1448) {
+      if (!this.validateShipAlertEmail()) {
+        return; 
+      }
+      if (!this.shippingDetailsData.ContactPerson) {
+        this.appService.errorMessage('Please enter contact person');
+        return;
+      } 
+    }
+    if (this.selectedShippingMethod?.masterListItemId === 1447) {
+      if (!this.validateShipAlertEmail()) {
+        return; 
+      }
     }
     if (this.selectedShippingMethod?.masterListItemId === 1534) {
+      if (!this.validateShipAlertEmail()) {
+        return; 
+      }
+      if (!this.validateTotalValue()) {
+        return; 
+      }
+      if (!this.validateUnitValue()) {
+        return; 
+      }
       if (!this.selectedCOO?.masterListItemId) {
         this.appService.errorMessage('Please select COO.');
         return;
@@ -903,6 +1035,9 @@ export class AddCustomerRequestComponent implements OnInit {
         return;
       }
       if (this.selectedCourier?.masterListItemId == 3) {
+        if (!this.validateShipAlertEmail()) {
+          return; 
+        }
         if (!this.selectedServiceType?.itemText) {
           this.appService.errorMessage('Please select Service Type.');
           return;
@@ -918,6 +1053,9 @@ export class AddCustomerRequestComponent implements OnInit {
       }
   
       if (this.selectedCourier?.masterListItemId == 4) {
+        if (!this.validateEmailOnSubmit()) {
+          return; 
+        }
         if (!this.selectedBillTransport?.itemText) {
           this.appService.errorMessage('Please select Bill Transportation To.');
           return;
@@ -932,6 +1070,9 @@ export class AddCustomerRequestComponent implements OnInit {
         }
       }
       if (this.selectedCourier?.masterListItemId == 5) {
+        if (!this.validateUnitValue()) {
+          return; 
+        }
         if (!this.selectedCIFrom?.masterListItemId) {
           this.appService.errorMessage('Please select CI Form.');
           return;
@@ -942,6 +1083,10 @@ export class AddCustomerRequestComponent implements OnInit {
         }
         if (!this.selectedBillTransport?.itemText) {
           this.appService.errorMessage('Please select Bill Transportation To.');
+          return;
+        }
+        if (!this.Courier.BillTransportationAcct) {
+          this.appService.errorMessage('Please enter Bill Trasportation Acct#.');
           return;
         }
         if (!this.selectedBillDutyTaxFeesTo?.itemText) {
@@ -962,6 +1107,15 @@ export class AddCustomerRequestComponent implements OnInit {
         }
       }
       if (this.selectedCourier?.masterListItemId == 6) {
+        if (!this.validateEmailOnSubmit()) {
+          return; 
+        }
+        if (!this.validateTotalValue()) {
+          return; 
+        }
+        if (!this.validateShipAlertEmail()) {
+          return; 
+        }
         if (!this.selectedCIFrom?.masterListItemId) {
           this.appService.errorMessage('Please select CI Form.');
           return;
@@ -1000,6 +1154,12 @@ export class AddCustomerRequestComponent implements OnInit {
         }
       }
       if (this.selectedCourier?.masterListItemId == 7) {
+        if (!this.validateUnitValue()) {
+          return; 
+        }
+        if (!this.validateShipAlertEmail()) {
+          return; 
+        }
         if (!this.selectedCIFrom?.masterListItemId) {
           this.appService.errorMessage('Please select CI Form.');
           return;
@@ -1048,7 +1208,7 @@ export class AddCustomerRequestComponent implements OnInit {
       return;
     }
 
-    if (!this.address.contactPerson) {
+    if (!this.shippingDetailsData.ContactPerson) {
       this.appService.errorMessage('Please enter Contact Name.');
       return;
     }
@@ -1079,20 +1239,12 @@ export class AddCustomerRequestComponent implements OnInit {
       return;
     }
   }
-  const expdate = this.shippingDetailsData.ExpectedDate;
-  const time = this.shippingDetailsData.ExpectedTime; 
-  const date = new Date(expdate);
-  const year = date.getFullYear();
-  const month = ('0' + (date.getMonth() + 1)).slice(-2); 
-  const day = ('0' + date.getDate()).slice(-2);
-  const formattedDate = `${year}-${month}-${day}`;
-  const shipdate = this.shippingDetailsData.ShipDate;
-  const shiptime = this.shippingDetailsData.ShippingTime; 
-  const shippingdate = new Date(shipdate);
-  const shippingyear = shippingdate.getFullYear();
-  const shippingmonth = ('0' + (shippingdate.getMonth() + 1)).slice(-2); 
-  const shippingday = ('0' + shippingdate.getDate()).slice(-2);
-  const shippingformattedDate = `${shippingyear}-${shippingmonth}-${shippingday}`;  
+  debugger;
+  const formattedPickUpDate = this.ExpectedPickUpDate ? this.ExpectedPickUpDate.toISOString().split('T')[0] : null;
+  const PickUptime = this.shippingDetailsData.ExpectedTime;
+  const formattedshipDate = this.ShipDate ? this.ShipDate.toISOString().split('T')[0] : null;
+  const Shiptime = this.shippingDetailsData.ShippingTime; 
+   
      
     const customerAddress: CustomerAddress = {
       ShippingMethodId:this.selectedShippingMethod.masterListItemId,
@@ -1100,7 +1252,7 @@ export class AddCustomerRequestComponent implements OnInit {
       ContactPerson: this.shippingDetailsData.ContactPerson,
       Phone: this.address.Phone, 
       ShipAlertEmail: this.shippingDetailsData.ShipAlertEmail,
-      ExpectedTime: (formattedDate && time) ? `${formattedDate} ${time}` : null,  
+      ExpectedTime: (formattedPickUpDate && PickUptime) ? `${formattedPickUpDate} ${PickUptime}` : null,  
       Comments: this.address.Comments,  
       SpecialInstructionforShipping: this.address.SpecialInstructions,  
       PackingSlipComments: this.address.PackingComments,  
@@ -1116,7 +1268,7 @@ export class AddCustomerRequestComponent implements OnInit {
       StateProvince:this.address.State,
       City:this.address.City,
       Extension:this.address.Ext,
-      ShipDate:(shippingformattedDate && shiptime) ? `${shippingformattedDate} ${shiptime}` : null,
+      ShipDate:(formattedshipDate && Shiptime) ? `${formattedshipDate} ${Shiptime}` : null,
       CountryOfOrigin:this.selectedCOO?.itemText,
       CIFromId:this.selectedCIFrom?.masterListItemId,
       UnitValue:this.UnitValue,
@@ -1151,7 +1303,7 @@ export class AddCustomerRequestComponent implements OnInit {
       ScheduleBUnits1:this.Courier.ScheduleBUnits1,
       PurchaseNumber:this.Courier.PurchaseNumber,
       ShipmentReference:this.shippingDetailsData.Height,
-      CustomsTermsOfTradeid:this.selectedCustomeTT?.masterListItemId, 
+      CustomsTermsOfTradeId:this.selectedCustomeTT?.masterListItemId, 
       Qty:this.Courier.Qty,
       CommodityOrigin:this.selectedCommodityOrigin?.itemText
     };
