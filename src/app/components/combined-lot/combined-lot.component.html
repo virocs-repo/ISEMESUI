@@ -48,7 +48,11 @@
    
 <!--       <kendo-grid-column field="receiptID" title="receipt #"></kendo-grid-column>
       <kendo-grid-column field="customerVendorID" title="customerVendorID"  [hidden]="true" ></kendo-grid-column> -->
-      <kendo-grid-column field="comboLotID" title="Combo Lot#" [width]="130"></kendo-grid-column>
+      <kendo-grid-column field="comboLotID" title="Combo Lot#" [width]="130">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.comboLotID">{{dataItem.comboLotID}}</div>
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column field="comboName" title="Combo Name"> 
          <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.comboName">{{dataItem.comboName}}</div>
@@ -74,7 +78,11 @@
         </ng-template>
       </kendo-grid-column>
      <!-- <kendo-grid-column field="isPrimaryAddress" title="Is Primary Address"></kendo-grid-column>-->
-      <kendo-grid-column field="status" title="Status" [width]="150"></kendo-grid-column>
+      <kendo-grid-column field="status" title="Status" [width]="150">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.status">{{dataItem.status}}</div>
+        </ng-template>
+      </kendo-grid-column>
     </kendo-grid>
   </div>
   
