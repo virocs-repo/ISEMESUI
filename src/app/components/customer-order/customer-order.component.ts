@@ -208,7 +208,6 @@ this.formOrdData = {
 };
 this.apiService.getShipmentdeliveryInfo(dataItem.deliveryInfoId).subscribe({
   next: (deliveryInfo:any) => {
-    console.log(deliveryInfo);
     this.deliveryInfo = deliveryInfo;
   },
   error: (err) => {
