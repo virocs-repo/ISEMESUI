@@ -234,7 +234,10 @@ onSearch(): void {
     this.appService.errorMessage('Please select a customer.');
     return;
   }
-
+  this.selectedDropdownValue = null;  
+  this.dropdownData = []; 
+  this.selecteddropdownData = [];
+  this.gridSelectedKeys = []; 
   this.apiService.SearchComblotsWithCust_Lot(customerId, lotNumber).subscribe({
     next: (res: any) => {
       console.log(res);
@@ -294,8 +297,6 @@ saveCombineLots(): void {
 
 onSelectionChange(event: SelectionEvent): void {
   console.log('Grid Selected Keys:', this.gridSelectedKeys);
-  
-
   const selectedRows = this.gridDataResult.data.filter((item) =>
     this.gridSelectedKeys.includes(item.inventoryID) && item.addressId > 0
   );
@@ -321,8 +322,10 @@ onSelectionChange(event: SelectionEvent): void {
     this.selectedDropdownValue = null;
   }
 
+  if (!this.selectedDropdownValue && this.dropdownData.length > 0) {
+    this.selectedDropdownValue = this.dropdownData[0];
+  }
   this.isDisabled.shipBtn =false;
-
 }
 
 
