@@ -402,11 +402,11 @@ export class ApiService {
   getAllHolds(inventoryId: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getAllHolds?inventoryId=${inventoryId}`);
   }
-  upsertInventoryHold(request: any,options: { responseType: 'text' },file?: File): Observable<any> {
+  upsertInventoryHold(request: any,options: { responseType: 'text' },files?: File[]): Observable<any> {
     const formData = new FormData();
-    if(file)
+    if(files)
     {
-      formData.append('file', file);
+      files.forEach(file => formData.append('files', file));
     }
     formData.append('input', JSON.stringify(request));
     return this.httpClient.post(`${API}v1/ise/inventory/inventoryHold/UpsertHold`, formData, options);

@@ -41,7 +41,7 @@ export class AddHoldComponent implements OnInit {
   isReadOnly: boolean = false;
   isView: boolean = false;
   showHoldFields:boolean = false;
-  fileToUpload: File | undefined;
+  fileToUpload: File[] = [];
   constructor(private appService: AppService, private apiService: ApiService) {}
 
   ngOnInit(): void {
@@ -165,7 +165,7 @@ export class AddHoldComponent implements OnInit {
       UserId: this.appService.loginId,
       CategoryName: 'Hold',
     };
-    if(this.fileToUpload)
+    if(this.fileToUpload.length>0)
       {
         this.apiService.upsertInventoryHold(payload, { responseType: 'text' },this.fileToUpload).subscribe(
           () => {
@@ -213,7 +213,9 @@ export class AddHoldComponent implements OnInit {
   }
   onUpload(event: SelectEvent): void {
     const formData = new FormData();
-    this.fileToUpload = event.files[0].rawFile;
+    event.files.forEach((files: any) => {
+      this.fileToUpload.push(files.rawFile);
+    });
   }
 
   shippingAttachments: ShippingAttachment[] = [];
