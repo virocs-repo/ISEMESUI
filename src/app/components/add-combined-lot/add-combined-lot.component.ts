@@ -32,6 +32,7 @@ export class AddCombinedLotComponent implements OnDestroy {
     clearBtn: false
   }
   isEditMode = false;
+  isViewMode = false;
   selecteddropdownData: any[] = []; // Data for the dropdown
   dropdownData: any[] = []; // Data for the dropdown
   selectedDropdownValue: any; // Selected value in the dropdown
@@ -64,17 +65,17 @@ export class AddCombinedLotComponent implements OnDestroy {
       
           if (this.appService.sharedData.combolot.isViewMode)
         {
-            if (allresdata.length > 0)
+            if (res.length > 0)
            {
               // Assign the matching records to the grid
-              this.gridDataResult.data = allresdata;
+              this.gridDataResult.data = res;
       
               // Automatically select rows where viewFlag = 1
-              this.gridSelectedKeys = allresdata
+              this.gridSelectedKeys = res
                 .filter(item => item.viewFlag === 1) // Filter items with viewFlag = 1
                 .map(item => item.inventoryID); // Map to the unique key field (inventoryID)
                  // Populate dropdown data
-                 this.dropdownData = allresdata
+                 this.dropdownData = res
                  .filter((row: any) => row.addressId > 0) // Filter rows with addressId > 0
                  .map((row: any) => ({
                    iseLotNum: row.iseLotNum,
@@ -84,7 +85,7 @@ export class AddCombinedLotComponent implements OnDestroy {
          
 
         // Automatically select the primary lot in the dropdown
-        const primaryLot = allresdata.find((row: any) => row.isPrimaryAddress === true);
+        const primaryLot = res.find((row: any) => row.isPrimaryAddress === true);
         if (primaryLot) {
           this.selectedDropdownValue = {
             iseLotNum: primaryLot.iseLotNum,
@@ -165,6 +166,7 @@ export class AddCombinedLotComponent implements OnDestroy {
       this.isDisabled.shipBtn = true;
       this.isDisabled.clearBtn = true;
     }
+    this.isViewMode = this.appService.sharedData.combolot.isViewMode;
   }
   ngOnDestroy(): void {
     this.appService.sharedData.combolot.isEditMode = false

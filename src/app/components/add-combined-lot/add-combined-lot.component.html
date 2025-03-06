@@ -6,12 +6,13 @@
           <div class="k-d-flex k-gap-3 flex-col-sm">
             <kendo-label text="Customer" class="k-w-full">
               <b class="required-label"></b>
-              <kendo-combobox [data]="customers" [(ngModel)]="customerSelected" (ngModelChange)="onChangeCustomer()"
+              <kendo-combobox [data]="customers" [(ngModel)]="customerSelected" (ngModelChange)="onChangeCustomer()" [readonly]="isViewMode"
               [textField]="'CustomerName'" [valueField]="'CustomerID'" placeholder="Select"
               rounded="large"></kendo-combobox>
             </kendo-label>
             <kendo-label text="Lot Number">
               <kendo-autocomplete
+              [readonly]="isViewMode"
               placeholder="#Lot Number"
               rounded="large"
               [(ngModel)]="lotNumber"
@@ -38,7 +39,7 @@
       [(selectedKeys)]="gridSelectedKeys" 
       (selectionChange)="onSelectionChange($event)"
       class="bold-column-header cell-border-none">
-      <kendo-grid-checkbox-column [width]="5"></kendo-grid-checkbox-column>
+      <kendo-grid-checkbox-column *ngIf="!isViewMode" [width]="5"></kendo-grid-checkbox-column>
       <kendo-grid-column field="receiptID" title="Receipt ID#" [width]="12">
         <ng-template kendoGridCellTemplate let-dataItem>
           <div class="truncate-text" [title]="dataItem.receiptID">{{dataItem.receiptID}}</div>
@@ -94,6 +95,7 @@
             <kendo-label text="Select Primary Lot Shipping Address">
               <b class="required-label"></b>
               <kendo-combobox
+                [readonly]="isViewMode"
                 [data]="dropdownData"
                 [textField]="'iseLotNum'"
                 [valueField]="'inventoryID'"
@@ -104,10 +106,10 @@
           </div>
           <kendo-label text="Combo Lot Name">
             <b class="required-label"></b>
-            <kendo-textarea  placeholder="Enter Name" rounded="large" [(ngModel)]="comboLotName"></kendo-textarea>
+            <kendo-textarea  placeholder="Enter Name" rounded="large" [readonly]="isViewMode" [(ngModel)]="comboLotName"></kendo-textarea>
           </kendo-label>
           <kendo-label text="Combo Lot Comments">
-            <kendo-textarea [(ngModel)]="ComboComments" placeholder="Enter comments" rounded="large"></kendo-textarea>
+            <kendo-textarea [(ngModel)]="ComboComments" placeholder="Enter comments" [readonly]="isViewMode" rounded="large"></kendo-textarea>
           </kendo-label>
         </div>
       </kendo-card-body>
