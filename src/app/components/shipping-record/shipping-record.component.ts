@@ -275,6 +275,7 @@ shipId :number =0;
         this.shippingDetailsData.ScheduleB=res[0].scheduleBNumber;
         this.shippingDetailsData.CommodityDescription=res[0].commodityDescription;
         this.shippingDetailsData.UltimateConsignee=res[0].ultimateConsignee;
+        this.shippingDetailsData.ShipmentReference=res[0].shipmentReference;
         this.onShippingMethodChange(res[0].shippingMethod);
         
 
