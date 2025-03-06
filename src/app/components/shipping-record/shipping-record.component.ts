@@ -333,7 +333,7 @@ shipId :number =0;
   }
   gridSelectedKeys: number[] = [];
   shipItem() {
-debugger;
+
     if(this.shippingAttachments.length<=0)
       {
         this.appService.errorMessage('please add atleast one attachment.');
@@ -350,9 +350,9 @@ debugger;
       }
 
     }
-    else if(!this.AttachementVerified)
+    else if(!this.AttachementVerified || !this.address.TrackingId)
       {
-        this.appService.errorMessage('Please have the attachments verified ');
+        this.appService.errorMessage('Please have the attachments verified and Tracking #/AWB');
         return;
       }
    
@@ -647,6 +647,7 @@ if(this.packages.length<=0)
    
     this.apiService.saveShipmentpackagesRecord(payload).subscribe({
       next: (response: any) => {
+        this.appService.successMessage('saved info successfully!');
         this.fetchpackageByShipmentId(this.shipId);
       },
       error: (error: any) => {
@@ -655,14 +656,46 @@ if(this.packages.length<=0)
       },
     });
   }
-  onDeleteRow(rowIndex: number): void {
+  /* onDeleteRow(rowIndex: number): void {
     if (rowIndex >= 0 && rowIndex < this.packages.length) {
       // Update the active flag to false instead of deleting the row.
       this.packages[rowIndex].active = false;
+      this.packages.splice(rowIndex, 1);
     }
     this.onSave();
+  } */
+    onDeleteRow(rowIndex: number): void {
+
+      if (rowIndex >= 0 && rowIndex < this.packages.length) {
+        // Check if the package has been saved (i.e., has a packageId)
+        if (this.packages[rowIndex].packageId) {
+          // If it has been saved, mark it as inactive
+          this.packages[rowIndex].active = false;
+         
+        } else {
+          // If it has not been saved, remove it from the array
+          this.packages.splice(rowIndex, 1);
+          
+          // Reassign package numbers after deletion
+          this.reassignPackageNumbers();
+        }
+      }
+      // Check if more than one row has a packageId before calling onSave()
+  const savedPackagesCount = this.packages.filter(pkg => pkg.packageId).length;
+  if (savedPackagesCount > 0) {
+    this.onSave();
   }
-  
+    
+   
+    }
+    
+    // Function to Reassign Package Numbers After a Row is Deleted
+    private reassignPackageNumbers(): void {
+      this.packages.forEach((pkg, index) => {
+        pkg.packageNo = index + 1; // Ensure package numbers are sequential
+      });
+    }
+    
   private fetchpackageDimensions() {
    
     this.apiService.fetchpackageDimensions().subscribe({

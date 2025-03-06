@@ -122,26 +122,29 @@
 
     <kendo-grid-column field="trackingurl" title="Tracking URL">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <ng-container *ngIf="dataItem.trackingurl && dataItem.trackingurl.includes(';;'); else singleLink">
-          <ng-container *ngFor="let url of dataItem.trackingurl.split(';;'); let i = index">
-            <a class="minimal-text link" 
-               [title]="url" 
-               [href]="url" 
-               target="_blank">
-              Package{{ i + 1 }}
-            </a><br/>
+        <ng-container *ngIf="dataItem.trackingurl && dataItem.trackingurl.trim() !== ''">
+          <ng-container *ngIf="dataItem.trackingurl.includes(';;'); else singleLink">
+            <ng-container *ngFor="let url of dataItem.trackingurl.split(';;'); let i = index">
+              <a class="minimal-text link" 
+                 [title]="url" 
+                 [href]="url" 
+                 target="_blank">
+                Package {{ i + 1 }}
+              </a><br/>
+            </ng-container>
           </ng-container>
+          <ng-template #singleLink>
+            <a class="minimal-text link" 
+               [title]="dataItem.trackingurl" 
+               [href]="dataItem.trackingurl" 
+               target="_blank">
+              Package 1
+            </a>
+          </ng-template>
         </ng-container>
-        <ng-template #singleLink>
-          <a class="minimal-text link" 
-             [title]="dataItem.trackingurl" 
-             [href]="dataItem.trackingurl" 
-             target="_blank">
-            Package1
-          </a>
-        </ng-template>
       </ng-template>
     </kendo-grid-column>
+    
     
     
   </kendo-grid>

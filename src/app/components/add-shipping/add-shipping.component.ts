@@ -144,8 +144,8 @@ onDeviceSelectionChange(value: any): void {
     const custId=this.customerSelected?.CustomerID ||null;
     this.gridDataResult.data = [];
   
-    if (!receivedFromId || !this.customerSelected) {
-      this.appService.errorMessage('Please select customer  and Location.');
+    if (!receivedFromId || !this.customerSelected || !this.shipmentCategorySelected) {
+      this.appService.errorMessage('Please select customer  and Location and shipment category.');
       return;
     }
     if (!receivedFromId && !deviceId && !lotNumber && !this.customerSelected) {
