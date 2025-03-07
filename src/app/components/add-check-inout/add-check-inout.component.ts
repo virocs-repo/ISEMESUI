@@ -16,6 +16,7 @@ export class AddCheckInoutComponent implements OnInit {
   @Input() isReadOnly: boolean = false;
   @Input() selectedRowData: any;
   @Output() cancel = new EventEmitter<void>();
+  @Output() statusUpdated = new EventEmitter<void>();  
   @ViewChild('grid', { static: true }) grid!: GridComponent; 
   gridDataResult: GridDataResult = { data: [], total: 0 };
   public icons = { printIcon: printIcon };
@@ -211,6 +212,7 @@ export class AddCheckInoutComponent implements OnInit {
       .subscribe({
         next: (response) => {
           console.log('Inventory move status updated successfully:', response);
+          this.statusUpdated.emit();
           this.cancel.emit(); 
         },
         error: (err) => {

@@ -53,14 +53,46 @@
     [filterable]="true" (cellClick)="onCellClick($event)" class="grid-header-sm grid-header-bold"
     [rowClass]="rowCallback">
     <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
-    <kendo-grid-column field="anotherShipmentID" title="anotherShipmentID" [hidden]="true" ></kendo-grid-column>
-    <kendo-grid-column field="requestor" title="Requestor"></kendo-grid-column>
-    <kendo-grid-column field="deliveryMethod" title="Delivery Method"></kendo-grid-column>
-    <kendo-grid-column field="customerType" title="Customer Type"></kendo-grid-column>
-    <kendo-grid-column field="customerVendor" title="Customer/Vendor"></kendo-grid-column>
-    <kendo-grid-column field="shipTo" title="Ship To"></kendo-grid-column>
-    <kendo-grid-column field="recordStatus" title="RecordStatus"></kendo-grid-column>
-    <kendo-grid-column field="status" title="Status" [hidden]="true"></kendo-grid-column>
+    <kendo-grid-column field="anotherShipmentID" title="anotherShipmentID" [hidden]="true" >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.anotherShipmentID">{{dataItem.anotherShipmentID}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="requestor" title="Requestor">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.requestor">{{dataItem.requestor}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="deliveryMethod" title="Delivery Method">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.deliveryMethod">{{dataItem.deliveryMethod}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="customerType" title="Customer Type">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.customerType">{{dataItem.customerType}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="customerVendor" title="Customer/Vendor">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.customerVendor">{{dataItem.customerVendor}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="shipTo" title="Ship To">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.shipTo">{{dataItem.shipTo}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="recordStatus" title="RecordStatus">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.recordStatus">{{dataItem.recordStatus}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="status" title="Status" [hidden]="true">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.status">{{dataItem.status}}</div>
+      </ng-template>
+    </kendo-grid-column>
   </kendo-grid>
 </div>
 

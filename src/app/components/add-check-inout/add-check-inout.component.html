@@ -39,11 +39,36 @@
     <kendo-grid 
     class="grid-header-sm grid-header-bold"
     [kendoGridBinding]="gridDataResult.data">
-      <kendo-grid-column *ngFor="let c of columnData" [hidden]="!c.visible" [field]="c.field" [title]="c.title"></kendo-grid-column>
+    <kendo-grid-column field="lotNum" title="Lot#/Serial#" [width]="130">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <button kendoButton [svgIcon]="ICON.moreVerticalIcon" #rowActionMenu></button>
-        <kendo-contextmenu showOn="click" [target]="rowActionMenu"></kendo-contextmenu>
+        <div class="truncate-text" [title]="dataItem.lotNum">{{dataItem.lotNum}}</div>
       </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="location" title="Location" [width]="130">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.location">{{dataItem.location}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="receivedFrom" title="Received From/CheckOut To" [width]="130">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.receivedFrom">{{dataItem.receivedFrom}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="systemUser" title="Modified By" [width]="130">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.systemUser">{{dataItem.systemUser}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="goodsType" title="Goods Type" [width]="130">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.goodsType">{{dataItem.goodsType}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="status" title="Status" [width]="130">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.status">{{dataItem.status}}</div>
+      </ng-template>
+    </kendo-grid-column>
     </kendo-grid>
   </div>
 

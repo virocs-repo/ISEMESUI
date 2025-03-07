@@ -4,3 +4,8 @@
     left: 50%; 
     transform: translate(-50%, -50%); 
 }
+.truncate-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
