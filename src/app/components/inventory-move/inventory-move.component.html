@@ -1,10 +1,6 @@
 <div class="k-d-flex k-align-items-center  k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
     <h4>Inventory Move</h4>
     <i class="k-ml-auto"></i>
-  
-
-    <!-- <div class="k-d-flex k-gap-4 k-align-items-center k-flex-1"> -->
-        <!-- Search Icon and Input -->
         <kendo-label text="Search" class="k-font-size-sm">
           <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
             rounded="full" (input)="onSearchMaster()" />
@@ -17,32 +13,9 @@
         <kendo-label text="To Date" class="k-font-size-sm">
           <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
         </kendo-label>
-     
-<!--         <div class="k-d-flex k-align-items-center k-flex-1">
-          <label class="k-w-auto k-font-size-sm k-mr-2">From Date</label>
-          <kendo-datepicker [format]="format" [(value)]="fromDate" class="k-w-full"></kendo-datepicker>
-        </div>
-      
-
-        <div class="k-d-flex k-align-items-center k-flex-1">
-          <label class="k-w-auto k-font-size-sm k-mr-2">To Date</label>
-          <kendo-datepicker [format]="format" [(value)]="toDate" class="k-w-full"></kendo-datepicker>
-        </div> -->
-      
-      
-      
- 
-        
- 
     <div>
       <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="onSearch()">Search</button>
     </div>
-
-    <!-- <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
-    <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()"
-      [disabled]="!isAddButtonEnabled">Add</button> -->
-
-    
     <div>
       <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
     </div>
@@ -52,53 +25,51 @@
       [pageSize]="pageSize" [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
       class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
       [rowClass]="rowCallback">
-      <!-- <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column> -->
-      
-   
-<!--       <kendo-grid-column field="receiptID" title="receipt #"></kendo-grid-column>
-      <kendo-grid-column field="customerVendorID" title="customerVendorID"  [hidden]="true" ></kendo-grid-column> -->
-      <!--<kendo-grid-column field="inventoryID" title="InventoryID"></kendo-grid-column>-->
       <kendo-grid-column field="lotNum" title="ISE Lot #">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="minimal-text" [title]="dataItem.lotNum">{{dataItem.lotNum}}</a>
+          <div class="truncate-text" [title]="dataItem.lotNum">{{dataItem.lotNum}}</div>
         </ng-template>
-
       </kendo-grid-column>
-      <kendo-grid-column field="customerLotNumber" title="Customer Lot #"></kendo-grid-column>
+      <kendo-grid-column field="customerLotNumber" title="Customer Lot #">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.customerLotNumber">{{dataItem.customerLotNumber}}</div>
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column field="customerName" title="Customer Name">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="minimal-text" [title]="dataItem.customerName">{{dataItem.customerName}}</a>
+          <div class="truncate-text" [title]="dataItem.customerName">{{dataItem.customerName}}</div>
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="facilityArea" title="Facility Area"></kendo-grid-column>
-      <kendo-grid-column field="facility" title="Current Facility"></kendo-grid-column>
-      <kendo-grid-column field="inventoryStatus" title="Inventory Status"></kendo-grid-column>
-      <kendo-grid-column field="qty" title="Qty"></kendo-grid-column>
-      <kendo-grid-column field="checkInOutQty" title="CheckInOutQty" [hidden]="true"></kendo-grid-column>
-      <!--<kendo-grid-column field="area" title="Area">
+      <kendo-grid-column field="facilityArea" title="Facility Area">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="minimal-text" [title]="dataItem.area">{{dataItem.area}}</a>
+          <div class="truncate-text" [title]="dataItem.facilityArea">{{dataItem.facilityArea}}</div>
         </ng-template>
-      </kendo-grid-column> -->
+      </kendo-grid-column>
+      <kendo-grid-column field="facility" title="Current Facility">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.facility">{{dataItem.facility}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="inventoryStatus" title="Inventory Status">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.inventoryStatus">{{dataItem.inventoryStatus}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="qty" title="Qty">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.qty">{{dataItem.qty}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="checkInOutQty" title="CheckInOutQty" [hidden]="true">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.checkInOutQty">{{dataItem.checkInOutQty}}</div>
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column field="wipLocation" title="WipLocation" [hidden]="true">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="minimal-text" [title]="dataItem.wipLocation">{{dataItem.wipLocation}}</a>
+          <div class="truncate-text" [title]="dataItem.wipLocation">{{dataItem.wipLocation}}</div>
         </ng-template>
       </kendo-grid-column>
-     <!-- <kendo-grid-column field="receivedFromOrCheckOut" title="ReceivedFromOrCheckOut"></kendo-grid-column>
-      <kendo-grid-column field="checkInOutTime" title="CheckInOutTime">
-
-        <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="minimal-text" [title]="dataItem.checkInOutTime">{{dataItem.checkInOutTime}}</a>
-        </ng-template>
-      </kendo-grid-column>
-      <kendo-grid-column field="systemCheckInOutPerson" title="SystemCheckInOutPerson"></kendo-grid-column>-->      
-     <!-- <kendo-grid-column field="currentLocation" title="CurrentLocation">
-        <ng-template kendoGridCellTemplate let-dataItem>
-          <a class="minimal-text" [title]="dataItem.currentLocation">{{dataItem.currentLocation}}</a>
-        </ng-template>
-
-      </kendo-grid-column>-->
     </kendo-grid>
   </div>
   

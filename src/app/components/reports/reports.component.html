@@ -52,16 +52,66 @@
    [selectable]="selectableSettings" [columnMenu]="columnMenuSettings"
     [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
     [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" (cellClick)="onCellClick($event)" class="inventory-grid" [rowClass]="rowCallback"  >
-    <!-- <kendo-grid-excel fileName="InventoryReport.xlsx"></kendo-grid-excel> -->
-    <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title">
+    <kendo-grid-column field="iseLotNumber" title="ISE Lot#">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem?.[c.field] || ''">
-          {{ dataItem?.[c.field] || '' }}
-        </a>
+        <div class="truncate-text" [title]="dataItem.iseLotNumber">{{dataItem.iseLotNumber}}</div>
       </ng-template>
-
     </kendo-grid-column>
-
+    <kendo-grid-column field="receiptID" title="Receipt #">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.receiptID">{{dataItem.receiptID}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="qty" title="Qty">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.qty">{{dataItem.qty}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="expedite" title="Expedite">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.expedite">{{dataItem.expedite}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="partNum" title="Part #">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.partNum">{{dataItem.partNum}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="unprocessed" title="Unprocessed">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.unprocessed">{{dataItem.unprocessed}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="good" title="Good">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.good">{{dataItem.good}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="reject" title="Reject">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.reject">{{dataItem.reject}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="coo" title="COO">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.coo">{{dataItem.coo}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="dateCode" title="Date Code">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.dateCode">{{dataItem.dateCode}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="fgtPartNum" title="FG Part #">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.fgtPartNum">{{dataItem.fgtPartNum}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="status" title="Status">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.status">{{dataItem.status}}</div>
+      </ng-template>
+    </kendo-grid-column>
   <ng-template kendoGridCellTemplate let-dataItem>
 
    </ng-template>
