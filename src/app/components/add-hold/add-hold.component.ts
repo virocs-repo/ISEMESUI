@@ -140,7 +140,7 @@ export class AddHoldComponent implements OnInit {
       this.appService.errorMessage('Please fill in the required fields.');
       return;
     }
-    if(this.mode === "edit" && !this.offHoldComments){
+    if(this.mode === "edit" && !this.offHoldComments && !this.isHold){
       this.appService.errorMessage('Please fill Off Hold Comments');
       return;
     }

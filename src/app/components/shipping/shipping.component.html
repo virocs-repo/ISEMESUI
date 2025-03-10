@@ -26,7 +26,11 @@
     class="bold-column-header cell-border-none" [filterable]="true" (cellClick)="onCellClick($event)"
     [rowClass]="rowCallback">
     <!-- <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column> -->
-    <kendo-grid-column field="shipmentId" title="Shipment#" [hidden]="true" ></kendo-grid-column>
+    <kendo-grid-column field="shipmentId" title="Shipment#" [hidden]="true" >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.shipmentId">{{dataItem.shipmentId}}</div>
+      </ng-template>
+    </kendo-grid-column>
     <!-- <kendo-grid-column field="customerVendor" title="Customer/Vendor">
       <ng-template kendoGridCellTemplate let-dataItem>
         <kendo-combobox [data]="customerTypes" [(ngModel)]="dataItem.customerTypeSelected"
@@ -36,90 +40,68 @@
     </kendo-grid-column> -->
     <kendo-grid-column field="shipmentNum" title="Shipment No.">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.shipmentNum">{{dataItem.shipmentNum}}</a>
+        <div class="truncate-text" [title]="dataItem.shipmentNum">{{dataItem.shipmentNum}}</div>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="customerInfo" title="Customer">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.customerInfo">{{dataItem.customerInfo}}</a>
+        <div class="truncate-text" [title]="dataItem.customerInfo">{{dataItem.customerInfo}}</div>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="senderInfo" title="Sender Info">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.senderInfo">{{dataItem.senderInfo}}</a>
+        <div class="truncate-text" [title]="dataItem.senderInfo">{{dataItem.senderInfo}}</div>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="shipmentCategory" title="Shipment Category">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.shipmentCategory">{{dataItem.shipmentCategory}}</a>
+        <div class="truncate-text" [title]="dataItem.shipmentCategory">{{dataItem.shipmentCategory}}</div>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="shippmentInfo" title="Shipment Info">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.shippmentInfo">{{dataItem.shippmentInfo}}</a>
+        <div class="truncate-text" [title]="dataItem.shippmentInfo">{{dataItem.shippmentInfo}}</div>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="currentLocation" title="Current Location">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.currentLocation">{{dataItem.currentLocation}}</a>
+        <div class="truncate-text" [title]="dataItem.currentLocation">{{dataItem.currentLocation}}</div>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="shipped" title="Shipped">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.shipped">{{dataItem.shipped}}</a>
+        <div class="truncate-text" [title]="dataItem.shipped">{{dataItem.shipped}}</div>
       </ng-template>
     </kendo-grid-column>
   
     <kendo-grid-column field="deliveryMethod" title="Delivery Method ">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.deliveryMethod">{{dataItem.deliveryMethod}}</a>
+        <div class="truncate-text" [title]="dataItem.deliveryMethod">{{dataItem.deliveryMethod}}</div>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="contactPerson" title="Contact Person ">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.contactPerson">{{dataItem.contactPerson}}</a>
+        <div class="truncate-text" [title]="dataItem.contactPerson">{{dataItem.contactPerson}}</div>
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="trackingnum" title="Tracking #">
-
       <ng-template kendoGridCellTemplate let-dataItem>
-        <ng-container *ngIf="dataItem.trackingnum && dataItem.trackingnum.includes(';;'); else singleTracking">
-          <div *ngFor="let tn of dataItem.trackingnum.split(';;')">
-            <a class="minimal-text" [title]="tn" [href]="tn" target="_blank">{{ tn }}</a>
-          </div>
-        </ng-container>
-        <ng-template #singleTracking>
-          <a class="minimal-text" [title]="dataItem.trackingnum" [href]="dataItem.trackingnum" target="_blank">
-            {{ dataItem.trackingnum }}
-          </a>
-        </ng-template>
-      </ng-template>
-      
-      
-  <!--     <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text" [title]="dataItem.trackingnum">{{dataItem.trackingnum}}</a>
-      </ng-template> -->
-    </kendo-grid-column>
-    <!-- <kendo-grid-column field="trackingurl" title="Tracking URL">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <a class="minimal-text link" [title]="dataItem.trackingurl" [href]="dataItem.trackingurl"
-          target="_blank">{{"Shipment Label"}}</a>
-      </ng-template>
-    </kendo-grid-column> -->
-
-<!--     <kendo-grid-column field="trackingurl" title="Tracking URL">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <ng-container *ngIf="dataItem.trackingurl && dataItem.trackingurl.includes(';;'); else singleLink">
-          <ng-container *ngFor="let url of dataItem.trackingurl.split(';;')">
-            <a class="minimal-text link" [title]="url" [href]="url" target="_blank">Shipment Label</a><br/>
+        <div class="tracking-container" [title]="dataItem.trackingnum">
+          <ng-container *ngIf="dataItem.trackingnum && dataItem.trackingnum.includes(';;'); else singleTracking">
+            <div class="tracking-text">
+              <span *ngFor="let tn of dataItem.trackingnum.split(';;'); let first = first">
+                <a class="minimal-text" [href]="tn" target="_blank">{{ tn }}</a>
+              </span>
+            </div>
           </ng-container>
-        </ng-container>
-        <ng-template #singleLink>
-          <a class="minimal-text link" [title]="dataItem.trackingurl" [href]="dataItem.trackingurl" target="_blank">Shipment Label</a>
-        </ng-template>
+          <ng-template #singleTracking>
+            <div class="tracking-text">
+              <a class="minimal-text" [href]="dataItem.trackingnum" target="_blank">{{ dataItem.trackingnum }}</a>
+            </div>
+          </ng-template>
+        </div>
       </ng-template>
-    </kendo-grid-column> -->
-
+    </kendo-grid-column>    
     <kendo-grid-column field="trackingurl" title="Tracking URL">
       <ng-template kendoGridCellTemplate let-dataItem>
         <ng-container *ngIf="dataItem.trackingurl && dataItem.trackingurl.trim() !== ''">
