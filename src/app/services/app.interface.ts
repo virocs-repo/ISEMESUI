@@ -378,6 +378,19 @@ export interface CustomerAddress {
   CustomsTermsOfTradeId:number;
   Qty:number|null;
   CommodityOrigin:string;
+  BillToCountry:string;
+  BillToContactPerson:string;
+  BillToCompanyName:string;
+  BillToAddress1:string;
+  BillToAddress2:string;
+  BillToAddress3:string;
+  BillToPhone:string;
+  BillToStateProvince:string;
+  BillToCity:string;
+  BillToZip:string;
+  BillToExtension:string;
+  CustomerBillTOAddressId:number | null;
+  BillCheck:boolean;
 }
 
 export interface CustomerOrder {

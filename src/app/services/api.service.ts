@@ -670,5 +670,12 @@ getShippingAddressData(
     const url = `${API}v1/ise/inventory/ticket/voidTicket?ticketID=${ticketID}`;
     return this.httpClient.get(url);
   }
+  getContactPersonDetails(customerId:number, shippingContactId:number|null) {
+    let url = `${API}v1/ise/inventory/customerorder/getContactPersonDetails?customerId=${customerId}`;
+  if (shippingContactId !== null) {
+    url += `&parentId=${shippingContactId}`;
+  }
+    return this.httpClient.get(url);
+  }
 }
 
