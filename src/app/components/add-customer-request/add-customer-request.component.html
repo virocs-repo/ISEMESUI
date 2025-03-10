@@ -9,7 +9,7 @@
       <kendo-label text="Customer">
          
           <kendo-combobox [data]="customer" [(ngModel)]="customerSelected" [textField]="'CustomerName'"
-              [valueField]="'CustomerID'" placeholder="Select" rounded="large"  [disabled]="!addCustomerMode"></kendo-combobox>
+              [valueField]="'CustomerID'" placeholder="Select" rounded="large"  [disabled]="!addCustomerMode" (valueChange)="onCustomerChange($event)"></kendo-combobox>
       </kendo-label>
 
       <!-- Device Type ComboBox -->
@@ -84,9 +84,11 @@
               <div class="form-field" style="width: 40%;"> 
                 <label for="contactPerson">Contact Person:</label>
                 <kendo-combobox 
-                  id="contactPerson"
-                  name="ContactPerson"
-                  [(ngModel)]="shippingDetailsData.ContactPerson"
+                  [data]="ContactPersonList"
+                  [textField]="'itemText'"
+                  [valueField]="'masterListItemId'"
+                  [(ngModel)]="selectedContactPerson"
+                  (selectionChange)="onContactPersonChange($event)"
                   placeholder="Select" rounded="large" [disabled]="!isEditMode">
                 </kendo-combobox>                
               </div>
@@ -262,7 +264,7 @@
                     </div>
                     <div class="form-field" style="width: 30%;">
                       <label for="ScheduleB">Schedule B:</label>
-                      <input type="number" id="ScheduleB" kendoTextBox name="ScheduleB" [(ngModel)]="ScheduleB"[disabled]="!isEditMode" maxlength="10"/>
+                      <input type="text" id="ScheduleB" kendoTextBox name="ScheduleB" [(ngModel)]="ScheduleB"[disabled]="!isEditMode" maxlength="10" (input)="validateNumericInput($event)"/>
                     </div>
                     <div class="form-field" style="width: 30%;">
                       <label for="LicenseType">License Exception Symbol:</label>
@@ -278,7 +280,7 @@
                   <div class="form-row" style="display: flex; justify-content: space-between; gap: 10px;">
                     <div class="form-field" style="width: 45%;">
                       <label for="CommodityDescription">Commodity Description:</label>
-                      <kendo-textarea [disabled]="!isEditMode"[rows]="3" id="CommodityDescription" name="CommodityDescription" [(ngModel)]="shippingDetailsData.CommodityDescription"style="width: 110%; height: 60px;"></kendo-textarea>
+                      <kendo-textarea [disabled]="!isEditMode"[rows]="3" id="CommodityDescription" name="CommodityDescription" [(ngModel)]="shippingDetailsData.CommodityDescription" style="width: 110%; height: 60px;" [maxlength]="450"></kendo-textarea>
                     </div>
                     <div class="form-field" style="width: 45%;">
                       <label for="ShipAlertEmail">Ship Alert Email:</label>
@@ -288,7 +290,7 @@
                   <div class="form-row" style="display: flex; justify-content: space-between; gap: 10px;">
                     <div class="form-field" style="width: 30%;">
                       <label for="UltimateConsignee">Ultimate Consignee:</label>
-                      <input [disabled]="!isEditMode" type="text" id="UltimateConsignee" kendoTextBox name="UltimateConsignee" [(ngModel)]="shippingDetailsData.UltimateConsignee"/>
+                      <input [disabled]="!isEditMode" type="text" id="UltimateConsignee" kendoTextBox name="UltimateConsignee" [(ngModel)]="shippingDetailsData.UltimateConsignee" maxlength="25"/>
                     </div>
                   </div>
                 </div>                  
@@ -463,7 +465,7 @@
           
               <div class="form-field" style="width: 40%;">
                 <label for="Taxid">Tax Id#:</label>
-                <input [disabled]="!isEditMode"type="text" id="Taxid" kendoTextBox name="Taxid" [(ngModel)]="Courier.Taxid" />
+                <input [disabled]="!isEditMode"type="text" id="Taxid" kendoTextBox name="Taxid" [(ngModel)]="Courier.Taxid" maxlength="15"/>
               </div>
               <div class="form-field" style="width: 40%;">
                 <label for="EmailAddress">E-mail Address:</label>
@@ -510,7 +512,7 @@
           
               <div class="form-field" style="width: 40%;">
                 <label for="ScheduleB">Schedule B:</label>
-                      <input [disabled]="!isEditMode" type="number" id="ScheduleB" kendoTextBox name="ScheduleB" [(ngModel)]="ScheduleB" (input)="validateNumericInput($event)" readonly/>
+                  <input [disabled]="!isEditMode" type="text" id="ScheduleB" kendoTextBox name="ScheduleB" [(ngModel)]="ScheduleB" (input)="validateNumericInput($event)" maxlength="10"/>
               </div>
           
               <div class="form-field" style="width: 40%;">
@@ -529,12 +531,12 @@
             <div style="display: flex; gap: 20px; align-items: flex-start;">
               <div class="form-field" style="width: 40%;">
                 <label for="TrasportationAcct">Bill Trasportation Acct#:<b class="required-label"></b></label>
-                <input [disabled]="!isEditMode"type="text" id="TrasportationAcct" kendoTextBox name="TrasportationAcct" [(ngModel)]="Courier.BillTransportationAcct" (input)="validateNumericInput($event)" maxlength="9"/>
+                <input [disabled]="!isEditMode"type="text" id="TrasportationAcct" kendoTextBox name="TrasportationAcct" [(ngModel)]="Courier.BillTransportationAcct" (input)="validateNumericInput($event)" maxlength="10"/>
               </div>
           
               <div class="form-field" style="width: 40%;">
                 <label for="CustomerReference">Customer Reference:</label>
-                <input [disabled]="!isEditMode"type="text" id="CustomerReference" kendoTextBox name="CustomerReference" [(ngModel)]="Courier.CustomerReference" maxlength="30"/>
+                <input [disabled]="!isEditMode"type="text" id="CustomerReference" kendoTextBox name="CustomerReference" [(ngModel)]="Courier.CustomerReference" maxlength="39"/>
               </div>
           
               <div class="form-field" style="width: 40%;">
@@ -708,7 +710,7 @@
             <div style="display: flex; gap: 20px; align-items: flex-start;">
               <div class="form-field" style="width: 40%;">
                 <label for="ScheduleB">Schedule B Number</label>
-                <input [disabled]="!isEditMode"type="number" id="ScheduleB" kendoTextBox name="ScheduleB" [(ngModel)]="ScheduleB" readonly/>
+                <input [disabled]="!isEditMode"type="text" id="ScheduleB" kendoTextBox name="ScheduleB" [(ngModel)]="ScheduleB" (input)="validateNumericInput($event)" maxlength="10"/>
               </div>
           
               <div class="form-field" style="width: 40%;">
@@ -915,7 +917,7 @@
               </div>
               <div class="form-field" style="width: 40%;">
                 <label for="ShipmentReference">Shipment Reference:</label>
-                <input [disabled]="!isEditMode"type="text" id="ShipmentReference" kendoTextBox name="ShipmentReference" [(ngModel)]="shippingDetailsData.Height" />
+                <input [disabled]="!isEditMode"type="text" id="ShipmentReference" kendoTextBox name="ShipmentReference" [(ngModel)]="shippingDetailsData.Height" maxlength="31"/>
               </div>
             </div>
             <div style="display: flex; gap: 20px; align-items: flex-start;">
@@ -943,6 +945,10 @@
                           <div class="k-font-weight-bold" style="color: maroon;">
                             <label style="margin-right: 20px;">Address Details</label>
                             <button [disabled]="!isEditMode" kendoButton (click)="openDialog()" [svgIcon]="ICON.mapMarkerIcon" [ngStyle]="{ 'color': 'blue' }" style="background-color: #ADD8E6; color: white; width: 50px; height: 30px;"></button>
+                            <input type="checkbox" id="shipadress" class="k-checkbox" style="margin-left: 20px;"
+                              name="shipadress" [(ngModel)]="sameAsShipTo" [disabled]="!isEditMode" (change)="copyShipTo()"
+                              kendoCheckBox />
+                              <label for="shipadress">Same as Ship To Address</label>
                           </div>
                           <kendo-dialog *ngIf="dialogVisible" (close)="closeDialog()">
                             <div class="k-font-weight-bold" style="color: maroon;">
@@ -963,7 +969,7 @@
                                         type="radio" 
                                         name="radio-group" 
                                         [value]="dataItem.addressId"
-                                        [checked]="dataItem.addressId === address.addressId" 
+                                        [checked]="isBillTo ? (billToAddress.billtoaddressId === dataItem.addressId) : (address.addressId === dataItem.addressId)"  
                                         (change)="onRadioChange(dataItem)" 
                                         [disabled]="!dataItem.canSelect" />
                                     </ng-template>
@@ -1065,14 +1071,16 @@
                           <br>
                       <div class="form-row">
                         <div class="form-field" style="width: 100%;">
-                          <label><strong>Ship To</strong></label>
+                          <button kendoButton (click)="toggleShipTo()" style="font-weight: bold;">Ship To</button>
+                          <button kendoButton (click)="toggleBillTo()" style="font-weight: bold; margin-left: 15px;">Bill To</button>
                         </div>
                       </div>
                       <br>
-                      <div class="form-row">
+                      <div *ngIf="!isBillTo">
+                        <div class="form-row" >
                           <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
                             <label for="country">Country:<b class="required-label"></b></label>
-                            <input [disabled]="!isEditMode" type="text" id="country" kendoTextBox name="Country" [(ngModel)]="address.Country" required />
+                            <input [disabled]="!isEditMode" type="text" id="country" kendoTextBox name="Country" [(ngModel)]="address.Country" required readonly />
                           </div>
                           <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
                             <label for="receiversName">Contact Name:<b class="required-label"></b></label>
@@ -1080,21 +1088,21 @@
                           </div>
                           <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
                             <label for="companyName">Company Name:<b class="required-label"></b></label>
-                            <input [disabled]="!isEditMode" type="text" id="companyName" kendoTextBox name="CompanyName" [(ngModel)]="address.CompanyName" required />
+                            <input [disabled]="!isEditMode" type="text" id="companyName" kendoTextBox name="CompanyName" [(ngModel)]="address.CompanyName" required readonly/>
                           </div>
                           <div class="form-field" style="display: inline-block; width: 24%;">
                             <label for="address1">Address 1:<b class="required-label"></b></label>
-                            <input [disabled]="!isEditMode"type="text" id="address1" kendoTextBox name="Address1" [(ngModel)]="address.Address1" required />
+                            <input [disabled]="!isEditMode"type="text" id="address1" kendoTextBox name="Address1" [(ngModel)]="address.Address1" required readonly/>
                           </div>
-                      </div>
-                      <div class="form-row">
+                        </div>
+                        <div class="form-row">
                           <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
                             <label for="address2">Address 2:</label>
-                            <input [disabled]="!isEditMode"type="text" id="address2" kendoTextBox name="Address2" [(ngModel)]="address.Address2" />
+                            <input [disabled]="!isEditMode"type="text" id="address2" kendoTextBox name="Address2" [(ngModel)]="address.Address2" readonly/>
                           </div>
                           <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
                             <label for="address3">Address 3:</label>
-                            <input [disabled]="!isEditMode"type="text" id="address3" kendoTextBox name="Address3" [(ngModel)]="address.Address3" />
+                            <input [disabled]="!isEditMode"type="text" id="address3" kendoTextBox name="Address3" [(ngModel)]="address.Address3" readonly/>
                           </div>
                           <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
                             <label for="telephone">Telephone:<b class="required-label"></b></label>
@@ -1102,7 +1110,7 @@
                           </div>
                           <div class="form-field" style="display: inline-block; width: 24%;">
                             <label for="state">State/Province:<b class="required-label"></b></label>
-                            <input [disabled]="!isEditMode"type="text" id="state" kendoTextBox name="State" [(ngModel)]="address.State" required />
+                            <input [disabled]="!isEditMode"type="text" id="state" kendoTextBox name="State" [(ngModel)]="address.State" required readonly/>
                           </div>
                         </div>
                         <div class="form-row">
@@ -1112,14 +1120,66 @@
                           </div>
                           <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
                             <label for="postCode">Post Code:<b class="required-label"></b></label>
-                            <input [disabled]="!isEditMode"type="text" id="postCode" kendoTextBox name="PostCode" [(ngModel)]="address.PostCode" required />
+                            <input [disabled]="!isEditMode"type="text" id="postCode" kendoTextBox name="PostCode" [(ngModel)]="address.PostCode" required readonly/>
                           </div>
                           <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
                             <label for="ext">Ext:</label>
-                            <input [disabled]="!isEditMode"type="text" id="ext" kendoTextBox name="Ext" [(ngModel)]="address.Ext" />
+                            <input [disabled]="!isEditMode"type="text" id="ext" kendoTextBox name="Ext" [(ngModel)]="address.Ext" readonly/>
                           </div>
-                          <div class="form-field" style="width: 24%;"></div> 
                         </div>
+                      </div>
+                      <div *ngIf="isBillTo">
+                        <div class="form-row" >
+                          <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
+                            <label for="country">Country:</label>
+                            <input [disabled]="!isEditMode" type="text" id="country" kendoTextBox name="Country" [(ngModel)]="billToAddress.Country" readonly/>
+                          </div>
+                          <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
+                            <label for="receiversName">Contact Name:</label>
+                            <input [disabled]="!isEditMode" type="text" id="contactPerson" kendoTextBox name="contactPerson" [(ngModel)]="billToAddress.ContactPerson"  />
+                          </div>
+                          <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
+                            <label for="companyName">Company Name:</label>
+                            <input [disabled]="!isEditMode" type="text" id="companyName" kendoTextBox name="CompanyName" [(ngModel)]="billToAddress.CompanyName" readonly/>
+                          </div>
+                          <div class="form-field" style="display: inline-block; width: 24%;">
+                            <label for="address1">Address 1:</label>
+                            <input [disabled]="!isEditMode"type="text" id="address1" kendoTextBox name="Address1" [(ngModel)]="billToAddress.Address1" readonly/>
+                          </div>
+                        </div>
+                        <div class="form-row">
+                          <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
+                            <label for="address2">Address 2:</label>
+                            <input [disabled]="!isEditMode"type="text" id="address2" kendoTextBox name="Address2" [(ngModel)]="billToAddress.Address2" readonly/>
+                          </div>
+                          <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
+                            <label for="address3">Address 3:</label>
+                            <input [disabled]="!isEditMode"type="text" id="address3" kendoTextBox name="Address3" [(ngModel)]="billToAddress.Address3" readonly/>
+                          </div>
+                          <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
+                            <label for="telephone">Telephone:</label>
+                            <input [disabled]="!isEditMode"type="text" id="telephone" kendoTextBox name="Telephone" [(ngModel)]="billToAddress.TelePhone"/>
+                          </div>
+                          <div class="form-field" style="display: inline-block; width: 24%;">
+                            <label for="state">State/Province:</label>
+                            <input [disabled]="!isEditMode"type="text" id="state" kendoTextBox name="State" [(ngModel)]="billToAddress.State" readonly/>
+                          </div>
+                        </div>
+                        <div class="form-row">
+                          <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
+                            <label for="city">City:</label>
+                            <input [disabled]="!isEditMode"type="text" id="city" kendoTextBox name="City" [(ngModel)]="billToAddress.City"/>
+                          </div>
+                          <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
+                            <label for="postCode">Post Code:</label>
+                            <input [disabled]="!isEditMode"type="text" id="postCode" kendoTextBox name="PostCode" [(ngModel)]="billToAddress.PostCode" readonly/>
+                          </div>
+                          <div class="form-field" style="display: inline-block; width: 24%; margin-right: 10px;">
+                            <label for="ext">Ext:</label>
+                            <input [disabled]="!isEditMode"type="text" id="ext" kendoTextBox name="Ext" [(ngModel)]="billToAddress.Ext" readonly/>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </kendo-card-body>
                 </kendo-card>

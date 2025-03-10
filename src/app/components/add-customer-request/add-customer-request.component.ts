@@ -32,6 +32,7 @@ export class AddCustomerRequestComponent implements OnInit {
   lotNumbers: string[] = [];
 
   selectedShippingMethod: any = null;
+  selectedContactPerson: any = null;
   selectedCOO: any = null;
   selectedCIFrom: any = null;
   selectedLicense: any = null;
@@ -45,6 +46,9 @@ export class AddCustomerRequestComponent implements OnInit {
   selectedCustomeTT: any = null;
   selectedCommodityOrigin: any = null;
   shippingMethods: any[] = [];
+  ContactPersonList: any[] = [];
+  MasterContactPersonList: any[] = [];
+  SelectedContactPersonDetails: any;
   COOList: any[] = [];
   CIFromList: any[] = []; 
   LicenseList: any[] = [];
@@ -68,7 +72,8 @@ export class AddCustomerRequestComponent implements OnInit {
   format: string = 'yyyy-MM-dd';
   ExpectedPickUpDate:Date | null = null;
   ShipDate:Date | null = null;
-
+  AwbOrTracking: string = '';
+  MasterCourierList:any[] = []; 
 
   allLotNumbers: string[] = []; // F
   // below code can be changed/removed
@@ -174,11 +179,24 @@ export class AddCustomerRequestComponent implements OnInit {
     PurchaseNumber:'',
     ScheduleBUnits1:null as number | null,
     Qty:null as number | null,
-
   }
-  
+  billToAddress = {
+    billtoaddressId:0,
+    Country: '',
+    ContactPerson: '',
+    CompanyName: '',
+    Address1: '',
+    Address2: '',
+    Address3: '',
+    TelePhone: '',
+    State: '',
+    City: '',
+    PostCode: '',
+    Ext: ''
+  };  
 
   async ngOnInit(): Promise<void> {
+    debugger;
     this.formData.OQA = false;   // Initialize OQA as false
     this.formData.Bake = false;  // Initialize Bake as false
     this.formData.PandL = false; // Initialize P&L as false
@@ -197,6 +215,9 @@ export class AddCustomerRequestComponent implements OnInit {
     if (!this.addCustomerMode && this.customerOrd && this.customerOrd.length > 0) {
       this.gridDataResult.data = this.customerOrd;
       this.formData=this.formOrdData;
+      this.customerSelected={}as Customer;
+      this.customerSelected.CustomerID = this.formOrdData.CustomerId;
+          
       this.initializeSelectedRows();
       if (this.deliveryInfo) {
         this.ExpectedPickUpDate = this.deliveryInfo[0]?.expectedTime? new Date(new Date(this.deliveryInfo[0].expectedTime.split('T')[0]).getTime() + new Date().getTimezoneOffset() * 60000) : null;
@@ -258,6 +279,7 @@ export class AddCustomerRequestComponent implements OnInit {
         this.Quantity = this.deliveryInfo[0]?.units;
         this.TotalValue=this.deliveryInfo[0]?.totalValue;
         this.UnitValue=this.deliveryInfo[0]?.unitValue;
+        this.sameAsShipTo=this.deliveryInfo[0]?.billCheck || false,
         this.shippingDetailsData = {
           Email: this.deliveryInfo[0]?.email || '',
           ShipAlertEmail: this.deliveryInfo[0]?.shipAlertEmail || '',
@@ -350,20 +372,149 @@ export class AddCustomerRequestComponent implements OnInit {
           ScheduleBUnits1: this.deliveryInfo[0]?.scheduleBUnits1 || 0,
           Qty: this.deliveryInfo[0]?.qty || 0
         };
+        this.billToAddress = {
+          billtoaddressId: this.deliveryInfo[0]?.customerBillTOAddressId || 0,
+          Country: this.deliveryInfo[0]?.billToCountry || '',
+          CompanyName: this.deliveryInfo[0]?.billToCompanyName || '',
+          Address1: this.deliveryInfo[0]?.billToAddress1 || '',
+          Address2: this.deliveryInfo[0]?.billToAddress2 || '',
+          Address3: this.deliveryInfo[0]?.billToAddress3 || '',
+          TelePhone: this.deliveryInfo[0]?.billToPhone || '',
+          State: this.deliveryInfo[0]?.billToStateProvince || '',
+          City: this.deliveryInfo[0]?.billToCity || '',
+          PostCode: this.deliveryInfo[0]?.billToPostCode || '',
+          Ext: this.deliveryInfo[0]?.billToExt || '',
+          ContactPerson: this.deliveryInfo[0]?.billToContactPerson || ''
+        };
             
       }
       
-     
     }
 
     this.getLotNumbers();
     this.getDestinationListItems('Destination',null);
     this.getCourierNameListItems('Courier',null);
     this.getCourierCIFromListItems('CIFrom',null);
-    
-   
   }
-  
+  onCustomerChange(selectedCustomer: any) {
+    debugger;
+    if (selectedCustomer && selectedCustomer.CustomerID) {
+      this.customerSelected = selectedCustomer;
+      this.getContactPersonDetails(this.customerSelected?.CustomerID ?? 0, null);
+    } else {
+      this.ContactPersonList = []; 
+    }
+  }
+  async getContactPersonDetails(customerId: number, shippingContactId: number | null) {
+    debugger;
+    try {
+      const response: any = await this.apiService.getContactPersonDetails(customerId, shippingContactId).toPromise();
+      if (Array.isArray(response)) {
+        this.MasterContactPersonList = response
+        this.ContactPersonList = response
+          .filter(item => 
+            item.shippingContactName) 
+          .map(item => ({
+            masterListItemId: item.shippingContactId,
+            itemText: item.shippingContactName
+          }));
+      } else {
+        console.error("Unexpected response format:", response);
+        this.ContactPersonList = [];
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+      this.ContactPersonList = [];
+    }
+  }
+   onContactPersonChange(selectedContactperson: any) {
+    debugger;
+    if (selectedContactperson&&selectedContactperson.masterListItemId) {
+      this.SelectedContactPersonDetails = this.MasterContactPersonList.find(item => item.shippingContactId == selectedContactperson.masterListItemId)
+      if (this.SelectedContactPersonDetails) {
+        this.selectedCourier = null;
+  this.selectedDestination = null;
+          this.address.Address1= this.SelectedContactPersonDetails.address1 || '',
+          this.address.Address2= this.SelectedContactPersonDetails.address2 || '',
+          this.address.Address3= this.SelectedContactPersonDetails.address3 || '',
+          this.address.addressId=this.SelectedContactPersonDetails.addressId || 0,
+          this.AwbOrTracking= this.SelectedContactPersonDetails.awbOrTracking || '',
+          this.Courier.Duties= this.SelectedContactPersonDetails.billDutyTaxFeesAcct|| ''
+          if (this.SelectedContactPersonDetails.billDutyTaxFeesTo) {
+            this.selectedBillDutyTaxFeesTo = this.billTransportList.find(
+              a => a.itemText === this.SelectedContactPersonDetails.billDutyTaxFeesTo
+            );
+          }          
+          this.Courier.BillTransportationAcct= this.SelectedContactPersonDetails.billTransportationAcct || ''
+          if (this.SelectedContactPersonDetails.billTransportationTo) {
+            this.selectedBillTransport = this.billTransportList.find(
+              a => a.itemText === this.SelectedContactPersonDetails.billTransportationTo
+            );
+          }
+          this.address.City= this.SelectedContactPersonDetails.city || '',
+          this.address.Comments= this.SelectedContactPersonDetails.comments || '',
+          this.shippingDetailsData.CommodityDescription= this.SelectedContactPersonDetails.commodityDescription || '',
+          this.address.CompanyName= this.SelectedContactPersonDetails.companyName || '',
+          this.shippingDetailsData.ContactPerson= this.SelectedContactPersonDetails.contactPerson || '',
+          this.address.Country= this.SelectedContactPersonDetails.country || ''
+          if ( this.SelectedContactPersonDetails.destinationId>0) {
+            this.selectedDestination= this.destinationList.find(a=> a.masterListItemId==this.SelectedContactPersonDetails.destinationId)
+          }
+          if ( this.SelectedContactPersonDetails.courierId>0) {
+            if (this.selectedDestination?.itemText === 'International') {
+              const courierListt = this.MasterCourierList.filter((item: { parent: number; }) => item.parent === 2);
+              const selectOption = { itemText: 'Select', masterListItemId: null };
+              this.courierList = [selectOption, ...courierListt];
+            } else if (this.selectedDestination?.itemText === 'Domestic') {
+              const courierListt = this.MasterCourierList.filter((item: { parent: number; }) => item.parent === 1);
+              const selectOption = { itemText: 'Select', masterListItemId: null };
+              this.courierList = [selectOption, ...courierListt];
+            }
+            this.selectedCourier= this.MasterCourierList.find(a=> a.masterListItemId==this.SelectedContactPersonDetails.courierId)
+          }
+          if ( this.SelectedContactPersonDetails.customerId>0) {
+            this.customerSelected= this.customer.find(a=> a.CustomerID==this.SelectedContactPersonDetails.customerId)
+          }
+          if ( this.SelectedContactPersonDetails.customsTermsOfTradeId>0) {
+            this.selectedCustomeTT= this.CustomeTTList.find(a=> a.masterListItemId==this.SelectedContactPersonDetails.customsTermsOfTradeId)
+          }
+         
+          // email: this.SelectedContactPersonDetails.dropOffCity || ''
+          this.shippingDetailsData.Email= this.SelectedContactPersonDetails.email || ''
+          // email: this.SelectedContactPersonDetails.expectedTime || ''
+          this.address.Ext= this.SelectedContactPersonDetails.extension || ''
+          this.shippingDetailsData.Forwarder= this.SelectedContactPersonDetails.isForwarder || ''
+          if (this.SelectedContactPersonDetails.licenseType) {
+            this.selectedLicense = this.LicenseList.find(
+              a => a.itemText === this.SelectedContactPersonDetails.licenseType
+            );
+          }
+          this.address.Phone= this.SelectedContactPersonDetails.phone || ''
+          // email: this.SelectedContactPersonDetails.sendToCountry || ''
+          if (this.SelectedContactPersonDetails.serviceType) {
+            this.selectedServiceType = this.serviceTypeList.find(
+              a => a.itemText === this.SelectedContactPersonDetails.serviceType
+            );
+          }
+          
+          this.shippingDetailsData.ShipAlertEmail= this.SelectedContactPersonDetails.shipAlertEmail || ''
+          // email: this.SelectedContactPersonDetails.shipDate || ''
+          // email: this.SelectedContactPersonDetails.shippingContactId || ''
+          // email: this.SelectedContactPersonDetails.shippingContactName || ''
+          if ( this.SelectedContactPersonDetails.shippingMethodId>0) {
+            this.selectedShippingMethod= this.shippingMethods.find(a=> a.masterListItemId==this.SelectedContactPersonDetails.shippingMethodId)
+          }
+          this.address.State= this.SelectedContactPersonDetails.stateProvince || ''
+          this.UnitValue= this.SelectedContactPersonDetails.unitValue || ''
+          this.address.PostCode= this.SelectedContactPersonDetails.zip|| ''
+      }
+    }
+    else{
+      this.SelectedContactPersonDetails = null;
+      return;
+    }
+  }  
+
   calculateTotalValue(): void {
     this.TotalValue = parseFloat(((this.Quantity || 0) * (this.UnitValue || 0)).toFixed(1));
   }
@@ -525,6 +676,50 @@ onShippingMethodChange(): void {
     }
     return times;
   }
+  sameAsShipTo: boolean = false;
+  isBillTo: boolean = false;
+ toggleBillTo(): void {
+   this.isBillTo = true;
+ }
+ toggleShipTo(): void {//need this falg to load address table
+  this.isBillTo = false;
+ }
+
+ copyShipTo(): void {
+  if (this.sameAsShipTo) {
+    this.billToAddress = {
+      ...this.billToAddress,
+      billtoaddressId: this.address.addressId,
+      Country: this.address.Country,
+      ContactPerson: this.address.contactPerson,
+      CompanyName: this.address.CompanyName,
+      Address1: this.address.Address1,
+      Address2: this.address.Address2,
+      Address3: this.address.Address3,
+      TelePhone: this.address.Phone,
+      State: this.address.State,
+      City: this.address.City,
+      PostCode: this.address.PostCode,
+      Ext: this.address.Ext,
+    };
+  } else {
+    this.billToAddress = {
+      billtoaddressId:0,
+      Country: '',
+      ContactPerson: '',
+      CompanyName: '',
+      Address1: '',
+      Address2: '',
+      Address3: '',
+      TelePhone: '',
+      State: '',
+      City: '',
+      PostCode: '',
+      Ext: ''
+    }; 
+  }
+}
+
   openDialog() {
     var a = this.customerSelected?.CustomerID || null;
     if (a === null) {
@@ -532,7 +727,7 @@ onShippingMethodChange(): void {
       this.dialogVisible = false;
       return;
     } 
-    let isDomestic = false;
+    var isDomestic = false;
     let courierId =  null;  
    
     if (this.selectedShippingMethod?.masterListItemId == 1446) {
@@ -544,7 +739,7 @@ onShippingMethodChange(): void {
         return;
       }
     }
-    this.loadShippingAddresses(a, false, null, courierId, isDomestic);
+    this.loadShippingAddresses(a, this.isBillTo, null, courierId, isDomestic);
         this.dialogVisible = true;
   }
   
@@ -555,10 +750,17 @@ onShippingMethodChange(): void {
     this.apiService.getShippingAddressData(customerId, isBilling, vendorId, courierId, isDomestic).subscribe({
       next: (data: any[]) => {
         this.addressDataResult.data = data;
-        if (this.address && this.address.addressId) {
-          const selectedAddress = this.addressDataResult.data.find((address: any) => address.addressId === this.address.addressId);
+        let selectedAddressId = isBilling ? this.billToAddress?.billtoaddressId : this.address?.addressId;
+
+        if (selectedAddressId) {
+          const selectedAddress = this.addressDataResult.data.find((address: any) => address.addressId === selectedAddressId);
           if (selectedAddress) {
-            this.onRadioChange(selectedAddress);
+            // Store selection separately for Ship To & Bill To
+            if (isBilling) {
+              this.tempBillToSelectedAddress = selectedAddress;
+            } else {
+              this.tempShipToSelectedAddress = selectedAddress;
+            }
           }
         }
       },
@@ -575,41 +777,75 @@ onShippingMethodChange(): void {
     }
   }
   
-  tempSelectedAddress: any = null;  
+  tempShipToSelectedAddress: any = null;
+  tempBillToSelectedAddress: any = null;  
   onRadioChange(dataItem: any) {
-    this.tempSelectedAddress = dataItem;
+    if (this.isBillTo) {
+      this.tempBillToSelectedAddress = dataItem;
+    } else {
+      this.tempShipToSelectedAddress = dataItem;
+    }
   }
+  
 
  closeDialog() {
   this.dialogVisible = false;
  }
  onOk() {
-  if (this.tempSelectedAddress) {
-    this.address = {
-      ...this.address,
-      addressId: this.tempSelectedAddress.addressId,
-      Country: this.tempSelectedAddress.country,
-      contactPerson: this.tempSelectedAddress.contactPerson,
-      CompanyName: this.tempSelectedAddress.companyName,
-      Address1: this.tempSelectedAddress.address1,
-      Address2: this.tempSelectedAddress.address2,
-      Address3: this.tempSelectedAddress.address3,
-      Phone: this.tempSelectedAddress.phone,
-      State: this.tempSelectedAddress.state,
-      City: this.tempSelectedAddress.city,
-      PostCode: this.tempSelectedAddress.zip,
-      Ext: this.tempSelectedAddress.extension,
-      Comments: '',   
-      SpecialInstructions: '',   
-      PackingComments: '',   
-      InvoiceComments: ''
-    };
-    this.shippingDetailsData.ContactPerson = this.tempSelectedAddress.contactPerson;
-    this.closeDialog(); 
+  if (this.isBillTo) {
+    // Check if a Bill To address has been selected
+    if (this.tempBillToSelectedAddress) {
+      this.billToAddress = {
+        billtoaddressId: this.tempBillToSelectedAddress.addressId,
+        Country: this.tempBillToSelectedAddress.country,
+        ContactPerson: this.tempBillToSelectedAddress.contactPerson,
+        CompanyName: this.tempBillToSelectedAddress.companyName,
+        Address1: this.tempBillToSelectedAddress.address1,
+        Address2: this.tempBillToSelectedAddress.address2,
+        Address3: this.tempBillToSelectedAddress.address3,
+        TelePhone: this.tempBillToSelectedAddress.phone,
+        State: this.tempBillToSelectedAddress.state,
+        City: this.tempBillToSelectedAddress.city,
+        PostCode: this.tempBillToSelectedAddress.zip,
+        Ext: this.tempBillToSelectedAddress.extension
+      };
+    } else {
+      this.appService.errorMessage('Please select at least one Bill To address');
+      return;
+    }
   } else {
-    this.appService.errorMessage('Please select at least one address');
-    return;
+    // Check if a Ship To address has been selected
+    if (this.tempShipToSelectedAddress) {
+      this.address = {
+        addressId: this.tempShipToSelectedAddress.addressId,
+        ReceiversName: '',
+        Country: this.tempShipToSelectedAddress.country,
+        contactPerson: this.tempShipToSelectedAddress.contactPerson,
+        CompanyName: this.tempShipToSelectedAddress.companyName,
+        Address1: this.tempShipToSelectedAddress.address1,
+        Address2: this.tempShipToSelectedAddress.address2,
+        Address3: this.tempShipToSelectedAddress.address3,
+        Phone: this.tempShipToSelectedAddress.phone,
+        State: this.tempShipToSelectedAddress.state,
+        City: this.tempShipToSelectedAddress.city,
+        PostCode: this.tempShipToSelectedAddress.zip,
+        Ext: this.tempShipToSelectedAddress.extension,
+        Comments: '',   
+        SpecialInstructions: '',   
+        PackingComments: '',   
+        InvoiceComments: ''
+      };
+
+      // Update shipping details contact person
+      this.shippingDetailsData.ContactPerson = this.tempShipToSelectedAddress.contactPerson;
+    } else {
+      this.appService.errorMessage('Please select at least one Ship To address');
+      return;
+    }
   }
+
+  // Close the dialog after successful selection
+  this.closeDialog();
 }
 
   onCancel() {
@@ -702,7 +938,8 @@ onShippingMethodChange(): void {
           this.courierList = [{ itemText: 'Select', masterListItemId: null }];
         }
         else {
-          this.courierList = [{ itemText: 'Select', masterListItemId: null }];
+            this.courierList = [{ itemText: 'Select', masterListItemId: null }];
+            this.MasterCourierList=data;
         }
       },
       error: (error: any) => {
@@ -723,8 +960,9 @@ onShippingMethodChange(): void {
     if (event) {
       this.getCourierCIFromListItems('CIFrom', null);
       this.getCourierNameListItems('Courier', null);
-      this.selectedCourier = null;
+      // this.selectedCourier = null;
     } else {
+
       this.CourierCIFromList = [{ itemText: 'N/A', masterListItemId: null }];
       this.courierList = [{ itemText: 'Select', masterListItemId: null }];
       this.selectedCourier = null;
@@ -988,6 +1226,9 @@ onShippingMethodChange(): void {
       return;
     } 
     if (this.selectedShippingMethod?.masterListItemId === 1448) {
+      if (!this.validateEmailOnSubmit()) {
+        return; 
+      }
       if (!this.validateShipAlertEmail()) {
         return; 
       }
@@ -1107,6 +1348,9 @@ onShippingMethodChange(): void {
         }
       }
       if (this.selectedCourier?.masterListItemId == 6) {
+        if (!this.validateUnitValue()) {
+          return; 
+        }
         if (!this.validateEmailOnSubmit()) {
           return; 
         }
@@ -1305,7 +1549,20 @@ onShippingMethodChange(): void {
       ShipmentReference:this.shippingDetailsData.Height,
       CustomsTermsOfTradeId:this.selectedCustomeTT?.masterListItemId, 
       Qty:this.Courier.Qty,
-      CommodityOrigin:this.selectedCommodityOrigin?.itemText
+      CommodityOrigin:this.selectedCommodityOrigin?.itemText,
+      BillToCountry:this.billToAddress.Country,
+      BillToContactPerson:this.billToAddress.ContactPerson,
+      BillToCompanyName:this.billToAddress.CompanyName,
+      BillToAddress1:this.billToAddress.Address1,
+      BillToAddress2:this.billToAddress.Address2,
+      BillToAddress3:this.billToAddress.Address3,
+      BillToPhone:this.billToAddress.TelePhone,
+      BillToStateProvince:this.billToAddress.State,
+      BillToCity:this.billToAddress.City,
+      BillToZip:this.billToAddress.PostCode,
+      BillToExtension:this.billToAddress.Ext,
+      CustomerBillTOAddressId:this.billToAddress.billtoaddressId,
+      BillCheck:this.sameAsShipTo,
     };
     const customerOrderID = (this.customerOrd && this.customerOrd.length > 0) 
     ? (this.customerOrd.find((order: any) => order.customerOrderID !== null && order.customerOrderID !== undefined)?.customerOrderID ?? null)
