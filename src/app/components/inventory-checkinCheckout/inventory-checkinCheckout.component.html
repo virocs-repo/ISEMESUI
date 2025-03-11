@@ -102,5 +102,5 @@
       <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
           (click)="closeDialog()"></button>
   </div>
-  <app-add-check-inout [isReadOnly]="viewMode"  [selectedRowData]="checkinoutData" (cancel)="closeDialog()"></app-add-check-inout>
+  <app-add-check-inout [isReadOnly]="viewMode"  [selectedRowData]="checkinoutData" (statusUpdated)="onRecordUpdated($event)" (cancel)="closeDialog()"></app-add-check-inout>
 </kendo-dialog>
