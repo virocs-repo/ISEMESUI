@@ -58,7 +58,9 @@ export class InventoryHoldComponent implements OnInit {
   }
 
   loadGridData(): void {
-    this.apiService.getAllSearchHold().subscribe({
+    const from_date = this.fromDate ?? undefined;
+    const to_date = this.toDate ?? undefined;
+    this.apiService.getAllSearchHoldBasedOnDate(from_date, to_date).subscribe({
       next: (data: any) => {
         this.originalData = data;
         this.originalData.forEach(obj => {
