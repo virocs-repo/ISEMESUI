@@ -393,6 +393,17 @@ export class ApiService {
   getAllSearchHold() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getAllSearchHold`);
   }
+  getAllSearchHoldBasedOnDate(fromDate?: Date | null, toDate?: Date | null)
+  {
+    let params = new HttpParams();
+    if (fromDate != null) {
+      params = params.set('fromDate', this.formatDate(fromDate));
+    }
+    if (toDate != null) {
+      params = params.set('toDate', this.formatDate(toDate));
+    }
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryHold/getAllSearchHold`, { params });
+  }
   getHoldType(inventoryId: number): Observable<any[]> {
     return this.httpClient.get<any[]>(`${API}v1/ise/inventory/inventoryHold/getHoldType?inventoryId=${inventoryId}`);
   }
