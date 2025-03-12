@@ -87,6 +87,25 @@ export class InventoryHoldComponent implements OnInit {
   }
 
   onSearch(): void {
+    // Pass Date objects directly
+    const from_date = this.fromDate ?? undefined;
+    const to_date = this.toDate ?? undefined;
+   
+    this.apiService.getAllSearchHoldBasedOnDate(from_date, to_date).subscribe({
+        next: (v: any) => {
+   /*          this.gridDataResult.data = v;
+            this.gridDataResult.total = v.length; */
+            this.originalData = v;
+            this.pageData();
+        },
+        error: (error: any) => {
+            console.error('Error fetching CombinationLots', error);
+        }
+    });
+   
+     }
+
+  onSearchMaster(): void {
     this.skip = 0;
     this.pageData();
   }
