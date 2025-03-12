@@ -136,7 +136,7 @@ export class AddHoldComponent implements OnInit {
   
 
   save(): void {
-    if (!this.holdComments || !this.selectedHoldType ) {
+    if (!this.holdComments) {
       this.appService.errorMessage('Please fill in the required fields.');
       return;
     }
@@ -162,7 +162,10 @@ export class AddHoldComponent implements OnInit {
       InventoryId: this.inventoryId,
       Reason: this.reason,
       HoldComments: this.holdComments,
-      HoldType: this.selectedHoldType.holdType,
+      HoldType: this.mode === 'edit' || this.mode === 'view' 
+  ? this.selectedGridData[0]?.holdType 
+  : this.selectedHoldType?.holdType || '',
+
       GroupName: groupName,
       HoldCodeId: holdCodeId,
       OffHoldComments: this.isHold ? null : this.offHoldComments,

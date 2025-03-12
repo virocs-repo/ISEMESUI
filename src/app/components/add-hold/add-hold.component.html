@@ -43,8 +43,9 @@
 
                 <div class="k-d-flex k-flex-wrap k-gap-3">
                   <label class="k-label" style="min-width: 150px;">Hold Type:<b class="required-label"></b></label>
+                  <kendo-textbox class="textbox" *ngIf="mode === 'edit'" [(ngModel)]="this.selectedGridData[0].holdType" [disabled]="isReadOnly" style="width: 250px;"></kendo-textbox>
                   <kendo-textbox class="textbox" *ngIf="mode === 'view'" [(ngModel)]="this.selectedGridData[0].holdType" [disabled]="isReadOnly" style="width: 250px;"></kendo-textbox>
-                  <div *ngIf="mode !== 'view'">
+                  <div *ngIf="mode !== 'edit' && mode !== 'view'">
                     <kendo-combobox
                       class="combobox"
                       [(ngModel)]="selectedHoldType"
