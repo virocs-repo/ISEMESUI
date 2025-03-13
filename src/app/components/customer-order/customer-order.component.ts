@@ -206,6 +206,7 @@ this.formOrdData = {
   
   Active: dataItem.active
 };
+
 this.apiService.getShipmentdeliveryInfo(dataItem.deliveryInfoId).subscribe({
   next: (deliveryInfo:any) => {
     this.deliveryInfo = deliveryInfo;
@@ -262,6 +263,7 @@ switch (e.item.text) {
         Active: false,
         RecordStatus: 'D',
         CustomerOrderDetails: [],
+        IsHoldShip:false,
         CustomerAddress:[]
       };
    

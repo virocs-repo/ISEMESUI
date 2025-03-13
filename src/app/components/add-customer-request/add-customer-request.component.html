@@ -104,13 +104,23 @@
                   placeholder="Select" rounded="large" [disabled]="!isEditMode">
                 </kendo-combobox>
               </div>
-              
+              <div class="form-field" style="width: 40%;">
+                <label for="shippingMethod">Reject Location:</label>
+                <kendo-combobox 
+                  [data]="RejectLocationlist"
+                  [textField]="'itemText'"
+                  [valueField]="'masterListItemId'"
+                  [(ngModel)]="selectedRejectLocation"
+                  placeholder="Select" rounded="large" [disabled]="!isEditMode">
+                </kendo-combobox>
+              </div>
               <div class="form-field" style="width: 40%;">
                 <label for="HoldShip">Hold Ship: </label>
                 <input type="checkbox" id="HoldShip" class="k-checkbox"
                        name="HoldShip" [(ngModel)]="shippingDetailsData.HoldShip" [disabled]="!isEditMode"
                        kendoCheckBox />
               </div>
+              
           </div>
           <br>
           <div *ngIf="selectedShippingMethod?.masterListItemId== 1447">
@@ -324,7 +334,7 @@
               </div>
           
               <div class="form-field" style="width: 40%;">
-                <label for="ciForm">CI Form:<b class="required-label" *ngIf="selectedDestination?.masterListItemId === 2"></b></label>
+                <label for="ciForm">CI From:<b class="required-label" *ngIf="selectedDestination?.masterListItemId === 2"></b></label>
                 <kendo-combobox 
                   [data]="CourierCIFromList"
                   [textField]="'itemText'"
@@ -394,13 +404,13 @@
                 <label for="PackageDimension">Package Dimensions:</label>
                 <input [disabled]="!isEditMode" type="text" id="PackageDimension" kendoTextBox name="PackageDimension" [(ngModel)]="Courier.PackageDimension" maxlength="9"/>
               </div>
-          
-              <div class="form-field" style="width: 40%;">
-                <label for="Residential">Residential:</label>
+              <div class="form-field" style="width: 40%; display: flex; flex-direction: column;">
+                <label for="Residential" style="margin-bottom: 5px;">Residential:</label>
                 <input type="checkbox" id="Residential" class="k-checkbox"
-                       name="Residential" [(ngModel)]="Courier.Residential" [disabled]="!isEditMode"
-                       kendoCheckBox />
-              </div>
+                       name="Residential" [(ngModel)]="Courier.Residential"
+                       [disabled]="!isEditMode" kendoCheckBox
+                       style="transform: scale(1.5);" />
+              </div>              
             </div>
             <div style="display: flex; gap: 20px; align-items: flex-start;">
               <div class="form-field" style="width: 40%;">
@@ -481,12 +491,13 @@
                 <label for="PackageType">Package Type:</label>
                 <input [disabled]="!isEditMode"type="text" id="PackageType" kendoTextBox name="PackageType" [(ngModel)]="Courier.PackageType" />
               </div>
-              <div class="form-field" style="width: 40%;">
-                <label for="Residential">Residential:</label>
+              <div class="form-field" style="width: 40%; display: flex; flex-direction: column;">
+                <label for="Residential" style="margin-bottom: 5px;">Residential:</label>
                 <input type="checkbox" id="Residential" class="k-checkbox"
-                       name="Residential" [(ngModel)]="Courier.Residential" [disabled]="!isEditMode"
-                       kendoCheckBox />
-              </div>
+                       name="Residential" [(ngModel)]="Courier.Residential"
+                       [disabled]="!isEditMode" kendoCheckBox
+                       style="transform: scale(1.5);" />
+              </div> 
             </div>
             <div style="display: flex; gap: 20px; align-items: flex-start;">
               <div class="form-field" style="width: 40%;">
@@ -612,7 +623,7 @@
             <div style="display: flex; gap: 20px; align-items: flex-start;">
               <div class="form-field" style="width: 40%;">
                 <label for="CIAdditionalInfo">CI Additional Info:</label>
-                <textarea [disabled]="!isEditMode"id="CIAdditionalInfo" kendoTextArea name="CIAdditionalInfo" [(ngModel)]="shippingDetailsData.CommodityDescription"></textarea>
+                <textarea [disabled]="!isEditMode"id="CIAdditionalInfo" kendoTextArea name="CIAdditionalInfo" [(ngModel)]="shippingDetailsData.CommodityDescription" maxlength="450"></textarea>
               </div>
               <div class="form-field" style="width: 40%;">
                 <label for="ShipAlertEmail">Ship Alert Email::</label>
@@ -733,12 +744,13 @@
                 <label for="Taxid">Tax Id#:</label>
                 <input [disabled]="!isEditMode"type="text" id="Taxid" kendoTextBox name="Taxid" [(ngModel)]="Courier.Taxid" maxlength="15"/>
               </div>
-              <div class="form-field" style="width: 40%;">
-                <label for="Residential">Residential:</label>
+              <div class="form-field" style="width: 40%; display: flex; flex-direction: column;">
+                <label for="Residential" style="margin-bottom: 5px;">Residential:</label>
                 <input type="checkbox" id="Residential" class="k-checkbox"
-                       name="Residential" [(ngModel)]="Courier.Residential" [disabled]="!isEditMode"
-                       kendoCheckBox />
-              </div>
+                       name="Residential" [(ngModel)]="Courier.Residential"
+                       [disabled]="!isEditMode" kendoCheckBox
+                       style="transform: scale(1.5);" />
+              </div> 
             </div>
             <div style="display: flex; gap: 20px; align-items: flex-start;">
               <div class="form-field" style="width: 40%;">

@@ -32,6 +32,7 @@ export class AddCustomerRequestComponent implements OnInit {
   lotNumbers: string[] = [];
 
   selectedShippingMethod: any = null;
+  selectedRejectLocation: any = null;
   selectedContactPerson: any = null;
   selectedCOO: any = null;
   selectedCIFrom: any = null;
@@ -47,6 +48,7 @@ export class AddCustomerRequestComponent implements OnInit {
   selectedCommodityOrigin: any = null;
   shippingMethods: any[] = [];
   ContactPersonList: any[] = [];
+  RejectLocationlist: any[] = [];
   MasterContactPersonList: any[] = [];
   SelectedContactPersonDetails: any;
   COOList: any[] = [];
@@ -119,7 +121,7 @@ export class AddCustomerRequestComponent implements OnInit {
     AccountNumber:'',
     Height:'',
     TaxId:'',
-    HoldShip:'',
+    HoldShip:false,
     Forwarder:false,
     Phone:'',
     LicenseException:'',
@@ -196,7 +198,6 @@ export class AddCustomerRequestComponent implements OnInit {
   };  
 
   async ngOnInit(): Promise<void> {
-    debugger;
     this.formData.OQA = false;   // Initialize OQA as false
     this.formData.Bake = false;  // Initialize Bake as false
     this.formData.PandL = false; // Initialize P&L as false
@@ -210,11 +211,14 @@ export class AddCustomerRequestComponent implements OnInit {
     await this.getbillTransportListItems('BillTransportationTo',null);
     await this.getCustomeTTListItems('CustomsTermsofTrade',null);
     await this.getserviceTypeListItems('ServiceType',null);
+    await this,this.getRejectLocationlistItems('RejectLocation',null);
 
     this.initializeColumns();
     if (!this.addCustomerMode && this.customerOrd && this.customerOrd.length > 0) {
       this.gridDataResult.data = this.customerOrd;
+      // console.log("customerOrd",this.customerOrd)
       this.formData=this.formOrdData;
+      // console.log("formOrdData",this.formOrdData)
       this.customerSelected={}as Customer;
       this.customerSelected.CustomerID = this.formOrdData.CustomerId;
           
@@ -395,9 +399,13 @@ export class AddCustomerRequestComponent implements OnInit {
     this.getDestinationListItems('Destination',null);
     this.getCourierNameListItems('Courier',null);
     this.getCourierCIFromListItems('CIFrom',null);
+     this.getContactPersonDetails(this.customerSelected?.CustomerID ?? 0, null);
   }
   onCustomerChange(selectedCustomer: any) {
-    debugger;
+    this.selectedShippingMethod=null;
+    this.selectedCourier = null;
+  this.selectedDestination = null;
+  this.selectedContactPerson=null;
     if (selectedCustomer && selectedCustomer.CustomerID) {
       this.customerSelected = selectedCustomer;
       this.getContactPersonDetails(this.customerSelected?.CustomerID ?? 0, null);
@@ -406,7 +414,6 @@ export class AddCustomerRequestComponent implements OnInit {
     }
   }
   async getContactPersonDetails(customerId: number, shippingContactId: number | null) {
-    debugger;
     try {
       const response: any = await this.apiService.getContactPersonDetails(customerId, shippingContactId).toPromise();
       if (Array.isArray(response)) {
@@ -428,12 +435,11 @@ export class AddCustomerRequestComponent implements OnInit {
     }
   }
    onContactPersonChange(selectedContactperson: any) {
-    debugger;
     if (selectedContactperson&&selectedContactperson.masterListItemId) {
       this.SelectedContactPersonDetails = this.MasterContactPersonList.find(item => item.shippingContactId == selectedContactperson.masterListItemId)
       if (this.SelectedContactPersonDetails) {
         this.selectedCourier = null;
-  this.selectedDestination = null;
+        this.selectedDestination = null;
           this.address.Address1= this.SelectedContactPersonDetails.address1 || '',
           this.address.Address2= this.SelectedContactPersonDetails.address2 || '',
           this.address.Address3= this.SelectedContactPersonDetails.address3 || '',
@@ -460,6 +466,7 @@ export class AddCustomerRequestComponent implements OnInit {
           if ( this.SelectedContactPersonDetails.destinationId>0) {
             this.selectedDestination= this.destinationList.find(a=> a.masterListItemId==this.SelectedContactPersonDetails.destinationId)
           }
+          this.getCourierCIFromListItems('CIFrom',null);
           if ( this.SelectedContactPersonDetails.courierId>0) {
             if (this.selectedDestination?.itemText === 'International') {
               const courierListt = this.MasterCourierList.filter((item: { parent: number; }) => item.parent === 2);
@@ -657,6 +664,7 @@ onUnitValueErrorClose(): void {
 onShippingMethodChange(): void {
   this.selectedCourier = null;
   this.selectedDestination = null;
+  this.selectedContactPerson=null;
 }
   generateTimes(): any[] {
     const times = [];
@@ -691,7 +699,7 @@ onShippingMethodChange(): void {
       ...this.billToAddress,
       billtoaddressId: this.address.addressId,
       Country: this.address.Country,
-      ContactPerson: this.address.contactPerson,
+      ContactPerson: this.shippingDetailsData.ContactPerson,
       CompanyName: this.address.CompanyName,
       Address1: this.address.Address1,
       Address2: this.address.Address2,
@@ -850,6 +858,15 @@ onShippingMethodChange(): void {
 
   onCancel() {
     this.closeDialog();
+  }
+  async getRejectLocationlistItems(listName: string, parentId: number | null){
+    this.RejectLocationlist = await new Promise<any>((resolve, reject) => { 
+      this.apiService.getListItems(listName, parentId).subscribe({
+        next:(data) => resolve(data),
+        error: (err) => reject(err)
+        
+       });
+    });
   }
   async getMasterListItems(listName: string, serviceId: number | null){
     this.shippingMethods = await new Promise<any>((resolve, reject) => { 
@@ -1483,7 +1500,6 @@ onShippingMethodChange(): void {
       return;
     }
   }
-  debugger;
   const formattedPickUpDate = this.ExpectedPickUpDate ? this.ExpectedPickUpDate.toISOString().split('T')[0] : null;
   const PickUptime = this.shippingDetailsData.ExpectedTime;
   const formattedshipDate = this.ShipDate ? this.ShipDate.toISOString().split('T')[0] : null;
@@ -1563,6 +1579,7 @@ onShippingMethodChange(): void {
       BillToExtension:this.billToAddress.Ext,
       CustomerBillTOAddressId:this.billToAddress.billtoaddressId,
       BillCheck:this.sameAsShipTo,
+      RejectLocationId:this.selectedRejectLocation?.masterListItemId
     };
     const customerOrderID = (this.customerOrd && this.customerOrd.length > 0) 
     ? (this.customerOrd.find((order: any) => order.customerOrderID !== null && order.customerOrderID !== undefined)?.customerOrderID ?? null)
@@ -1588,6 +1605,7 @@ onShippingMethodChange(): void {
       RecordStatus: customerOrderID != null ? 'U' : 'I',
       Active: true,
       CustomerOrderDetails: Array.from(this.selectedRecords),
+      IsHoldShip:this.shippingDetailsData.HoldShip,
      CustomerAddress:[customerAddress]
     };
  

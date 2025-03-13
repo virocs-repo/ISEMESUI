@@ -391,6 +391,7 @@ export interface CustomerAddress {
   BillToExtension:string;
   CustomerBillTOAddressId:number | null;
   BillCheck:boolean;
+  RejectLocationId:number;
 }
 
 export interface CustomerOrder {
@@ -412,6 +413,7 @@ export interface CustomerOrder {
   OrderStatus: string | null;
   RecordStatus: string;
   Active: boolean;
+  IsHoldShip:boolean;
   CustomerOrderDetails: CustomerOrderDetail[];
   CustomerAddress :CustomerAddress[];
 }
