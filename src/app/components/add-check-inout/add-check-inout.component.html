@@ -1,79 +1,81 @@
 <div class="k-m-3 k-overflow-y-auto" style="width: auto;">
-  <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
-    <div class="k-d-flex k-align-items-end k-gap-3">
-      <kendo-label class="k-w-full">
-        <strong>Lot Number test</strong>
-        <b class="required-label"></b>
-        <kendo-autocomplete text="Lot Number" [data]="filteredLotNumbers" [(ngModel)]="selectedLotNumber" placeholder="#Lot Number" rounded="large" 
-        (filterChange)="onLotNumberFilter($event)" [suggest]="true" (valueChange)="onLotNumberSelected($event)" [disabled]="isReadOnly"></kendo-autocomplete>
-            </kendo-label>
-      <kendo-label *ngIf="isCheckOutBehavior(status)" class="k-w-full">
-        <strong>Location</strong>
-        <b class="required-label"></b>
-        <kendo-combobox [data]="uniqueLocations" [(ngModel)]="selectedLocation" placeholder="Location" rounded="large" [disabled]="isReadOnly"></kendo-combobox>
-      </kendo-label>
-      <kendo-label *ngIf="isCheckOutBehavior(status)" class="k-w-full">
-        <strong>Qty</strong>
-        <b class="required-label"></b>
-        <input type="number" [(ngModel)]="selectedQty" placeholder="Qty" class="k-input k-textbox" [disabled]="isReadOnly"/>
-      </kendo-label>
-      <kendo-label *ngIf="isCheckOutBehavior(status)" class="k-w-full">
-        <strong>Received From</strong>
-        <b class="required-label"></b>
-        <kendo-textbox [(ngModel)]="employeesSelected" [disabled]="isReadOnly"></kendo-textbox>
-      </kendo-label>
-      <kendo-label *ngIf="status === 'CheckIn'" class="k-w-full">
-        <strong>CheckOut To</strong>
-        <b class="required-label"></b>
-        <kendo-textbox [(ngModel)]="employeesSelected" [disabled]="isReadOnly"></kendo-textbox>
-      </kendo-label>    
-      <kendo-label *ngIf="status === 'CheckIn'" class="k-w-full">
-        <strong>Return to Customer</strong>
-        <b class="required-label"></b>
-        <div class="centered-checkbox">
-        <kendo-checkbox [checkedState]="true" [(ngModel)]="returnToCustomer" rounded="large" [disabled]="isReadOnly"></kendo-checkbox></div>
-      </kendo-label>
+  <kendo-pdf-export #pdfExport>
+    <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
+      <div class="k-d-flex k-align-items-end k-gap-3">
+        <kendo-label class="k-w-full">
+          <strong>Lot Number test</strong>
+          <b class="required-label"></b>
+          <kendo-autocomplete text="Lot Number" [data]="filteredLotNumbers" [(ngModel)]="selectedLotNumber" placeholder="#Lot Number" rounded="large" 
+          (filterChange)="onLotNumberFilter($event)" [suggest]="true" (valueChange)="onLotNumberSelected($event)" [disabled]="isReadOnly"></kendo-autocomplete>
+              </kendo-label>
+        <kendo-label *ngIf="isCheckOutBehavior(status)" class="k-w-full">
+          <strong>Location</strong>
+          <b class="required-label"></b>
+          <kendo-combobox [data]="uniqueLocations" [(ngModel)]="selectedLocation" placeholder="Location" rounded="large" [disabled]="isReadOnly"></kendo-combobox>
+        </kendo-label>
+        <kendo-label *ngIf="isCheckOutBehavior(status)" class="k-w-full">
+          <strong>Qty</strong>
+          <b class="required-label"></b>
+          <input type="number" [(ngModel)]="selectedQty" placeholder="Qty" class="k-input k-textbox" [disabled]="isReadOnly"/>
+        </kendo-label>
+        <kendo-label *ngIf="isCheckOutBehavior(status)" class="k-w-full">
+          <strong>Received From</strong>
+          <b class="required-label"></b>
+          <kendo-textbox [(ngModel)]="employeesSelected" [disabled]="isReadOnly"></kendo-textbox>
+        </kendo-label>
+        <kendo-label *ngIf="status === 'CheckIn'" class="k-w-full">
+          <strong>CheckOut To</strong>
+          <b class="required-label"></b>
+          <kendo-textbox [(ngModel)]="employeesSelected" [disabled]="isReadOnly"></kendo-textbox>
+        </kendo-label>    
+        <kendo-label *ngIf="status === 'CheckIn'" class="k-w-full">
+          <strong>Return to Customer</strong>
+          <b class="required-label"></b>
+          <div class="centered-checkbox">
+          <kendo-checkbox [checkedState]="true" [(ngModel)]="returnToCustomer" rounded="large" [disabled]="isReadOnly"></kendo-checkbox></div>
+        </kendo-label>
+      </div>
+    </kendo-card-body>
+    <div class="k-my-6" *ngIf="selectedLotNumber">
+      <kendo-grid 
+      class="grid-header-sm grid-header-bold"
+      [kendoGridBinding]="gridDataResult.data">
+      <kendo-grid-column field="lotNum" title="Lot#/Serial#" [width]="130">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.lotNum">{{dataItem.lotNum}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="location" title="Location" [width]="130">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.location">{{dataItem.location}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="receivedFrom" title="Received From/CheckOut To" [width]="130">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.receivedFrom">{{dataItem.receivedFrom}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="systemUser" title="Modified By" [width]="130">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.systemUser">{{dataItem.systemUser}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="goodsType" title="Goods Type" [width]="130">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.goodsType">{{dataItem.goodsType}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="status" title="Status" [width]="130">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.status">{{dataItem.status}}</div>
+        </ng-template>
+      </kendo-grid-column>
+      </kendo-grid>
     </div>
-  </kendo-card-body>
-  <div class="k-my-6" *ngIf="selectedLotNumber">
-    <kendo-grid 
-    class="grid-header-sm grid-header-bold"
-    [kendoGridBinding]="gridDataResult.data">
-    <kendo-grid-column field="lotNum" title="Lot#/Serial#" [width]="130">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <div class="truncate-text" [title]="dataItem.lotNum">{{dataItem.lotNum}}</div>
-      </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="location" title="Location" [width]="130">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <div class="truncate-text" [title]="dataItem.location">{{dataItem.location}}</div>
-      </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="receivedFrom" title="Received From/CheckOut To" [width]="130">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <div class="truncate-text" [title]="dataItem.receivedFrom">{{dataItem.receivedFrom}}</div>
-      </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="systemUser" title="Modified By" [width]="130">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <div class="truncate-text" [title]="dataItem.systemUser">{{dataItem.systemUser}}</div>
-      </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="goodsType" title="Goods Type" [width]="130">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <div class="truncate-text" [title]="dataItem.goodsType">{{dataItem.goodsType}}</div>
-      </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="status" title="Status" [width]="130">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <div class="truncate-text" [title]="dataItem.status">{{dataItem.status}}</div>
-      </ng-template>
-    </kendo-grid-column>
-    </kendo-grid>
-  </div>
 
-  <div class="k-d-flex k-gap-3 k-mt-3">
-    <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem" [disabled]="isReadOnly">Print</button>
-    <button kendoButton type="button" rounded="full" themeColor="info" (click)="onCheckInOut()" [disabled]="isReadOnly">{{ checkInOutLabel }}</button>
-  </div>
+    <div class="k-d-flex k-gap-3 k-mt-3">
+      <button kendoButton type="button" rounded="full" themeColor="error" class="k-ml-auto" style="width:6rem" [disabled]="isReadOnly" (click)="printSection()">Print</button>
+      <button kendoButton type="button" rounded="full" themeColor="info" (click)="onCheckInOut()" [disabled]="isReadOnly">{{ checkInOutLabel }}</button>
+    </div>
+  </kendo-pdf-export>
 </div>

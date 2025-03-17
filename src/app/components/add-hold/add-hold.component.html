@@ -5,24 +5,24 @@
         <div class="k-m-2 k-overflow-y-auto" style="height: auto">
           <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
             <div class="k-d-flex k-flex-column k-gap-3">
-              <div class="k-d-flex k-align-items-end k-gap-3" style="display: flex; flex-wrap: wrap; width: 100%;">
-                <div class="field-container" style="flex: 1; display: flex; align-items: center;">
+              <div class="k-d-flex k-align-items-end k-gap-3 field-wrapper">
+                <div class="field-container">
                   <kendo-label [for]="'lotNumber'" class="label-text">
                     <strong>Lot/ Mail/ FGI Pull #:</strong>
                   </kendo-label>
-                  <span class="value-text" style="margin-left: 0.5rem;">{{ lotNumber }}</span>
+                  <span class="value-text">{{ lotNumber }}</span>
                 </div>
-                <div class="field-container" style="flex: 1; display: flex; align-items: center;">
+                <div class="field-container">
                   <kendo-label [for]="'customerName'" class="label-text">
                     <strong>Customer:</strong>
                   </kendo-label>
-                  <span class="value-text" style="margin-left: 0.5rem;">{{ customerName }}</span>
+                  <span class="value-text">{{ customerName }}</span>
                 </div>
-                <div class="field-container" style="flex: 1; display: flex; align-items: center;">
+                <div class="field-container">
                   <kendo-label [for]="'editholdDate'" class="label-text">
                     <strong>Device:</strong>
                   </kendo-label>
-                  <span class="value-text" style="margin-left: 0.5rem;">{{ device }}</span>
+                  <span class="value-text">{{ device }}</span>
                 </div>
               </div>
             </div>
@@ -166,7 +166,7 @@
                   
                   <kendo-grid-column title="Actions" [width]="100">
                     <ng-template kendoGridCellTemplate let-dataItem>
-                      <button kendoButton [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteFile(dataItem)" [disabled]="isDisabled.shipBtn"></button>
+                      <button kendoButton *ngIf="mode === 'edit'" [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteFile(dataItem)" [disabled]="isDisabled.shipBtn"></button>
                     </ng-template>
                   </kendo-grid-column>
                 </kendo-grid>

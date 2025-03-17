@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { GridComponent, GridDataResult } from '@progress/kendo-angular-grid';
 import { ContextMenuComponent } from '@progress/kendo-angular-menu';
+import { PDFExportComponent } from '@progress/kendo-angular-pdf-export';
 import { printIcon } from '@progress/kendo-svg-icons';
 import { ApiService } from 'src/app/services/api.service';
 import { Employee, ICON } from 'src/app/services/app.interface';
@@ -13,6 +14,7 @@ import { AppService } from 'src/app/services/app.service';
 })
 export class AddCheckInoutComponent implements OnInit {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
+  @ViewChild('pdfExport', { static: true }) pdfExportComponent!: PDFExportComponent;
   @Input() isReadOnly: boolean = false;
   @Input() selectedRowData: any;
   @Output() cancel = new EventEmitter<void>();
@@ -230,10 +232,18 @@ export class AddCheckInoutComponent implements OnInit {
   }
   
 
-private checkOutStatuses: string[] = ['CheckOut', 'Draft', 'Received', 'Shipped','Pending Receive','Pending Shipment'];
+  private checkOutStatuses: string[] = ['CheckOut', 'Draft', 'Received', 'Shipped','Pending Receive','Pending Shipment'];
 
-isCheckOutBehavior(status: string | null): boolean {
-  return this.checkOutStatuses.includes(status || '');
-}
+  isCheckOutBehavior(status: string | null): boolean {
+    return this.checkOutStatuses.includes(status || '');
+  }
+  printSection() {
+    this.pdfExportComponent.paperSize = 'A4'
+    this.pdfExportComponent.landscape = true;
+    this.pdfExportComponent.scale = 0.6;
+    this.pdfExportComponent.margin = '0.9cm';
+    this.pdfExportComponent.fileName = 'Hold Receipt ' + new Date().toLocaleString();
+    this.pdfExportComponent.saveAs();
+  }
 
 }

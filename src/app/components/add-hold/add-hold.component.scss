@@ -21,4 +21,25 @@
   ::ng-deep .checkbox .k-checkbox {
     border: 2px solid rgb(177, 174, 174) !important;
   }
+  .field-wrapper {
+    display: flex;
+    flex-wrap: nowrap; 
+    gap: 16px;
+    width: 100%;
+  }
   
+  .field-container {
+    flex: 1;
+    min-width: 150px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .value-text {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }  
