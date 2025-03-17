@@ -139,6 +139,7 @@ export class InventorycheckinCheckoutComponent implements OnInit{
         this.appService.sharedData.anotherShipping.isEditMode = true;
         this.appService.sharedData.anotherShipping.isViewMode = false;
         this.checkinoutData = { ...dataItem };
+        this.viewMode = false;
         // access the same in receipt component
         this.openDialog()
         break;
