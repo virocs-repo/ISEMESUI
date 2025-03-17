@@ -43,6 +43,7 @@
             rounded="full"
             themeColor="info"
             style="padding: 0.3rem 1.2rem"
+            *ngIf="viewOrEdit === 'edit'"
             (click)="onAddClick()">
             Add
           </button>
@@ -68,10 +69,19 @@
       style="height: 40vh;">
       <kendo-grid-column [width]="30" [columnMenu]="false">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <button kendoButton *ngIf="!dataItem.offHoldComments; else viewButtonTemplate" (click)="openEditDialog(dataItem)" themeColor="info">Edit</button>
-          <ng-template #viewButtonTemplate>
-            <button kendoButton (click)="openViewDialog(dataItem)" themeColor="primary">View</button>
-          </ng-template>
+            <button kendoButton 
+                *ngIf="viewOrEdit === 'edit' && !dataItem.offHoldComments; else viewButtonTemplate" 
+                (click)="openEditDialog(dataItem)" 
+                themeColor="info">
+                Edit
+            </button>
+            <ng-template #viewButtonTemplate>
+                <button kendoButton
+                    (click)="openViewDialog(dataItem)" 
+                    themeColor="primary">
+                    View
+                </button>
+            </ng-template>
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column field="holdCode" title="Code" [width]="55">
@@ -131,7 +141,7 @@
   </div>
   <app-add-hold
     (cancel)="closeDialog()"
-    [mode]="viewOrEdit"
+    [mode]="viewOrEdits"
     [lotNumber]="selectedRowData?.iseLotNumber || ''"
     [noOfHolds]="gridDataResult.total.toString()"
     [customerName]="customerName"

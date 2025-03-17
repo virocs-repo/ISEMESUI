@@ -50,6 +50,7 @@ export class InventoryHoldComponent implements OnInit {
   public holdData: any = {};
   public selectedRowIndex: number = -1;
   public dataItemSelected: any;
+  viewOrEdit: string ='';
 
   constructor(private apiService: ApiService,public appService: AppService) { }
 
@@ -145,11 +146,13 @@ export class InventoryHoldComponent implements OnInit {
         case 'View Data':
             this.isEditMode = false;
             this.holdData = { ...dataItem };
+            this.viewOrEdit = 'view';
             this.openDialog();
             break;
         case 'Edit Data':
             this.isEditMode = true; 
             this.holdData = { ...dataItem };
+            this.viewOrEdit = 'edit';
             this.openDialog();
             break;
         default:
