@@ -11,6 +11,7 @@ import { ApiService } from 'src/app/services/api.service';
 export class EditInventoryHoldComponent implements OnInit {
   @Output() cancel = new EventEmitter<void>();
   @Input() selectedRowData: any;
+  @Input() viewOrEdit: string = ''; 
   selectedRowDat:any;
   gridDataResult: GridDataResult = { data: [], total: 0 };
   readonly ICON = ICON;
@@ -39,7 +40,7 @@ export class EditInventoryHoldComponent implements OnInit {
     checkboxOnly: true,
     mode: 'single',
   }
-  viewOrEdit: string = '';
+  viewOrEdits: string = '';
 
   constructor(private apiService: ApiService) {}
 
@@ -55,7 +56,7 @@ export class EditInventoryHoldComponent implements OnInit {
       next: (data) => {
         console.log('Fetched data:', data); 
         this.selectedRowDat = data; 
-        this.viewOrEdit = 'edit';
+        this.viewOrEdits = 'edit';
         this.isDialogOpen = true; 
       },
       error: (err) => console.error('Failed to fetch hold details:', err)
@@ -67,7 +68,7 @@ export class EditInventoryHoldComponent implements OnInit {
       next: (data) => {
         console.log('Fetched data for view:', data); 
         this.selectedRowDat = data; 
-        this.viewOrEdit = 'view';
+        this.viewOrEdits = 'view';
         this.isDialogOpen = true; 
       },
       error: (err) => console.error('Failed to fetch hold details for view:', err)
@@ -160,7 +161,7 @@ export class EditInventoryHoldComponent implements OnInit {
     }
   }
   onAddClick()  {
-    this.viewOrEdit = '';
+    this.viewOrEdits = '';
     this.openDialog();
   }
 }

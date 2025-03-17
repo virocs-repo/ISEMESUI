@@ -72,5 +72,5 @@
         <h2 class="k-m-0">On / Off Hold</h2>
         <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon"(click)="closeDialog()"></button>
     </div>
-    <app-edit-inventory-hold [selectedRowData]="holdData" (cancel)="closeDialog()"></app-edit-inventory-hold>
+    <app-edit-inventory-hold [selectedRowData]="holdData" [viewOrEdit]="viewOrEdit" (cancel)="closeDialog()"></app-edit-inventory-hold>
 </kendo-dialog>
