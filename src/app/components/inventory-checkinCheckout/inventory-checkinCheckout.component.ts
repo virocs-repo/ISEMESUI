@@ -69,26 +69,43 @@ export class InventorycheckinCheckoutComponent implements OnInit{
 
   loadGridData() {
 
-    this.apiService.getAllInventoryCheckinCheckoutStatus().subscribe({
-      next: (v: any) => {
-        this.originalData = v;
-        this.originalData.forEach(obj => {
-          obj.checkInOutTime = new Date(obj.checkInOutTime).toLocaleString('en-US')
-        })
-
-        this.pageData();
-        console.log(v);
-      },
-      error: (v: any) => { }
-    });
+     // Pass Date objects directly
+     const from_date = this.fromDate ?? undefined;
+     const to_date = this.toDate ?? undefined;
+    
+     this.apiService.getAllInventoryCheckinCheckoutStatusWithDates(from_date, to_date).subscribe({
+         next: (v: any) => {
+    /*          this.gridDataResult.data = v;
+             this.gridDataResult.total = v.length; */
+             this.originalData = v;
+             this.pageData();
+         },
+         error: (error: any) => {
+             console.error('Error fetching CombinationLots', error);
+         }
+     });
   }
 
 
 
   onSearch(): void {
-    this.skip = 0;
-    this.pageData();
-  }
+    // Pass Date objects directly
+    const from_date = this.fromDate ?? undefined;
+    const to_date = this.toDate ?? undefined;
+   
+    this.apiService.getAllInventoryCheckinCheckoutStatusWithDates(from_date, to_date).subscribe({
+        next: (v: any) => {
+   /*          this.gridDataResult.data = v;
+            this.gridDataResult.total = v.length; */
+            this.originalData = v;
+            this.pageData();
+        },
+        error: (error: any) => {
+            console.error('Error fetching CombinationLots', error);
+        }
+    });
+   
+     }
 
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;

@@ -4,11 +4,29 @@
     text-overflow: ellipsis;
   }
   .field-container {
-    flex: 1;
     display: flex;
     align-items: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-  
+}
+
+.lot-number {
+    flex: 0.6; /* Reduce space for Lot Number */
+}
+
+.customer {
+    flex: 1.5; /* Increase space for Customer */
+}
+
+.no-of-holds {
+    flex: 0.6; /* Reduce space for No Of Holds */
+}
+
+.device {
+    flex: 1.5; /* Increase space for Device */
+}
+
+.field-container:not(.lot-number, .customer, .no-of-holds, .device) {
+    flex: 1; /* Keep other fields balanced */
+}

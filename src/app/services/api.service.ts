@@ -290,7 +290,17 @@ export class ApiService {
   getAllInventoryCheckinCheckoutStatus() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryCheckinCheckout/getallInventoryCheckinCheckoutStatus`);
   }
+  getAllInventoryCheckinCheckoutStatusWithDates(fromDate?: Date, toDate?: Date) {
+    let params = new HttpParams();
 
+    if (fromDate != null) {
+      params = params.set('fromDate', this.formatDate(fromDate));
+    }
+    if (toDate != null) {
+      params = params.set('toDate', this.formatDate(toDate));
+    }
+    return this.httpClient.get(`${API}v1/ise/inventory/inventoryCheckinCheckout/getallInventoryCheckinCheckoutStatus`, { params });
+  }
   GetInventoryCheckinCheckoutLocation() {
     return this.httpClient.get(`${API}v1/ise/inventory/inventoryCheckinCheckout/getInventoryCheckinCheckoutLocation`);
   }

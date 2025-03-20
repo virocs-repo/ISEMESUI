@@ -21,25 +21,30 @@
   ::ng-deep .checkbox .k-checkbox {
     border: 2px solid rgb(177, 174, 174) !important;
   }
-  .field-wrapper {
-    display: flex;
-    flex-wrap: nowrap; 
-    gap: 16px;
-    width: 100%;
-  }
   
+
   .field-container {
-    flex: 1;
-    min-width: 150px;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  
-  .value-text {
-    display: block;
+    display: flex;
+    align-items: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }  
+}
+
+.lot-number {
+    flex: 0.7; /* Reduce space for Lot Number */
+}
+
+.customer {
+    flex: 1.5; /* Increase space for Customer */
+}
+
+.device {
+    flex: 1; /* Keep Device field balanced */
+}
+
+.field-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
