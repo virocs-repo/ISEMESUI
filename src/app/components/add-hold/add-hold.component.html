@@ -5,28 +5,28 @@
         <div class="k-m-2 k-overflow-y-auto" style="height: auto">
           <kendo-card-body class="card-flex" style="background-color:#E8F9F1">
             <div class="k-d-flex k-flex-column k-gap-3">
-              <div class="k-d-flex k-align-items-end k-gap-3 field-wrapper">
-                <div class="field-container">
-                  <kendo-label [for]="'lotNumber'" class="label-text">
-                    <strong>Lot/ Mail/ FGI Pull #:</strong>
-                  </kendo-label>
-                  <span class="value-text">{{ lotNumber }}</span>
+                <div class="k-d-flex k-align-items-end k-gap-3 field-wrapper">
+                    <div class="field-container lot-number">
+                        <kendo-label [for]="'lotNumber'" class="label-text">
+                            <strong>Lot/ Mail/ FGI Pull #:</strong>
+                        </kendo-label>
+                        <span class="value-text">{{ lotNumber }}</span>
+                    </div>
+                    <div class="field-container customer">
+                        <kendo-label [for]="'customerName'" class="label-text">
+                            <strong>Customer:</strong>
+                        </kendo-label>
+                        <span class="value-text">{{ customerName }}</span>
+                    </div>
+                    <div class="field-container device">
+                        <kendo-label [for]="'device'" class="label-text">
+                            <strong>Device:</strong>
+                        </kendo-label>
+                        <span class="value-text">{{ device }}</span>
+                    </div>
                 </div>
-                <div class="field-container">
-                  <kendo-label [for]="'customerName'" class="label-text">
-                    <strong>Customer:</strong>
-                  </kendo-label>
-                  <span class="value-text">{{ customerName }}</span>
-                </div>
-                <div class="field-container">
-                  <kendo-label [for]="'editholdDate'" class="label-text">
-                    <strong>Device:</strong>
-                  </kendo-label>
-                  <span class="value-text">{{ device }}</span>
-                </div>
-              </div>
             </div>
-          </kendo-card-body>
+        </kendo-card-body>        
           <fieldset class="k-mt-1 hold-details">
               <legend><b>Hold Details</b></legend>
               <div class="k-d-flex k-flex-column k-gap-3">
