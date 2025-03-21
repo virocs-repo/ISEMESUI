@@ -658,7 +658,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
     }
     
     if(this.PMReceiverSelected){
-      const PMRecev: Employee = { EmployeeID: this.PMReceiverSelected.employeeID, EmployeeName: this.PMReceiverSelected.employeeName} 
+      const PMRecev: Employee = { EmployeeID: this.PMReceiverSelected.employeeID, EmployeeName: this.PMReceiverSelected.employeeName,EmployeeEmail:this.PMReceiverSelected.email} 
       data.EmployeeDetail = [PMRecev];
     }
 

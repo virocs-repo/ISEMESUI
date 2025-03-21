@@ -30,6 +30,7 @@ export class AnotherShippingComponent implements OnDestroy {
   statusSelected: KeyValueData | undefined;
   searchTerm:string="";
   originalData: any[] = [];
+  public deliveryInfo: any = {}; 
   
   constructor(public appService: AppService, private apiService: ApiService, public datePipe: DatePipe) { 
      
@@ -66,11 +67,9 @@ export class AnotherShippingComponent implements OnDestroy {
     }
   }
   canCloseDialog() {
-    debugger;
     this.appService.sharedData.anotherShipping.eventEmitter.emit('canCloseDialog?')
   }
   fetchdata() {
-    debugger;
   var customerId:number = 0;
   var employeeId:number = 0;
   var statusId:number = 0;
@@ -172,6 +171,14 @@ export class AnotherShippingComponent implements OnDestroy {
   onSelectRowActionMenu(e: ContextMenuSelectEvent) {
      
     const dataItem = this.dataItemSelected;
+    this.apiService.getShipmentdeliveryInfo(dataItem.deliveryInfoId).subscribe({
+      next: (deliveryInfo:any) => {
+        this.deliveryInfo = deliveryInfo;
+      },
+      error: (err) => {
+        console.error('Error fetching shipment delivery info:', err);
+      },
+    });    
     switch (e.item.text) {
     case 'Void Data':
       this.apiService.voidAnotherShipping(dataItem.anotherShipmentID).subscribe({
