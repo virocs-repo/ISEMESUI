@@ -66,6 +66,7 @@ import { IntTranferReceivingComponent } from './components/int-tranfer-receiving
 import { IntTranferReceivingAddComponent } from './components/int-tranfer-receiving-add/int-tranfer-receiving-add.component';
 import { TicketComponent } from './components/ticket/ticket.component';
 import { AddTicketComponent } from './components/add-ticket/add-ticket.component';
+import { AddShippingAddressComponent } from './components/add-shipping-address/add-shipping-address.component';
 
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1;
@@ -146,7 +147,8 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     IntTranferReceivingComponent,
     IntTranferReceivingAddComponent,
     TicketComponent,
-    AddTicketComponent
+    AddTicketComponent,
+    AddShippingAddressComponent,
   ],
   imports: [
     BrowserModule,

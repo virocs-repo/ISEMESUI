@@ -109,6 +109,6 @@
       (click)="canCloseDialog()"></button>
   </div>
   <div class="dialog-body k-overflow-y-auto">
-    <app-add-another-shipping (onClose)="closeDialog()"></app-add-another-shipping>
+    <app-add-another-shipping (onClose)="closeDialog()" [deliveryInfo]="deliveryInfo"></app-add-another-shipping>
   </div>
 </kendo-dialog>

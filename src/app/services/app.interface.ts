@@ -442,6 +442,7 @@ export interface Address {
 export interface Employee {
   EmployeeID: number
   EmployeeName: string
+  EmployeeEmail:string
 }
 export interface PostReceipt {
   ReceiptID: number | null;
@@ -764,6 +765,7 @@ export interface AnotherShipDetails {
   userID: number
   approvedON: Date // do we need this from UI or can be taken as getdate in the SQL?
   anotherShipLineItems: AnotherShippingLineitem[]
+  CustomerAddress :CustomerAddress[];
 }
 export const INIT_ANOTHERSHIPDETAILS: AnotherShipDetails = {
   anotherShipmentID: 0,
@@ -790,7 +792,8 @@ export const INIT_ANOTHERSHIPDETAILS: AnotherShipDetails = {
   approvedBy: 0,
   userID: 0,
   approvedON: new Date(),
-  anotherShipLineItems: []
+  anotherShipLineItems: [],
+  CustomerAddress :[]
 }
 
 export interface AnotherShip {
@@ -804,6 +807,7 @@ export interface AnotherShip {
   shipmentCategory: string
   currentLocation: string
   status: string
+  deliveryInfoId:number
 }
 export interface ReceiptAttachment {
   attachmentId: number,

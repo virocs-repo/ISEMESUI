@@ -1,12 +1,14 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { PDFExportComponent } from '@progress/kendo-angular-pdf-export';
 import { FileRestrictions } from '@progress/kendo-angular-upload';
 import { map, Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
-import { INIT_ANOTHERSHIPDETAILS, AnotherShipDetails, INIT_OTHERSHIPPING_ITEM, AnotherShippingLineitem, KeyValueData, Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt, ReceiptLocation, SignatureTypes, Vendor } from 'src/app/services/app.interface';
+import { INIT_ANOTHERSHIPDETAILS, AnotherShipDetails, INIT_OTHERSHIPPING_ITEM, AnotherShippingLineitem, KeyValueData, Address, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee, EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE, INIT_POST_RECEIPT, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt, ReceiptLocation, SignatureTypes, Vendor,CustomerAddress } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
+import { CellClickEvent, GridComponent, GridDataResult,RowArgs  } from '@progress/kendo-angular-grid';
+import { AddShippingAddressComponent } from '../add-shipping-address/add-shipping-address.component';
 
 // enum TableType {
 //   Device = 'Device',
@@ -28,6 +30,8 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   readonly ICON = ICON;
   //readonly TableType = TableType;
   @Output() onClose = new EventEmitter<void>();
+  @Input() deliveryInfo:any | null;
+  @ViewChild(AddShippingAddressComponent) shippingAddressComponent!: AddShippingAddressComponent;
 
   //readonly customerTypes: CustomerType[] = this.appService.masterData.customerType;
   //customerTypeSelected: CustomerType | undefined;
@@ -107,6 +111,7 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   shipToCity:string = "";
   shipToState:string = "";
   shipToZip:string = "";
+  addressDataResult: GridDataResult = { data: [], total: 0 };
   readonly countries: Country[] = this.appService.masterData.country
   countrySelected: Country | undefined;
   readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
@@ -130,13 +135,19 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   isViewOrEdit:boolean = false;
   approverId:number=0;
   approvedById:number=0;
+  
 
   constructor(public appService: AppService, private apiService: ApiService) { 
     this.getServiceTypes();
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.init();
+    const user = this.employees.find(emp => emp.EmployeeID === this.appService.loginId);
+    if (user) {
+      this.requestorSelected = user;
+      this.requestorEmail=user.EmployeeEmail;
+    }
     this.subscription.add(this.appService.sharedData.anotherShipping.eventEmitter.subscribe((v) => {
       switch (v) {
         case 'canCloseDialog?':
@@ -174,6 +185,18 @@ export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   }
   else {
     this.isViewOrEdit = false;
+  }
+}
+onCustomerChange(selectedCustomer: any) {
+  this.shippingAddressComponent.selectedShippingMethod=null;
+  this.shippingAddressComponent.selectedCourier = null;
+this.shippingAddressComponent.selectedDestination = null;
+this.shippingAddressComponent.selectedContactPerson=null;
+  if (selectedCustomer && selectedCustomer.CustomerID) {
+    this.customerSelected = selectedCustomer;
+    // this.getContactPersonDetails(this.customerSelected?.CustomerID ?? 0, null);
+  } else {
+    this.shippingAddressComponent.ContactPersonList = []; 
   }
 }
 private bindData(){
@@ -251,6 +274,89 @@ private getOtherInventoryShipment(anotherShippingID:number) {
   });
 
 }
+shipAlertEmailError: boolean = false;
+shipAlertEmailMessage: string = "";
+validateShipAlertEmail(): boolean {
+  const inputValue = this.shippingAddressComponent.shippingDetailsData.ShipAlertEmail ? this.shippingAddressComponent.shippingDetailsData.ShipAlertEmail.trim() : "";
+  if (!inputValue) return true; 
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  const emailList = inputValue.split(/[,;\s]+/).filter(email => email.length > 0);
+  for (const email of emailList) {
+    if (!emailPattern.test(email)) {
+      this.shipAlertEmailError = true;
+      this.shipAlertEmailMessage = "Please enter valid Ship Alert Email Id(s) - Shipping Info.";
+      return false;
+    }
+  }
+  const uniqueEmails = new Set(emailList);
+  if (uniqueEmails.size !== emailList.length) {
+    this.shipAlertEmailError = true;
+    this.shipAlertEmailMessage = "Duplicate Ship Alert Email Exist - Shipping Info.";
+    return false;
+  }
+  return true;
+}
+
+onShipAlertEmailErrorClose(): void {
+  this.shipAlertEmailError = false;
+}
+emailError: boolean = false;
+  emailMessage: string = "";
+  validateEmailOnSubmit(): boolean {
+    const inputValue = this.shippingAddressComponent.shippingDetailsData.Email ? this.shippingAddressComponent.shippingDetailsData.Email.trim() : "";
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    const multipleEmails = inputValue.includes(",") || inputValue.includes(";") || inputValue.split(" ").length > 1;
+    if (!inputValue) {
+      return true;
+    }
+    if (multipleEmails) {
+      this.emailError = true;
+      this.emailMessage = "Please enter valid Email Address - Shipping Info";
+      return false;
+    } else if (!emailPattern.test(inputValue)) {
+      this.emailError = true;
+      this.emailMessage = "Please enter valid Email Address - Shipping Info";
+      return false;
+    }
+    return true; 
+  }
+  onemailErrorClose(): void {
+    this.emailError = false;
+  }
+  onErrorClose(): void {
+    this.onemailErrorClose();
+  }
+  totalValueError: boolean = false;
+totalValueMessage: string = "";
+validateTotalValue(): boolean {
+  const totalValue = this.shippingAddressComponent.TotalValue ?? 0;
+  if (totalValue > 50000) {
+    this.totalValueError = true;
+    this.totalValueMessage = "Total Value cannot be greater than 50,000.00. Please Check Unit Value and units.";
+    return false;
+  }
+  return true;
+}
+onTotalValueErrorClose(): void {
+  this.totalValueError = false;
+}
+unitValueError: boolean = false;
+unitValueMessage: string = "";
+
+validateUnitValue(): boolean {
+  const unitValue = this.shippingAddressComponent.UnitValue ?? 0; 
+
+  if (unitValue > 999999999.9999) {
+    this.unitValueError = true;
+    this.unitValueMessage = "Unit Value cannot be greater than 999999999.9999.";
+    return false;
+  }
+  return true;
+}
+onUnitValueErrorClose(): void {
+  this.unitValueError = false;
+}
+  
 upsertAnotherShipment(saveType:any){
   const invalidQuantityItems = this.lineItemsGrid.filter(item =>
     item.quantity == null || isNaN(item.quantity) || item.quantity <= 0
@@ -304,14 +410,21 @@ if (invalidValueItems.length > 0) {
     this.appService.errorMessage('Please select recipient name');
     return;
   }
-  if(this.phoneNumber){
-    shipDetail.phoneNo = this.phoneNumber;
-  }
-  else {
-    this.appService.errorMessage('Please select phone number');
+ 
+  if (!this.phoneNumber) {
+    this.appService.errorMessage('Please enter phone number');
     return;
   }
-
+  
+  const isNumeric = /^\d+$/.test(this.phoneNumber);
+  
+  if (!isNumeric) {
+    this.appService.errorMessage('Please enter a valid numeric phone number');
+    return;
+  }
+  
+  shipDetail.phoneNo = this.phoneNumber;
+  
   if(this.customerOrVendor == "Customer") {
     shipDetail.customerTypeID = 1;
     if(this.customerSelected) {
@@ -332,42 +445,268 @@ if (invalidValueItems.length > 0) {
       return;
     }
   }
-  if(this.shipToAddress1){
-    shipDetail.address1 = this.shipToAddress1;
+  if (!this.shippingAddressComponent.selectedShippingMethod?.masterListItemId) {
+    this.appService.errorMessage('Please select ShippingMethod');
+    return;
+  } 
+  if (this.shippingAddressComponent.selectedShippingMethod?.masterListItemId === 1448) {
+    if (!this.validateEmailOnSubmit()) {
+      return; 
+    }
+    if (!this.validateShipAlertEmail()) {
+      return; 
+    }
+    if (!this.shippingAddressComponent.shippingDetailsData.ContactPerson) {
+      this.appService.errorMessage('Please enter contact person');
+      return;
+    } 
   }
-  else {
-    this.appService.errorMessage('Please select address 1');
+  if (this.shippingAddressComponent.selectedShippingMethod?.masterListItemId === 1447) {
+    if (!this.validateShipAlertEmail()) {
+      return; 
+    }
+  }
+  if (this.shippingAddressComponent.selectedShippingMethod?.masterListItemId === 1534) {
+    if (!this.validateShipAlertEmail()) {
+      return; 
+    }
+    if (!this.validateTotalValue()) {
+      return; 
+    }
+    if (!this.validateUnitValue()) {
+      return; 
+    }
+    if (!this.shippingAddressComponent.selectedCOO?.masterListItemId) {
+      this.appService.errorMessage('Please select COO.');
+      return;
+    }
+
+    if (!this.shippingAddressComponent.selectedCIFrom?.masterListItemId) {
+      this.appService.errorMessage('Please select CI Form.');
+      return;
+    }
+    if (!this.shippingAddressComponent.UnitValue) {
+      this.appService.errorMessage('Please enter UnitValue.');
+      return;
+    }
+  }
+  if (this.shippingAddressComponent.selectedShippingMethod?.masterListItemId === 1446) {
+    if (!this.shippingAddressComponent.selectedDestination?.masterListItemId) {
+      this.appService.errorMessage('Please select Destination.');
+      return;
+    }
+    if (!this.shippingAddressComponent.selectedCourier?.masterListItemId) {
+      this.appService.errorMessage('Please select Courier Name.');
+      return;
+    }
+    if (this.shippingAddressComponent.selectedCourier?.masterListItemId == 3) {
+      if (!this.validateShipAlertEmail()) {
+        return; 
+      }
+      if (!this.shippingAddressComponent.selectedServiceType?.itemText) {
+        this.appService.errorMessage('Please select Service Type.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedBillTransport?.itemText) {
+        this.appService.errorMessage('Please select Bill Transportation To.');
+        return;
+      }
+      if (!this.shippingAddressComponent.Courier.BillTransportationAcct) {
+        this.appService.errorMessage('Please enter Trasportation Acct#.');
+        return;
+      }
+    }
+
+    if (this.shippingAddressComponent.selectedCourier?.masterListItemId == 4) {
+      if (!this.validateEmailOnSubmit()) {
+        return; 
+      }
+      if (!this.shippingAddressComponent.selectedBillTransport?.itemText) {
+        this.appService.errorMessage('Please select Bill Transportation To.');
+        return;
+      }
+      if (!this.shippingAddressComponent.Courier.UPSAccountNumber) {
+        this.appService.errorMessage('Please enter UPS Account Number.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedServiceType?.itemText) {
+        this.appService.errorMessage('Please select UPS Service.');
+        return;
+      }
+    }
+    if (this.shippingAddressComponent.selectedCourier?.masterListItemId == 5) {
+      if (!this.validateUnitValue()) {
+        return; 
+      }
+      if (!this.shippingAddressComponent.selectedCIFrom?.masterListItemId) {
+        this.appService.errorMessage('Please select CI Form.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedServiceType?.itemText) {
+        this.appService.errorMessage('Please select Service Type.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedBillTransport?.itemText) {
+        this.appService.errorMessage('Please select Bill Transportation To.');
+        return;
+      }
+      if (!this.shippingAddressComponent.Courier.BillTransportationAcct) {
+        this.appService.errorMessage('Please enter Bill Trasportation Acct#.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedBillDutyTaxFeesTo?.itemText) {
+        this.appService.errorMessage('Please select Bill Duties/taxes/fees.');
+        return;
+      }
+      if (!this.shippingAddressComponent.Courier.Duties) {
+        this.appService.errorMessage('Please enter Duties/taxes/fees Acc#.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedCOO?.masterListItemId) {
+        this.appService.errorMessage('Please select COO.');
+        return;
+      }
+      if (!this.shippingAddressComponent.UnitValue) {
+        this.appService.errorMessage('Please enter UnitValue.');
+        return;
+      }
+    }
+    if (this.shippingAddressComponent.selectedCourier?.masterListItemId == 6) {
+      if (!this.validateUnitValue()) {
+        return; 
+      }
+      if (!this.validateEmailOnSubmit()) {
+        return; 
+      }
+      if (!this.validateTotalValue()) {
+        return; 
+      }
+      if (!this.validateShipAlertEmail()) {
+        return; 
+      }
+      if (!this.shippingAddressComponent.selectedCIFrom?.masterListItemId) {
+        this.appService.errorMessage('Please select CI Form.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedBillTransport?.itemText) {
+        this.appService.errorMessage('Please select Bill Transportation To.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedBillDutyTaxFeesTo?.itemText) {
+        this.appService.errorMessage('Please select Bill Duties/taxes/fees.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedServiceType?.itemText) {
+        this.appService.errorMessage('Please select UPS Service.');
+        return;
+      }
+      if (!this.shippingAddressComponent.Courier.UPSAccountNumber) {
+        this.appService.errorMessage('Please enter UPS Account Number.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedCOO?.masterListItemId) {
+        this.appService.errorMessage('Please select Country of Origin.');
+        return;
+      }
+      if (!this.shippingAddressComponent.Quantity) {
+        this.appService.errorMessage('Please enter Units.');
+        return;
+      }
+      if (!this.shippingAddressComponent.UnitValue) {
+        this.appService.errorMessage('Please enter UnitValue.');
+        return;
+      }
+      if (!this.shippingAddressComponent.Courier.Height) {
+        this.appService.errorMessage('Please enter Acct#.');
+        return;
+      }
+    }
+    if (this.shippingAddressComponent.selectedCourier?.masterListItemId == 7) {
+      if (!this.validateUnitValue()) {
+        return; 
+      }
+      if (!this.validateShipAlertEmail()) {
+        return; 
+      }
+      if (!this.shippingAddressComponent.selectedCIFrom?.masterListItemId) {
+        this.appService.errorMessage('Please select CI Form.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedServiceType?.itemText) {
+        this.appService.errorMessage('Please select Product.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedBillTransport?.itemText) {
+        this.appService.errorMessage('Please select Bill To.');
+        return;
+      }
+      if (!this.shippingAddressComponent.Courier.BillTransportationAcct) {
+        this.appService.errorMessage('Please enter Bill To Account.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedBillDutyTaxFeesTo?.itemText) {
+        this.appService.errorMessage('Please select Bill Duties/taxes/fees.');
+        return;
+      }
+      if (!this.shippingAddressComponent.Courier.Duties) {
+        this.appService.errorMessage('Please enter Duties/taxes/fees Acc#.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedCOO?.masterListItemId) {
+        this.appService.errorMessage('Please select Country of Origin.');
+        return;
+      }
+      if (!this.shippingAddressComponent.selectedCommodityOrigin?.itemText) {
+        this.appService.errorMessage('Please select Commodity Origin.');
+        return;
+      }
+      if (!this.shippingAddressComponent.UnitValue) {
+        this.appService.errorMessage('Please enter UnitValue.');
+        return;
+      }
+    }
+  }
+  if (this.shippingAddressComponent.selectedShippingMethod?.masterListItemId === 1447 || 
+    this.shippingAddressComponent.selectedShippingMethod?.masterListItemId === 1446 || 
+    this.shippingAddressComponent.selectedShippingMethod?.masterListItemId === 1534) {
+
+  
+  if (!this.shippingAddressComponent.address.Country) {
+    this.appService.errorMessage('Please enter Country.');
     return;
   }
-  shipDetail.address2 = this.shipToAddress2;
-  if(this.shipToCity){
-    shipDetail.city = this.shipToCity;
-  }
-  else {
-    this.appService.errorMessage('Please select city');
+
+  if (!this.shippingAddressComponent.shippingDetailsData.ContactPerson) {
+    this.appService.errorMessage('Please enter Contact Name.');
     return;
   }
-  if(this.shipToState){
-    shipDetail.state = this.shipToState;
-  }
-  else {
-    this.appService.errorMessage('Please select state');
+
+  if (!this.shippingAddressComponent.address.CompanyName) {
+    this.appService.errorMessage('Please enter Company Name.');
     return;
   }
-  if(this.shipToZip){
-    shipDetail.zip = this.shipToZip;
-  }
-  else {
-    this.appService.errorMessage('Please select zip');
+
+  if (!this.shippingAddressComponent.address.Address1) {
+    this.appService.errorMessage('Please enter Address 1.');
     return;
   }
-  if(this.countrySelected){
-    shipDetail.country = this.countrySelected?.countryName == undefined ? "" : this.countrySelected.countryName;
-  }
-  else {
-    this.appService.errorMessage('Please select country');
+  if (!this.shippingAddressComponent.address.Phone) {
+    this.appService.errorMessage('Please enter Telephone.');
     return;
   }
+  if (!this.shippingAddressComponent.address.State) {
+    this.appService.errorMessage('Please enter State/Province.');
+    return;
+  }
+  if (!this.shippingAddressComponent.address.City) {
+    this.appService.errorMessage('Please enter City.');
+    return;
+  }
+  if (!this.shippingAddressComponent.address.PostCode) {
+    this.appService.errorMessage('Please enter PostCode.');
+    return;
+  }
+}
   shipDetail.instructions = this.shipToInstructions;
   shipDetail.status = "Active";
   shipDetail.recordStatus = recordStatus;
@@ -390,19 +729,94 @@ if (invalidValueItems.length > 0) {
     shipDetail.approverID = this.approverId;
     shipDetail.approvedBy = this.appService.loginId;
   }
-  debugger;
   this.lineItemsGrid.forEach((d, index) => {
      
     d.inventoryID = this.allLotNumbers.find(e => e.name == d.lotNumberSelected).id;
     shipDetail.anotherShipLineItems.push(d);
   })
-
-  
+  const formattedPickUpDate = this.shippingAddressComponent.ExpectedPickUpDate ? this.shippingAddressComponent.ExpectedPickUpDate.toISOString().split('T')[0] : null;
+  const PickUptime = this.shippingAddressComponent.shippingDetailsData.ExpectedTime;
+  const formattedshipDate = this.shippingAddressComponent.ShipDate ? this.shippingAddressComponent.ShipDate.toISOString().split('T')[0] : null;
+  const Shiptime = this.shippingAddressComponent.shippingDetailsData.ShippingTime; 
+  const customerAddress: CustomerAddress = {
+        ShippingMethodId:this.shippingAddressComponent.selectedShippingMethod.masterListItemId,
+        IsForwarder: this.shippingAddressComponent.shippingDetailsData.Forwarder,  
+        ContactPerson: this.shippingAddressComponent.shippingDetailsData.ContactPerson,
+        Phone: this.shippingAddressComponent.address.Phone, 
+        ShipAlertEmail: this.shippingAddressComponent.shippingDetailsData.ShipAlertEmail,
+        ExpectedTime: (formattedPickUpDate && PickUptime) ? `${formattedPickUpDate} ${PickUptime}` : null,  
+        Comments: this.shippingAddressComponent.address.Comments,  
+        SpecialInstructionforShipping: this.shippingAddressComponent.address.SpecialInstructions,  
+        PackingSlipComments: this.shippingAddressComponent.address.PackingComments,  
+        CIComments: this.shippingAddressComponent.address.InvoiceComments,
+        AddressId:this.shippingAddressComponent.address.addressId,  
+        Email:this.shippingAddressComponent.shippingDetailsData.Email,
+        Country:this.shippingAddressComponent.address.Country,
+        CompanyName:this.shippingAddressComponent.address.CompanyName,
+        Address1:this.shippingAddressComponent.address.Address1,
+        Address2:this.shippingAddressComponent.address.Address2,
+        Address3:this.shippingAddressComponent.address.Address3,
+        Zip:this.shippingAddressComponent.address.PostCode,
+        StateProvince:this.shippingAddressComponent.address.State,
+        City:this.shippingAddressComponent.address.City,
+        Extension:this.shippingAddressComponent.address.Ext,
+        ShipDate:(formattedshipDate && Shiptime) ? `${formattedshipDate} ${Shiptime}` : null,
+        CountryOfOrigin:this.shippingAddressComponent.selectedCOO?.itemText,
+        CIFromId:this.shippingAddressComponent.selectedCIFrom?.masterListItemId,
+        UnitValue:this.shippingAddressComponent.UnitValue,
+        TotalValue:this.shippingAddressComponent.TotalValue,
+        Units:this.shippingAddressComponent.Quantity,
+        ECCN:this.shippingAddressComponent.shippingDetailsData.ECCN,
+        ScheduleBNumber:this.shippingAddressComponent.ScheduleB,
+        LicenseType:this.shippingAddressComponent.selectedLicense?.itemText,
+        CommidityDescription:this.shippingAddressComponent.shippingDetailsData.CommodityDescription,
+        UltimateConsignee:this.shippingAddressComponent.shippingDetailsData.UltimateConsignee,
+        DestinationId:this.shippingAddressComponent.selectedDestination?.masterListItemId,
+        CourierId:this.shippingAddressComponent.selectedCourier?.masterListItemId,
+        ServiceType:this.shippingAddressComponent.selectedServiceType?.itemText,
+        PackageType:this.shippingAddressComponent.Courier.PackageType,
+        BillTransportationTo:this.shippingAddressComponent.selectedBillTransport?.itemText,
+        BillTransportationAcct:this.shippingAddressComponent.Courier.BillTransportationAcct,
+        CustomerReference:this.shippingAddressComponent.Courier.CustomerReference,
+        NoOfPackages:this.shippingAddressComponent.Courier.NumberOfPackages,
+        Weight:this.shippingAddressComponent.Courier.Weight,
+        PackageDimentions:this.shippingAddressComponent.Courier.PackageDimension,
+        IsResidential:this.shippingAddressComponent.Courier.Residential,
+        AccountNumber:this.shippingAddressComponent.Courier.UPSAccountNumber,
+        ReferenceNumber1:this.shippingAddressComponent.Courier.Length,
+        ReferenceNumber2:this.shippingAddressComponent.Courier.Width,
+        OtherAccountNumber:this.shippingAddressComponent.Courier.Height,
+        TaxId:this.shippingAddressComponent.Courier.Taxid,
+        Attention:this.shippingAddressComponent.Courier.Attention,
+        InvoiceNumber:this.shippingAddressComponent.Courier.InvoiceNumber,
+        BillDutyTaxFeesTo:this.shippingAddressComponent.selectedBillDutyTaxFeesTo?.itemText,
+        BillDutyTaxFeesAcct:this.shippingAddressComponent.Courier.Duties,
+        CommodityDescription:this.shippingAddressComponent.shippingDetailsData.CommodityDescription,
+        ScheduleBUnits1:this.shippingAddressComponent.Courier.ScheduleBUnits1,
+        PurchaseNumber:this.shippingAddressComponent.Courier.PurchaseNumber,
+        ShipmentReference:this.shippingAddressComponent.shippingDetailsData.Height,
+        CustomsTermsOfTradeId:this.shippingAddressComponent.selectedCustomeTT?.masterListItemId, 
+        Qty:this.shippingAddressComponent.Courier.Qty,
+        CommodityOrigin:this.shippingAddressComponent.selectedCommodityOrigin?.itemText,
+        BillToCountry:this.shippingAddressComponent.billToAddress.Country,
+        BillToContactPerson:this.shippingAddressComponent.billToAddress.ContactPerson,
+        BillToCompanyName:this.shippingAddressComponent.billToAddress.CompanyName,
+        BillToAddress1:this.shippingAddressComponent.billToAddress.Address1,
+        BillToAddress2:this.shippingAddressComponent.billToAddress.Address2,
+        BillToAddress3:this.shippingAddressComponent.billToAddress.Address3,
+        BillToPhone:this.shippingAddressComponent.billToAddress.TelePhone,
+        BillToStateProvince:this.shippingAddressComponent.billToAddress.State,
+        BillToCity:this.shippingAddressComponent.billToAddress.City,
+        BillToZip:this.shippingAddressComponent.billToAddress.PostCode,
+        BillToExtension:this.shippingAddressComponent.billToAddress.Ext,
+        CustomerBillTOAddressId:this.shippingAddressComponent.billToAddress.billtoaddressId,
+        BillCheck:this.shippingAddressComponent.sameAsShipTo,
+        RejectLocationId:this.shippingAddressComponent.selectedRejectLocation?.masterListItemId
+      };
+       shipDetail.CustomerAddress = [customerAddress];
   const shipDetailJson = JSON.stringify(shipDetail);
-
   this.apiService.upsertAntherShipment(shipDetailJson).subscribe({
     next : (v: any) => {
-      debugger;
       this.onClose.emit();
       this.appService.successMessage(MESSAGES.DataSaved);
       //this.closeDialog();
@@ -565,7 +979,6 @@ if (invalidValueItems.length > 0) {
     this.employeesSelected = [];
   }
   private areThereAnyChanges() {
-    debugger;
     return false;
 
     if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {

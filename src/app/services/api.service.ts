@@ -465,12 +465,17 @@ export class ApiService {
     const url = `${API}v1/ise/otherinventory/getServiceTypes`;
     return this.httpClient.get(url);
   }
-
+  
   upsertAntherShipment(inputJson: string) {
-    const url = `${API}v1/ise/otherinventory/upsertAntherInventoryShipment?anotherShipJson=${inputJson}`;
-    return this.httpClient.get(url);
+    const body = {
+      LoginId: 1,
+      InputJSON: inputJson
+    };
+    return this.httpClient.post(`${API}v1/ise/otherinventory/upsertAntherInventoryShipment`, body,{headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    })});
   }
-
+ 
   voidAnotherShipping(anotherShippingID: number) {
     const url = `${API}v1/ise/otherinventory/voidAnotherShipping?anotherShippingID=${anotherShippingID}`;
     return this.httpClient.get(url);
