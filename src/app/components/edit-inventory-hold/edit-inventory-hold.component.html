@@ -129,6 +129,11 @@
           <div class="truncate-text" >{{ dataItem.offHoldDate | date: 'MM-dd-yyyy HH:mm a' }}</div>
         </ng-template>
       </kendo-grid-column>
+      <kendo-grid-column field="onHold" title="On Hold" [width]="45">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="truncate-text" [title]="dataItem.onHold">{{dataItem.onHold}}</div>
+        </ng-template>
+      </kendo-grid-column>
     </kendo-grid>
   </div>
   <div class="k-d-flex k-gap-3 k-mt-2">

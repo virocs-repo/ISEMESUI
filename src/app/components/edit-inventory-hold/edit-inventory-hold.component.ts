@@ -33,6 +33,7 @@ export class EditInventoryHoldComponent implements OnInit {
     { field: 'holdDate', title: 'Hold Date' },
     { field: 'offHoldBy', title: 'Off Hold By' },
     { field: 'offHoldDate', title: 'Off Hold Date' },
+    { field: 'onHold', title: 'On Hold'}
   ];
 
   isDialogOpen = false;

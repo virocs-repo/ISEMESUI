@@ -106,6 +106,19 @@
                   </kendo-textarea>
                 </div>
 
+                <div *ngIf="selectedHoldCode === 'Count Mismatch'" class="k-d-flex k-flex-column k-gap-3">
+                  <div class="k-d-flex k-align-items-end k-gap-3 field-wrapper">
+                      <label class="k-label k-mb-0" style="min-width: 150px;">Expected Qty:</label>
+                      <kendo-textbox class="textbox" [(ngModel)]="expectedQty" [disabled]="isReadOnly" style="width: 250px;"></kendo-textbox>
+                    
+                      <label class="k-label k-mb-0" style="min-width: 150px;">Available Qty:</label>
+                      <kendo-textbox class="textbox" [(ngModel)]="availableQty" [disabled]="isReadOnly" style="width: 250px;"></kendo-textbox>
+                   
+                      <label class="k-label k-mb-0" style="min-width: 150px;">Confirmed Qty:<b class="required-label"></b></label>
+                      <kendo-textbox class="textbox" [(ngModel)]="confirmedQty" [disabled]="isReadOnly" style="width: 250px;"></kendo-textbox>
+                  </div>
+                </div>
+
                 <div class="k-d-flex k-align-items-center k-gap-3">
                   <kendo-label class="k-mb-0" style="min-width: 150px;">Hold By:</kendo-label>
                   <span class="value-text">{{ holdBy || '......' }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
