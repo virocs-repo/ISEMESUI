@@ -31,6 +31,9 @@ export class AddHoldComponent implements OnInit {
   holdComments: string = '';
   reason: string = '';
   offHoldComments: string = '';
+  expectedQty: number| null = null;
+  availableQty: number | null = null;
+  confirmedQty: number | null = null;
   treeNodes: any[] = [];
   selectedIds: any[] = [];
   holdBy: string | null = null; 
@@ -72,6 +75,7 @@ export class AddHoldComponent implements OnInit {
 
   onHoldChanged(){
     this.showHoldFields = !this.isHold;
+    this.isReadOnly = this.isHold;
   }
  
 
@@ -88,6 +92,9 @@ export class AddHoldComponent implements OnInit {
       this.offHoldBy = this.selectedGridData[0]?.offHoldBy || null;
       this.offHoldTime = this.selectedGridData[0]?.offHoldDate || null;
       this.selectedHoldCode = this.selectedGridData[0]?.holdCode || ''; 
+      this.expectedQty = this.selectedGridData[0]?.expectedQty || '';
+      this.availableQty = this.selectedGridData[0]?.availableQty || '';
+      this.confirmedQty = this.selectedGridData[0]?.confirmedQty || '';
       this.listFiles();
     }
     //this.isReadOnly = !!this.offHoldComments;
@@ -169,6 +176,7 @@ export class AddHoldComponent implements OnInit {
       GroupName: groupName,
       HoldCodeId: holdCodeId,
       OffHoldComments: this.isHold ? null : this.offHoldComments,
+      ConfirmedQty: this.isHold ? null : this.confirmedQty,
       UserId: this.appService.loginId,
       CategoryName: 'Hold',
     };
