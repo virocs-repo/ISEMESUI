@@ -1,0 +1,108 @@
+<div class="k-d-flex k-align-items-center k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
+
+  <h4>Receiver Form (Internal)</h4>
+  <i class="k-ml-auto"></i>
+  <kendo-label text="Search" class="k-font-size-sm">
+    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
+      rounded="full" (input)="onSearchMaster()" />
+  </kendo-label>
+
+
+  <!-- <div class="search-box">
+    <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
+    <input kendoTextBox type="search" placeholder="Search" class="search-input" rounded="full" />
+    <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
+  </div> -->
+  <kendo-label text="Receipt Start Date" class="k-font-size-sm">
+    <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
+  </kendo-label>
+  <kendo-label text="Receipt End Date" class="k-font-size-sm">
+    <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
+  </kendo-label>
+  <!-- <kendo-daterange class="k-max-w-fit">
+    <kendo-label text="Start: ">
+      <kendo-dateinput kendoDateRangeStartInput rounded="full" [(ngModel)]="range.start"></kendo-dateinput>
+    </kendo-label>
+    <kendo-label text="End: ">
+      <kendo-dateinput kendoDateRangeEndInput rounded="full" [(ngModel)]="range.end"></kendo-dateinput>
+    </kendo-label>
+  </kendo-daterange> -->
+  <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
+  <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()"
+    [disabled]="!isAddButtonEnabled">Add</button>
+</div>
+<div
+  class="k-d-flex k-align-items-center k-gap-2 k-py-2 k-px-2 k-flex-wrap k-justify-content-between page-header page-header-mobile">
+  <h2 class="k-m-0">Receiving</h2>
+  <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
+  <div class="search-box k-w-full k-ml-auto">
+    <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
+    <input kendoTextBox type="search" placeholder="Search" class="search-input k-w-full" rounded="full" />
+    <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
+  </div>
+</div>
+<!-- <div class="k-d-flex">
+  <i class="k-ml-auto"></i>
+  <button kendoButton (click)="doTestEditMode()">Test Edit Mode</button>
+</div> -->
+<div class="page-body k-m-4">
+  <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings"
+    [columnMenu]="columnMenuSettings" [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
+    [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" 
+    class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
+    <kendo-grid-column field="receiptID" title="Receipt ID"></kendo-grid-column>
+    <kendo-grid-column field="customerType" title="Receive From"></kendo-grid-column>
+    <kendo-grid-column field="customerVendor" title="Customer / Vendor">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="minimal-text" [title]="dataItem.customerVendor">{{dataItem.customerVendor}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="receivedOnBehalf" title="Received on Behalf">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="minimal-text" [title]="dataItem.receivedOnBehalf">{{dataItem.receivedOnBehalf}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="receivingFacility" title="Receiving Facility"></kendo-grid-column>
+    <kendo-grid-column field="deliveryMode" title="Delivery Method">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="minimal-text" [title]="dataItem.deliveryMode">{{dataItem.deliveryMode}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="mailStatus" title="Mail Status"></kendo-grid-column>
+    <kendo-grid-column field="receivingStatus" title="Receiving Status"></kendo-grid-column>
+    <kendo-grid-column field="receiptType" title="Receipt Type"></kendo-grid-column>
+    <kendo-grid-column field="trackingNumber" title="Tracking/AWB#"></kendo-grid-column>
+    <kendo-grid-column field="active" title="Active" filter="boolean">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="k-d-flex">
+          <span>{{dataItem.active?'Yes': 'No'}}</span>
+          <!-- <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
+          <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
+            (select)="onSelectRowActionMenuV1($event, dataItem)"></kendo-contextmenu> -->
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+  </kendo-grid>
+</div>
+
+<kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
+  #gridContextMenu></kendo-contextmenu>
+
+<kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'95%'"
+  class="dialog-round receipt-dialog">
+  <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
+    <h3 class="k-m-0">Receipt</h3>
+    <small *ngIf="appService.sharedData.receiving.isViewMode">(View Mode)</small>
+    <small *ngIf="appService.sharedData.receiving.isEditMode">(Edit Mode)</small>
+    <!-- receiptID -->
+    <small *ngIf="appService.sharedData.receiving.dataItem?.receiptID">Receipt ID:
+      {{appService.sharedData.receiving.dataItem.receiptID}}</small>
+      
+    <i class="k-ml-auto"></i>
+    <button kendoButton type="button" rounded="full" [svgIcon]="ICON.xIcon" size="small"
+      (click)="canCloseDialog()"></button>
+  </div>
+  <div class="dialog-body k-overflow-y-auto">
+    <app-receipt (onClose)="closeDialog()" (onRestart)="onClearForm()"></app-receipt>
+  </div>
+</kendo-dialog>

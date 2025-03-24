@@ -12,13 +12,22 @@
       <!--       <button kendoButton fillMode="flat" routerLink="/receiving" routerLinkActive="active"
         [disabled]="!(appService.userPreferences || (appService.userPreferences && appService.activeNavigationUrls.includes('Receiving')))">Receiving</button> -->
 
-      <div class="kendo-dropdown-wrapper">
+        <div class="kendo-dropdown-wrapper">
         <button kendoButton fillMode="flat" class="parent-menu-button" routerLink="/receiving" routerLinkActive="active"
           [disabled]="!(appService.userPreferences || (appService.userPreferences && appService.activeNavigationUrls.includes('Receiving')))">
           Receiving
           <kendo-icon name="arrow-down" class="menu-icon"></kendo-icon>
         </button>
         <div class="submenu">
+          <button kendoButton fillMode="flat" routerLink="/receiver-form-internal" routerLinkActive="active">
+            Receiver Form(Internal)
+          </button>
+          <button kendoButton fillMode="flat" routerLink="/receiver-form-customer" routerLinkActive="active">
+            Receiver Form(Customer)
+          </button>
+          <button kendoButton fillMode="flat" routerLink="/mail-room" routerLinkActive="active">
+            Mail Room
+          </button>
           <button kendoButton fillMode="flat" routerLink="/int-transfer-receiving" routerLinkActive="active">
             Internal Tranfer Receiving
           </button>

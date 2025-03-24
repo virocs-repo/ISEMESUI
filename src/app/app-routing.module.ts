@@ -18,9 +18,15 @@ import { CombinedLotComponent } from './components/combined-lot/combined-lot.com
 import { InventoryMoveComponent } from './components/inventory-move/inventory-move.component';
 import { IntTranferReceivingComponent } from './components/int-tranfer-receiving/int-tranfer-receiving.component';
 import { TicketComponent } from './components/ticket/ticket.component';
+import { ReceiverFormInternalComponent } from './components/receiver-form-internal/receiver-form-internal.component';
+import { ReceiverFormCustomerComponent } from './components/receiver-form-customer/receiver-form-customer.component';
+import { MailRoomComponent } from './components/mail-room/mail-room.component';
 
 const routes: Routes = [
   { path: 'receiving', component: ReceivingComponent, canActivate: [authGuard] },
+  { path: 'receiver-form-internal', component: ReceiverFormInternalComponent, canActivate: [authGuard] },
+  { path: 'receiver-form-customer', component: ReceiverFormCustomerComponent, canActivate: [authGuard] },
+  { path: 'mail-room', component: MailRoomComponent, canActivate: [authGuard] },
   { path: 'inventory-hold', component: InventoryHoldComponent, canActivate: [authGuard] },
   { path: 'inventory-checkinCheckout', component: InventorycheckinCheckoutComponent, canActivate: [authGuard] },
   { path: 'shipping', component: ShippingComponent, canActivate: [authGuard] },
