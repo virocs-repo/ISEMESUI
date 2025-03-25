@@ -95,7 +95,7 @@
         </ng-container>
         <ng-template #regularCell>
           <!-- Regular Cell -->
-          <span class="minimal-text" [title]="dataItem?.[c.field] || ''">
+          <span class="truncate-text" [title]="dataItem?.[c.field] || ''">
             {{ dataItem?.[c.field] || '' }}
           </span>
         </ng-template>
