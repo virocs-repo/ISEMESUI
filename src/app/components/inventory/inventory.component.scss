@@ -6,3 +6,13 @@
     color: #007bff;
     text-decoration: underline;
 }
+
+a.minimal-text {
+    pointer-events: none;
+  }
+
+  .truncate-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
