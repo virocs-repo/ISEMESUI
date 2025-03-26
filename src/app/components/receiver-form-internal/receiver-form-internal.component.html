@@ -1,36 +1,95 @@
-<div class="k-d-flex k-align-items-center k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
-
-  <h4>Receiver Form (Internal)</h4>
-  <i class="k-ml-auto"></i>
-  <kendo-label text="Search" class="k-font-size-sm">
-    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
-      rounded="full" (input)="onSearchMaster()" />
-  </kendo-label>
-
-
-  <!-- <div class="search-box">
-    <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
-    <input kendoTextBox type="search" placeholder="Search" class="search-input" rounded="full" />
-    <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
-  </div> -->
-  <kendo-label text="Receipt Start Date" class="k-font-size-sm">
-    <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
-  </kendo-label>
-  <kendo-label text="Receipt End Date" class="k-font-size-sm">
-    <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
-  </kendo-label>
-  <!-- <kendo-daterange class="k-max-w-fit">
-    <kendo-label text="Start: ">
-      <kendo-dateinput kendoDateRangeStartInput rounded="full" [(ngModel)]="range.start"></kendo-dateinput>
+<div class="k-d-flex k-flex-col k-gap-2 page-header page-header-desktop k-px-4 k-py-2">
+  <!-- Title Row -->
+  <div class="k-d-flex k-align-items-center k-justify-content-between">
+    <h4 class="k-m-0">Receiver Form (Internal)</h4>
+    <kendo-label text="Search" class="k-font-size-sm">
+      <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search"
+      class="search-input" (input)="onSearchMaster()" style="width: 250px;" />
     </kendo-label>
-    <kendo-label text="End: ">
-      <kendo-dateinput kendoDateRangeEndInput rounded="full" [(ngModel)]="range.end"></kendo-dateinput>
+  </div>  
+
+  <!-- Form Fields Grid Layout -->
+  <div class="k-d-grid k-grid-cols-7 k-gap-4">
+    <kendo-label text="Receiving Info #" class="k-font-size-sm">
+      <kendo-textbox [(ngModel)]="mailNumber" class="k-w-full" placeholder="Enter Mail #"></kendo-textbox>
     </kendo-label>
-  </kendo-daterange> -->
-  <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
-  <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()"
-    [disabled]="!isAddButtonEnabled">Add</button>
+  
+    <kendo-label text="Customer" class="k-font-size-sm">
+      <kendo-combobox [data]="customers" [(ngModel)]="selectedCustomer" textField="name"
+        valueField="id" class="k-w-full" [filterable]="true" placeholder="Select Customer">
+      </kendo-combobox>
+    </kendo-label>
+  
+    <kendo-label text="Device Family" class="k-font-size-sm">
+      <kendo-combobox [data]="customers" [(ngModel)]="selectedCustomer" textField="name"
+        valueField="id" class="k-w-full" [filterable]="true" placeholder="Select Device Family">
+      </kendo-combobox>
+    </kendo-label>
+  
+    <kendo-label text="Device" class="k-font-size-sm">
+      <kendo-textbox [(ngModel)]="mailNumber" class="k-w-full" placeholder="Enter Device"></kendo-textbox>
+    </kendo-label>
+  
+    <kendo-label text="Customer Lots" class="k-font-size-sm">
+      <kendo-textbox [(ngModel)]="mailNumber" class="k-w-full" placeholder="Enter Customer Lots"></kendo-textbox>
+    </kendo-label>
+  
+    <kendo-label text="Status" class="k-font-size-sm">
+      <kendo-combobox [data]="customers" [(ngModel)]="selectedCustomer" textField="name"
+        valueField="id" class="k-w-full" [filterable]="true" placeholder="Select Status">
+      </kendo-combobox>
+    </kendo-label>
+  
+    <kendo-label text="ISE lot #" class="k-font-size-sm">
+      <kendo-textbox [(ngModel)]="mailNumber" class="k-w-full" placeholder="Enter ISE Lot #"></kendo-textbox>
+    </kendo-label>
+  </div>
+  
+  <!-- Second Row -->
+  <div class="k-d-grid k-grid-cols-7 k-gap-4">
+    <kendo-label text="Mail #" class="k-font-size-sm">
+      <kendo-textbox [(ngModel)]="mailNumber" class="k-w-full" placeholder="Enter Mail #"></kendo-textbox>
+    </kendo-label>
+  
+    <kendo-label text="Receipt Start Date" class="k-font-size-sm">
+      <kendo-datepicker [(value)]="fromDate" class="k-w-full"></kendo-datepicker>
+    </kendo-label>
+  
+    <kendo-label text="Receipt End Date" class="k-font-size-sm">
+      <kendo-datepicker [(value)]="toDate" class="k-w-full"></kendo-datepicker>
+    </kendo-label>
+  
+    <kendo-label text="Location" class="k-font-size-sm">
+      <kendo-combobox [data]="customers" [(ngModel)]="selectedCustomer" textField="name"
+        valueField="id" class="k-w-full" [filterable]="true" placeholder="Select Location">
+      </kendo-combobox>
+    </kendo-label>
+  
+    <kendo-label text="Service Category" class="k-font-size-sm">
+      <kendo-combobox [data]="customers" [(ngModel)]="selectedCustomer" textField="name"
+        valueField="id" class="k-w-full" [filterable]="true" placeholder="Select Service Category">
+      </kendo-combobox>
+    </kendo-label>
+  
+    <kendo-label text="" class="k-font-size-sm k-col-span-1">
+      <div class="k-d-flex k-align-items-center k-gap-4">
+        <label class="k-font-size-sm k-d-flex k-align-items-center">
+          <input type="radio" kendoRadioButton value="Expected" [(ngModel)]="radio1.layout"/>
+          <span class="k-ml-2">Expected</span>
+        </label>
+        <label class="k-font-size-sm k-d-flex k-align-items-center">
+          <input type="radio" kendoRadioButton value="UnExpected" [(ngModel)]="radio1.layout"/>
+          <span class="k-ml-2">UnExpected</span>
+        </label>
+      </div>
+    </kendo-label>
+    <div class="k-d-flex k-gap-4 k-w-64">
+      <button kendoButton rounded="full" themeColor="success" class="k-w-full k-h-8" (click)="search()">Search</button>
+      <button kendoButton rounded="full" themeColor="info" class="k-w-full k-h-8" (click)="openDialog()" [disabled]="!isAddButtonEnabled">Add</button>
+    </div>      
+  </div>  
 </div>
+  
 <div
   class="k-d-flex k-align-items-center k-gap-2 k-py-2 k-px-2 k-flex-wrap k-justify-content-between page-header page-header-mobile">
   <h2 class="k-m-0">Receiving</h2>
@@ -50,36 +109,89 @@
     [columnMenu]="columnMenuSettings" [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
     [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" 
     class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
-    <kendo-grid-column field="receiptID" title="Receipt ID"></kendo-grid-column>
-    <kendo-grid-column field="customerType" title="Receive From"></kendo-grid-column>
-    <kendo-grid-column field="customerVendor" title="Customer / Vendor">
+    <kendo-grid-column field="receivingInfo" title="Receiving Info #" [width]="50">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <div class="minimal-text" [title]="dataItem.customerVendor">{{dataItem.customerVendor}}</div>
+        <div class="truncate-text" [title]="dataItem.receivingInfo">{{dataItem.receivingInfo}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="receivedOnBehalf" title="Received on Behalf">
+    <kendo-grid-column field="mail" title="Mail #" [width]="50">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <div class="minimal-text" [title]="dataItem.receivedOnBehalf">{{dataItem.receivedOnBehalf}}</div>
+        <div class="truncate-text" [title]="dataItem.mail">{{dataItem.mail}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="receivingFacility" title="Receiving Facility"></kendo-grid-column>
-    <kendo-grid-column field="deliveryMode" title="Delivery Method">
+    <kendo-grid-column field="customerVendor" title="Customer" [width]="70">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <div class="minimal-text" [title]="dataItem.deliveryMode">{{dataItem.deliveryMode}}</div>
+        <div class="truncate-text" [title]="dataItem.customerVendor">{{dataItem.customerVendor}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="mailStatus" title="Mail Status"></kendo-grid-column>
-    <kendo-grid-column field="receivingStatus" title="Receiving Status"></kendo-grid-column>
-    <kendo-grid-column field="receiptType" title="Receipt Type"></kendo-grid-column>
-    <kendo-grid-column field="trackingNumber" title="Tracking/AWB#"></kendo-grid-column>
-    <kendo-grid-column field="active" title="Active" filter="boolean">
+    <kendo-grid-column field="deliveryMode" title="Delivery Method" [width]="75">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <div class="k-d-flex">
-          <span>{{dataItem.active?'Yes': 'No'}}</span>
-          <!-- <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto" #rowActionMenuTarget></button>
-          <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="rowActionMenu"
-            (select)="onSelectRowActionMenuV1($event, dataItem)"></kendo-contextmenu> -->
-        </div>
+        <div class="truncate-text" [title]="dataItem.deliveryMode">{{dataItem.deliveryMode}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="trackingNumber" title="Tracking Code" [width]="70">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.trackingNumber">{{dataItem.trackingNumber}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="sender" title="Sender" [width]="50">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.sender">{{dataItem.sender}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="senderFrom" title="Send From" [width]="70">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.senderFrom">{{dataItem.senderFrom}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="subCategory" title="Sub Category" [width]="75">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.subCategory">{{dataItem.subCategory}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="mailStatus" title="Mail Status" [width]="70">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.mailStatus">{{dataItem.mailStatus}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="travelerStatus" title="Traveler Status" [width]="70">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.travelerStatus">{{dataItem.travelerStatus}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="modifiedOn" title="Created Date" [width]="100">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        {{ dataItem.modifiedOn | date: 'MM-dd-yyyy HH:mm a' }}
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="iseLots" title="ISE Lot #" [width]="60">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.iseLots">{{dataItem.iseLots}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="customerLots" title="Customer Lot #" [width]="50">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.customerLots">{{dataItem.customerLots}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="receiptStatus" title="Status" [width]="50">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.receiptStatus">{{dataItem.receiptStatus}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="modifiedby" title="Created By" [width]="50">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.modifiedby">{{dataItem.modifiedby}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="recipient" title="Recipient" [width]="50">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.recipient">{{dataItem.recipient}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="location" title="Location" [width]="50">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.location">{{dataItem.location}}</div>
       </ng-template>
     </kendo-grid-column>
   </kendo-grid>
