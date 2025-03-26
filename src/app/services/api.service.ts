@@ -28,6 +28,31 @@ export class ApiService {
     }
     return this.httpClient.get(`${API}v1/ise/inventory/receiptdata`, { params });
   }
+  getSearchMailRoomReceiptData(
+    mailID?: number|null, customer?: string |null, deviceFamily?: string|null, device?: string|null,
+    deliveryMethodID?: string|null, statusID?: string|null, trackingNo?: string|null,
+    locationID?: string|null, fromDate?: Date | null, toDate?: Date | null,
+    receiptID?: number|null, receiptStatus?: string|null, facilityIDStr?: string|null
+  ) {
+    debugger;
+    let params = new HttpParams();
+  
+    if (mailID) params = params.set('mailID', mailID.toString());
+    if (customer) params = params.set('customer', customer);
+    if (deviceFamily) params = params.set('deviceFamily', deviceFamily);
+    if (device) params = params.set('device', device);
+    if (deliveryMethodID) params = params.set('deliveryMethodID', deliveryMethodID);
+    if (statusID) params = params.set('statusID', statusID);
+    if (trackingNo) params = params.set('trackingNo', trackingNo);
+    if (locationID) params = params.set('locationID', locationID);
+    if (fromDate) params = params.set('fromDate', this.formatDate(fromDate));
+    if (toDate) params = params.set('toDate', this.formatDate(toDate));
+    if (receiptID) params = params.set('receiptID', receiptID.toString());
+    if (receiptStatus) params = params.set('receiptStatus', receiptStatus);
+    if (facilityIDStr) params = params.set('facilityIDStr', facilityIDStr);
+  
+    return this.httpClient.get(`${API}v1/ise/inventory/getSearchMailRoomReceiptData`, { params });
+  }  
   getReceiptdatas(facilityIDStr?: string | null, receiptStatus?: string | null, fromDate?: Date | null, toDate?: Date | null) {
     let params = new HttpParams();
 

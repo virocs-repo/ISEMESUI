@@ -2,11 +2,12 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CellClickEvent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
-import { Receipt, ICON, MESSAGES } from 'src/app/services/app.interface';
+import { Receipt, ICON, MESSAGES, Customer, KeyValueData, ReceiptLocation, DeliveryMode } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { ContextMenuComponent } from '@progress/kendo-angular-menu';
 import { Subscription } from 'rxjs';
 import * as moment from 'moment';
+import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 
 @Component({
   selector: 'app-mail-room',
@@ -21,7 +22,21 @@ export class MailRoomComponent implements OnDestroy {
   public skip = 0;
   public gridDataResult: GridDataResult = { data: [], total: 0 };
   originalData: any[] = [];
-  public searchTerm: string = '';
+  public searchTerm: string = ''; 
+  customer: Customer[] =[];
+  customerSelected: Customer | undefined;
+  deliveryMode: DeliveryMode[] = this.appService.masterData.deliveryMode;
+  deliveryModeSelected: DeliveryMode | undefined;
+  location: ReceiptLocation[] = this.appService.masterData.receiptLocation
+  locationSelected: ReceiptLocation | undefined;
+  mailSearch:number | undefined;
+  devicefamilySelected:string | undefined;
+  deviceSelected:string | undefined;
+  statusSelected:string | undefined;
+  trackingNo:string | undefined;
+  customerLot:string | undefined;
+  receivingNumber:string | undefined;
+  lotNumber:string | undefined; 
   isAddButtonEnabled: boolean = true;
   isEditButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Edit")?.active ?? true;
   selectableSettings: any = {
@@ -46,8 +61,12 @@ export class MailRoomComponent implements OnDestroy {
   format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker
   fromDate: Date | null = null;  // Variable to store the selected 'from' date
   toDate: Date | null = null;    // Variable to store the selected 'to' date
-
   isDialogOpen = false;
+  public areaList: Array<string> = [ 
+    "Pending",
+    "Scheduled",
+    "Cancelled",
+  ];
   openDialog() {
     this.isDialogOpen = true;
   }
@@ -59,8 +78,12 @@ export class MailRoomComponent implements OnDestroy {
   readonly subscription = new Subscription()
 
   constructor(public appService: AppService, private apiService: ApiService) { }
+ 
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this.customer = this.appService.masterData.entityMap.Customer;
+    this.deliveryMode= this.appService.masterData.deliveryMode;
+    this.location = this.appService.masterData.receiptLocation;
     this.search();
     this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
       switch (v) {
@@ -110,7 +133,8 @@ export class MailRoomComponent implements OnDestroy {
     }
   }
   private fetchdata() {
-    this.apiService.getReceiptdata(this.fromDate, this.toDate).subscribe({
+    this.apiService.getSearchMailRoomReceiptData(this.mailSearch,this.customerSelected?.CustomerName,this.devicefamilySelected,this.deviceSelected,this.deliveryModeSelected?.deliveryModeName,this.statusSelected,
+      this.trackingNo,this.locationSelected?.receivingFacilityName,this.fromDate, this.toDate,null,null).subscribe({
       next: (v: any) => {
         this.originalData = v;
         this.pageData();
