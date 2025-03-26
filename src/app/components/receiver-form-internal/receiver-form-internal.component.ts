@@ -15,7 +15,19 @@ import * as moment from 'moment';
 })
 export class ReceiverFormInternalComponent implements OnDestroy {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
+  //
+  mailNumber: string = '';
+  selectedCustomer: any;
 
+  customers = [
+    { id: 1, name: 'Customer A' },
+    { id: 2, name: 'Customer B' },
+    { id: 3, name: 'Customer C' },
+  ];
+  public radio1 = {
+    layout: "Expected",
+  };
+//
   readonly ICON = ICON;
   public pageSize = 25;
   public skip = 0;
@@ -110,7 +122,7 @@ export class ReceiverFormInternalComponent implements OnDestroy {
     }
   }
   private fetchdata() {
-    this.apiService.getReceiptdata(this.fromDate, this.toDate).subscribe({
+    this.apiService.getReceiverFormInternal().subscribe({
       next: (v: any) => {
         this.originalData = v;
         this.pageData();
