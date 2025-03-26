@@ -780,5 +780,56 @@ getShippingAddressData(
   }
     return this.httpClient.get(url);
   }
-}
 
+
+  getReceiverFormCustomer(receivingInfoId?: number,customerId?: number,deviceFamilyId?: number,deviceId?: number,customerLotsStr?: string | null,statusId?: number,isExpected?: boolean, isElot?: string | null,serviceCategoryId?: number,locationId?: number,mail?: string | null, fromDate?: Date | null, toDate?: Date | null,receiptStatus?: string | null,facilityIdStr?: string | null) {
+    let params = new HttpParams();
+
+    if (receivingInfoId) {
+      params = params.set('receivingInfoId', receivingInfoId);
+    }
+    if (customerId) {
+        params = params.set('customerId', customerId);
+    }
+    if (deviceFamilyId) {
+        params = params.set('deviceFamilyId', deviceFamilyId);
+    }
+    if (deviceId) {
+      params = params.set('deviceId', deviceId);
+    }
+    if (customerLotsStr) {
+        params = params.set('customerLotsStr', customerLotsStr);
+    }
+    if (statusId) {
+        params = params.set('statusId', statusId);
+    }
+    if (isExpected) {
+        params = params.set('isExpected', isExpected);
+    }
+    if (isElot) {
+      params = params.set('isElot', isElot);
+    }
+    if (serviceCategoryId) {
+        params = params.set('serviceCategoryId', serviceCategoryId);
+    }
+    if (locationId) {
+        params = params.set('facilityIDStr', locationId);
+    }
+    if (mail) {
+        params = params.set('mail', mail);
+    }
+    if (fromDate) {
+        params = params.set('fromDate', this.formatDate(fromDate));
+    }
+    if (toDate) {
+        params = params.set('toDate', this.formatDate(toDate));
+    }
+    if (receiptStatus) {
+      params = params.set('receiptStatus', receiptStatus);
+    }
+    if (facilityIdStr) {
+        params = params.set('facilityIdStr', facilityIdStr);
+    }
+    return this.httpClient.get(`${API}v1/ise/inventory/searchCustomerReceiverForm`, { params });
+  }
+}

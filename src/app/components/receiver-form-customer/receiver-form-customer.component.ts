@@ -13,17 +13,26 @@ import * as moment from 'moment';
   templateUrl: './receiver-form-customer.component.html',
   styleUrls: ['./receiver-form-customer.component.scss']
 })
+
 export class ReceiverFormCustomerComponent implements OnDestroy {
+  
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
 
+  readonly subscription = new Subscription()
   readonly ICON = ICON;
-  public pageSize = 25;
-  public skip = 0;
-  public gridDataResult: GridDataResult = { data: [], total: 0 };
+  pageSize = 25;
+  skip = 0;
+  gridDataResult: GridDataResult = { data: [], total: 0 };
   originalData: any[] = [];
-  public searchTerm: string = '';
+  searchTerm: string = '';
+  mailNumber: string = '';
+  selectedCustomer: any;
+  dataItemSelected: Receipt | undefined;
+  selectedRowIndex: number = -1;
+
   isAddButtonEnabled: boolean = true;
   isEditButtonEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Edit")?.active ?? true;
+
   selectableSettings: any = {
     checkboxOnly: true,
     mode: 'single',
@@ -35,14 +44,29 @@ export class ReceiverFormCustomerComponent implements OnDestroy {
     autoSizeColumn: true,
     autoSizeAllColumns: true,
   }
+  customers = [
+    { id: 1, name: 'Customer A' },
+    { id: 2, name: 'Customer B' },
+    { id: 3, name: 'Customer C' },
+  ];
+  public radio1 = {
+    layout: "Expected",
+  };
+  
+  rowActionMenu: MenuItem[] = [
+    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
+    { text: 'Edit Data', icon: 'edit', disabled: !this.isEditButtonEnabled, svgIcon: ICON.pencilIcon },
+    { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
+    // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
+  ];
+
   private readonly today = new Date();
   private readonly oneMonthAgo = new Date(this.today.getFullYear(), this.today.getMonth() - 1, this.today.getDate());
   range = {
     start: this.oneMonthAgo,
     end: this.today
   };
-  // fromDate = '';
-  // toDate = '';
+  
   format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker
   fromDate: Date | null = null;  // Variable to store the selected 'from' date
   toDate: Date | null = null;    // Variable to store the selected 'to' date
@@ -56,13 +80,12 @@ export class ReceiverFormCustomerComponent implements OnDestroy {
     this.fetchdata(); // because there might be changes from dialog
     this.appService.eventEmitter.emit({ action: 'refreshVendors', data: { m: 'masterData' } })
   }
-  readonly subscription = new Subscription()
-
+  
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
     this.search();
-    this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
+    this.subscription.add(this.appService.sharedData.customerReceiverForm.eventEmitter.subscribe((v) => {
       switch (v) {
         case 'closeDialog':
           this.closeDialog();
@@ -110,84 +133,21 @@ export class ReceiverFormCustomerComponent implements OnDestroy {
     }
   }
   private fetchdata() {
-    this.apiService.getReceiptdata(this.fromDate, this.toDate).subscribe({
+    this.apiService.getReceiverFormCustomer().subscribe({
       next: (v: any) => {
         this.originalData = v;
         this.pageData();
-        /*    this.gridDataResult.data = v;
-           this.gridDataResult.total = v.length */
-        // this.testReceiptEdit();
       },
       error: (v: any) => { }
     });
   }
-  private testReceiptEdit() {
-    setTimeout(() => {
-      this.appService.sharedData.receiving.dataItem = this.gridDataResult.data[0]
-      this.appService.sharedData.receiving.isEditMode = true;
-      this.appService.sharedData.receiving.isViewMode = false;
-      // access the same in receipt component
-      this.openDialog()
-    }, 3000);
-  }
+
   pageChange(event: PageChangeEvent): void {
     this.skip = event.skip;
     this.fetchdata();
   }
-  rowActionMenu: MenuItem[] = [
-    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
-    { text: 'Edit Data', icon: 'edit', disabled: !this.isEditButtonEnabled, svgIcon: ICON.pencilIcon },
-    { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
-    // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
-  ];
-  doTestEditMode() {
-    // this.onSelectRowActionMenuV1({ item: { text: 'Edit Data' } } as any, this.gridDataResult.data[0]);
-  }
-  private onSelectRowActionMenuV1(e: ContextMenuSelectEvent, dataItem: Receipt) {
-    dataItem.holdComments = dataItem.holdComments || '';
-    switch (e.item.text) {
-      case 'Void Data':
-        const body = {
-          receiptDetails: [
-            { ...dataItem, recordStatus: "U", loginId: this.appService.loginId, active: false }
-          ]
-        };
-        // temp fix
-        if (body.receiptDetails[0].receivingStutus) {
-          body.receiptDetails[0].receivingStatus = body.receiptDetails[0].receivingStutus;
-        }
-        this.apiService.postProcessReceipt(body).subscribe({
-          next: (value) => {
-            this.appService.successMessage(MESSAGES.DataSaved);
-            this.fetchdata()
-          },
-          error: (err) => {
-            this.appService.errorMessage(MESSAGES.DataSaveError);
-          },
-        })
-        break;
-      case 'View Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = false;
-        this.appService.sharedData.receiving.isViewMode = true;
-        // access the same in receipt component
-        this.openDialog()
-        break;
-      case 'Edit Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = true;
-        this.appService.sharedData.receiving.isViewMode = false;
-        // access the same in receipt component
-        this.openDialog()
-        break;
+  
 
-      default:
-        break;
-    }
-
-  }
-  dataItemSelected: Receipt | undefined;
-  selectedRowIndex: number = -1;
   onCellClick(e: CellClickEvent): void {
     if (e.type === 'contextmenu') {
       this.showContextMenu(e);
@@ -226,16 +186,16 @@ export class ReceiverFormCustomerComponent implements OnDestroy {
         })
         break;
       case 'View Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = false;
-        this.appService.sharedData.receiving.isViewMode = true;
+        this.appService.sharedData.customerReceiverForm.dataItem = dataItem
+        this.appService.sharedData.customerReceiverForm.isEditMode = false;
+        this.appService.sharedData.customerReceiverForm.isViewMode = true;
         // access the same in receipt component
         this.openDialog()
         break;
       case 'Edit Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = true;
-        this.appService.sharedData.receiving.isViewMode = false;
+        this.appService.sharedData.customerReceiverForm.dataItem = dataItem
+        this.appService.sharedData.customerReceiverForm.isEditMode = true;
+        this.appService.sharedData.customerReceiverForm.isViewMode = false;
         // access the same in receipt component
         this.openDialog()
         break;
@@ -256,11 +216,9 @@ export class ReceiverFormCustomerComponent implements OnDestroy {
     }, 300);
   }
   canCloseDialog() {
-    this.appService.sharedData.receiving.eventEmitter.emit('canCloseDialog?')
+    this.appService.sharedData.customerReceiverForm.eventEmitter.emit('canCloseDialog?')
   }
   search() {
-    // this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
-    // this.toDate = moment(this.range.end).format('MM-DD-YYYY');
     this.fetchdata()
   }
 
@@ -270,22 +228,12 @@ export class ReceiverFormCustomerComponent implements OnDestroy {
   }
 
   pageData(): void {
-    /*    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
-   
-       // Paginate the data
-       const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
-       this.gridDataResult.data = paginatedData;
-           this.gridDataResult.total =filteredData.length ; */
-
     const filteredData = this.filterData(this.originalData);
     const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
     this.gridDataResult.data = filteredData;
     this.gridDataResult.total = filteredData.length;
-
-
-
-
   }
+
   filterData(data: any[]): any[] {
     if (!this.searchTerm) {
       return data;

@@ -82,6 +82,7 @@ export class AppService {
     anotherShipping:SharedInfo
     addshipping:SharedInfo
     addTicket:SharedInfo
+    customerReceiverForm:SharedInfo
 
   } = {
       receiving: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
@@ -91,7 +92,8 @@ export class AppService {
       Inttransfer: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
       addshipping: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
       anotherShipping : {isEditMode:false, isViewMode:false, dataItem: {}, eventEmitter: new EventEmitter() },
-      addTicket: {isEditMode:false, isViewMode:false, dataItem: {}, eventEmitter: new EventEmitter()}
+      addTicket: {isEditMode:false, isViewMode:false, dataItem: {}, eventEmitter: new EventEmitter()},
+      customerReceiverForm: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()}
     }
   hardwareTypes: HardwareType[] = []
   userData: UserData = { email: '', name: '', firstName: '' }
