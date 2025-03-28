@@ -81,20 +81,22 @@ export class MailRoomComponent implements OnDestroy {
  
 
   async ngOnInit(): Promise<void> {
-    this.customer = this.appService.masterData.entityMap.Customer;
-    this.deliveryMode= this.appService.masterData.deliveryMode;
-    this.location = this.appService.masterData.receiptLocation;
-    this.search();
-    this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
-      switch (v) {
-        case 'closeDialog':
-          this.closeDialog();
-          break;
-        default:
-          break;
-      }
-    }));
-
+    setTimeout(() => {
+      this.customer = this.appService.masterData.entityMap.Customer;
+      this.deliveryMode= this.appService.masterData.deliveryMode;
+      this.location = this.appService.masterData.receiptLocation;
+      this.search();
+      console.log("masterdata",this.appService.masterData);
+      this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
+        switch (v) {
+          case 'closeDialog':
+            this.closeDialog();
+            break;
+          default:
+            break;
+        }
+      }));
+    }, 500);
     this.initRoleBasedUI();
   }
   ngOnDestroy(): void {
@@ -133,8 +135,8 @@ export class MailRoomComponent implements OnDestroy {
     }
   }
   private fetchdata() {
-    this.apiService.getSearchMailRoomReceiptData(this.mailSearch,this.customerSelected?.CustomerName,this.devicefamilySelected,this.deviceSelected,this.deliveryModeSelected?.deliveryModeName,this.statusSelected,
-      this.trackingNo,this.locationSelected?.receivingFacilityName,this.fromDate, this.toDate,null,null).subscribe({
+    this.apiService.getSearchMailRoomReceiptData(this.mailSearch,this.customerSelected?.CustomerName,this.devicefamilySelected,this.deviceSelected,this.deliveryModeSelected?.deliveryModeID.toString(),this.statusSelected,
+      this.trackingNo,this.locationSelected?.receivingFacilityName,this.fromDate, this.toDate,null,null,null,null,null,null).subscribe({
       next: (v: any) => {
         this.originalData = v;
         this.pageData();
