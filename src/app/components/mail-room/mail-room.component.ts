@@ -29,10 +29,13 @@ export class MailRoomComponent implements OnDestroy {
   deliveryModeSelected: DeliveryMode | undefined;
   location: ReceiptLocation[] = this.appService.masterData.receiptLocation
   locationSelected: ReceiptLocation | undefined;
+  statusList: any[] = [];
+  devicefamilyList:any[] = [];
+  deviceList:any[] = [];
   mailSearch:number | undefined;
-  devicefamilySelected:string | undefined;
+  devicefamilySelected:any = null;
   deviceSelected:string | undefined;
-  statusSelected:string | undefined;
+  statusSelected:any = null;
   trackingNo:string | undefined;
   customerLot:string | undefined;
   receivingNumber:string | undefined;
@@ -62,11 +65,6 @@ export class MailRoomComponent implements OnDestroy {
   fromDate: Date | null = null;  // Variable to store the selected 'from' date
   toDate: Date | null = null;    // Variable to store the selected 'to' date
   isDialogOpen = false;
-  public areaList: Array<string> = [ 
-    "Pending",
-    "Scheduled",
-    "Cancelled",
-  ];
   openDialog() {
     this.isDialogOpen = true;
   }
@@ -85,6 +83,7 @@ export class MailRoomComponent implements OnDestroy {
       this.customer = this.appService.masterData.entityMap.Customer;
       this.deliveryMode= this.appService.masterData.deliveryMode;
       this.location = this.appService.masterData.receiptLocation;
+       this.getStatusList();
       this.search();
       console.log("masterdata",this.appService.masterData);
       this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
@@ -102,6 +101,55 @@ export class MailRoomComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
+  async getStatusList(){
+    this.statusList = await new Promise<any>((resolve, reject) => { 
+      this.apiService.getStatusList().subscribe({
+        next:(data) => resolve(data),
+        error: (err) => reject(err)
+        
+       });
+    });
+  }
+  onCustomerChange(selectedCustomer: any) {
+    if (!selectedCustomer && !selectedCustomer.CustomerID) return;
+  
+    const customerId = selectedCustomer.CustomerID;
+    this.getDeviceFamiliesList(customerId);
+  }
+
+  getDeviceFamiliesList(customerId: number) {
+    this.apiService.getDeviceFamiliesList(customerId).subscribe({
+      next: (data: any[]) => { 
+        this.devicefamilyList = Array.isArray(data) ? data : []; 
+      },
+      error: (err) => {
+        console.error('Error fetching device families:', err);
+        this.devicefamilyList = [];
+      }
+    });
+  }
+  onDeviceFamilyChange(selectedDeviceFamily: any) {
+    const customerId = this.customerSelected?.CustomerID; 
+    if (customerId && selectedDeviceFamily) {
+      this.getDeviceList(customerId, selectedDeviceFamily.deviceFamilyId);
+    } else {
+      this.deviceList = []; 
+    }
+  }
+  
+
+  getDeviceList(customerId: number, deviceFamilyId: number) {
+    this.apiService.getDeviceList(customerId, deviceFamilyId).subscribe(
+      (data: any[]) => {
+        this.deviceList = Array.isArray(data) ? data : []; 
+      },
+      (error) => {
+        console.error('Error fetching device list:', error);
+        this.deviceList = []; 
+      }
+    );
+  }
+
   private initRoleBasedUI() {
     const appMenu = this.appService.userPreferences?.roles.appMenus.find(am => am.menuTitle == 'Receiving Menu')
     if (appMenu) {

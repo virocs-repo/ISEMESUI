@@ -835,4 +835,17 @@ getShippingAddressData(
     }
     return this.httpClient.get(`${API}v1/ise/inventory/searchCustomerReceiverForm`, { params });
   }
+  getStatusList() {
+    let url = `${API}v1/ise/inventory/getInventoryReceiptStatuses`;
+    return this.httpClient.get(url);
+  }
+  getDeviceFamiliesList(customerId: number): Observable<any[]> {
+    let url = `${API}v1/ise/inventory/getDeviceFamilies?customerId=${customerId}`;
+    return this.httpClient.get<any[]>(url);
+  }
+  getDeviceList(customerId: number, deviceFamilyId: number): Observable<any[]> {
+    let url = `${API}v1/ise/inventory/getDevices?customerId=${customerId}&deviceFamilyId=${deviceFamilyId}`;
+    return this.httpClient.get<any[]>(url);
+  }
+  
 }
