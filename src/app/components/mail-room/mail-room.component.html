@@ -16,27 +16,25 @@
 
   <kendo-label text="Customer" class="k-font-size-sm">
     <kendo-combobox [data]="customer" [(ngModel)]="customerSelected" [textField]="'CustomerName'"
-        [valueField]="'CustomerID'" placeholder="Select" placeholder="Select Customer"  class="k-w-full"></kendo-combobox>
+        [valueField]="'CustomerID'" placeholder="Select" placeholder="Select Customer"  class="k-w-full" (valueChange)="onCustomerChange($event)"></kendo-combobox>
   </kendo-label>
 
   <kendo-label text="Device Family" class="k-font-size-sm">
-    <kendo-combobox [data]="" [(ngModel)]="devicefamilySelected" [textField]="''"
-        [valueField]="''" placeholder="Select Device Family" class="k-w-full"></kendo-combobox>
+    <kendo-combobox [data]="devicefamilyList" [(ngModel)]="devicefamilySelected" [textField]="'deviceFamilyName'"
+        [valueField]="'deviceFamilyId'" placeholder="Select Device Family" class="k-w-full" (valueChange)="onDeviceFamilyChange($event)"></kendo-combobox>
   </kendo-label>
 
   <kendo-label text="Device" class="k-font-size-sm">
-    <kendo-combobox [data]="" [(ngModel)]="deviceSelected" [textField]="''"
-        [valueField]="''" placeholder="Enter Device"></kendo-combobox>
+    <kendo-combobox [data]="deviceList" [(ngModel)]="deviceSelected" [textField]="'deviceName'"
+        [valueField]="'deviceId'" placeholder="Enter Device"></kendo-combobox>
   </kendo-label>
-
   <kendo-label text="Delivery Method" class="k-font-size-sm">
     <kendo-combobox [data]="deliveryMode" [(ngModel)]="deliveryModeSelected" 
     [textField]="'deliveryModeName'" [valueField]="'deliveryModeID'" placeholder="Select Delivery Method"></kendo-combobox>
   </kendo-label>
-
   <kendo-label text="Status" class="k-font-size-sm">
-    <kendo-combobox [data]="areaList" [(ngModel)]="statusSelected" [textField]="''"
-        [valueField]="''" placeholder="Select Status"></kendo-combobox>
+    <kendo-combobox [data]="statusList" [(ngModel)]="statusSelected" [textField]="'itemText'"
+        [valueField]="'masterListItemId'" placeholder="Select Status"></kendo-combobox>
   </kendo-label>
 
   <kendo-label text="Tracking No" class="k-font-size-sm">
@@ -147,7 +145,7 @@
       (click)="canCloseDialog()"></button>
   </div>
   <div class="dialog-body k-overflow-y-auto">
-    <app-receipt (onClose)="closeDialog()" (onRestart)="onClearForm()"></app-receipt>
-    <!-- <app-add-mail-info (onClose)="closeDialog()" (onRestart)="onClearForm()"></app-add-mail-info> -->
+    <!-- <app-receipt (onClose)="closeDialog()" (onRestart)="onClearForm()"></app-receipt> -->
+     <app-add-mail-info (onClose)="closeDialog()" (onRestart)="onClearForm()"></app-add-mail-info> 
   </div>
 </kendo-dialog>
