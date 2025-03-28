@@ -2,9 +2,6 @@
   height: 85vh;
 }
 
-a.minimal-text {
-  pointer-events: none;
-}
 
 .truncate-text {
   white-space: nowrap;
@@ -12,11 +9,3 @@ a.minimal-text {
   text-overflow: ellipsis;
 }
 
-.custom-grid {
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
-.k-grid {
-  min-width: 100%;
-}
