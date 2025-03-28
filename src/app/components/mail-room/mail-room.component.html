@@ -1,46 +1,51 @@
-<div class="k-d-flex k-align-items-center k-gap-4 k-py-2 k-px-4 page-header page-header-desktop">
-  <h4 class="k-m-0">Search Mail</h4>
-  <i class="k-ml-auto"></i>
-  <kendo-label text="Search" class="k-font-size-sm">
-    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search"
-      class="search-input k-w-full k-mr-4" rounded="full" (input)="onSearchMaster()" />
-  </kendo-label>
- <div class="k-d-grid k-grid-cols-7 k-gap-4 k-px-4">
+<div class="k-d-flex k-flex-col k-gap-2 page-header page-header-desktop k-px-4 k-py-2">
+  <!-- Title Row -->
+  <div class="k-d-flex k-align-items-center k-justify-content-between">
+    <h4 class="k-m-0">Mail Room</h4>
+    <kendo-label text="Search" class="k-font-size-sm">
+      <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search"
+      class="search-input" (input)="onSearchMaster()" style="width: 250px;" />
+    </kendo-label>
+  </div>  
+ 
+ <!-- Form Fields Grid Layout -->
+ <div class="k-d-grid k-grid-cols-7 k-gap-4">
   <kendo-label text="Mail #" class="k-font-size-sm">
-    <input kendoTextBox [(ngModel)]="mailSearch" type="search" class="search-input k-w-full"
-      rounded="full" (input)="onSearchMaster()" />
+    <kendo-textbox [(ngModel)]="mailSearch" class="k-w-full" placeholder="Enter Mail #"></kendo-textbox>
   </kendo-label>
-  
+
   <kendo-label text="Customer" class="k-font-size-sm">
     <kendo-combobox [data]="customer" [(ngModel)]="customerSelected" [textField]="'CustomerName'"
-        [valueField]="'CustomerID'" placeholder="Select" rounded="large"></kendo-combobox>
+        [valueField]="'CustomerID'" placeholder="Select" placeholder="Select Customer"  class="k-w-full"></kendo-combobox>
   </kendo-label>
-  
+
   <kendo-label text="Device Family" class="k-font-size-sm">
     <kendo-combobox [data]="" [(ngModel)]="devicefamilySelected" [textField]="''"
-        [valueField]="''" placeholder="Select"></kendo-combobox>
+        [valueField]="''" placeholder="Select Device Family" class="k-w-full"></kendo-combobox>
   </kendo-label>
-  
+
   <kendo-label text="Device" class="k-font-size-sm">
     <kendo-combobox [data]="" [(ngModel)]="deviceSelected" [textField]="''"
-        [valueField]="''" placeholder="Select"></kendo-combobox>
+        [valueField]="''" placeholder="Enter Device"></kendo-combobox>
   </kendo-label>
 
   <kendo-label text="Delivery Method" class="k-font-size-sm">
     <kendo-combobox [data]="deliveryMode" [(ngModel)]="deliveryModeSelected" 
-    [textField]="'deliveryModeName'" [valueField]="'deliveryModeID'" placeholder="Select"></kendo-combobox>
+    [textField]="'deliveryModeName'" [valueField]="'deliveryModeID'" placeholder="Select Delivery Method"></kendo-combobox>
   </kendo-label>
 
   <kendo-label text="Status" class="k-font-size-sm">
     <kendo-combobox [data]="areaList" [(ngModel)]="statusSelected" [textField]="''"
-        [valueField]="''" placeholder="Select"></kendo-combobox>
+        [valueField]="''" placeholder="Select Status"></kendo-combobox>
   </kendo-label>
 
   <kendo-label text="Tracking No" class="k-font-size-sm">
     <input kendoTextBox [(ngModel)]="trackingNo" class="search-input k-w-full" rounded="full"/>
   </kendo-label>
-
-  <kendo-label text="Customer Lot #" class="k-font-size-sm">
+ </div>
+ <!-- Second Row -->
+ <div class="k-d-grid k-grid-cols-7 k-gap-4">
+   <kendo-label text="Customer Lot #" class="k-font-size-sm">
     <input kendoTextBox [(ngModel)]="customerLot" class="search-input k-w-full" rounded="full"/>
   </kendo-label>
 
@@ -66,12 +71,11 @@
     <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
   </kendo-label>
 
-  <div class="k-d-flex k-gap-2">
-    <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
-    <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()"
-      [disabled]="!isAddButtonEnabled">Add</button>
+  <div class="k-d-flex k-gap-4 k-w-64">
+    <button kendoButton rounded="full" themeColor="success" class="k-w-full k-h-8" (click)="search()">Search</button>
+    <button kendoButton rounded="full" themeColor="info" class="k-w-full k-h-8" (click)="openDialog()" [disabled]="!isAddButtonEnabled">Add</button>
   </div>  
- </div>
+ </div> 
 </div>
 
 
@@ -132,10 +136,9 @@
 <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'95%'"
   class="dialog-round receipt-dialog">
   <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
-    <h3 class="k-m-0">Receipt</h3>
+    <h3 class="k-m-0" style="color: maroon;">Mail Info</h3>
     <small *ngIf="appService.sharedData.receiving.isViewMode">(View Mode)</small>
     <small *ngIf="appService.sharedData.receiving.isEditMode">(Edit Mode)</small>
-    <!-- receiptID -->
     <small *ngIf="appService.sharedData.receiving.dataItem?.receiptID">Receipt ID:
       {{appService.sharedData.receiving.dataItem.receiptID}}</small>
       
@@ -145,5 +148,6 @@
   </div>
   <div class="dialog-body k-overflow-y-auto">
     <app-receipt (onClose)="closeDialog()" (onRestart)="onClearForm()"></app-receipt>
+    <!-- <app-add-mail-info (onClose)="closeDialog()" (onRestart)="onClearForm()"></app-add-mail-info> -->
   </div>
 </kendo-dialog>

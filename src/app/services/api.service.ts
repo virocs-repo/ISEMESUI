@@ -31,8 +31,8 @@ export class ApiService {
   getSearchMailRoomReceiptData(
     mailID?: number|null, customer?: string |null, deviceFamily?: string|null, device?: string|null,
     deliveryMethodID?: string|null, statusID?: string|null, trackingNo?: string|null,
-    locationID?: string|null, fromDate?: Date | null, toDate?: Date | null,
-    receiptID?: number|null, receiptStatus?: string|null, facilityIDStr?: string|null
+    locationID?: string|null, fromDate?: Date | null, toDate?: Date | null,iseLot?: string | null,customerLotsstr?: string|null,
+    receivingInfoID?: number|null,receiptID?: number|null, receiptStatus?: string|null, facilityIDStr?: string|null
   ) {
     debugger;
     let params = new HttpParams();
@@ -47,6 +47,9 @@ export class ApiService {
     if (locationID) params = params.set('locationID', locationID);
     if (fromDate) params = params.set('fromDate', this.formatDate(fromDate));
     if (toDate) params = params.set('toDate', this.formatDate(toDate));
+    if (iseLot) params = params.set('iseLot', iseLot);
+    if (customerLotsstr) params = params.set('customerLotsstr', customerLotsstr);
+    if (receivingInfoID) params = params.set('receivingInfoID', receivingInfoID);
     if (receiptID) params = params.set('receiptID', receiptID.toString());
     if (receiptStatus) params = params.set('receiptStatus', receiptStatus);
     if (facilityIDStr) params = params.set('facilityIDStr', facilityIDStr);
