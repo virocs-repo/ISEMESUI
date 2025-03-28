@@ -11,6 +11,6 @@ export const environment = {
     scopes: ['user.read'],
     uri: 'https://graph.microsoft.com/v1.0/me'
   },
-  apiUrl: 'https://localhost:44341/api/',
+  apiUrl : 'https://ise-inventoryapi.azurewebsites.net/api/',
   ACCESS_CODE: ''
 };
