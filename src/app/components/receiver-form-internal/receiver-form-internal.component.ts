@@ -2,7 +2,7 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CellClickEvent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
-import { Receipt, ICON, MESSAGES } from 'src/app/services/app.interface';
+import { Receipt, ICON, MESSAGES, Customer, ReceiptLocation } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { ContextMenuComponent } from '@progress/kendo-angular-menu';
 import { Subscription } from 'rxjs';
@@ -17,7 +17,6 @@ export class ReceiverFormInternalComponent implements OnDestroy {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
   //
   mailNumber: string = '';
-  selectedCustomer: any;
 
   customers = [
     { id: 1, name: 'Customer A' },
@@ -28,6 +27,40 @@ export class ReceiverFormInternalComponent implements OnDestroy {
     layout: "Expected",
   };
 //
+  receivingInfoId : number | undefined;
+  customerId : number | undefined;
+  deviceFamilyId : number | undefined;
+  deviceId : number | undefined;
+  customerLotsStr : string | null = "";
+  statusId : number | undefined;
+  isExpected : boolean | undefined;
+  isElot : string | null = "";
+  serviceCategoryId : number | undefined;
+  locationId : number | undefined;
+  mail : string | undefined;
+  from_Date: Date | undefined;
+  to_Date: Date | undefined;
+  receiptStatus:string | undefined;
+  facilityIdStr: string | undefined;
+  selectedreceivingInfo : string | null = "";
+  customer: Customer[] = this.appService.masterData.entityMap.Customer;
+  selectedCustomer: Customer | undefined;
+  selectedDeviceFamily:string | undefined;
+  selectedDevice:string | null ="";
+  selectedCustomerLot:string | null ="";
+  selectedIseLot:string | null ="";
+  selectedMail: string | null = "";
+  receivingFacilityName : string = this.appService.facility;
+  public areaList: Array<string> = [ 
+    "Pending Receive",
+    "Partially Received",
+    "Completed",
+    "Cancelled",
+    "Purged"
+  ];
+  selectedStatus: string | null = "";
+  location: ReceiptLocation[] = [];
+  selectedLocation : string | null ="";
   readonly ICON = ICON;
   public pageSize = 25;
   public skip = 0;
@@ -53,19 +86,16 @@ export class ReceiverFormInternalComponent implements OnDestroy {
     start: this.oneMonthAgo,
     end: this.today
   };
-  // fromDate = '';
-  // toDate = '';
-  format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker
-  fromDate: Date | null = null;  // Variable to store the selected 'from' date
-  toDate: Date | null = null;    // Variable to store the selected 'to' date
-
+  format: string = 'yyyy-MM-dd';
+  fromDate: Date | null = null;
+  toDate: Date | null = null;
   isDialogOpen = false;
   openDialog() {
     this.isDialogOpen = true;
   }
   closeDialog() {
     this.isDialogOpen = false;
-    this.fetchdata(); // because there might be changes from dialog
+    this.fetchdata(); 
     this.appService.eventEmitter.emit({ action: 'refreshVendors', data: { m: 'masterData' } })
   }
   readonly subscription = new Subscription()
@@ -73,6 +103,7 @@ export class ReceiverFormInternalComponent implements OnDestroy {
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
+    this.location = this.appService.masterData.receiptLocation;
     this.search();
     this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
       switch (v) {
@@ -122,23 +153,23 @@ export class ReceiverFormInternalComponent implements OnDestroy {
     }
   }
   private fetchdata() {
-    this.apiService.getReceiverFormInternal().subscribe({
+    this.apiService.getReceiverFormInternal(this.receivingInfoId,this.customerId,this.deviceFamilyId,this.deviceId,this.customerLotsStr,this.statusId,this.isExpected,this.isElot,this.serviceCategoryId,this.locationId,this.mail,this.from_Date,this.to_Date,this.receiptStatus,this.facilityIdStr).subscribe({
       next: (v: any) => {
-        this.originalData = v;
-        this.pageData();
-        /*    this.gridDataResult.data = v;
-           this.gridDataResult.total = v.length */
-        // this.testReceiptEdit();
+ /*          this.gridDataResult.data = v;
+          this.gridDataResult.total = v.length; */
+          this.originalData = v;
+          this.pageData();
       },
-      error: (v: any) => { }
-    });
+      error: (error: any) => {
+          console.error('Error fetching CombinationLots', error);
+      }
+  });
   }
   private testReceiptEdit() {
     setTimeout(() => {
       this.appService.sharedData.receiving.dataItem = this.gridDataResult.data[0]
       this.appService.sharedData.receiving.isEditMode = true;
       this.appService.sharedData.receiving.isViewMode = false;
-      // access the same in receipt component
       this.openDialog()
     }, 3000);
   }
@@ -150,10 +181,9 @@ export class ReceiverFormInternalComponent implements OnDestroy {
     { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
     { text: 'Edit Data', icon: 'edit', disabled: !this.isEditButtonEnabled, svgIcon: ICON.pencilIcon },
     { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
-    // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
   ];
   doTestEditMode() {
-    // this.onSelectRowActionMenuV1({ item: { text: 'Edit Data' } } as any, this.gridDataResult.data[0]);
+    
   }
   private onSelectRowActionMenuV1(e: ContextMenuSelectEvent, dataItem: Receipt) {
     dataItem.holdComments = dataItem.holdComments || '';
@@ -182,14 +212,12 @@ export class ReceiverFormInternalComponent implements OnDestroy {
         this.appService.sharedData.receiving.dataItem = dataItem
         this.appService.sharedData.receiving.isEditMode = false;
         this.appService.sharedData.receiving.isViewMode = true;
-        // access the same in receipt component
         this.openDialog()
         break;
       case 'Edit Data':
         this.appService.sharedData.receiving.dataItem = dataItem
         this.appService.sharedData.receiving.isEditMode = true;
         this.appService.sharedData.receiving.isViewMode = false;
-        // access the same in receipt component
         this.openDialog()
         break;
 
@@ -241,14 +269,12 @@ export class ReceiverFormInternalComponent implements OnDestroy {
         this.appService.sharedData.receiving.dataItem = dataItem
         this.appService.sharedData.receiving.isEditMode = false;
         this.appService.sharedData.receiving.isViewMode = true;
-        // access the same in receipt component
         this.openDialog()
         break;
       case 'Edit Data':
         this.appService.sharedData.receiving.dataItem = dataItem
         this.appService.sharedData.receiving.isEditMode = true;
         this.appService.sharedData.receiving.isViewMode = false;
-        // access the same in receipt component
         this.openDialog()
         break;
 
@@ -271,32 +297,19 @@ export class ReceiverFormInternalComponent implements OnDestroy {
     this.appService.sharedData.receiving.eventEmitter.emit('canCloseDialog?')
   }
   search() {
-    // this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
-    // this.toDate = moment(this.range.end).format('MM-DD-YYYY');
     this.fetchdata()
   }
 
   onSearchMaster(): void {
-    this.skip = 0;  // Reset pagination when searching
-    this.pageData();  // Apply search and pagination
+    this.skip = 0;
+    this.pageData();
   }
 
   pageData(): void {
-    /*    const filteredData = this.searchTerm ? this.filterData(this.gridDataResult.data) : this.gridDataResult.data;
-   
-       // Paginate the data
-       const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
-       this.gridDataResult.data = paginatedData;
-           this.gridDataResult.total =filteredData.length ; */
-
     const filteredData = this.filterData(this.originalData);
     const paginatedData = filteredData.slice(this.skip, this.skip + this.pageSize);
     this.gridDataResult.data = filteredData;
     this.gridDataResult.total = filteredData.length;
-
-
-
-
   }
   filterData(data: any[]): any[] {
     if (!this.searchTerm) {

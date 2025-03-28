@@ -51,14 +51,6 @@
       <kendo-textbox [(ngModel)]="mailNumber" class="k-w-full" placeholder="Enter Mail #"></kendo-textbox>
     </kendo-label>
   
-    <kendo-label text="Receipt Start Date" class="k-font-size-sm">
-      <kendo-datepicker [(value)]="fromDate" class="k-w-full"></kendo-datepicker>
-    </kendo-label>
-  
-    <kendo-label text="Receipt End Date" class="k-font-size-sm">
-      <kendo-datepicker [(value)]="toDate" class="k-w-full"></kendo-datepicker>
-    </kendo-label>
-  
     <kendo-label text="Location" class="k-font-size-sm">
       <kendo-combobox [data]="customers" [(ngModel)]="selectedCustomer" textField="name"
         valueField="id" class="k-w-full" [filterable]="true" placeholder="Select Location">
@@ -83,6 +75,15 @@
         </label>
       </div>
     </kendo-label>
+
+    <kendo-label text="Start Date" class="k-font-size-sm">
+      <kendo-datepicker [(value)]="fromDate" class="k-w-full"></kendo-datepicker>
+    </kendo-label>
+  
+    <kendo-label text="End Date" class="k-font-size-sm">
+      <kendo-datepicker [(value)]="toDate" class="k-w-full"></kendo-datepicker>
+    </kendo-label>
+
     <div class="k-d-flex k-gap-4 k-w-64">
       <button kendoButton rounded="full" themeColor="success" class="k-w-full k-h-8" (click)="search()">Search</button>
       <button kendoButton rounded="full" themeColor="info" class="k-w-full k-h-8" (click)="openDialog()" [disabled]="!isAddButtonEnabled">Add</button>
