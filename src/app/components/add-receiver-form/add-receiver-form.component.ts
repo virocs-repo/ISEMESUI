@@ -46,7 +46,29 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   isDisabledGoodsType = false;
   readonly deliveryMode: DeliveryMode[] = this.appService.masterData.deliveryMode;
   deliveryModeSelected: DeliveryMode | undefined;
+  public selectedQty: number | null = null;
+  category = [
+    { id: 1, name: 'Lot' },
+    { id: 2, name: 'Hardware' },
+    { id: 3, name: 'Tray' },
+    { id: 3, name: 'Other' },
+  ];
+  lotData = [
+    { iseLot: '1234', customerLot: '5678', expectedQty: 100, deviceName: 'DeviceA', dataCode: 'D01', coo: 'USA', expedite: 'Yes', iqaOptional: 'No', lotOwner: 'John', hold: 'No' }
+  ];
 
+  hardwareData = [
+    { hardwareType: 'TypeA', projectDeviceName: 'ProjectX', qty: 50 }
+  ];
+
+  trayData = [
+    { trayVendor: 'Vendor1', trayPart: 'T123', qty: 20 }
+  ];
+
+  otherData = [
+    { type: 'Misc', details: 'Extra details', qty: 10 }
+  ];
+  selectedCategory: { id: number; name: string } | undefined;
   readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
   customerSelected: Customer | undefined;
   readonly vendors: Vendor[] = this.appService.masterData.entityMap.Vendor;
