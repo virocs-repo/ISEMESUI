@@ -41,8 +41,8 @@ steps:
 # Step 7: Archive Build Output into ZIP
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
-    includeRootFolder: true
+    rootFolderOrFile: '$(buildDirectory)'
+    includeRootFolder: false
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/angular-app.zip'
     replaceExistingArchive: true
