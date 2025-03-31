@@ -162,6 +162,17 @@ export class ApiService {
     }
     return this.httpClient.get(`${API}v1/ise/inventory/GetReceiverFormInternal`, { params });
   }
+  DeviceFamilies(customerId: number){
+    return this.httpClient.get(`${API}v1/ise/inventory/getDeviceFamilies?customerId=${customerId}`);
+  }
+
+  ReceiverStatus(){
+    return this.httpClient.get(`${API}v1/ise/inventory/getInventoryReceiptStatuses`);
+  }
+
+  ServiceCategory(listName: string){
+    return this.httpClient.get(`${API}v1/ise/inventory/getInventoryReceiptServiceCategory?listName=${listName}`);
+  }
 
   // Receipt
   getDevicesByCustomer(customerId: number) {

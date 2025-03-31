@@ -4,7 +4,7 @@ import { AppService } from './services/app.service';
 import { DrawerItem, DrawerSelectEvent } from '@progress/kendo-angular-layout';
 import { Router } from '@angular/router';
 import { ApiService } from './services/api.service';
-import { Address, ICON } from './services/app.interface';
+import { Address, DeviceFamily, ICON, ReceiptStatus, ServiceCategory } from './services/app.interface';
 import { Subscription } from 'rxjs';
 
 interface DrawerItemExtra extends DrawerItem {
@@ -37,6 +37,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.getAllEntityData();
     this.getAddresses();
     this.fetchHardwareTypes();
+    this.getDeviceFamilies();
+    this.getReceiverStatus();
+    this.getServiceCategory();
 
     this.subscription.add(this.appService.eventEmitter.subscribe((e) => {
       console.log(e);
@@ -108,6 +111,48 @@ export class AppComponent implements OnInit, OnDestroy {
             let props = [a.address1, a.address2, a.city, a.state, a.country]
             props = props.filter(a => a)
             a.fullAddress = props.join(', ')
+            return a;
+          })
+        }
+      }
+    });
+  }
+
+  private getDeviceFamilies() {
+    this.apiService.DeviceFamilies(775).subscribe({
+      next: (value: any) => {
+        if (value) {
+          this.appService.masterData.deviceFamily = value.map((a: DeviceFamily) => {
+            let props = [a.deviceFamilyId, a.deviceFamilyName]
+            props = props.filter(a => a)
+            return a;
+          })
+        }
+      }
+    });
+  }
+
+  private getReceiverStatus() {
+    this.apiService.ReceiverStatus().subscribe({
+      next: (value: any) => {
+        if (value) {
+          this.appService.masterData.receiptStatus = value.map((a: ReceiptStatus) => {
+            let props = [a.masterListItemId, a.itemText]
+            props = props.filter(a => a)
+            return a;
+          })
+        }
+      }
+    });
+  }
+
+  private getServiceCategory() {
+    this.apiService.ServiceCategory("GoodsType").subscribe({
+      next: (value: any) => {
+        if (value) {
+          this.appService.masterData.serviceCategory = value.map((a: ServiceCategory) => {
+            let props = [a.serviceCategoryId, a.serviceCategoryName]
+            props = props.filter(a => a)
             return a;
           })
         }
