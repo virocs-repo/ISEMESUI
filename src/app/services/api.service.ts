@@ -112,11 +112,11 @@ export class ApiService {
   }
   //Receiver Form (Internal)
 
-  getReceiverFormInternal(receivingInfoId?: number,customerId?: number,deviceFamilyId?: number,deviceId?: number,customerLotsStr?: string | null,statusId?: number,isExpected?: boolean, isElot?: string | null,serviceCategoryId?: number,locationId?: number,mail?: string | null, fromDate?: Date | null, toDate?: Date | null,receiptStatus?: string | null,facilityIdStr?: string | null) {
+  getReceiverFormInternal(receivingInfoNum?: string | null,customerId?: number,deviceFamilyId?: number,device?: string | null,customerLotsStr?: string | null,statusId?: string| null,isExpected?: boolean, isElot?: string | null,serviceCategoryId?: number,locationId?: string | null,mail?: string | null, fromDate?: Date | null, toDate?: Date | null) {
     let params = new HttpParams();
 
-    if (receivingInfoId) {
-      params = params.set('receivingInfoId', receivingInfoId);
+    if (receivingInfoNum) {
+      params = params.set('receivingInfoId', receivingInfoNum);
     }
     if (customerId) {
         params = params.set('customerId', customerId);
@@ -124,8 +124,8 @@ export class ApiService {
     if (deviceFamilyId) {
         params = params.set('deviceFamilyId', deviceFamilyId);
     }
-    if (deviceId) {
-      params = params.set('deviceId', deviceId);
+    if (device) {
+      params = params.set('deviceId', device);
     }
     if (customerLotsStr) {
         params = params.set('customerLotsStr', customerLotsStr);
@@ -143,7 +143,7 @@ export class ApiService {
         params = params.set('serviceCategoryId', serviceCategoryId);
     }
     if (locationId) {
-        params = params.set('facilityIDStr', locationId);
+        params = params.set('locationId', locationId);
     }
     if (mail) {
         params = params.set('mail', mail);
@@ -153,12 +153,6 @@ export class ApiService {
     }
     if (toDate) {
         params = params.set('toDate', this.formatDate(toDate));
-    }
-    if (receiptStatus) {
-      params = params.set('receiptStatus', receiptStatus);
-    }
-    if (facilityIdStr) {
-        params = params.set('facilityIdStr', facilityIdStr);
     }
     return this.httpClient.get(`${API}v1/ise/inventory/GetReceiverFormInternal`, { params });
   }
