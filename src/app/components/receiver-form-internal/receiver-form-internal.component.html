@@ -11,7 +11,7 @@
   <!-- Form Fields Grid Layout -->
   <div class="k-d-grid k-grid-cols-7 k-gap-4">
     <kendo-label text="Receiving Info #" class="k-font-size-sm">
-      <kendo-textbox [(ngModel)]="mailNumber" class="k-w-full" placeholder="Enter Mail #"></kendo-textbox>
+      <kendo-textbox [(ngModel)]="selectedReceivingInfoNum" class="k-w-full" placeholder="Enter Mail #"></kendo-textbox>
     </kendo-label>
   
     <kendo-label text="Customer" class="k-font-size-sm">
@@ -35,9 +35,15 @@
     </kendo-label>
   
     <kendo-label text="Status" class="k-font-size-sm">
-      <kendo-combobox [data]="status" [(ngModel)]="selectedStatus" textField="itemText"
+      <kendo-multiselect [data]="status" [(ngModel)]="selectedStatus" [tagMapper]="tagDisplayLimits" textField="itemText"
         valueField="masterListItemId" class="k-w-full" [filterable]="true" placeholder="Select Status">
-      </kendo-combobox>
+        <ng-template kendoMultiSelectItemTemplate let-dataItem>
+          <input type="checkbox" 
+          [checked]="isSelectedStatus(dataItem.masterListItemId)" 
+          (change)="toggleSelection(dataItem, 'status')">
+          {{ dataItem.itemText }}
+        </ng-template>
+      </kendo-multiselect>
     </kendo-label>
   
     <kendo-label text="ISE lot #" class="k-font-size-sm">
@@ -52,9 +58,15 @@
     </kendo-label>
   
     <kendo-label text="Location" class="k-font-size-sm">
-      <kendo-combobox [data]="location" [(ngModel)]="selectedLocation" textField="receivingFacilityName"
+      <kendo-multiselect [data]="location" [(ngModel)]="selectedLocation" [tagMapper]="tagDisplayLimit" textField="receivingFacilityName"
         valueField="receivingFacilityID" class="k-w-full" [filterable]="true" placeholder="Select Location">
-      </kendo-combobox>
+        <ng-template kendoMultiSelectItemTemplate let-dataItem>
+          <input type="checkbox" 
+          [checked]="isSelected(dataItem.receivingFacilityID)" 
+          (change)="toggleSelection(dataItem, 'facility')">
+          {{ dataItem.receivingFacilityName }}
+        </ng-template>
+      </kendo-multiselect>
     </kendo-label>
   
     <kendo-label text="Service Category" class="k-font-size-sm">
