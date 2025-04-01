@@ -9,7 +9,7 @@ pool:
 variables:
   buildConfiguration: 'production'
   buildDirectory: '$(Build.ArtifactStagingDirectory)/dist'
-  TELERIK_LICENSE: '$(TELERIK_LICENSE)'
+
 steps:
 # Step 1: List all files (for debugging)
 - script: dir /s
@@ -31,7 +31,8 @@ steps:
     npm install --save @progress/kendo-licensing
     npx kendo-ui-license activate
   displayName: 'Install Dependencies'
-
+  env:
+      TELERIK_LICENSE: $(TELERIK_LICENSE)
 # Step 5: Debug Angular CLI Version
 - script: ng version
   displayName: 'Debug Angular CLI Version'
