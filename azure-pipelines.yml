@@ -26,9 +26,6 @@ steps:
 
 # Step 4: Install Dependencies (Fix Missing Packages)
 - script: |
-
-    #npm ci
-    #npm install --save-dev @angular-devkit/build-angular;
     npm install --save @progress/kendo-licensing;
     npx kendo-ui-license activate
   displayName: 'Install Dependencies'
