@@ -22,6 +22,18 @@ export interface Customer {
   CustomerID: number;
   CustomerName: string;
 }
+export interface DeviceFamily {
+  deviceFamilyId: number;
+  deviceFamilyName: string;
+}
+export interface ReceiptStatus {
+  masterListItemId: number;
+  itemText: string;
+}
+export interface ServiceCategory {
+  serviceCategoryId: number;
+  serviceCategoryName: string;
+}
 export interface Vendor {
   VendorID: number;
   VendorName: string;
@@ -46,6 +58,9 @@ export interface MasterData {
   goodsType: GoodsType[]
   deliveryMode: DeliveryMode[]
   customer: Customer[]  // remove this in next version
+  deviceFamily : DeviceFamily[]
+  receiptStatus : ReceiptStatus[]
+  serviceCategory : ServiceCategory[]
   entityMap: EntityMap;
   addresses: Address[];
   country: Country[];

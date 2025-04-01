@@ -62,6 +62,9 @@ export class AppService {
     goodsType: [],
     deliveryMode: [],
     customer: [], // remove this in next version
+    deviceFamily: [],
+    receiptStatus:[],
+    serviceCategory:[],
     entityMap: {
       Customer: [],
       Vendor: [],

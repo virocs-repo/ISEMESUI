@@ -11,55 +11,67 @@
   <!-- Form Fields Grid Layout -->
   <div class="k-d-grid k-grid-cols-7 k-gap-4">
     <kendo-label text="Receiving Info #" class="k-font-size-sm">
-      <kendo-textbox [(ngModel)]="mailNumber" class="k-w-full" placeholder="Enter Mail #"></kendo-textbox>
+      <kendo-textbox [(ngModel)]="selectedReceivingInfoNum" class="k-w-full" placeholder="Enter Mail #"></kendo-textbox>
     </kendo-label>
   
     <kendo-label text="Customer" class="k-font-size-sm">
-      <kendo-combobox [data]="customers" [(ngModel)]="selectedCustomer" textField="name"
-        valueField="id" class="k-w-full" [filterable]="true" placeholder="Select Customer">
+      <kendo-combobox [data]="customer" [(ngModel)]="selectedCustomer" textField="CustomerName"
+        valueField="CustomerID" class="k-w-full" [filterable]="true" placeholder="Select Customer">
       </kendo-combobox>
     </kendo-label>
   
     <kendo-label text="Device Family" class="k-font-size-sm">
-      <kendo-combobox [data]="customers" [(ngModel)]="selectedCustomer" textField="name"
-        valueField="id" class="k-w-full" [filterable]="true" placeholder="Select Device Family">
+      <kendo-combobox [data]="deviceFamily" [(ngModel)]="selectedDeviceFamily" textField="deviceFamilyName"
+        valueField="deviceFamilyId" class="k-w-full" [filterable]="true" placeholder="Select Device Family">
       </kendo-combobox>
     </kendo-label>
   
     <kendo-label text="Device" class="k-font-size-sm">
-      <kendo-textbox [(ngModel)]="mailNumber" class="k-w-full" placeholder="Enter Device"></kendo-textbox>
+      <kendo-textbox [(ngModel)]="selectedDevice" class="k-w-full" placeholder="Enter Device"></kendo-textbox>
     </kendo-label>
   
     <kendo-label text="Customer Lots" class="k-font-size-sm">
-      <kendo-textbox [(ngModel)]="mailNumber" class="k-w-full" placeholder="Enter Customer Lots"></kendo-textbox>
+      <kendo-textbox [(ngModel)]="selectedCustomerLot" class="k-w-full" placeholder="Enter Customer Lots"></kendo-textbox>
     </kendo-label>
   
     <kendo-label text="Status" class="k-font-size-sm">
-      <kendo-combobox [data]="customers" [(ngModel)]="selectedCustomer" textField="name"
-        valueField="id" class="k-w-full" [filterable]="true" placeholder="Select Status">
-      </kendo-combobox>
+      <kendo-multiselect [data]="status" [(ngModel)]="selectedStatus" [tagMapper]="tagDisplayLimits" textField="itemText"
+        valueField="masterListItemId" class="k-w-full" [filterable]="true" placeholder="Select Status">
+        <ng-template kendoMultiSelectItemTemplate let-dataItem>
+          <input type="checkbox" 
+          [checked]="isSelectedStatus(dataItem.masterListItemId)" 
+          (change)="toggleSelection(dataItem, 'status')">
+          {{ dataItem.itemText }}
+        </ng-template>
+      </kendo-multiselect>
     </kendo-label>
   
     <kendo-label text="ISE lot #" class="k-font-size-sm">
-      <kendo-textbox [(ngModel)]="mailNumber" class="k-w-full" placeholder="Enter ISE Lot #"></kendo-textbox>
+      <kendo-textbox [(ngModel)]="selectedIseLot" class="k-w-full" placeholder="Enter ISE Lot #"></kendo-textbox>
     </kendo-label>
   </div>
   
   <!-- Second Row -->
   <div class="k-d-grid k-grid-cols-7 k-gap-4">
     <kendo-label text="Mail #" class="k-font-size-sm">
-      <kendo-textbox [(ngModel)]="mailNumber" class="k-w-full" placeholder="Enter Mail #"></kendo-textbox>
+      <kendo-textbox [(ngModel)]="selectedMailNumber" class="k-w-full" placeholder="Enter Mail #"></kendo-textbox>
     </kendo-label>
   
     <kendo-label text="Location" class="k-font-size-sm">
-      <kendo-combobox [data]="customers" [(ngModel)]="selectedCustomer" textField="name"
-        valueField="id" class="k-w-full" [filterable]="true" placeholder="Select Location">
-      </kendo-combobox>
+      <kendo-multiselect [data]="location" [(ngModel)]="selectedLocation" [tagMapper]="tagDisplayLimit" textField="receivingFacilityName"
+        valueField="receivingFacilityID" class="k-w-full" [filterable]="true" placeholder="Select Location">
+        <ng-template kendoMultiSelectItemTemplate let-dataItem>
+          <input type="checkbox" 
+          [checked]="isSelected(dataItem.receivingFacilityID)" 
+          (change)="toggleSelection(dataItem, 'facility')">
+          {{ dataItem.receivingFacilityName }}
+        </ng-template>
+      </kendo-multiselect>
     </kendo-label>
   
     <kendo-label text="Service Category" class="k-font-size-sm">
-      <kendo-combobox [data]="customers" [(ngModel)]="selectedCustomer" textField="name"
-        valueField="id" class="k-w-full" [filterable]="true" placeholder="Select Service Category">
+      <kendo-combobox [data]="serviceCategory" [(ngModel)]="selectedServiceCategory" textField="serviceCategoryName"
+        valueField="serviceCategoryId" class="k-w-full" [filterable]="true" placeholder="Select Service Category">
       </kendo-combobox>
     </kendo-label>
   

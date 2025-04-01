@@ -2,7 +2,7 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CellClickEvent, GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { ApiService } from 'src/app/services/api.service';
-import { Receipt, ICON, MESSAGES, Customer, ReceiptLocation } from 'src/app/services/app.interface';
+import { Receipt, ICON, MESSAGES, Customer, ReceiptLocation, DeviceFamily, ReceiptStatus, ServiceCategory } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { ContextMenuComponent } from '@progress/kendo-angular-menu';
 import { Subscription } from 'rxjs';
@@ -16,51 +16,39 @@ import * as moment from 'moment';
 export class ReceiverFormInternalComponent implements OnDestroy {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
   //
-  mailNumber: string = '';
-
-  customers = [
-    { id: 1, name: 'Customer A' },
-    { id: 2, name: 'Customer B' },
-    { id: 3, name: 'Customer C' },
-  ];
   public radio1 = {
     layout: "Expected",
   };
 //
-  receivingInfoId : number | undefined;
+  selectedReceivingInfoNum : string | null ="";
   customerId : number | undefined;
   deviceFamilyId : number | undefined;
-  deviceId : number | undefined;
   customerLotsStr : string | null = "";
   statusId : number | undefined;
   isExpected : boolean | undefined;
   isElot : string | null = "";
   serviceCategoryId : number | undefined;
   locationId : number | undefined;
-  mail : string | undefined;
   from_Date: Date | undefined;
   to_Date: Date | undefined;
   receiptStatus:string | undefined;
+  selectedLocation: ReceiptLocation[] = [];
+  selectedStatus: ReceiptStatus[] = [];
+  selectedServiceCategory:ServiceCategory | undefined;
   facilityIdStr: string | undefined;
   selectedreceivingInfo : string | null = "";
   customer: Customer[] = this.appService.masterData.entityMap.Customer;
+  deviceFamily: DeviceFamily[] = this.appService.masterData.deviceFamily;
+  location: ReceiptLocation[] = this.appService.masterData.receiptLocation;
+  status: ReceiptStatus[] = this.appService.masterData.receiptStatus;
+  serviceCategory: ServiceCategory[] = this.appService.masterData.serviceCategory;
+  selectedDeviceFamily : DeviceFamily | undefined;
   selectedCustomer: Customer | undefined;
-  selectedDeviceFamily:string | undefined;
   selectedDevice:string | null ="";
   selectedCustomerLot:string | null ="";
   selectedIseLot:string | null ="";
-  selectedMail: string | null = "";
+  selectedMailNumber: string | null = "";
   receivingFacilityName : string = this.appService.facility;
-  public areaList: Array<string> = [ 
-    "Pending Receive",
-    "Partially Received",
-    "Completed",
-    "Cancelled",
-    "Purged"
-  ];
-  selectedStatus: string | null = "";
-  location: ReceiptLocation[] = [];
-  selectedLocation : string | null ="";
   readonly ICON = ICON;
   public pageSize = 25;
   public skip = 0;
@@ -152,8 +140,59 @@ export class ReceiverFormInternalComponent implements OnDestroy {
       })
     }
   }
+  isSelected(receivingFacilityID: any): boolean {
+    return this.selectedLocation.some(facility => facility.receivingFacilityID === receivingFacilityID);
+  } 
+  isSelectedStatus(masterListItemId: any): boolean {
+    return this.selectedStatus.some(facility => facility.masterListItemId === masterListItemId);
+  }  
+  toggleSelection(item: any, type: string): void {
+    if (type === 'facility') {
+      const index = this.selectedLocation.findIndex(facility => facility.receivingFacilityID === item.receivingFacilityID);
+      if (index > -1) {
+        this.selectedLocation.splice(index, 1);
+      } else {
+        this.selectedLocation.push(item); // Store full object to maintain reference
+      }
+    }
+    if (type === 'status') {
+      const index = this.selectedStatus.findIndex(facility => facility.masterListItemId === item.masterListItemId);
+      if (index > -1) {
+        this.selectedStatus.splice(index, 1);
+      } else {
+        this.selectedStatus.push(item); // Store full object to maintain reference
+      }
+    }
+  }
+  tagDisplayLimit(tags: any[]): any[] {
+    const maxVisibleTags = 1;
+    return tags.length > maxVisibleTags
+      ? [...tags.slice(0, maxVisibleTags), { receivingFacilityName: `+${tags.length - maxVisibleTags} ` }]
+      : tags;
+  }
+  tagDisplayLimits(tags: any[]): any[] {
+    const maxVisibleTags = 1;
+    return tags.length > maxVisibleTags
+      ? [...tags.slice(0, maxVisibleTags),{ itemText: `+${tags.length - maxVisibleTags} ` }]
+      : tags;
+  }  
   private fetchdata() {
-    this.apiService.getReceiverFormInternal(this.receivingInfoId,this.customerId,this.deviceFamilyId,this.deviceId,this.customerLotsStr,this.statusId,this.isExpected,this.isElot,this.serviceCategoryId,this.locationId,this.mail,this.from_Date,this.to_Date,this.receiptStatus,this.facilityIdStr).subscribe({
+    const satatusIDs = this.selectedStatus
+        .map(name => this.appService.masterData.receiptStatus.find(status => status.itemText === name.itemText)?.masterListItemId)
+        .filter(id => id !== null);
+        const statusIDsStr: string | null = 
+        satatusIDs.length > 0 && this.isSearchClicked
+            ? satatusIDs.join(',')
+            : null;   
+            
+            const locationIDs = this.selectedLocation
+            .map(name => this.appService.masterData.receiptLocation.find(location => location.receivingFacilityName === name.receivingFacilityName)?.receivingFacilityID)
+            .filter(id => id !== null);
+            const locationIDsStr: string | null = 
+            locationIDs.length > 0 && this.isSearchClicked
+                ? locationIDs.join(',')
+                : null;   
+    this.apiService.getReceiverFormInternal(this.selectedReceivingInfoNum,this.selectedCustomer?.CustomerID,this.selectedDeviceFamily?.deviceFamilyId,this.selectedDevice,this.selectedCustomerLot,statusIDsStr,this.isExpected,this.selectedIseLot,this.selectedServiceCategory?.serviceCategoryId,locationIDsStr,this.selectedMailNumber,this.from_Date,this.to_Date).subscribe({
       next: (v: any) => {
  /*          this.gridDataResult.data = v;
           this.gridDataResult.total = v.length; */
@@ -296,7 +335,9 @@ export class ReceiverFormInternalComponent implements OnDestroy {
   canCloseDialog() {
     this.appService.sharedData.receiving.eventEmitter.emit('canCloseDialog?')
   }
+  private isSearchClicked = false; 
   search() {
+    this.isSearchClicked = true; 
     this.fetchdata()
   }
 
