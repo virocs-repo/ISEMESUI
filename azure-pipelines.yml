@@ -29,10 +29,13 @@ steps:
     npm ci
     npm install --save-dev @angular-devkit/build-angular
     npm install --save @progress/kendo-licensing
-    npx kendo-ui-license activate
   displayName: 'Install Dependencies'
-  env:
-      TELERIK_LICENSE: $(TELERIK_LICENSE)
+- script: npx kendo-ui-license activate
+   displayName: 'Activate Kendo UI License'
+   # Set working directory if the application is not in the repository root folder:
+   # workingDirectory: 'ClientApp'
+   env:
+       TELERIK_LICENSE: $(TELERIK_LICENSE)
 # Step 5: Debug Angular CLI Version
 - script: ng version
   displayName: 'Debug Angular CLI Version'
