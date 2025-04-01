@@ -29,7 +29,7 @@ steps:
     rm -r .angular/cache
     npm ci
     npm install --save-dev @angular-devkit/build-angular
-    npm i @progress/kendo-licensing
+    npm install --save @progress/kendo-licensing
     npx kendo-ui-license activate
   displayName: 'Install Dependencies'
   env:
