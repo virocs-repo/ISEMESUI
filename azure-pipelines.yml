@@ -26,9 +26,14 @@ steps:
 
 # Step 4: Install Dependencies (Fix Missing Packages)
 - script: |
+    npm ci
+    npm install --save-dev @angular-devkit/build-angular;
+  displayName: 'Install Dependencies'
+# Step 5: Activate Keno License
+- script: |
     npm install --save @progress/kendo-licensing;
     npx kendo-ui-license activate
-  displayName: 'Install Dependencies'
+  displayName: 'Activate KendoUI'
   env:
       TELERIK_LICENSE: $(TELERIK_LICENSE)
 # Step 5: Debug Angular CLI Version
