@@ -32,9 +32,9 @@ export class MailRoomComponent implements OnDestroy {
   statusList: any[] = [];
   devicefamilyList:any[] = [];
   deviceList:any[] = [];
-  mailSearch:number | undefined;
+  mailSearch:string | undefined;
   devicefamilySelected:any = null;
-  deviceSelected:string | undefined;
+  deviceSelected:any | undefined;
   statusSelected:any = null;
   trackingNo:string | undefined;
   customerLot:string | undefined;
@@ -183,8 +183,8 @@ export class MailRoomComponent implements OnDestroy {
     }
   }
   private fetchdata() {
-    this.apiService.getSearchMailRoomReceiptData(this.mailSearch,this.customerSelected?.CustomerName,this.devicefamilySelected,this.deviceSelected,this.deliveryModeSelected?.deliveryModeID.toString(),this.statusSelected,
-      this.trackingNo,this.locationSelected?.receivingFacilityName,this.fromDate, this.toDate,null,null,null,null,null,null).subscribe({
+    this.apiService.getSearchMailRoomReceiptData(this.mailSearch,this.customerSelected?.CustomerID,this.devicefamilySelected?.deviceFamilyId,this.deviceSelected?.deviceId,this.deliveryModeSelected?.deliveryModeID,this.statusSelected?.masterListItemId,
+      this.trackingNo,this.locationSelected?.receivingFacilityID,this.fromDate, this.toDate,this.lotNumber,this.customerLot,this.receivingNumber,null,null,null).subscribe({
       next: (v: any) => {
         this.originalData = v;
         this.pageData();
