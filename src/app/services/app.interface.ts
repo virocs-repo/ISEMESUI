@@ -34,6 +34,14 @@ export interface ServiceCategory {
   serviceCategoryId: number;
   serviceCategoryName: string;
 }
+export interface Coo {
+  serviceCategoryId: number;
+  serviceCategoryName: string;
+}
+export interface LotOwners {
+  employeeID: number;
+  employeeName: string;
+}
 export interface Vendor {
   VendorID: number;
   VendorName: string;
@@ -52,6 +60,14 @@ export interface CourierDetails {
   courierDetailID: number
   courierName: string
 }
+export interface TrayVendor {
+  trayVendorId: number
+  vendorName: string
+}
+export interface TrayPart {
+  trayPartId: number
+  trayNumber: string
+}
 export interface MasterData {
   customerType: CustomerType[]
   receiptLocation: ReceiptLocation[]
@@ -60,7 +76,11 @@ export interface MasterData {
   customer: Customer[]  // remove this in next version
   deviceFamily : DeviceFamily[]
   receiptStatus : ReceiptStatus[]
+  lotOwners: LotOwners[]
   serviceCategory : ServiceCategory[]
+  coo : Coo[]
+  trayVendor : TrayVendor[]
+  trayPart : TrayPart[]
   entityMap: EntityMap;
   addresses: Address[];
   country: Country[];
