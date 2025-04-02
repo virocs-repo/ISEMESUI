@@ -1,6 +1,6 @@
 # Inventory
 
-Playground for Kendo and Angular 16
+Playground for Kendo and Angular 16 and CICD
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.
 
