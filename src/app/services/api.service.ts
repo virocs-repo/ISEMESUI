@@ -168,6 +168,16 @@ export class ApiService {
     return this.httpClient.get(`${API}v1/ise/inventory/getInventoryReceiptServiceCategory?listName=${listName}`);
   }
 
+  LotOwners(){
+    return this.httpClient.get(`${API}v1/ise/inventory/getInventoryReceiptLotOwners`);
+  }
+  TrayVendor(customerId: number){
+    return this.httpClient.get(`${API}v1/ise/inventory/getInventoryReceiptTrayVendor?customerId=${customerId}`);
+  }
+  TrayPart(customerId: number,vendorId: number){
+    return this.httpClient.get(`${API}v1/ise/inventory/getInventoryReceiptTraysByVendorId?customerId=${customerId}&vendorId=${vendorId}`);
+  }
+
   // Receipt
   getDevicesByCustomer(customerId: number) {
     return this.httpClient.get(`${API}v1/ise/inventory/deviceTypeByCustomer?customerId=${customerId}`);

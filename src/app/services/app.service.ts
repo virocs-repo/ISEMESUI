@@ -65,6 +65,10 @@ export class AppService {
     deviceFamily: [],
     receiptStatus:[],
     serviceCategory:[],
+    coo:[],
+    trayVendor:[],
+    trayPart:[],
+    lotOwners:[],
     entityMap: {
       Customer: [],
       Vendor: [],

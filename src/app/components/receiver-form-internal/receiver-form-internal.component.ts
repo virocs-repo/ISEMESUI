@@ -221,50 +221,6 @@ export class ReceiverFormInternalComponent implements OnDestroy {
     { text: 'Edit Data', icon: 'edit', disabled: !this.isEditButtonEnabled, svgIcon: ICON.pencilIcon },
     { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
   ];
-  doTestEditMode() {
-    
-  }
-  private onSelectRowActionMenuV1(e: ContextMenuSelectEvent, dataItem: Receipt) {
-    dataItem.holdComments = dataItem.holdComments || '';
-    switch (e.item.text) {
-      case 'Void Data':
-        const body = {
-          receiptDetails: [
-            { ...dataItem, recordStatus: "U", loginId: this.appService.loginId, active: false }
-          ]
-        };
-        // temp fix
-        if (body.receiptDetails[0].receivingStutus) {
-          body.receiptDetails[0].receivingStatus = body.receiptDetails[0].receivingStutus;
-        }
-        this.apiService.postProcessReceipt(body).subscribe({
-          next: (value) => {
-            this.appService.successMessage(MESSAGES.DataSaved);
-            this.fetchdata()
-          },
-          error: (err) => {
-            this.appService.errorMessage(MESSAGES.DataSaveError);
-          },
-        })
-        break;
-      case 'View Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = false;
-        this.appService.sharedData.receiving.isViewMode = true;
-        this.openDialog()
-        break;
-      case 'Edit Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = true;
-        this.appService.sharedData.receiving.isViewMode = false;
-        this.openDialog()
-        break;
-
-      default:
-        break;
-    }
-
-  }
   dataItemSelected: Receipt | undefined;
   selectedRowIndex: number = -1;
   onCellClick(e: CellClickEvent): void {

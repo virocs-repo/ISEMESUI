@@ -9,8 +9,7 @@ import {
   Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee,
   EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE,
   INIT_POST_RECEIPT, InterimLot, InterimItem, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt,
-  ReceiptAttachment, ReceiptLocation, SignatureTypes, Vendor,InterimDevice
-} from 'src/app/services/app.interface';
+  ReceiptAttachment, ReceiptLocation, SignatureTypes, Vendor,InterimDevice,DeviceFamily,Coo,LotOwners,TrayPart,TrayVendor} from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { environment } from 'src/environments/environment';
 
@@ -49,26 +48,35 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   public selectedQty: number | null = null;
   category = [
     { id: 1, name: 'Lot' },
-    { id: 2, name: 'Hardware' },
-    { id: 3, name: 'Tray' },
-    { id: 3, name: 'Other' },
+    { id: 2, name: 'Tray' },
+    { id: 3, name: 'Hardware' },
+    { id: 4, name: 'Other' },
   ];
+  
   lotData = [
     { iseLot: '1234', customerLot: '5678', expectedQty: 100, deviceName: 'DeviceA', dataCode: 'D01', coo: 'USA', expedite: 'Yes', iqaOptional: 'No', lotOwner: 'John', hold: 'No' }
   ];
-
+  
   hardwareData = [
     { hardwareType: 'TypeA', projectDeviceName: 'ProjectX', qty: 50 }
   ];
-
+  
   trayData = [
     { trayVendor: 'Vendor1', trayPart: 'T123', qty: 20 }
   ];
-
+  
   otherData = [
     { type: 'Misc', details: 'Extra details', qty: 10 }
   ];
-  selectedCategory: { id: number; name: string } | undefined;
+  
+  // Multi-select array
+  selectedCategories: { id: number; name: string }[] = [];
+  
+  // Helper function to check if category is selected
+  isCategorySelected(categoryId: number): boolean {
+    return this.selectedCategories.some(category => category.id === categoryId);
+  }
+  
   readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
   customerSelected: Customer | undefined;
   readonly vendors: Vendor[] = this.appService.masterData.entityMap.Vendor;
@@ -92,7 +100,8 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   name: string = '';
   email: string | null = '';
   comments: string = '';
-  deliveryComments: string = '';
+  PickupDropoffComments: string = '';
+  notesInformation: string = '';
   address: any;
   readonly addresses: Address[] = this.appService.masterData.addresses;
   addressSelected: Address | undefined;
@@ -113,9 +122,12 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     { name: 'TBD', id: 'TBD' },
   ]
   lotIdentifierSelected: { name: string; id: string } | undefined;
-
+  deviceFamily: DeviceFamily[] = this.appService.masterData.deviceFamily;
+  coo: Coo[] = this.appService.masterData.coo;
+  lotOwner: LotOwners[] = this.appService.masterData.lotOwners;
+  trayVendor: TrayVendor[] = this.appService.masterData.trayVendor;
+  trayPart: TrayPart[] = this.appService.masterData.trayPart;
   description: string = '';
-
   isHoldCheckboxEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
     featureField?.find(o => o.featureFieldName == 'HoldCheckbox')?.active ?? true;
   isHoldCommentEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
@@ -123,9 +135,24 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   @ViewChild('noOfCartons', { static: false, }) noOfCartons: ElementRef | undefined;
   gridData = [
     {
+      holdComments: "",//option for feilds after getting orginal will take out
+      customerLot: "",
+      expectedQty: null,
+      deviceName: null,
+      dateCode:"",
+      coo:"",
+      expedite: false,
+      iqaOptional: false,
+      lotOwner:"",
       noOfCartons: undefined,
       isHold: false,
-      holdComments: "",
+      trayVendor:"",
+      trayPart:"",
+      trayQty:"",
+      hardwareQty:"",
+      projectDevice:"",
+      otherDetails:"",
+      otherQty:"",
       isHoldCheckboxEnabled: !this.isHoldCheckboxEnabled,
       isHoldCommentEnabled: !this.isHoldCommentEnabled
     }
@@ -155,6 +182,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
 
   PMReceivers:any[] = [];
   PMReceiverSelected:any;
+  SelectedPMReceiver:any;
 
   constructor(public appService: AppService, private apiService: ApiService) { 
     this.getInvUserByRole();
@@ -275,7 +303,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
         this.countrySelected = this.countries.find(c => c.countryID == dataItem.countryFromID)
       }
       this.expectedDateTime = new Date(dataItem.expectedDateTime);
-      this.deliveryComments = dataItem.mailComments;
+      this.PickupDropoffComments = dataItem.mailComments;
 
       this.addressSelected = this.addresses.find(a => a.addressId == dataItem.addressID)
 
@@ -490,7 +518,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       Email: this.email,
       ExpectedDateTime: this.appService.formattedDateTime2(this.expectedDateTime),
       AddressID: this.addressSelected?.addressId || null,
-      MailComments: this.deliveryComments,
+      MailComments: this.PickupDropoffComments,
       PMComments: this.comments?.trim() || null,
       NoOfCartons: this.gridData[0].noOfCartons || 0,
       IsHold: this.gridData[0].isHold,
@@ -1266,13 +1294,8 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       this.gridData[index].holdComments = '';
     }
   }
-  onChangeHoldComments() {
-    this.gridData[0].holdComments = this.gridData[0].holdComments?.trim()
-    if (this.gridData[0].holdComments) {
-      this.gridData[0].isHold = true
-    } else {
-      this.gridData[0].isHold = false
-    }
+  onChangeCustomer() {
+    this.gridData[0].customerLot = this.gridData[0].customerLot?.trim()
   }
   onClearForm() {
     this.isFTZ = false;
@@ -1290,7 +1313,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     this.courierSelected = undefined
     this.countrySelected = undefined
     this.expectedDateTime = new Date();
-    this.deliveryComments = ''
+    this.PickupDropoffComments = ''
 
     this.addressSelected = undefined
 
@@ -1326,7 +1349,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
         this.tracking,
         this.courierSelected,
         this.countrySelected,
-        this.deliveryComments,
+        this.PickupDropoffComments,
 
         this.addressSelected,
 

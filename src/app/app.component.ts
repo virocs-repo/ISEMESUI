@@ -4,7 +4,7 @@ import { AppService } from './services/app.service';
 import { DrawerItem, DrawerSelectEvent } from '@progress/kendo-angular-layout';
 import { Router } from '@angular/router';
 import { ApiService } from './services/api.service';
-import { Address, DeviceFamily, ICON, ReceiptStatus, ServiceCategory } from './services/app.interface';
+import { Address, Coo, DeviceFamily, ICON, LotOwners, ReceiptStatus, ServiceCategory, TrayPart, TrayVendor } from './services/app.interface';
 import { Subscription } from 'rxjs';
 
 interface DrawerItemExtra extends DrawerItem {
@@ -40,6 +40,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.getDeviceFamilies();
     this.getReceiverStatus();
     this.getServiceCategory();
+    this.getCoo();
+    this.getLotOwners();
+    this.getTrayVendor();
+    this.getTrayPart();
 
     this.subscription.add(this.appService.eventEmitter.subscribe((e) => {
       console.log(e);
@@ -152,6 +156,62 @@ export class AppComponent implements OnInit, OnDestroy {
         if (value) {
           this.appService.masterData.serviceCategory = value.map((a: ServiceCategory) => {
             let props = [a.serviceCategoryId, a.serviceCategoryName]
+            props = props.filter(a => a)
+            return a;
+          })
+        }
+      }
+    });
+  }
+
+  private getLotOwners() {
+    this.apiService.LotOwners().subscribe({
+      next: (value: any) => {
+        if (value) {
+          this.appService.masterData.lotOwners = value.map((a: LotOwners) => {
+            let props = [a.employeeID, a.employeeName]
+            props = props.filter(a => a)
+            return a;
+          })
+        }
+      }
+    });
+  }
+
+  private getCoo() {
+    this.apiService.ServiceCategory("CountryOfOrigin").subscribe({
+      next: (value: any) => {
+        if (value) {
+          this.appService.masterData.coo = value.map((a: Coo) => {
+            let props = [a.serviceCategoryId, a.serviceCategoryName]
+            props = props.filter(a => a)
+            return a;
+          })
+        }
+      }
+    });
+  }
+
+  private getTrayVendor() {
+    this.apiService.TrayVendor(775).subscribe({
+      next: (value: any) => {
+        if (value) {
+          this.appService.masterData.trayVendor = value.map((a: TrayVendor) => {
+            let props = [a.trayVendorId, a.vendorName]
+            props = props.filter(a => a)
+            return a;
+          })
+        }
+      }
+    });
+  }
+
+  private getTrayPart() {
+    this.apiService.TrayPart(775,2).subscribe({
+      next: (value: any) => {
+        if (value) {
+          this.appService.masterData.trayPart = value.map((a: TrayPart) => {
+            let props = [a.trayPartId, a.trayNumber]
             props = props.filter(a => a)
             return a;
           })
