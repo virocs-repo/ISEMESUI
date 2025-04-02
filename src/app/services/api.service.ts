@@ -853,5 +853,18 @@ getShippingAddressData(
     let url = `${API}v1/ise/inventory/getDevices?customerId=${customerId}&deviceFamilyId=${deviceFamilyId}`;
     return this.httpClient.get<any[]>(url);
   }
+  getISEPOList(customerId: number|undefined, divisionId: number | null, isFreezed: boolean | null) {
+    let url = `${API}v1/ise/inventory/GetPurchaseOrders?customerId=${customerId}`;
+    
+    if (divisionId !== null) {
+      url += `&divisionId=${divisionId}`;
+    }
+    
+    if (isFreezed !== null) {
+      url += `&isFreezed=${isFreezed}`;
+    }
+  
+    return this.httpClient.get<any[]>(url);
+  }
   
 }
