@@ -68,6 +68,14 @@ export interface TrayPart {
   trayPartId: number
   trayNumber: string
 }
+export interface Others {
+  Id: number
+  CategoryName: string
+}
+export interface PackageCategory {
+  Id: number
+  CategoryName: string
+}
 export interface MasterData {
   customerType: CustomerType[]
   receiptLocation: ReceiptLocation[]
@@ -82,6 +90,8 @@ export interface MasterData {
   trayVendor : TrayVendor[]
   trayPart : TrayPart[]
   entityMap: EntityMap;
+  PackageCategory: PackageCategory[];
+  Others:Others[],
   addresses: Address[];
   country: Country[];
   courierDetails: CourierDetails[];

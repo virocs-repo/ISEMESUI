@@ -4,7 +4,7 @@ import { AppService } from './services/app.service';
 import { DrawerItem, DrawerSelectEvent } from '@progress/kendo-angular-layout';
 import { Router } from '@angular/router';
 import { ApiService } from './services/api.service';
-import { Address, Coo, DeviceFamily, ICON, LotOwners, ReceiptStatus, ServiceCategory, TrayPart, TrayVendor } from './services/app.interface';
+import { Address, Coo, DeviceFamily, ICON, LotOwners, Others, PackageCategory, ReceiptStatus, ServiceCategory, TrayPart, TrayVendor } from './services/app.interface';
 import { Subscription } from 'rxjs';
 
 interface DrawerItemExtra extends DrawerItem {
@@ -44,6 +44,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.getLotOwners();
     this.getTrayVendor();
     this.getTrayPart();
+    this.getPackageCategoryList();
+    this.getOthersList();
 
     this.subscription.add(this.appService.eventEmitter.subscribe((e) => {
       console.log(e);
@@ -106,7 +108,6 @@ export class AppComponent implements OnInit, OnDestroy {
       error(err) { }
     })
   }
-
   private getAddresses() {
     this.apiService.getAddresses().subscribe({
       next: (value: any) => {
@@ -227,5 +228,31 @@ export class AppComponent implements OnInit, OnDestroy {
         this.appService.hardwareTypes = hardwareTypes;
       }
     })
+  }
+  private getPackageCategoryList() {
+    this.apiService.getPackageCategoryList("PackageCategory").subscribe({
+      next: (value: any) => {
+        if (value) {
+          this.appService.masterData.PackageCategory = value.map((a: PackageCategory) => {
+            let props = [a.Id, a.CategoryName]
+            props = props.filter(a => a)
+            return a;
+          })
+        }
+      }
+    });
+  }
+  private getOthersList() {
+    this.apiService.getPackageCategoryList("Others").subscribe({
+      next: (value: any) => {
+        if (value) {
+          this.appService.masterData.Others = value.map((a:Others) => {
+            let props = [a.Id, a.CategoryName]
+            props = props.filter(a => a)
+            return a;
+          })
+        }
+      }
+    });
   }
 }

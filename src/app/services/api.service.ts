@@ -189,6 +189,12 @@ export class ApiService {
   getEntitiesName(entityType: string) {
     return this.httpClient.get(`${API}v1/ise/inventory/entity/${entityType}`);
   }
+  getPackageCategoryList(categoryName: string) {
+    return this.httpClient.get(`${API}v1/ise/inventory/GetPackageCategoryList`, {
+        params: { categoryName }
+    });
+}
+
   getAddresses() {
     return this.httpClient.get(`${API}v1/ise/inventory/address`);
   }
