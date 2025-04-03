@@ -10,10 +10,12 @@ import {
   Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee,
   EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE,
   INIT_POST_RECEIPT, InterimLot, InterimItem, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt,
-  ReceiptAttachment, ReceiptLocation, SignatureTypes, Vendor,InterimDevice
+  ReceiptAttachment, ReceiptLocation, SignatureTypes, Vendor,InterimDevice,
+  PackageCategory,
+  Others
 } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
-import { environment } from 'src/environments/environment';
+import { GridDataResult } from '@progress/kendo-angular-grid';
 
 @Component({
   selector: 'app-add-mail-info',
@@ -28,6 +30,15 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
 
   readonly customerTypes: CustomerType[] = this.appService.masterData.customerType;
   customerTypeSelected: CustomerType | undefined;
+  readonly packageCategoryList: PackageCategory[]= this.appService.masterData.PackageCategory;
+  gridData: GridDataResult = { 
+    data: [
+      { type: null, details: '', qty: '' }  // `type` will hold the selected dropdown value
+    ], 
+    total: 1 
+  };
+  
+  typeList: Others[] = this.appService.masterData?.Others ?? [];  
   readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
   receiptLocationSelected: ReceiptLocation | undefined;
   readonly goodsType: GoodsType[] = this.appService.masterData.goodsType;
@@ -78,37 +89,11 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   // readonly deviceTypes = this.appService.masterData.deviceType;
   readonly deviceTypes: DeviceType[] = [];
   deviceTypeSelected: DeviceType | undefined;
-  category = [
-    { id: 1, name: 'Lot' },
-    { id: 2, name: 'Hardware' },
-    { id: 3, name: 'Tray' },
-    { id: 4, name: 'Other' },
-  ];
-  readonly lotIdentifiers = [
-    { name: 'Test', id: 'Test' },
-    { name: 'Test&Rel', id: 'Test&Rel' },
-    { name: 'Rel', id: 'Rel' },
-    { name: 'Customer Lot', id: 'Customer Lot' },
-    { name: 'TBD', id: 'TBD' },
-  ]
-  lotIdentifierSelected: { name: string; id: string } | undefined;
-
-  description: string = '';
-
   isHoldCheckboxEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
     featureField?.find(o => o.featureFieldName == 'HoldCheckbox')?.active ?? true;
   isHoldCommentEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
     featureField?.find(o => o.featureFieldName == "HoldComments")?.active ?? true;
   @ViewChild('noOfCartons', { static: false, }) noOfCartons: ElementRef | undefined;
-  gridData = [
-    {
-      noOfCartons: undefined,
-      isHold: false,
-      holdComments: "",
-      isHoldCheckboxEnabled: !this.isHoldCheckboxEnabled,
-      isHoldCommentEnabled: !this.isHoldCommentEnabled
-    }
-  ];
   isExpected = false;
   isFTZ: boolean = false;
   isInterim: boolean = false;
@@ -175,6 +160,20 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
       this.isDisableInterim = true;
     }
   }
+  addOthersRow() {
+    this.gridData.data.unshift({
+      type: null,  // Dropdown default value
+      details: '',
+      qty: ''
+    });
+  
+    // Update total count
+    this.gridData.total = this.gridData.data.length;
+  
+    // Trigger UI update
+    this.gridData = { ...this.gridData };
+  }
+  
   onDamageChange(): void {
     if (!this.isDamaged) {
       this.placeLotOnHold = false; 
@@ -242,22 +241,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     const vendor: Vendor = { VendorID: 9999, VendorName: content };
     return vendor
   }));
-  onChangeIsHold() {
-    const index = 0;
-    if (this.gridData[index].isHold) {
-      // do nothing
-    } else {
-      this.gridData[index].holdComments = '';
-    }
-  }
-  onChangeHoldComments() {
-    this.gridData[0].holdComments = this.gridData[0].holdComments?.trim()
-    if (this.gridData[0].holdComments) {
-      this.gridData[0].isHold = true
-    } else {
-      this.gridData[0].isHold = false
-    }
-  }
+  
   private areThereAnyChanges() {
     if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
       return false
@@ -278,8 +262,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
 
         this.addressSelected,
 
-        this.gridData[0].noOfCartons,
-        this.gridData[0].holdComments,
+        
 
         this.signatureTypeSelected,
         this.signatureEmployeeSelected,

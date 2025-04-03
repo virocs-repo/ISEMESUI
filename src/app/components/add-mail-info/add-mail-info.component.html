@@ -178,7 +178,7 @@
               </kendo-label>             
               <kendo-label text="Package Category" class="k-w-full">
                 <b class="required-label"></b>
-                <kendo-combobox [data]="category" [(ngModel)]="selectedCategory" textField="name"
+                <kendo-combobox [data]="packageCategoryList" [(ngModel)]="selectedCategory" textField="categoryName"
                   valueField="id" class="k-w-full" [filterable]="true" placeholder="Select Package Category">
                 </kendo-combobox>
               </kendo-label>
@@ -201,31 +201,51 @@
             </kendo-card-body>
           </kendo-card>
       </div>
-
-      <kendo-card class="card-green card-full k-mt-4" *ngIf="selectedCategory?.id === 4">
+      
+      <kendo-card class="card-green card-full k-mt-4" *ngIf="selectedCategory?.id === 38">
         <kendo-card-body class="card-flex">
-      <kendo-grid [kendoGridBinding]="gridData" class="bold-column-header cartons" >
-        <kendo-grid-column field="type" title="Type">
-          <ng-template kendoGridCellTemplate let-dataItem>
-                <kendo-textbox [(ngModel)]="dataItem.holdComments" (ngModelChange)="onChangeHoldComments()"
-                  placeholder="Enter Type" ></kendo-textbox>
+          <div class="k-d-flex k-align-items-center k-gap-3">
+            <h3 class="k-my-2">Others</h3>
+            <i class="k-ml-auto"></i>
+            <button kendoButton type="button" rounded="large" themeColor="info" (click)="addOthersRow()" 
+              [disabled]="isDisabled.addHardware">Add</button>
+            <button kendoButton type="button" rounded="large" themeColor="info" 
+              [disabled]="isDisabled.addHardware">Save</button>
+          </div>
+          <kendo-grid #grid [kendoGridBinding]="gridData.data" class="bold-column-header cartons">
+            
+            <!-- Dropdown for Type -->
+            <kendo-grid-column field="type" title="Type">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <kendo-combobox
+                  [data]="typeList" 
+                  textField="categoryName"
+                  valueField="id"
+                  [(ngModel)]="dataItem.type"
+                  placeholder="Select Type">
+                </kendo-combobox>
               </ng-template>
-        </kendo-grid-column>
-        <kendo-grid-column field="details" title="Details">
-          <ng-template kendoGridCellTemplate let-dataItem>
-                <kendo-textbox [(ngModel)]="dataItem.holdComments" (ngModelChange)="onChangeHoldComments()"
-                  placeholder="Enter Details" ></kendo-textbox>
+            </kendo-grid-column>
+      
+            <!-- Textbox for Details -->
+            <kendo-grid-column field="details" title="Details">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <kendo-textbox [(ngModel)]="dataItem.details" placeholder="Enter Details"></kendo-textbox>
               </ng-template>
-        </kendo-grid-column>
-        <kendo-grid-column field="qty" title="Qty">
-          <ng-template kendoGridCellTemplate let-dataItem>
-                <kendo-textbox [(ngModel)]="dataItem.holdComments" (ngModelChange)="onChangeHoldComments()"
-                  placeholder="Enter Qty" ></kendo-textbox>
+            </kendo-grid-column>
+      
+            <!-- Textbox for Quantity -->
+            <kendo-grid-column field="qty" title="Qty">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <kendo-textbox [(ngModel)]="dataItem.qty" placeholder="Enter Qty"></kendo-textbox>
               </ng-template>
-        </kendo-grid-column>
-      </kendo-grid>
-    </kendo-card-body>
+            </kendo-grid-column>
+      
+          </kendo-grid>
+        </kendo-card-body>
       </kendo-card>
+        
+      
     </div>
   </kendo-pdf-export>
   <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
