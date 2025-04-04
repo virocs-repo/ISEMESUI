@@ -10,10 +10,7 @@ import {
   Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee,
   EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE,
   INIT_POST_RECEIPT, InterimLot, InterimItem, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt,
-  ReceiptAttachment, ReceiptLocation, SignatureTypes, Vendor,InterimDevice,
-  PackageCategory,
-  Others
-} from 'src/app/services/app.interface';
+  ReceiptAttachment, ReceiptLocation, SignatureTypes, Vendor,InterimDevice,PackageCategory,Others,MailInfoRequest,MailRoomDetails} from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { GridDataResult } from '@progress/kendo-angular-grid';
 
@@ -37,7 +34,8 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     ], 
     total: 1 
   };
-  
+  awbMailCode='';
+  scanLocation='';
   typeList: Others[] = this.appService.masterData?.Others ?? [];  
   readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
   receiptLocationSelected: ReceiptLocation | undefined;
@@ -74,7 +72,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   format = "MM/dd/yyyy HH:mm";
 
   name: string = '';
-  email: string | null = '';
+  email ='';
   comments: string = '';
   deliveryComments: string = '';
   address: any;
@@ -230,6 +228,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   onChangeBehalfOfCusotmer() {
     if (this.appService.sharedData.receiving.dataItem) {
       this.appService.sharedData.receiving.dataItem.behalfID = this.behalfOfCusotmerSelected?.CustomerID;
+      this.getISEPOList(this.behalfOfCusotmerSelected?.CustomerID,null,null);
       // this.fetchDevicesByCustomer();
     }
   }
@@ -287,5 +286,55 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     this.pdfExportComponent.fileName = 'Receipt ' + new Date().toLocaleString();
     this.pdfExportComponent.saveAs();
   }
- 
+  submitForm(): void {
+    const otherDetailsArray = this.gridData.data
+  .filter(item => item && item.type && item.details?.trim() && item.qty != null && item.qty !== '')
+  .map(item => ({
+    OtherId: null,
+    TypeId: item.type.id,  
+    Details: item.details.trim(),
+    Qty: item.qty
+  }))|| [];
+    const MailRoomDetails: MailRoomDetails = {
+      CustomerTypeId: this.customerTypeSelected?.customerTypeID,
+      CustomerVendorId: this.customerSelected?.CustomerID || this.vendorSelected?.VendorID,
+      BehalfId: this.behalfOfCusotmerSelected?.CustomerID,
+      AWBMailCode: this.awbMailCode,
+      ScanLocation: this.scanLocation,
+      LocationId: this.receiptLocationSelected?.receivingFacilityID,
+      RecipientId: this.recipientSelected?.EmployeeID,
+      SendorId: this.requestorSelected?.EmployeeID,
+      PartialDelivery: this.isPartialDelivery,
+      IsDamage: this.isDamaged,
+      IsHold: this.placeLotOnHold,
+      DeliveryMethodId: this.deliveryModeSelected?.deliveryModeID,
+      ContactPerson: this.contactPerson,
+      Email: this.email,
+      CourierId: this.courierSelected?.courierDetailID,
+      SendFromCountryId: this.countrySelected?.countryID,
+      TrackingNumber: this.tracking,
+      ExpectedDateTime: this.expectedDateTime,
+      AddressId: this.addressSelected?.addressId,
+      MailComments: this.deliveryComments,
+      NoofPackages: this.selectedQty,
+      PackageCategory: this.selectedCategory?.id.toString(),
+      POId: this.isePOListSelected?.purchaseOrderId,
+      OtherDetails: otherDetailsArray
+    };    
+  
+    const payload: MailInfoRequest = {
+      MailDetails: [MailRoomDetails]
+    };
+    const loginId = this.appService.loginId;
+    this.apiService.saveMailRoomInfo(payload,loginId).subscribe({
+      next: (v: any) => {
+        this.appService.successMessage(MESSAGES.DataSaved);
+        this.onClose.emit();
+      },
+      error: (err) => {
+        this.appService.errorMessage(MESSAGES.DataSaveError);
+        console.log(err);
+      }
+    });
+  }  
 }
