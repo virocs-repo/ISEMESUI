@@ -6,10 +6,10 @@
           <kendo-card-body class="card-flex">
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label text="AWB / ISE Mailroom Barcode" class="k-w-full">
-                <kendo-textbox [(ngModel)]="selectedQty" placeholder="Enter"></kendo-textbox>
+                <kendo-textbox [(ngModel)]="awbMailCode" placeholder="Enter"></kendo-textbox>
               </kendo-label> 
               <kendo-label text="Scan Staging Location" class="k-w-full">
-                <kendo-textbox [(ngModel)]="selectedQty" placeholder="Enter"></kendo-textbox>
+                <kendo-textbox [(ngModel)]="scanLocation" placeholder="Enter"></kendo-textbox>
               </kendo-label> 
             </div>
             <div class="k-d-flex k-align-items-center k-gap-4">
@@ -237,7 +237,7 @@
             <!-- Textbox for Quantity -->
             <kendo-grid-column field="qty" title="Qty">
               <ng-template kendoGridCellTemplate let-dataItem>
-                <kendo-textbox [(ngModel)]="dataItem.qty" placeholder="Enter Qty"></kendo-textbox>
+                <kendo-numerictextbox [(ngModel)]="dataItem.qty" placeholder="Enter Qty"></kendo-numerictextbox>
               </ng-template>
             </kendo-grid-column>
       
@@ -251,8 +251,7 @@
   <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
 
     <span style="margin-left: auto;"></span>
-    <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" 
-      [disabled]="isDisabled.addReceipt">Submit</button>
+    <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" (click)="submitForm()">Submit</button>
     <button kendoButton type="button" rounded="large" themeColor="dark" style="width:6rem"
       (click)="printSection()">Print</button>
   </div>

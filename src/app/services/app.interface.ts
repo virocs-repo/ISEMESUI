@@ -1051,3 +1051,51 @@ export interface CommentsAttachment {
   fileName:string
   active:boolean
 }
+export interface MailInfoRequest {
+  MailDetails: MailRoomDetails[];
+}
+export interface MailInfoRequest {
+  MailDetails: MailRoomDetails[]; 
+}
+
+export interface MailRoomDetails {
+  CustomerTypeId: number|undefined;
+  CustomerVendorId: number|undefined;
+  BehalfId: number |undefined;
+  AWBMailCode: string;
+  ScanLocation: string;
+  LocationId: number|undefined;
+  RecipientId: number|undefined;
+  SendorId: number|undefined;
+  PartialDelivery: boolean|undefined;
+  IsDamage: boolean|undefined;
+  IsHold: boolean|undefined;
+  DeliveryMethodId: number|undefined;
+  ContactPerson: string;
+  Email: string;
+  CourierId: number|undefined;
+  SendFromCountryId: number|undefined;
+  TrackingNumber: string;
+  ExpectedDateTime: Date; 
+  AddressId: number|undefined;
+  MailComments: string;
+  NoofPackages: number|null;
+  PackageCategory: string|undefined;
+  POId: number;
+  OtherDetails: {
+    OtherId?: number | null;
+    TypeId: number;
+    Details: string;
+    Qty: number;
+  }[];
+  
+}
+
+// export interface OtherDetails {
+//   otherId?: number | null;
+//   typeId: number;
+//   details: string;
+//   qty: number;
+// }
+
+

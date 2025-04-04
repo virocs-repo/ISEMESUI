@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { CustomerOrder, OrderRequest } from 'src/app/services/app.interface';
+import { CustomerOrder, OrderRequest,MailInfoRequest } from 'src/app/services/app.interface';
 import { Observable } from 'rxjs';
 const API = environment.apiUrl;
 
@@ -882,5 +882,13 @@ getShippingAddressData(
   
     return this.httpClient.get<any[]>(url);
   }
-  
+  saveMailRoomInfo(payload: MailInfoRequest, loginId: number) {
+    const body = {
+      MailId:null,
+      LoginId: loginId,
+      MailJson: JSON.stringify(payload)
+    };
+    return this.httpClient.post(`${API}v1/ise/inventory/savemailroominfo`, body);
+
+  }
 }
