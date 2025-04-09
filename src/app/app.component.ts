@@ -234,7 +234,7 @@ export class AppComponent implements OnInit, OnDestroy {
       next: (value: any) => {
         if (value) {
           this.appService.masterData.PackageCategory = value.map((a: PackageCategory) => {
-            let props = [a.Id, a.CategoryName]
+            let props = [a.id, a.categoryName]
             props = props.filter(a => a)
             return a;
           })

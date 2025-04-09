@@ -35,7 +35,7 @@ export class MailRoomComponent implements OnDestroy {
   mailSearch:string | undefined;
   devicefamilySelected:any = null;
   deviceSelected:any | undefined;
-  statusSelected:any = null;
+  selectedStatus:any = null;
   trackingNo:string | undefined;
   customerLot:string | undefined;
   receivingNumber:string | undefined;
@@ -83,7 +83,7 @@ export class MailRoomComponent implements OnDestroy {
       this.customer = this.appService.masterData.entityMap.Customer;
       this.deliveryMode= this.appService.masterData.deliveryMode;
       this.location = this.appService.masterData.receiptLocation;
-       this.getStatusList();
+       this.getStatusList('MailRoomStatus');
       this.search();
       console.log("masterdata",this.appService.masterData);
       this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
@@ -101,9 +101,9 @@ export class MailRoomComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
-  async getStatusList(){
+  async getStatusList(listName: string){
     this.statusList = await new Promise<any>((resolve, reject) => { 
-      this.apiService.getStatusList().subscribe({
+      this.apiService.getStatusList(listName).subscribe({
         next:(data) => resolve(data),
         error: (err) => reject(err)
         
@@ -182,15 +182,34 @@ export class MailRoomComponent implements OnDestroy {
       })
     }
   }
+
+  isStatusSelected(id: number): boolean {
+    return this.selectedStatus?.some((item: any) => item.masterListItemId === id);
+  }
+  
+  toggleStatusSelection(item: any): void {
+    const index = this.selectedStatus.findIndex((x: any) => x === item.masterListItemId);
+    if (index >= 0) {
+      this.selectedStatus.splice(index, 1);
+    } else {
+      this.selectedStatus.push(item.masterListItemId);
+    }
+    this.selectedStatus = [...this.selectedStatus]; 
+  }
+  
+  statusTagDisplayLimit = (tags: any[]): any[] => {
+    const maxVisibleTags = 2;
+    return tags.length > maxVisibleTags
+      ? [...tags.slice(0, maxVisibleTags), { masterListItemId: 0, itemText: `+${tags.length - maxVisibleTags}` }]
+      : tags;
+  };
+
   private fetchdata() {
-    this.apiService.getSearchMailRoomReceiptData(this.mailSearch,this.customerSelected?.CustomerID,this.devicefamilySelected?.deviceFamilyId,this.deviceSelected?.deviceId,this.deliveryModeSelected?.deliveryModeID,this.statusSelected?.masterListItemId,
-      this.trackingNo,this.locationSelected?.receivingFacilityID,this.fromDate, this.toDate,this.lotNumber,this.customerLot,this.receivingNumber,null,null,null).subscribe({
+    const statusString = this.selectedStatus?.length? this.selectedStatus.map((x: any) => x.masterListItemId).join(','): null;    
+    this.apiService.getSearchMailRoomReceiptData(statusString,this.fromDate,this.toDate).subscribe({
       next: (v: any) => {
         this.originalData = v;
         this.pageData();
-        /*    this.gridDataResult.data = v;
-           this.gridDataResult.total = v.length */
-        // this.testReceiptEdit();
       },
       error: (v: any) => { }
     });

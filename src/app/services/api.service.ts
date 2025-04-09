@@ -28,35 +28,6 @@ export class ApiService {
     }
     return this.httpClient.get(`${API}v1/ise/inventory/receiptdata`, { params });
   }
-  getSearchMailRoomReceiptData(
-    mailID?: string | null, customer?: number | null, deviceFamily?: number | null, device?: number | null,
-    deliveryMethodID?: number | null, statusID?: string | null, trackingNo?: string | null,
-    locationID?: number | null, fromDate?: Date | null, toDate?: Date | null, iseLot?: string | null,
-    customerLotsstr?: string | null, receivingInfoID?: string | null, receiptID?: number | null,
-    receiptStatus?: string | null, facilityIDStr?: string | null
-  ) {
-    let params = new HttpParams();
-  
-    if (mailID) params = params.set('mailID', mailID);
-    if (customer !== null && customer !== undefined) params = params.set('customer', customer.toString());
-    if (deviceFamily !== null && deviceFamily !== undefined) params = params.set('deviceFamily', deviceFamily.toString());
-    if (device !== null && device !== undefined) params = params.set('device', device.toString());
-    if (deliveryMethodID !== null && deliveryMethodID !== undefined) params = params.set('deliveryMethodID', deliveryMethodID.toString());
-    if (statusID) params = params.set('statusID', statusID);
-    if (trackingNo) params = params.set('trackingNo', trackingNo);
-    if (locationID !== null && locationID !== undefined) params = params.set('locationID', locationID.toString());
-    if (fromDate) params = params.set('fromDate', this.formatDate(fromDate));
-    if (toDate) params = params.set('toDate', this.formatDate(toDate));
-    if (iseLot) params = params.set('iseLot', iseLot);
-    if (customerLotsstr) params = params.set('customerLotsstr', customerLotsstr);
-    if (receivingInfoID) params = params.set('receivingInfoID', receivingInfoID);
-    if (receiptID !== null && receiptID !== undefined) params = params.set('receiptID', receiptID.toString());
-    if (receiptStatus) params = params.set('receiptStatus', receiptStatus);
-    if (facilityIDStr) params = params.set('facilityIDStr', facilityIDStr);
-  
-    return this.httpClient.get(`${API}v1/ise/inventory/getSearchMailRoomReceiptData`, { params });
-  }
-  
   getReceiptdatas(facilityIDStr?: string | null, receiptStatus?: string | null, fromDate?: Date | null, toDate?: Date | null) {
     let params = new HttpParams();
 
@@ -857,10 +828,11 @@ getShippingAddressData(
     }
     return this.httpClient.get(`${API}v1/ise/inventory/searchCustomerReceiverForm`, { params });
   }
-  getStatusList() {
-    let url = `${API}v1/ise/inventory/getInventoryReceiptStatuses`;
+  getStatusList(listName: string) {
+    const url = `${API}v1/ise/inventory/GetMailRoomStatusList?listName=${listName}`;
     return this.httpClient.get(url);
   }
+  
   getDeviceFamiliesList(customerId: number): Observable<any[]> {
     let url = `${API}v1/ise/inventory/getDeviceFamilies?customerId=${customerId}`;
     return this.httpClient.get<any[]>(url);
@@ -891,4 +863,19 @@ getShippingAddressData(
     return this.httpClient.post(`${API}v1/ise/inventory/savemailroominfo`, body);
 
   }
+  getSearchMailRoomReceiptData(statusID?: string | null, fromDate?: Date | null, toDate?: Date | null) {
+    let params = new HttpParams();
+  
+    if (statusID) {
+      params = params.set('status', statusID);
+    }
+    if (fromDate) {
+      params = params.set('fromDate', this.formatDate(fromDate));
+    }
+    if (toDate) {
+      params = params.set('toDate', this.formatDate(toDate));
+    }
+  
+    return this.httpClient.get(`${API}v1/ise/inventory/GetMailRoomSearchData`, { params });
+  }  
 }
