@@ -76,6 +76,22 @@ export interface PackageCategory {
   id: number
   categoryName: string
 }
+export interface Hardware{
+  Id: number
+  CategoryName: string
+}
+export interface Quotes{
+  quoteId: number
+  quote: string
+}
+export interface PurchaseOrder{
+  purchaseOrderId: number
+  customerPoNumber: string
+}
+export interface Category{
+  serviceCategoryId: number
+  serviceCategoryName: string
+}
 export interface MasterData {
   customerType: CustomerType[]
   receiptLocation: ReceiptLocation[]
@@ -92,6 +108,10 @@ export interface MasterData {
   entityMap: EntityMap;
   PackageCategory: PackageCategory[];
   Others:Others[],
+  hardware: Hardware[];
+  Quotes: Quotes[];
+  PurchaseOrder: PurchaseOrder[];
+  Category: Category[];
   addresses: Address[];
   country: Country[];
   courierDetails: CourierDetails[];
@@ -1097,5 +1117,132 @@ export interface MailRoomDetails {
 //   details: string;
 //   qty: number;
 // }
+export interface ReceiptJson {
+    ReceiptDetails: ReceiptDetails;
+  LotDetails: LotDetails;
+  TrayDetails: TrayDetails;
+  HardwareDetails: HardwareDetails;
+  OtherDetails: OtherDetails;
+}
+
+export interface ReceiptDetails {
+  IsInterim: boolean;
+  CustomerTypeID: number | null;
+  CustomerVendorID: number | null;
+  BehalfID: number | null;
+  RecipientId: number | null;
+  SendorId: number | null;
+  ReceivingFacilityID: number | null;
+  DeliveryMethodID: number | null;
+  ContactPerson: string;
+  Email: string | null;
+  CourierID: number | null;
+  CountryFromID: number | null;
+  TrackingNumber: string | null;
+  ExpectedDateTime: string | null;
+  AddressID: number | null;
+  ContactPhone: string | null;
+  ReceivingInstructions: string | null;
+  Notes: string | null;
+  NoofPackages: number;
+  PackageCategory: string | null;
+  Quotes: string | null;
+  POId: number | null;
+  LotCategoryId: number | null;
+}
+
+export interface LotDetails {
+  DeviceId: number | null;
+  ISELotNumber: string | null;
+  CustomerLotNumber: string | null;
+  CustomerCount: number | null;
+  DeviceTypeID: number | null;
+  DateCode: string | null;
+  COO: number | null;
+  Expedite: number | null;
+  IQA: number | null;
+  LotOwnerID: number | null;
+  LotCategoryId: number | null;
+}
+
+export interface TrayDetails {
+  Id: number | null;
+  TrayVendorId: number | null;
+  TrayPartId: number | null;
+  Qty: number | null;
+}
+
+export interface HardwareDetails {
+  Id: number | null;
+  HardwareTypeId: number | null;
+  DeviceName: string | null;
+  HardwareId: string | null;
+}
+
+export interface OtherDetails {
+  Id: number | null;
+  TypeId: number | null;
+  Details: string | null;
+  Qty: number | null;
+}
 
 
+export const INIT_RECEIPT: ReceiptJson = {
+  
+    ReceiptDetails: {
+      IsInterim: false,
+      CustomerTypeID: null,
+      CustomerVendorID: null,
+      BehalfID: null,
+      RecipientId: null,
+      SendorId: null,
+      ReceivingFacilityID: null,
+      DeliveryMethodID: null,
+      ContactPerson: '',
+      Email: '',
+      CourierID: null,
+      CountryFromID: null,
+      TrackingNumber: '',
+      ExpectedDateTime: '',
+      AddressID: null,
+      ContactPhone: '',
+      ReceivingInstructions: '',
+      Notes: '',
+      NoofPackages: 0,
+      PackageCategory: '',
+      Quotes: '',
+      POId: null,
+      LotCategoryId: null,
+      },
+      LotDetails: {
+        DeviceId: null,
+        ISELotNumber: '',
+        CustomerLotNumber: '',
+        CustomerCount: null,
+        DeviceTypeID: null,
+        DateCode: '',
+        COO: null,
+        Expedite: null,
+        IQA: null,
+        LotOwnerID: null,
+        LotCategoryId: null
+      },
+      TrayDetails: {
+        Id: null,
+        TrayVendorId: null,
+        TrayPartId: null,
+        Qty: null
+      },
+      HardwareDetails: {
+        Id: null,
+        HardwareTypeId: null,
+        DeviceName: '',
+        HardwareId: ''
+      },
+      OtherDetails: {
+        Id: null,
+        TypeId: null,
+        Details: '',
+        Qty: null
+      }
+};

@@ -4,7 +4,7 @@ import { AppService } from './services/app.service';
 import { DrawerItem, DrawerSelectEvent } from '@progress/kendo-angular-layout';
 import { Router } from '@angular/router';
 import { ApiService } from './services/api.service';
-import { Address, Coo, DeviceFamily, ICON, LotOwners, Others, PackageCategory, ReceiptStatus, ServiceCategory, TrayPart, TrayVendor } from './services/app.interface';
+import { Address, Category, Coo, DeviceFamily, Hardware, ICON, LotCategory, LotOwners, Others, PackageCategory, PurchaseOrder, Quotes, ReceiptStatus, ServiceCategory, TrayPart, TrayVendor } from './services/app.interface';
 import { Subscription } from 'rxjs';
 
 interface DrawerItemExtra extends DrawerItem {
@@ -46,6 +46,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.getTrayPart();
     this.getPackageCategoryList();
     this.getOthersList();
+    this.getPackageCategoryHardwareList();
+    this.getQuotes();
+    this.getISEPOList();
+    this.getLotCategory();
 
     this.subscription.add(this.appService.eventEmitter.subscribe((e) => {
       console.log(e);
@@ -126,99 +130,56 @@ export class AppComponent implements OnInit, OnDestroy {
   private getDeviceFamilies() {
     this.apiService.DeviceFamilies(775).subscribe({
       next: (value: any) => {
-        if (value) {
-          this.appService.masterData.deviceFamily = value.map((a: DeviceFamily) => {
-            let props = [a.deviceFamilyId, a.deviceFamilyName]
-            props = props.filter(a => a)
-            return a;
-          })
-        }
+        this.appService.masterData.deviceFamily = value;
       }
-    });
+    })
   }
-
   private getReceiverStatus() {
     this.apiService.ReceiverStatus().subscribe({
       next: (value: any) => {
-        if (value) {
-          this.appService.masterData.receiptStatus = value.map((a: ReceiptStatus) => {
-            let props = [a.masterListItemId, a.itemText]
-            props = props.filter(a => a)
-            return a;
-          })
-        }
+        this.appService.masterData.receiptStatus = value;
       }
-    });
+    })
   }
-
+        
   private getServiceCategory() {
     this.apiService.ServiceCategory("GoodsType").subscribe({
       next: (value: any) => {
-        if (value) {
-          this.appService.masterData.serviceCategory = value.map((a: ServiceCategory) => {
-            let props = [a.serviceCategoryId, a.serviceCategoryName]
-            props = props.filter(a => a)
-            return a;
-          })
-        }
+        this.appService.masterData.serviceCategory = value;
       }
-    });
+    })
   }
 
   private getLotOwners() {
     this.apiService.LotOwners().subscribe({
       next: (value: any) => {
-        if (value) {
-          this.appService.masterData.lotOwners = value.map((a: LotOwners) => {
-            let props = [a.employeeID, a.employeeName]
-            props = props.filter(a => a)
-            return a;
-          })
-        }
+        this.appService.masterData.lotOwners = value;
       }
-    });
-  }
+    })
+   }
 
   private getCoo() {
     this.apiService.ServiceCategory("CountryOfOrigin").subscribe({
       next: (value: any) => {
-        if (value) {
-          this.appService.masterData.coo = value.map((a: Coo) => {
-            let props = [a.serviceCategoryId, a.serviceCategoryName]
-            props = props.filter(a => a)
-            return a;
-          })
-        }
+        this.appService.masterData.coo = value;
       }
-    });
+    })
   }
 
   private getTrayVendor() {
     this.apiService.TrayVendor(775).subscribe({
       next: (value: any) => {
-        if (value) {
-          this.appService.masterData.trayVendor = value.map((a: TrayVendor) => {
-            let props = [a.trayVendorId, a.vendorName]
-            props = props.filter(a => a)
-            return a;
-          })
-        }
+        
+          this.appService.masterData.trayVendor = value;
       }
-    });
+    })
   }
-
   private getTrayPart() {
     this.apiService.TrayPart(775,2).subscribe({
       next: (value: any) => {
-        if (value) {
-          this.appService.masterData.trayPart = value.map((a: TrayPart) => {
-            let props = [a.trayPartId, a.trayNumber]
-            props = props.filter(a => a)
-            return a;
-          })
-        }
+        this.appService.masterData.trayPart = value;
       }
-    });
+    })
   }
 
   private fetchHardwareTypes() {
@@ -242,12 +203,64 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     });
   }
+  private getPackageCategoryHardwareList() {
+    this.apiService.getPackageCategoryList("Hardware").subscribe({
+      next: (value: any) => {
+        if (value) {
+          this.appService.masterData.hardware = value.map((a: Hardware) => {
+            let props = [a.Id, a.CategoryName]
+            props = props.filter(a => a)
+            return a;
+          })
+        }
+      }
+    });
+  }
+  private getQuotes() {
+    this.apiService.Quotes(775).subscribe({
+      next: (value: any) => {
+        if (value) {
+          this.appService.masterData.Quotes = value.map((a: Quotes) => {
+            let props = [a.quoteId, a.quote]
+            props = props.filter(a => a)
+            return a;
+          })
+        }
+      }
+    });
+  }
   private getOthersList() {
     this.apiService.getPackageCategoryList("Others").subscribe({
       next: (value: any) => {
         if (value) {
           this.appService.masterData.Others = value.map((a:Others) => {
             let props = [a.Id, a.CategoryName]
+            props = props.filter(a => a)
+            return a;
+          })
+        }
+      }
+    });
+  }
+  private getISEPOList() {
+    this.apiService.getISEPOList(775,null,true).subscribe({
+      next: (value: any) => {
+        if (value) {
+          this.appService.masterData.PurchaseOrder = value.map((a:PurchaseOrder) => {
+            let props = [a.purchaseOrderId, a.customerPoNumber]
+            props = props.filter(a => a)
+            return a;
+          })
+        }
+      }
+    });
+  }
+  private getLotCategory() {
+    this.apiService.getServiceCaetgory().subscribe({
+      next: (value: any) => {
+        if (value) {
+          this.appService.masterData.Category = value.map((a:Category) => {
+            let props = [a.serviceCategoryId, a.serviceCategoryName]
             props = props.filter(a => a)
             return a;
           })
