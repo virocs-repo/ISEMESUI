@@ -5,15 +5,15 @@
         <kendo-card class="card-green k-flex-1 flex-auto-md">
           <kendo-card-body class="card-flex">
             <div class="k-d-flex k-align-items-center k-gap-4">
-              <kendo-label text="AWB / ISE Mailroom Barcode" class="k-w-full">
+              <kendo-label text="AWB / ISE Mailroom Barcode" class="k-w-full"><b class="required-label"></b>
                 <kendo-textbox [(ngModel)]="awbMailCode" placeholder="Enter"></kendo-textbox>
               </kendo-label> 
-              <kendo-label text="Scan Staging Location" class="k-w-full">
+              <kendo-label text="Scan Staging Location" class="k-w-full"><b class="required-label"></b>
                 <kendo-textbox [(ngModel)]="scanLocation" placeholder="Enter"></kendo-textbox>
               </kendo-label> 
             </div>
             <div class="k-d-flex k-align-items-center k-gap-4">
-              <kendo-label text="Customer / Vendor" class="k-w-full">
+              <kendo-label text="Customer / Vendor" class="k-w-full"><b class="required-label"></b>
                 <kendo-combobox [data]="customerTypes" [(ngModel)]="customerTypeSelected"
                   (ngModelChange)="onChangeCustomerType()" [textField]="'customerTypeName'"
                   [valueField]="'customerTypeID'" [kendoDropDownFilter]="filterSettings" placeholder="Select"
@@ -37,7 +37,7 @@
               </kendo-label>
             </div>
             <div class="k-d-flex k-align-items-center k-gap-4">
-              <kendo-label text="Behalf of Customer" class="k-w-full">
+              <kendo-label text="Behalf of Customer" class="k-w-full"><b class="required-label"></b>
                 <kendo-combobox [data]="customers" [(ngModel)]="behalfOfCusotmerSelected" [textField]="'CustomerName'"
                   [valueField]="'CustomerID'" placeholder="Select" rounded="large"
                   (ngModelChange)="onChangeBehalfOfCusotmer()" [kendoDropDownFilter]="filterSettings"
@@ -122,7 +122,7 @@
             </div>
             <div *ngIf="deliveryModeSelected?.deliveryModeName=='Courier'"
               class="k-d-flex k-align-items-center k-gap-4">
-              <kendo-label text="Courier Name" class="k-w-full">
+              <kendo-label text="Courier Name" class="k-w-full"><b class="required-label"></b>
                 <kendo-combobox [data]="couriers" [(ngModel)]="courierSelected" [textField]="'courierName'"
                   [kendoDropDownFilter]="filterSettings" [valueField]="'courierDetailID'" placeholder="Select"
                   rounded="large"></kendo-combobox>
@@ -176,15 +176,26 @@
                 <b class="required-label"></b>
                 <kendo-numerictextbox [(ngModel)]="selectedQty" placeholder="Enter"></kendo-numerictextbox>
               </kendo-label>             
-              <kendo-label text="Package Category" class="k-w-full">
-                <b class="required-label"></b>
-                <kendo-combobox [data]="packageCategoryList" [(ngModel)]="selectedCategory" textField="categoryName"
-                  valueField="id" class="k-w-full" [filterable]="true" placeholder="Select Package Category">
-                </kendo-combobox>
-              </kendo-label>
+              <kendo-label text="Package Category" class="k-w-full"><b class="required-label"></b>
+                <kendo-multiselect
+                  [data]="packageCategoryList"
+                  [(ngModel)]="selectedCategory"
+                  textField="categoryName"
+                  valueField="id"
+                  class="k-w-full"
+                  [filterable]="true"
+                  placeholder="Select Package Category"
+                  [tagMapper]="tagDisplayLimit">
+                  <ng-template kendoMultiSelectItemTemplate let-dataItem>
+                    <input type="checkbox"
+                      [checked]="isCategorySelected(dataItem.id)"
+                      (change)="toggleCategorySelection(dataItem)"/>
+                    {{ dataItem.categoryName }}
+                  </ng-template>
+                </kendo-multiselect>
+              </kendo-label>    
             </div>
             <kendo-label text="ISE PO" class="k-w-full">
-              <b class="required-label"></b>
               <kendo-combobox [data]="isePOList" [(ngModel)]="isePOListSelected" textField="customerPoNumber"
                 valueField="purchaseOrderId" class="k-w-full" [filterable]="true" placeholder="Select">
               </kendo-combobox>
@@ -202,20 +213,23 @@
           </kendo-card>
       </div>
       
-      <kendo-card class="card-green card-full k-mt-4" *ngIf="selectedCategory?.id === 38">
+      <kendo-card class="card-green card-full k-mt-4" *ngIf="isOtherCategorySelected()">
         <kendo-card-body class="card-flex">
           <div class="k-d-flex k-align-items-center k-gap-3">
             <h3 class="k-my-2">Others</h3>
             <i class="k-ml-auto"></i>
             <button kendoButton type="button" rounded="large" themeColor="info" (click)="addOthersRow()" 
               [disabled]="isDisabled.addHardware">Add</button>
-            <button kendoButton type="button" rounded="large" themeColor="info" 
-              [disabled]="isDisabled.addHardware">Save</button>
+            <!-- <button kendoButton type="button" rounded="large" themeColor="info" 
+              [disabled]="isDisabled.addHardware">Save</button> -->
           </div>
           <kendo-grid #grid [kendoGridBinding]="gridData.data" class="bold-column-header cartons">
             
             <!-- Dropdown for Type -->
-            <kendo-grid-column field="type" title="Type">
+            <kendo-grid-column field="type">
+              <ng-template kendoGridHeaderTemplate>
+                Type <b class="required-label">*</b>
+              </ng-template>
               <ng-template kendoGridCellTemplate let-dataItem>
                 <kendo-combobox
                   [data]="typeList" 
@@ -228,14 +242,20 @@
             </kendo-grid-column>
       
             <!-- Textbox for Details -->
-            <kendo-grid-column field="details" title="Details">
+            <kendo-grid-column field="details">
+              <ng-template kendoGridHeaderTemplate>
+                Details <b class="required-label">*</b>
+              </ng-template>
               <ng-template kendoGridCellTemplate let-dataItem>
                 <kendo-textbox [(ngModel)]="dataItem.details" placeholder="Enter Details"></kendo-textbox>
               </ng-template>
             </kendo-grid-column>
       
             <!-- Textbox for Quantity -->
-            <kendo-grid-column field="qty" title="Qty">
+            <kendo-grid-column field="qty">
+              <ng-template kendoGridHeaderTemplate>
+                Qty <b class="required-label">*</b>
+              </ng-template>
               <ng-template kendoGridCellTemplate let-dataItem>
                 <kendo-numerictextbox [(ngModel)]="dataItem.qty" placeholder="Enter Qty"></kendo-numerictextbox>
               </ng-template>

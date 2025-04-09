@@ -73,8 +73,8 @@ export interface Others {
   CategoryName: string
 }
 export interface PackageCategory {
-  Id: number
-  CategoryName: string
+  id: number
+  categoryName: string
 }
 export interface MasterData {
   customerType: CustomerType[]

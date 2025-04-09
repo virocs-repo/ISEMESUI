@@ -51,7 +51,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   isPartialDelivery: boolean | undefined;
   isDamaged: boolean | undefined;
   placeLotOnHold: boolean = false;
-  selectedCategory: { id: number; name: string } | undefined;
+  selectedCategory: PackageCategory[] = [];
   readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
   customerSelected: Customer | undefined;
   readonly vendors: Vendor[] = this.appService.masterData.entityMap.Vendor;
@@ -158,6 +158,30 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
       this.isDisableInterim = true;
     }
   }
+  isCategorySelected(id: number): boolean {
+    return this.selectedCategory?.some((item: PackageCategory) => item.id === id);
+  }
+  
+  toggleCategorySelection(item: PackageCategory): void {
+    const index = this.selectedCategory?.findIndex((cat: PackageCategory) => cat.id === item.id);
+    if (index >= 0) {
+      this.selectedCategory.splice(index, 1); 
+    } else {
+      this.selectedCategory.push(item); 
+    }
+    this.selectedCategory = [...this.selectedCategory]; 
+  }
+
+  tagDisplayLimit(tags: PackageCategory[]): PackageCategory[] {
+    const maxVisibleTags = 2;
+    return tags.length > maxVisibleTags
+      ? [...tags.slice(0, maxVisibleTags), { id: 0, categoryName: `+${tags.length - maxVisibleTags}` }]
+      : tags;
+  }
+  isOtherCategorySelected(): boolean {
+    return this.selectedCategory?.some(cat => cat.id === 38);
+  }
+  
   addOthersRow() {
     this.gridData.data.unshift({
       type: null,  // Dropdown default value
@@ -287,6 +311,122 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     this.pdfExportComponent.saveAs();
   }
   submitForm(): void {
+    if (!this.awbMailCode?.trim()) {
+      this.appService.errorMessage('Please enter AWB / ISE Mailroom Barcode');
+      return;
+    }
+  
+    if (!this.scanLocation?.trim()) {
+      this.appService.errorMessage('Please enter Scan Staging Location');
+      return;
+    }
+    if (!this.customerTypeSelected) {
+      this.appService.errorMessage('Please select customer/vendor');
+      return;
+    }
+    if (this.customerTypeSelected?.customerTypeName === 'Customer' && !this.customerSelected?.CustomerID) {
+      this.appService.errorMessage('Please select Customer');
+      return;
+    }
+  
+    if (this.customerTypeSelected?.customerTypeName === 'Vendor' && !this.vendorSelected?.VendorID) {
+      this.appService.errorMessage('Please select Vendor');
+      return;
+    }
+    if (!this.behalfOfCusotmerSelected?.CustomerID) {
+      this.appService.errorMessage('Please select Behalf of Customer');
+      return;
+    }
+  
+    if (!this.receiptLocationSelected?.receivingFacilityID) {
+      this.appService.errorMessage('Please select ISE Destination Location')
+      return;
+    }
+    if (!this.recipientSelected?.EmployeeID) {
+      this.appService.errorMessage('Please select Recipient / Attention To')
+      return;
+    }
+    if (!this.requestorSelected?.EmployeeID) {
+      this.appService.errorMessage('Please select Requestor/Sender Name')
+      return;
+    }
+    if (!this.deliveryModeSelected) {
+      this.appService.errorMessage('Please select delivery mode');
+      return;
+    }
+    if(this.deliveryModeSelected && this.deliveryModeSelected?.deliveryModeName=='Pickup'){
+      if(!this.contactPhone){
+        this.appService.errorMessage('Please enter contact phone');
+        return;
+      }
+      if(!this.contactPerson){
+        this.appService.errorMessage('Please enter contact person');
+        return;
+      }
+      if (!this.addressSelected) {
+        this.appService.errorMessage('Please select address');
+        return;
+      }
+    }
+    if(this.deliveryModeSelected && this.deliveryModeSelected?.deliveryModeName=='Courier'){
+      if (!this.tracking) {
+        this.appService.errorMessage('Please enter tracking ID');
+        return;
+      }
+      if (!this.courierSelected) {
+        this.appService.errorMessage('Please select courier name')
+        return;
+      }
+      if (!this.countrySelected) {
+        this.appService.errorMessage('Please select country')
+        return;
+      }
+    }
+    if(this.deliveryModeSelected && this.deliveryModeSelected?.deliveryModeName=='Customer Drop-Off'){
+      if(!this.contactPerson){
+        this.appService.errorMessage('Please enter contact person');
+        return;
+      }
+    }
+    if(this.deliveryModeSelected?.deliveryModeName=='Customer Drop-Off'||this.deliveryModeSelected?.deliveryModeName=='Pickup'){
+      this.email = this.email?.trim() || "";
+      if (this.email) {
+        // email validation
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(this.email)) {
+          this.appService.errorMessage('Invalid email address');
+          return;
+        }
+      }
+    }
+    if (!this.selectedQty || this.selectedQty <= 0) {
+      this.appService.errorMessage('Number of Packages is required and must be greater than 0');
+      return;
+    }
+    if (!this.selectedCategory || this.selectedCategory.length === 0) {
+      this.appService.errorMessage('At least one Package Category must be selected');
+      return;
+    }
+    if (this.isOtherCategorySelected()) {
+      for (let i = 0; i < this.gridData.data.length; i++) {
+        const row = this.gridData.data[i];
+  
+        if (!row.type) {
+          this.appService.errorMessage(`Row ${i + 1}: Please select a type.`);
+          return;
+        }
+  
+        if (!row.details || row.details.trim() === '') {
+          this.appService.errorMessage(`Row ${i + 1}: Please enter details`);
+          return;
+        }
+  
+        if (row.qty == null || row.qty <= 0) {
+          this.appService.errorMessage(`Row ${i + 1}: Please enter quantity `);
+          return;
+        }
+      }
+    }
     const otherDetailsArray = this.gridData.data
   .filter(item => item && item.type && item.details?.trim() && item.qty != null && item.qty !== '')
   .map(item => ({
@@ -299,8 +439,8 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
       CustomerTypeId: this.customerTypeSelected?.customerTypeID,
       CustomerVendorId: this.customerSelected?.CustomerID || this.vendorSelected?.VendorID,
       BehalfId: this.behalfOfCusotmerSelected?.CustomerID,
-      AWBMailCode: this.awbMailCode,
-      ScanLocation: this.scanLocation,
+      AWBMailCode: this.awbMailCode.trim(),
+      ScanLocation: this.scanLocation.trim(),
       LocationId: this.receiptLocationSelected?.receivingFacilityID,
       RecipientId: this.recipientSelected?.EmployeeID,
       SendorId: this.requestorSelected?.EmployeeID,
@@ -317,7 +457,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
       AddressId: this.addressSelected?.addressId,
       MailComments: this.deliveryComments,
       NoofPackages: this.selectedQty,
-      PackageCategory: this.selectedCategory?.id.toString(),
+      PackageCategory: this.selectedCategory.map(cat => cat.id).join(','),
       POId: this.isePOListSelected?.purchaseOrderId,
       OtherDetails: otherDetailsArray
     };    
