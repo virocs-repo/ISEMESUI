@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { CustomerOrder, OrderRequest,MailInfoRequest } from 'src/app/services/app.interface';
+import { CustomerOrder, OrderRequest,MailInfoRequest, ReceiptJson } from 'src/app/services/app.interface';
 import { Observable } from 'rxjs';
 const API = environment.apiUrl;
 
@@ -127,6 +127,20 @@ export class ApiService {
         params = params.set('toDate', this.formatDate(toDate));
     }
     return this.httpClient.get(`${API}v1/ise/inventory/GetReceiverFormInternal`, { params });
+  }
+  saveReceiverFormInternal(receiptId:number|null, loginId: number,payload: ReceiptJson) {
+    const body = {
+      ReceiptJson: JSON.stringify(payload)
+    };
+    return this.httpClient.post(`${API}v1/ise/inventory/save-inventory-receipt?receiptId=${receiptId ?? ''}&loginId=${loginId}`, body);
+
+  }
+  
+  Quotes(customerId: number){
+    return this.httpClient.get(`${API}v1/ise/inventory/getQuotes?customerId=${customerId}`);
+  }
+  getServiceCaetgory(){
+    return this.httpClient.get(`${API}v1/ise/inventory/getServiceCaetgory`);
   }
   DeviceFamilies(customerId: number){
     return this.httpClient.get(`${API}v1/ise/inventory/getDeviceFamilies?customerId=${customerId}`);

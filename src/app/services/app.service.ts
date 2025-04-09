@@ -75,6 +75,10 @@ export class AppService {
       Employee: []
     },
     Others:[],
+    hardware:[],
+    Quotes:[],
+    PurchaseOrder:[],
+    Category:[],
     PackageCategory:[],
     addresses: [],
     country: [],
