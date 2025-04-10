@@ -183,9 +183,10 @@ export class ApiService {
   getAddresses() {
     return this.httpClient.get(`${API}v1/ise/inventory/address`);
   }
-  generateLineItem() {
-    return this.httpClient.get(`${API}v1/ise/inventory/lineItem`);
+  generateLineItem(): Observable<{ data: string }> {
+    return this.httpClient.get<{ data: string }>(`${API}v1/ise/inventory/lineItem`);
   }
+  
   uploadFiles(file: File, inputFilename: string, inventoryId: string, loginId: number) {
     const formData = new FormData();
     formData.append('file', file);

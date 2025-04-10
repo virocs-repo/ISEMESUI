@@ -69,7 +69,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     { id: 3, name: 'Hardware' },
     { id: 4, name: 'Other' },
   ];
-  lotData = [{  }];
+  
   hardwareData = [{  }];
   trayData = [{  }];
   otherData = [{  }];
@@ -433,11 +433,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
         this.appService.errorMessage('Please select Lot Category');
         return;
       }
-      if(!this.iseLot)
-      {
-        this.appService.errorMessage('Please select ISE LOT#');
-        return;
-      } 
+       
       if(!this.customerLot)
       {
         this.appService.errorMessage('Please select Customer LOT#');
@@ -986,5 +982,82 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       }
     });
   }
+  getGeneratedLotNumber(): void {
+    this.apiService.generateLineItem().subscribe({
+      next: (res) => {
+        // handle the response
+        this.addLotRow(res.data); // pass the lot number to the add method
+      },
+      error: (err) => {
+        console.error('Error generating lot number', err);
+      }
+    });
+  }
+  onPackageCategoryChange(selectedCategories: { id: number; name: string }[]): void {
+    // Ensure there is at least one selection
+    if (selectedCategories && selectedCategories.length > 0) {
+      // Get the most recently added selection.
+      const latestSelection = selectedCategories[selectedCategories.length - 1];
+  
+      // Check if the most recent selection is "Lot"
+      if (latestSelection.name === 'Lot') {
+        this.getGeneratedLotNumber();
+      }
+    }
+  }
+  
+  lotData: any[] = [];
+  addLotRow(generatedLotNumber?: string) {
+    
+    this.lotData = [
+      ...this.lotData,
+      {
+        iseLot: generatedLotNumber || '',
+        customerLot: '',
+        expectedQty: null,
+        selectedDeviceFamily: null,
+        dateCode: '',
+        selectedCoo: null,
+        expedite: false,
+        iqaOptional: false,
+        selectedLotOwner: null,
+        isHold: false
+      }
+    ];
+  }
+  
+  addTrayRow() {
+    this.trayData = [
+      ...this.trayData,
+      {
+        selectedTrayVendor: null,
+        selectedTrayPart: null,
+        trayQty: null
+      }
+    ];
+  }
+  
+  addHardwareRow() {
+    this.hardwareData = [
+      ...this.hardwareData,
+      {
+        selectedHardwareList: null,
+        projectDevice: '',
+        hardwareQty: null
+      }
+    ];
+  }
+  
+  addOtherRow() {
+    this.otherData = [
+      ...this.otherData,
+      {
+        selectedOtherList: null,
+        otherDetails: '',
+        otherQty: null
+      }
+    ];
+  }
+  
  
 }
