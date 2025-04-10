@@ -84,41 +84,14 @@ export class ApiService {
   }
   //Receiver Form (Internal)
 
-  getReceiverFormInternal(receivingInfoNum?: string | null,customerId?: number,deviceFamilyId?: number,device?: string | null,customerLotsStr?: string | null,statusId?: string| null,isExpected?: boolean, isElot?: string | null,serviceCategoryId?: number,locationId?: string | null,mail?: string | null, fromDate?: Date | null, toDate?: Date | null) {
+  getReceiverFormInternal(status?: string| null,isExpected?: boolean, fromDate?: Date | null, toDate?: Date | null) {
     let params = new HttpParams();
 
-    if (receivingInfoNum) {
-      params = params.set('receivingInfoId', receivingInfoNum);
-    }
-    if (customerId) {
-        params = params.set('customerId', customerId);
-    }
-    if (deviceFamilyId) {
-        params = params.set('deviceFamilyId', deviceFamilyId);
-    }
-    if (device) {
-      params = params.set('deviceId', device);
-    }
-    if (customerLotsStr) {
-        params = params.set('customerLotsStr', customerLotsStr);
-    }
-    if (statusId) {
-        params = params.set('statusId', statusId);
-    }
+    if (status) {
+      params = params.set('statusId', status);
+  }
     if (isExpected) {
         params = params.set('isExpected', isExpected);
-    }
-    if (isElot) {
-      params = params.set('isElot', isElot);
-    }
-    if (serviceCategoryId) {
-        params = params.set('serviceCategoryId', serviceCategoryId);
-    }
-    if (locationId) {
-        params = params.set('locationId', locationId);
-    }
-    if (mail) {
-        params = params.set('mail', mail);
     }
     if (fromDate) {
         params = params.set('fromDate', this.formatDate(fromDate));
