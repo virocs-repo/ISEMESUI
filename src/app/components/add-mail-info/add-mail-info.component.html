@@ -94,6 +94,15 @@
                 </div>
               </kendo-label>
             </div>
+            <kendo-label text="Signature">
+              <kendo-signature 
+                #signature 
+                [(value)]="Signaturebase64Data"
+                [smooth]="true"
+                [maximizable]="false"
+                [hideLine]="true">
+              </kendo-signature>
+            </kendo-label>
           </kendo-card-body>
         </kendo-card>
         <kendo-card class="card-blue k-flex-1 flex-auto-md">
@@ -174,7 +183,10 @@
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label text="Number of Packages" class="k-w-full">
                 <b class="required-label"></b>
-                <kendo-numerictextbox [(ngModel)]="selectedQty" placeholder="Enter"></kendo-numerictextbox>
+                <kendo-numerictextbox [(ngModel)]="selectedQty" placeholder="Enter"[decimals]="0"
+                [format]="'n0'"
+                [step]="1"
+                [min]="0"></kendo-numerictextbox>
               </kendo-label>             
               <kendo-label text="Package Category" class="k-w-full"><b class="required-label"></b>
                 <kendo-multiselect
@@ -184,6 +196,7 @@
                   valueField="id"
                   class="k-w-full"
                   [filterable]="true"
+                  [autoClose]="false"
                   placeholder="Select Package Category"
                   [tagMapper]="tagDisplayLimit">
                   <ng-template kendoMultiSelectItemTemplate let-dataItem>
@@ -269,7 +282,10 @@
     </div>
   </kendo-pdf-export>
   <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
-
+    <div style="display: flex; align-items: center; gap: 4px;">
+      <h4 style="margin: 0;">NOTE:</h4>
+      <span style="font-weight: normal;">Please print out the form and attach to the packages</span>
+    </div>
     <span style="margin-left: auto;"></span>
     <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" (click)="submitForm()">Submit</button>
     <button kendoButton type="button" rounded="large" themeColor="dark" style="width:6rem"

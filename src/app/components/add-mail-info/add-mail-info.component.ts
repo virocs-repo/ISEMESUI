@@ -54,7 +54,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   selectedCategory: PackageCategory[] = [];
   readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
   customerSelected: Customer | undefined;
-  readonly vendors: Vendor[] = this.appService.masterData.entityMap.Vendor;
+  vendors: Vendor[] = this.appService.masterData.entityMap.Vendor;
   vendorSelected: Vendor | undefined;
   behalfOfCusotmerSelected: Customer | undefined;
   behalfOfVendorSelected: Vendor | undefined;
@@ -245,6 +245,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     if (this.customerTypeSelected?.customerTypeName == 'Customer') {
       this.isDisabledBehalfOfCusotmer = true
       this.behalfOfCusotmerSelected = this.customerSelected;
+      this.isePOListSelected = null;
       this.getISEPOList(this.customerSelected?.CustomerID,null,null);
     }
     this.onChangeBehalfOfCusotmer();
@@ -252,6 +253,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   onChangeBehalfOfCusotmer() {
     if (this.appService.sharedData.receiving.dataItem) {
       this.appService.sharedData.receiving.dataItem.behalfID = this.behalfOfCusotmerSelected?.CustomerID;
+      this.isePOListSelected = null;
       this.getISEPOList(this.behalfOfCusotmerSelected?.CustomerID,null,null);
       // this.fetchDevicesByCustomer();
     }
@@ -399,6 +401,13 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
         }
       }
     }
+    if (this.contactPhone) {
+      const phoneRegex = /^[0-9]{0,20}$/; // adjust min/max length as needed
+      if (!phoneRegex.test(this.contactPhone)) {
+        this.appService.errorMessage('Phone number must contain only digits');
+        return;
+      }
+    }
     if (!this.selectedQty || this.selectedQty <= 0) {
       this.appService.errorMessage('Number of Packages is required and must be greater than 0');
       return;
@@ -437,7 +446,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   }))|| [];
     const MailRoomDetails: MailRoomDetails = {
       CustomerTypeId: this.customerTypeSelected?.customerTypeID,
-      CustomerVendorId: this.customerSelected?.CustomerID || this.vendorSelected?.VendorID,
+      CustomerVendorName: this.customerSelected?.CustomerName || this.vendorSelected?.VendorName,
       BehalfId: this.behalfOfCusotmerSelected?.CustomerID,
       AWBMailCode: this.awbMailCode.trim(),
       ScanLocation: this.scanLocation.trim(),
@@ -459,6 +468,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
       NoofPackages: this.selectedQty,
       PackageCategory: this.selectedCategory.map(cat => cat.id).join(','),
       POId: this.isePOListSelected?.purchaseOrderId,
+      Signaturebase64Data: this.Signaturebase64Data,
       OtherDetails: otherDetailsArray
     };    
   
@@ -469,6 +479,16 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     this.apiService.saveMailRoomInfo(payload,loginId).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
+        if (this.customerTypeSelected?.customerTypeName === 'Vendor' && this.vendorSelected?.VendorName) {
+          this.apiService.getEntitiesName('Vendor').subscribe({
+            next: (value: any) => {
+              const vendors = value as Vendor[];
+              this.appService.masterData.entityMap.Vendor = vendors;
+              this.vendors = vendors;
+            },
+            error: (err) => console.error('Error refreshing vendor list', err)
+          });          
+        }
         this.onClose.emit();
       },
       error: (err) => {

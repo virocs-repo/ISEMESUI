@@ -5,7 +5,7 @@
     <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search"
     class="search-input" (input)="onSearchMaster()" />
   </kendo-label>
-  <kendo-label text="Status" class="k-font-size-sm">
+  <!-- <kendo-label text="Status" class="k-font-size-sm">
     <kendo-multiselect
       [data]="statusList"
       [(ngModel)]="selectedStatus"
@@ -22,7 +22,7 @@
         {{ dataItem.itemText }}
       </ng-template>
     </kendo-multiselect>
-  </kendo-label>
+  </kendo-label> -->
   
   <kendo-label text="Start Date" class="k-font-size-sm">
     <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
