@@ -1080,7 +1080,7 @@ export interface MailInfoRequest {
 
 export interface MailRoomDetails {
   CustomerTypeId: number|undefined;
-  CustomerVendorId: number|undefined;
+  CustomerVendorName: string|undefined;
   BehalfId: number |undefined;
   AWBMailCode: string;
   ScanLocation: string;
@@ -1102,6 +1102,7 @@ export interface MailRoomDetails {
   NoofPackages: number|null;
   PackageCategory: string|undefined;
   POId: number;
+  Signaturebase64Data:string;
   OtherDetails: {
     OtherId?: number | null;
     TypeId: number;
