@@ -140,7 +140,6 @@
                   [title]="addressSelected?.fullAddress || ''"></kendo-combobox>
               </kendo-label>
             </div>
-            <!-- show kedo icon using src image -->
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label text="Pick Up/DropOff Instructions for Receiving" class="k-w-full">
                 <kendo-textarea [(ngModel)]="PickupDropoffComments" [rows]="3" placeholder="Enter Pick Up/DropOff Instructions for Receiving"
@@ -148,7 +147,7 @@
               </kendo-label>
             </div>
             <div class="k-d-flex k-align-items-center k-gap-4">
-              <kendo-label text="Number of Packages" class="k-w-full">
+              <kendo-label text="Number of Packages" class="k-font-size-sm">
                 <b class="required-label"></b>
                 <kendo-numerictextbox [(ngModel)]="selectedQty" placeholder="Enter"></kendo-numerictextbox>
               </kendo-label>             
@@ -160,36 +159,78 @@
     </div>
       <kendo-card class="card-green card-full k-mt-4"[ngClass]="{'k-pointer-events-none': isDisableHoldComments}">
         <kendo-card-body class="card-flex">
-          <kendo-label text="Package Category" class="k-w-full" style="width: 1%;">
+          <kendo-label text="Package Category" class="k-font-size-sm">
             <b class="required-label"></b>
             <kendo-multiselect 
               [data]="category" 
               [(ngModel)]="selectedCategories" 
               textField="name" 
               valueField="id" 
-              class="k-w-full" 
               [filterable]="true" 
               (valueChange)="onPackageCategoryChange($event)"
-              placeholder="Select Package Category">
+              placeholder="Select Package Category"
+              style="width: 330px;">
             </kendo-multiselect>
           </kendo-label> 
           <!-- Lot Grid -->
            <ng-container *ngIf="isCategorySelected(1)">
+            <div class="k-mt-6">
             <h2 class="k-m-0">Lot</h2>
-            <div class="k-d-flex k-align-items-center k-gap-4">
-              <kendo-label text="ISE Quote #" class="k-w-full">
-                <b class="required-label"></b>
-                <kendo-combobox [data]="quotesList" [(ngModel)]="selectedQuotesList" [textField]="'quote'" [valueField]="'quoteId'" class="combobox" [filterable]="true" placeholder="Select ISE Quotes"></kendo-combobox>
-              </kendo-label>
-              <kendo-label text="Customer Purchase Order #" class="k-w-full">
-                <b class="required-label"></b>
-                <kendo-combobox [data]="custometPurchase" [(ngModel)]="selectedCustometPurchase" [textField]="'customerPoNumber'" [valueField]="'purchaseOrderId'" class="combobox" [filterable]="true" placeholder="Select Customer Purchase Order"></kendo-combobox>
-              </kendo-label>
-              <kendo-label text="Lot Category" class="k-w-full">
-                <b class="required-label"></b>
-                <kendo-combobox [data]="lotCategory" [(ngModel)]="selectedLotCategory" [textField]="'serviceCategoryName'" [valueField]="'serviceCategoryId'" class="combobox" [filterable]="true" placeholder="Select Lot Category"></kendo-combobox>
-              </kendo-label>
-            </div>
+            <div class="k-d-flex k-align-items-end k-gap-4">
+              <div class="k-flex k-flex-col k-flex-grow">
+                <kendo-label text="ISE Quote #" class="k-font-size-sm">
+                  <b class="required-label"></b>
+                </kendo-label>
+                <kendo-combobox
+                  [data]="quotesList"
+                  [(ngModel)]="selectedQuotesList"
+                  textField="quote"
+                  valueField="quoteId"
+                  class="k-w-full"
+                  [filterable]="true"
+                  placeholder="Select ISE Quotes">
+                </kendo-combobox>
+              </div>
+            
+              <div class="k-flex k-flex-col k-flex-grow">
+                <kendo-label text="Customer Purchase Order #" class="k-font-size-sm">
+                  <b class="required-label"></b>
+                </kendo-label>
+                <kendo-combobox
+                  [data]="custometPurchase"
+                  [(ngModel)]="selectedCustometPurchase"
+                  textField="customerPoNumber"
+                  valueField="purchaseOrderId"
+                  class="k-w-full"
+                  [filterable]="true"
+                  placeholder="Select Customer Purchase Order">
+                </kendo-combobox>
+              </div>
+            
+              <div class="k-flex k-flex-col k-flex-grow">
+                <kendo-label text="Lot Category" class="k-font-size-sm">
+                  <b class="required-label"></b>
+                </kendo-label>
+                <kendo-combobox
+                  [data]="lotCategory"
+                  [(ngModel)]="selectedLotCategory"
+                  textField="serviceCategoryName"
+                  valueField="serviceCategoryId"
+                  class="k-w-full"
+                  [filterable]="true"
+                  placeholder="Select Lot Category">
+                </kendo-combobox>
+              </div>
+            
+              <button
+                kendoButton
+                (click)="getGeneratedLotNumber()"
+                themeColor="primary"
+                icon="plus"
+                style="width: 70px;">
+                Add
+              </button>
+            </div>            
             <kendo-grid [kendoGridBinding]="lotData" class="bold-column-header cartons">
               <kendo-grid-column field="iseLot" title="ISE LOT#">
                 <ng-template kendoGridCellTemplate let-dataItem>
@@ -259,16 +300,16 @@
                   <input type="checkbox" [(ngModel)]="dataItem.isHold"/>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="actions" title="Actions">
-                <ng-template kendoGridCellTemplate let-dataItem>
-                  <button kendoButton (click)="getGeneratedLotNumber()" themeColor="primary" icon="plus">Add</button>
-                </ng-template>
-              </kendo-grid-column>
             </kendo-grid>
+            </div>
           </ng-container>
           <!-- Tray Grid -->
           <ng-container *ngIf="isCategorySelected(2)">
-            <h2 class="k-m-0">Tray</h2>
+            <div class="k-mt-6">
+            <div class="tray-header">
+              <h2 class="k-m-0">Tray</h2>
+              <button kendoButton (click)="addTrayRow()" themeColor="primary" style="width: 70px;" icon="plus">Add</button>
+            </div>
             <kendo-grid [kendoGridBinding]="trayData" class="bold-column-header cartons">
               <kendo-grid-column field="trayVendor" title="Tray Vendor">
                 <ng-template kendoGridCellTemplate let-dataItem>
@@ -286,10 +327,15 @@
                 </ng-template>
               </kendo-grid-column>
             </kendo-grid>
+            </div>
           </ng-container>
           <!-- Hardware Grid -->
           <ng-container *ngIf="isCategorySelected(3)">
-            <h2 class="k-m-0">Hardware</h2>
+            <div class="k-mt-6">
+            <div class="tray-header">
+              <h2 class="k-m-0">Hardware</h2>
+              <button kendoButton (click)="addHardwareRow()" themeColor="primary" style="width: 70px;" icon="plus">Add</button>
+            </div>
             <kendo-grid [kendoGridBinding]="hardwareData" class="bold-column-header cartons">
               <kendo-grid-column field="hardwareType" title="Hardware Type">
                 <ng-template kendoGridCellTemplate let-dataItem>
@@ -307,10 +353,15 @@
                 </ng-template>
               </kendo-grid-column>
             </kendo-grid>
+            </div>
           </ng-container>
           <!-- Other Grid -->
           <ng-container *ngIf="isCategorySelected(4)">
-            <h2 class="k-m-0">Other</h2>
+            <div class="k-mt-6">
+            <div class="tray-header">
+              <h2 class="k-m-0">Other</h2>
+              <button kendoButton (click)="addOtherRow()" themeColor="primary" style="width: 70px;" icon="plus">Add</button>
+            </div>
             <kendo-grid [kendoGridBinding]="otherData" class="bold-column-header cartons">
               <kendo-grid-column field="type" title="Type">
                 <ng-template kendoGridCellTemplate let-dataItem>
@@ -328,6 +379,7 @@
                 </ng-template>
               </kendo-grid-column>
             </kendo-grid>
+            </div>
           </ng-container>
         </kendo-card-body>
       </kendo-card>

@@ -19,3 +19,28 @@
 #addReceiptForm {
   --kendo-font-size: 0.625rem;
 }
+
+.tray-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px; /* optional spacing before grid */
+}
+.form-row {
+  display: flex;
+  gap: 16px; /* adjust as needed */
+  align-items: end;
+}
+
+.form-field {
+  flex: 1; /* Makes all fields equal width */
+}
+
+.combobox {
+  width: 100%;
+}
+
+.form-button {
+  display: flex;
+  align-items: end;
+}

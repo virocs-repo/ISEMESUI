@@ -184,15 +184,7 @@ export class ReceiverFormInternalComponent implements OnDestroy {
         satatusIDs.length > 0 && this.isSearchClicked
             ? satatusIDs.join(',')
             : null;   
-            
-            const locationIDs = this.selectedLocation
-            .map(name => this.appService.masterData.receiptLocation.find(location => location.receivingFacilityName === name.receivingFacilityName)?.receivingFacilityID)
-            .filter(id => id !== null);
-            const locationIDsStr: string | null = 
-            locationIDs.length > 0 && this.isSearchClicked
-                ? locationIDs.join(',')
-                : null;   
-    this.apiService.getReceiverFormInternal(this.selectedReceivingInfoNum,this.selectedCustomer?.CustomerID,this.selectedDeviceFamily?.deviceFamilyId,this.selectedDevice,this.selectedCustomerLot,statusIDsStr,this.isExpected,this.selectedIseLot,this.selectedServiceCategory?.serviceCategoryId,locationIDsStr,this.selectedMailNumber,this.from_Date,this.to_Date).subscribe({
+    this.apiService.getReceiverFormInternal(statusIDsStr,this.isExpected,this.from_Date,this.to_Date).subscribe({
       next: (v: any) => {
  /*          this.gridDataResult.data = v;
           this.gridDataResult.total = v.length; */
