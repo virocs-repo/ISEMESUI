@@ -15,17 +15,12 @@ import * as moment from 'moment';
 })
 export class ReceiverFormInternalComponent implements OnDestroy {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
-  //
-  public radio1 = {
-    layout: "Expected",
-  };
-//
+  public isExpected: boolean | null = null;
   selectedReceivingInfoNum : string | null ="";
   customerId : number | undefined;
   deviceFamilyId : number | undefined;
   customerLotsStr : string | null = "";
   statusId : number | undefined;
-  isExpected : boolean | undefined;
   isElot : string | null = "";
   serviceCategoryId : number | undefined;
   locationId : number | undefined;
@@ -91,6 +86,14 @@ export class ReceiverFormInternalComponent implements OnDestroy {
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
+    const defaultStatus = this.appService.masterData.receiptStatus.find(
+      status => status.itemText === 'Pending Receive'
+    );
+    if (defaultStatus) {
+      this.selectedStatus = [defaultStatus];
+    }
+  
+    this.isExpected = true;
     this.location = this.appService.masterData.receiptLocation;
     this.search();
     this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
@@ -147,14 +150,6 @@ export class ReceiverFormInternalComponent implements OnDestroy {
     return this.selectedStatus.some(facility => facility.masterListItemId === masterListItemId);
   }  
   toggleSelection(item: any, type: string): void {
-    if (type === 'facility') {
-      const index = this.selectedLocation.findIndex(facility => facility.receivingFacilityID === item.receivingFacilityID);
-      if (index > -1) {
-        this.selectedLocation.splice(index, 1);
-      } else {
-        this.selectedLocation.push(item); // Store full object to maintain reference
-      }
-    }
     if (type === 'status') {
       const index = this.selectedStatus.findIndex(facility => facility.masterListItemId === item.masterListItemId);
       if (index > -1) {
