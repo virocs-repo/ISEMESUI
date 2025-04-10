@@ -17,26 +17,26 @@
       </ng-template>
     </kendo-multiselect>
   </kendo-label>
-  <kendo-label text="" class="k-font-size-sm k-col-span-1">
+  <kendo-label text="" class="k-font-size-sm k-col-span-1"> 
     <div class="k-d-flex k-align-items-center k-gap-4">
       <label class="k-font-size-sm k-d-flex k-align-items-center">
-        <input type="radio" kendoRadioButton value="Expected" [(ngModel)]="radio1.layout"/>
+        <input type="radio" kendoRadioButton [value]="true" [(ngModel)]="isExpected" />
         <span class="k-ml-2">Expected</span>
       </label>
       <label class="k-font-size-sm k-d-flex k-align-items-center">
-        <input type="radio" kendoRadioButton value="UnExpected" [(ngModel)]="radio1.layout"/>
+        <input type="radio" kendoRadioButton [value]="false" [(ngModel)]="isExpected" />
         <span class="k-ml-2">UnExpected</span>
-      </label>
+      </label>      
     </div>
   </kendo-label>
   <kendo-label text="Start Date" class="k-font-size-sm">
-    <kendo-datepicker [(value)]="fromDate"></kendo-datepicker>
+    <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
   </kendo-label>
   <kendo-label text="End Date" class="k-font-size-sm">
-    <kendo-datepicker [(value)]="toDate"></kendo-datepicker>
+    <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
   </kendo-label>
-  <button kendoButton rounded="full" themeColor="success" style="padding: 0.3rem 2.2rem" (click)="search()">Search</button>
-  <button kendoButton rounded="full" themeColor="info" style="padding: 0.3rem 2.2rem" (click)="openDialog()">Add</button>
+  <button kendoButton rounded="full" themeColor="success" class="k-w-25"  (click)="search()">Search</button>
+  <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
 </div>
   <div></div>
 <div
@@ -58,97 +58,92 @@
     [columnMenu]="columnMenuSettings" [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
     [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" 
     class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
-    <kendo-grid-column field="receiptID" title="Receipt ID" [width]="50">
-      <ng-template kendoGridCellTemplate let-dataItem>
-        <div class="truncate-text" [title]="dataItem.receiptID">{{dataItem.receiptID}}</div>
-      </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="receivingNo" title="Receiving Number" [width]="50">
+    <kendo-grid-column field="receivingNo" title="Receiving No" [width]="135">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.receivingNo">{{dataItem.receivingNo}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="mailNo" title="Mailroom Number" [width]="70">
+    <kendo-grid-column field="mailNo" title="Mailroom No" [width]="135">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.mailNo">{{dataItem.mailNo}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="customerName" title="Customer" [width]="75">
+    <kendo-grid-column field="customerName" title="Customer" [width]="135">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.customerName">{{dataItem.customerName}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="createDate" title="Created Date" [width]="120">
+    <kendo-grid-column field="createDate" title="Created Date" [width]="170">
       <ng-template kendoGridCellTemplate let-dataItem>
         {{ dataItem.createDate | date: 'MM-dd-yyyy HH:mm a' }}
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="recipient" title="Recipient / Attention To" [width]="50">
+    <kendo-grid-column field="recipient" title="Recipient / Attention To" [width]="190">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.recipient">{{dataItem.recipient}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="deliveryMethod" title="Delivery Method" [width]="70">
+    <kendo-grid-column field="deliveryMethod" title="Delivery Method" [width]="160">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.deliveryMethod">{{dataItem.deliveryMethod}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="expectedDate" title="Expected Date" [width]="120">
+    <kendo-grid-column field="expectedDate" title="Expected Date" [width]="170">
       <ng-template kendoGridCellTemplate let-dataItem>
         {{ dataItem.expectedDate | date: 'MM-dd-yyyy HH:mm a' }}
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="noofPackages" title="No of Package" [width]="70">
+    <kendo-grid-column field="noofPackages" title="No of Package" [width]="130">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.noofPackages">{{dataItem.noofPackages}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="receivingStatus" title="Status" [width]="70">
+    <kendo-grid-column field="receivingStatus" title="Status" [width]="110">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.receivingStatus">{{dataItem.receivingStatus}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="mailStatus" title="Mail Status" [width]="60">
+    <kendo-grid-column field="mailStatus" title="Mail Status" [width]="120">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.mailStatus">{{dataItem.mailStatus}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="senderName" title="Sender Name" [width]="50">
+    <kendo-grid-column field="senderName" title="Sender Name" [width]="135">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.senderName">{{dataItem.senderName}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="awb" title="AWB" [width]="50">
+    <kendo-grid-column field="awb" title="AWB" [width]="120">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.awb">{{dataItem.awb}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="location" title="Location" [width]="50">
+    <kendo-grid-column field="location" title="Location" [width]="110">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.location">{{dataItem.location}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="createdBy" title="Created by" [width]="50">
+    <kendo-grid-column field="createdBy" title="Created by" [width]="117">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.createdBy">{{dataItem.createdBy}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="device" title="Device Name" [width]="50">
+    <kendo-grid-column field="device" title="Device Name" [width]="129">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.device">{{dataItem.device}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="iseLotNumbers" title="ISE Lot Number #" [width]="50">
+    <kendo-grid-column field="iseLotNumbers" title="ISE Lot Number #" [width]="154">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.iseLotNumbers">{{dataItem.iseLotNumbers}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="customerLotNumbers" title="Customer Lot #" [width]="50">
+    <kendo-grid-column field="customerLotNumbers" title="Customer Lot #" [width]="142">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.customerLotNumbers">{{dataItem.customerLotNumbers}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="expectedUnexpected" title="Expected/Unexpected" [width]="50">
+    <kendo-grid-column field="expectedUnexpected" title="Expected/Unexpected" [width]="180">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.expectedUnexpected">{{dataItem.expectedUnexpected}}</div>
       </ng-template>

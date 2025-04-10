@@ -84,7 +84,7 @@ export class ApiService {
   }
   //Receiver Form (Internal)
 
-  getReceiverFormInternal(status?: string| null,isExpected?: boolean, fromDate?: Date | null, toDate?: Date | null) {
+  getReceiverFormInternal(status?: string| null,isExpected?: boolean | null, fromDate?: Date | null, toDate?: Date | null) {
     let params = new HttpParams();
 
     if (status) {
