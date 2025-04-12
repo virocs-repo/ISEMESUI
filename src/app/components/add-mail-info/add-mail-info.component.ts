@@ -10,9 +10,11 @@ import {
   Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, DeviceItem, DeviceType, Employee,
   EntityType, GoodsType, HardwareItem, ICON, INIT_DEVICE_ITEM, INIT_HARDWARE_ITEM, INIT_MISCELLANEOUS_GOODS, INIT_POST_DEVICE,
   INIT_POST_RECEIPT, InterimLot, InterimItem, JSON_Object, LotCategory, MESSAGES, MiscellaneousGoods, PostDevice, PostHardware, PostMiscGoods, PostReceipt,
-  ReceiptAttachment, ReceiptLocation, SignatureTypes, Vendor,InterimDevice,PackageCategory,Others,MailInfoRequest,MailRoomDetails} from 'src/app/services/app.interface';
+  ReceiptAttachment, ReceiptLocation, SignatureTypes, Vendor,InterimDevice,PackageCategory,Others,MailInfoRequest,MailRoomDetails,
+  MailAttachment} from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { GridDataResult } from '@progress/kendo-angular-grid';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-add-mail-info',
@@ -122,20 +124,33 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   recipientSelected: Employee | undefined;
   contactPerson =''
 
+  selectedPackageLabelFiles:any[] = [];
+  selectedShipmentPaperFiles:any[] = [];
+  mailRoomDetails : any;
+  mailAttachements:any[] = [];
+  filteredMailAttachements:any[] = [];
+  otherDetail:any[] = [];
+  
+  selectableSettings: any = {
+    checkboxOnly: true,
+    mode: 'single',
+  }
+  readonly downloadFileApi = environment.apiUrl + 'v1/ise/inventory/download/'
 
   constructor(public appService: AppService, private apiService: ApiService) { 
     // this.getInvUserByRole();
   }
 
   ngOnInit(): void {
-    // this.init();
+
+    this.init();
     const user = this.employees.find(emp => emp.EmployeeID === this.appService.loginId);
     if (user) {
       this.requestorSelected = user;
       this.recipientSelected = user;
       this.contactPerson= this.requestorSelected?.EmployeeName;
     }
-    this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
+    this.subscription.add(this.appService.sharedData.mailRoom.eventEmitter.subscribe((v) => {
       switch (v) {
         case 'canCloseDialog?':
           let closeDialog = false;
@@ -146,16 +161,24 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
             closeDialog = true
           }
           if (closeDialog) {
-            this.appService.sharedData.receiving.eventEmitter.emit('closeDialog');
+            this.appService.sharedData.mailRoom.eventEmitter.emit('closeDialog');
           }
           break;
         default:
           break;
       }
     }))
-   
-    if(this.appService.sharedData.receiving.isEditMode){
-      this.isDisableInterim = true;
+    
+  }
+
+init() {
+  debugger;
+    if(this.appService.sharedData.mailRoom.isEditMode || this.appService.sharedData.mailRoom.isEditMode){
+      this.getMailRoomDetails(this.appService.sharedData.mailRoom.dataItem.mailId);
+
+      if(this.appService.sharedData.mailRoom.isEditMode){
+        this.isDisableInterim = true;
+      }
     }
   }
   isCategorySelected(id: number): boolean {
@@ -202,8 +225,8 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     }
   }
   ngOnDestroy(): void {
-    this.appService.sharedData.receiving.isEditMode = false
-    this.appService.sharedData.receiving.isViewMode = false;
+    this.appService.sharedData.mailRoom.isEditMode = false
+    this.appService.sharedData.mailRoom.isViewMode = false;
     this.subscription.unsubscribe();
   }
   isVisibleHoldComments = true;
@@ -251,8 +274,8 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     this.onChangeBehalfOfCusotmer();
   }
   onChangeBehalfOfCusotmer() {
-    if (this.appService.sharedData.receiving.dataItem) {
-      this.appService.sharedData.receiving.dataItem.behalfID = this.behalfOfCusotmerSelected?.CustomerID;
+    if (this.appService.sharedData.mailRoom.dataItem) {
+      this.appService.sharedData.mailRoom.dataItem.behalfID = this.behalfOfCusotmerSelected?.CustomerID;
       this.isePOListSelected = null;
       this.getISEPOList(this.behalfOfCusotmerSelected?.CustomerID,null,null);
       // this.fetchDevicesByCustomer();
@@ -268,7 +291,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   }));
   
   private areThereAnyChanges() {
-    if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
+    if (this.appService.sharedData.mailRoom.isViewMode || this.appService.sharedData.mailRoom.isEditMode) {
       return false
     } else {
       // new form
@@ -313,6 +336,12 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     this.pdfExportComponent.saveAs();
   }
   submitForm(): void {
+
+    var mailRoomId = 0;
+    if(this.appService.sharedData.mailRoom.dataItem.mailRoomId) {
+      mailRoomId = this.appService.sharedData.mailRoom.dataItem.mailRoomId;
+    }
+
     if (!this.awbMailCode?.trim()) {
       this.appService.errorMessage('Please enter AWB / ISE Mailroom Barcode');
       return;
@@ -412,10 +441,10 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
       this.appService.errorMessage('Number of Packages is required and must be greater than 0');
       return;
     }
-    if (!this.selectedCategory || this.selectedCategory.length === 0) {
-      this.appService.errorMessage('At least one Package Category must be selected');
-      return;
-    }
+    // if (!this.selectedCategory || this.selectedCategory.length === 0) {
+    //   this.appService.errorMessage('At least one Package Category must be selected');
+    //   return;
+    // }
     if (this.isOtherCategorySelected()) {
       for (let i = 0; i < this.gridData.data.length; i++) {
         const row = this.gridData.data[i];
@@ -436,7 +465,32 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
         }
       }
     }
-    const otherDetailsArray = this.gridData.data
+
+    var packageLabelFiles:any[] = [];
+    if (this.selectedPackageLabelFiles && this.selectedPackageLabelFiles.length) {
+      if (this.selectedPackageLabelFiles.length < 1) {
+        this.appService.errorMessage('Error while selecting package label file(s)');
+        return;
+      }
+
+      this.selectedPackageLabelFiles.forEach((file:any) => {
+        packageLabelFiles.push(file.rawFile);
+      })
+    }
+
+    var shipmentPaperFiles:any[] = [];
+    if (this.selectedShipmentPaperFiles && this.selectedShipmentPaperFiles.length) {
+      if (this.selectedShipmentPaperFiles.length < 1) {
+        this.appService.errorMessage('Error while selecting shipment paper file(s)');
+        return;
+      }
+
+      this.selectedShipmentPaperFiles.forEach((file:any) => {
+        shipmentPaperFiles.push(file.rawFile);
+      })
+    }
+
+  const otherDetailsArray = this.gridData.data
   .filter(item => item && item.type && item.details?.trim() && item.qty != null && item.qty !== '')
   .map(item => ({
     OtherId: null,
@@ -471,12 +525,32 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
       Signaturebase64Data: this.Signaturebase64Data,
       OtherDetails: otherDetailsArray
     };    
-  
+
+    debugger;
+    var deletedAttachmentsJson = ''
+    var deletedAttachments:any[] = []
+    
+    this.mailAttachements.filter(a => a.active == false).forEach((attach:any) => {
+      var attachment: any = {
+        attachmentId: attach.attachmentId,
+        Section: attach.Section,
+        path: attach.path,
+        active: attach.active
+      }
+      deletedAttachments.push(attachment);
+    })
+
+    if(deletedAttachments.length > 0)
+      deletedAttachmentsJson = JSON.stringify(deletedAttachments)
+
     const payload: MailInfoRequest = {
       MailDetails: [MailRoomDetails]
     };
+
+    const mailJson = JSON.stringify(payload)
+
     const loginId = this.appService.loginId;
-    this.apiService.saveMailRoomInfo(payload,loginId).subscribe({
+    this.apiService.saveMailRoomInfo(packageLabelFiles, shipmentPaperFiles, mailJson, mailRoomId, loginId, deletedAttachmentsJson).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
         if (this.customerTypeSelected?.customerTypeName === 'Vendor' && this.vendorSelected?.VendorName) {
@@ -496,5 +570,70 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
         console.log(err);
       }
     });
-  }  
+  }
+  
+  onSelectPackageLableAttachment(event: any): void {
+
+    event.files.forEach((f:any) => {
+      this.selectedPackageLabelFiles.push(f);
+    })
+  }
+
+  onPackageLabelFileRemove(event: any): void {
+    const fileToRemove = event.files[0]; 
+    this.selectedPackageLabelFiles = this.selectedPackageLabelFiles.filter((f:any ) => f.name !== fileToRemove.name);
+  }
+  onSelectShipmentPaperAttachment(event: any): void {
+
+    event.files.forEach((f:any) => {
+      this.selectedShipmentPaperFiles.push(f);
+    })
+  }
+
+  onShipmentPaperFileRemove(event: any): void {
+    const fileToRemove = event.files[0]; 
+    this.selectedShipmentPaperFiles = this.selectedShipmentPaperFiles.filter((f:any ) => f.name !== fileToRemove.name);
+  }
+
+  onUpload(event: any): void {
+    debugger;
+    // Send selected files to API
+    const formData = new FormData();
+    event.files.forEach((file: any) => {
+      formData.append('files', file.rawFile);
+    });
+    // Call API
+  }
+
+  deleteMailRoomAttachment(dataItem: any) {
+    debugger;
+    dataItem.active = false;
+    var attachment =  this.mailAttachements.find(a => a.path === dataItem.path);
+    if(attachment != undefined)
+      attachment.active = false;
+
+    this.filteredMailAttachements = this.mailAttachements.filter(a => a.active == true)
+  }
+
+  getMailRoomDetails(mailId:number)  {
+    debugger;
+    this.apiService.getMailRoomDetails(mailId).subscribe({
+      next : (data:any) => {
+        this.mailRoomDetails = data;
+        this.otherDetail = this.mailRoomDetails.others;
+        this.mailAttachements = this.mailRoomDetails.mailAttachments;
+        this.filteredMailAttachements = this.mailRoomDetails.mailAttachments;
+        this.bindMailRoomDetail();
+      },
+      error: (err) => {
+
+      }
+    })
+  }
+
+  bindMailRoomDetail(){
+    debugger;
+    this.awbMailCode = this.mailRoomDetails.awbMailCode;
+    this.scanLocation= this.mailRoomDetails.scanLocation;
+  }
 }

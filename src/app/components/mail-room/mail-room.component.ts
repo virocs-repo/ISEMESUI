@@ -86,7 +86,7 @@ export class MailRoomComponent implements OnDestroy {
        this.getStatusList('MailRoomStatus');
       this.search();
       console.log("masterdata",this.appService.masterData);
-      this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
+      this.subscription.add(this.appService.sharedData.mailRoom.eventEmitter.subscribe((v) => {
         switch (v) {
           case 'closeDialog':
             this.closeDialog();
@@ -216,9 +216,9 @@ export class MailRoomComponent implements OnDestroy {
   }
   private testReceiptEdit() {
     setTimeout(() => {
-      this.appService.sharedData.receiving.dataItem = this.gridDataResult.data[0]
-      this.appService.sharedData.receiving.isEditMode = true;
-      this.appService.sharedData.receiving.isViewMode = false;
+      this.appService.sharedData.mailRoom.dataItem = this.gridDataResult.data[0]
+      this.appService.sharedData.mailRoom.isEditMode = true;
+      this.appService.sharedData.mailRoom.isViewMode = false;
       // access the same in receipt component
       this.openDialog()
     }, 3000);
@@ -260,16 +260,16 @@ export class MailRoomComponent implements OnDestroy {
         })
         break;
       case 'View Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = false;
-        this.appService.sharedData.receiving.isViewMode = true;
+        this.appService.sharedData.mailRoom.dataItem = dataItem
+        this.appService.sharedData.mailRoom.isEditMode = false;
+        this.appService.sharedData.mailRoom.isViewMode = true;
         // access the same in receipt component
         this.openDialog()
         break;
       case 'Edit Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = true;
-        this.appService.sharedData.receiving.isViewMode = false;
+        this.appService.sharedData.mailRoom.dataItem = dataItem
+        this.appService.sharedData.mailRoom.isEditMode = true;
+        this.appService.sharedData.mailRoom.isViewMode = false;
         // access the same in receipt component
         this.openDialog()
         break;
@@ -300,6 +300,7 @@ export class MailRoomComponent implements OnDestroy {
     this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
   }
   onSelectRowActionMenu(e: ContextMenuSelectEvent) {
+    debugger;
     const dataItem = this.dataItemSelected;
     if (!dataItem) {
       console.error('Selected dataItem is not set');
@@ -319,16 +320,16 @@ export class MailRoomComponent implements OnDestroy {
         })
         break;
       case 'View Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = false;
-        this.appService.sharedData.receiving.isViewMode = true;
+        this.appService.sharedData.mailRoom.dataItem = dataItem
+        this.appService.sharedData.mailRoom.isEditMode = false;
+        this.appService.sharedData.mailRoom.isViewMode = true;
         // access the same in receipt component
         this.openDialog()
         break;
       case 'Edit Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = true;
-        this.appService.sharedData.receiving.isViewMode = false;
+        this.appService.sharedData.mailRoom.dataItem = dataItem
+        this.appService.sharedData.mailRoom.isEditMode = true;
+        this.appService.sharedData.mailRoom.isViewMode = false;
         // access the same in receipt component
         this.openDialog()
         break;
@@ -349,7 +350,7 @@ export class MailRoomComponent implements OnDestroy {
     }, 300);
   }
   canCloseDialog() {
-    this.appService.sharedData.receiving.eventEmitter.emit('canCloseDialog?')
+    this.appService.sharedData.mailRoom.eventEmitter.emit('canCloseDialog?')
   }
   search() {
     // this.fromDate = moment(this.range.start).format('MM-DD-YYYY');

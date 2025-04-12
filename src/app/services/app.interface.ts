@@ -1247,3 +1247,20 @@ export const INIT_RECEIPT: ReceiptJson = {
         Qty: null
       }
 };
+
+export interface MailAttachment {
+  attachmentId: number,
+  objectID: number,
+  section: string,
+  attachmentName: string,
+  path: string,
+  active: boolean,
+  createdBY:string,
+  createdON:Date
+}
+export interface MailAttachmentDto {
+  attachmentId: number,
+  attachmentName: string,
+  path: string,
+  active: boolean,
+}

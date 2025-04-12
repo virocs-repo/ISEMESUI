@@ -842,15 +842,35 @@ getShippingAddressData(
   
     return this.httpClient.get<any[]>(url);
   }
-  saveMailRoomInfo(payload: MailInfoRequest, loginId: number) {
-    const body = {
-      MailId:null,
-      LoginId: loginId,
-      MailJson: JSON.stringify(payload)
-    };
-    return this.httpClient.post(`${API}v1/ise/inventory/savemailroominfo`, body);
+  // saveMailRoomInfo(payload: MailInfoRequest, loginId: number) {
+  //   const body = {
+  //     MailId:null,
+  //     LoginId: loginId,
+  //     MailJson: JSON.stringify(payload)
+  //   };
+  //   return this.httpClient.post(`${API}v1/ise/inventory/savemailroominfo`, body);
 
+  // }
+
+  saveMailRoomInfo(packageLabelFiles: File[], shipmentPaperFiles: File[], mailJson: string, mailRoomId:number, loginId: number, deletedAttachmentsJson:string) {
+    debugger;    
+    const formData = new FormData();
+    for (let i = 0; i < packageLabelFiles.length; i++) {
+      formData.append('PackageLabelFiles', packageLabelFiles[i]); // 'files' is the key name for the file field
+    }
+    for (let i = 0; i < packageLabelFiles.length; i++) {
+      formData.append('ShipmentPaperFiles', shipmentPaperFiles[i]); // 'files' is the key name for the file field
+    }
+
+    formData.append('MailId', mailRoomId.toString());
+    formData.append('LoginId', loginId.toString());
+    formData.append('MailJson', mailJson);
+    formData.append('DeletedAttachmentsJson', deletedAttachmentsJson);
+    
+    const headers = new HttpHeaders({ 'Accept': '*/*' });
+    return this.httpClient.post(`${API}v1/ise/inventory/savemailroominfo`, formData, { headers });
   }
+
   getSearchMailRoomReceiptData(statusID?: string | null, fromDate?: Date | null, toDate?: Date | null) {
     let params = new HttpParams();
   
@@ -866,4 +886,11 @@ getShippingAddressData(
   
     return this.httpClient.get(`${API}v1/ise/inventory/GetMailRoomSearchData`, { params });
   }  
-}
+
+  getMailRoomDetails(mailId:number)  {
+    debugger;
+    let url = `${API}v1/ise/inventory/getMailRoomDetails?mailId=${mailId}`;
+    return this.httpClient.get<any[]>(url);
+  }
+
+}                                                     

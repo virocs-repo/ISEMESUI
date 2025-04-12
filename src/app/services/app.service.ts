@@ -96,6 +96,8 @@ export class AppService {
     addshipping:SharedInfo
     addTicket:SharedInfo
     customerReceiverForm:SharedInfo
+    internalReceiverForm:SharedInfo
+    mailRoom:SharedInfo
 
   } = {
       receiving: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
@@ -106,7 +108,9 @@ export class AppService {
       addshipping: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
       anotherShipping : {isEditMode:false, isViewMode:false, dataItem: {}, eventEmitter: new EventEmitter() },
       addTicket: {isEditMode:false, isViewMode:false, dataItem: {}, eventEmitter: new EventEmitter()},
-      customerReceiverForm: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()}
+      customerReceiverForm: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()},
+      internalReceiverForm: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()},
+      mailRoom: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()}
     }
   hardwareTypes: HardwareType[] = []
   userData: UserData = { email: '', name: '', firstName: '' }
@@ -283,4 +287,5 @@ export class AppService {
       console.error("Element not found");
     }
   }
+  
 }
