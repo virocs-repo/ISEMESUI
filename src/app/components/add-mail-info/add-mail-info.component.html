@@ -294,6 +294,11 @@
           <a class="minimal-text link" [href]="downloadFileApi+dataItem.path" target="_blank">{{dataItem.path}}</a>
         </ng-template>
       </kendo-grid-column>
+      <kendo-grid-column field="section" title="Attachment Type">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{dataItem.section}}
+        </ng-template>
+      </kendo-grid-column>
       <kendo-grid-column title="Actions" [width]="100">
         <ng-template kendoGridCellTemplate let-dataItem>
           <button kendoButton [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteMailRoomAttachment(dataItem)" ></button>
