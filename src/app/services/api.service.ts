@@ -853,7 +853,6 @@ getShippingAddressData(
   // }
 
   saveMailRoomInfo(packageLabelFiles: File[], shipmentPaperFiles: File[], mailJson: string, mailRoomId:number, loginId: number, deletedAttachmentsJson:string) {
-    debugger;    
     const formData = new FormData();
     for (let i = 0; i < packageLabelFiles.length; i++) {
       formData.append('PackageLabelFiles', packageLabelFiles[i]); // 'files' is the key name for the file field
@@ -887,10 +886,9 @@ getShippingAddressData(
     return this.httpClient.get(`${API}v1/ise/inventory/GetMailRoomSearchData`, { params });
   }  
 
-  getMailRoomDetails(mailId:number)  {
-    debugger;
-    let url = `${API}v1/ise/inventory/getMailRoomDetails?mailId=${mailId}`;
-    return this.httpClient.get<any[]>(url);
+  getMailRoomDetails(mailId: number) {
+    const url = `${API}v1/ise/inventory/GetMailRoomDetails?mailId=${mailId}`;
+    return this.httpClient.get(url);
   }
 
 }                                                     

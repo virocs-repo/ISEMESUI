@@ -1102,7 +1102,8 @@ export interface MailRoomDetails {
   NoofPackages: number|null;
   PackageCategory: string|undefined;
   POId: number;
-  Signaturebase64Data:string;
+  Signaturebase64Data:string|null;
+  Phone:string;
   OtherDetails: {
     OtherId?: number | null;
     TypeId: number;
