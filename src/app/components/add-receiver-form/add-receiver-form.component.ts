@@ -70,9 +70,19 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     { id: 4, name: 'Other' },
   ];
   
-  hardwareData = [{  }];
-  trayData = [{  }];
-  otherData = [{  }];
+  hardwareData = [{   
+    selectedHardwareList: null,
+    projectDevice: '',
+    hardwareId: '',
+    hardwareQty: null}];
+  trayData = [{ 
+    selectedTrayVendor: null,
+    selectedTrayPart: '',
+    trayQty: null  }];
+  otherData = [{ 
+    selectedOtherList: null,
+    otherDetails: null,
+    otherQty: null}];
   selectedCategories: { id: number; name: string }[] = [];
   isCategorySelected(categoryId: number): boolean {
     return this.selectedCategories.some(category => category.id === categoryId);
