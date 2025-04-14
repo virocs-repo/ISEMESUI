@@ -69,8 +69,8 @@ export interface TrayPart {
   trayNumber: string
 }
 export interface Others {
-  Id: number
-  CategoryName: string
+  id: number
+  categoryName: string
 }
 export interface PackageCategory {
   id: number
@@ -1183,7 +1183,7 @@ export interface HardwareDetails {
 
 export interface OtherDetails {
   Id: number | null;
-  TypeId: number | null;
+  Type: string | null;
   Details: string | null;
   Qty: number | null;
 }
@@ -1243,7 +1243,7 @@ export const INIT_RECEIPT: ReceiptJson = {
       },
       OtherDetails: {
         Id: null,
-        TypeId: null,
+        Type: null,
         Details: '',
         Qty: null
       }

@@ -358,12 +358,12 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       },
       OtherDetails: {
         Id: null,
-        TypeId: this.selectedOtherList?.Id ?? null,
+        Type: this.selectedOtherList?.categoryName ?? null,
         Details: this.otherDetails ?? null,
         Qty: this.otherQty ?? null
       }
     };
-    console.log(this.hardwareData);
+    console.log(this.otherData);
     if (!this.customerTypeSelected) {
       this.appService.errorMessage('Please select customer/vendor');
       return;
