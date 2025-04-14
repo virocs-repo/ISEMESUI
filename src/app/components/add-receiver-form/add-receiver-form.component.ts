@@ -363,6 +363,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
         Qty: this.otherQty ?? null
       }
     };
+    console.log(this.hardwareData);
     if (!this.customerTypeSelected) {
       this.appService.errorMessage('Please select customer/vendor');
       return;
@@ -492,61 +493,57 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       this.appService.errorMessage('Please select Package Category');
       return;
     }
-    if(this.isCategorySelected(1))
-    {
-      if(!this.selectedLotCategory)
-      {
-        this.appService.errorMessage('Please select Lot Category');
+    if (this.isCategorySelected(1)) {
+    for (let i = 0; i < this.lotData.length; i++) {
+      const lot = this.lotData[i];
+
+      if (!lot.customerLot) {
+        this.appService.errorMessage("Please enter Customer LOT#");
         return;
       }
-       
-      if(!this.customerLot)
-      {
-        this.appService.errorMessage('Please select Customer LOT#');
+      if (!lot.selectedLotOwner) {
+        this.appService.errorMessage("Please select Lot Owner");
         return;
       }
-      if(!this.selectedLotOwner)
-      {
-        this.appService.errorMessage('Please select Lot Owner');
+      if (!lot.expectedQty) {
+        this.appService.errorMessage("Please enter Expected Qty");
         return;
-      } 
-      if(!this.expectedQty)
-      {
-        this.appService.errorMessage('Please select Expected Qty');
-        return;
-      }      
+      }
     }
-    if(this.isCategorySelected(2))
-    {
-      if(!this.selectedTrayVendor)
-      {
-       this.appService.errorMessage('Please select Tray Vendor');
-       return;
-      }  
-      if(!this.selectedTrayPart)
-      {
-        this.appService.errorMessage('Please select Tray Part');
+  }
+    if (this.isCategorySelected(2)) {
+    
+    for (let i = 0; i < this.trayData.length; i++) {
+      const tray = this.trayData[i];
+
+      if (!tray.selectedTrayVendor) {
+        this.appService.errorMessage("Please select Tray Vendor");
         return;
-      } 
-      if(!this.trayQty)
-      {
-        this.appService.errorMessage('Please select Tray Qty');
-        return;
-      } 
-    }
-    if(this.isCategorySelected(3))
-      {
-        if(!this.selectedHardwareList)
-        {
-         this.appService.errorMessage('Please select Hardware Type');
-         return;
-        }  
-        if(!this.projectDevice)
-        {
-          this.appService.errorMessage('Please select Project/Device Name');
-          return;
-        } 
       }
+      if (!tray.selectedTrayPart) {
+        this.appService.errorMessage("Please select Tray Part");
+        return;
+      }
+      if (!tray.trayQty) {
+        this.appService.errorMessage("Please enter Tray Qty");
+        return;
+      }
+    }
+  }
+  if (this.isCategorySelected(3)) {
+    for (let i = 0; i < this.hardwareData.length; i++) {
+      const hw = this.hardwareData[i];
+
+      if (!hw.selectedHardwareList) {
+        this.appService.errorMessage("Please select Hardware Type");
+        return;
+      }
+      if (!hw.projectDevice) {
+        this.appService.errorMessage("Please select Project/Device Name");
+        return;
+      }
+    }
+  }
     this.apiService.saveReceiverFormInternal(this.requestID, this.appService.loginId, ticket).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
