@@ -88,7 +88,7 @@ export class ApiService {
     let params = new HttpParams();
 
     if (status) {
-      params = params.set('statusId', status);
+      params = params.set('status', status);
   }
     if (isExpected) {
         params = params.set('isExpected', isExpected);
