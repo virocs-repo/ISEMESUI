@@ -99,6 +99,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   hardwareList:Hardware[] = this.appService.masterData?.hardware ?? [];
   selectedHardwareList : Hardware | undefined;
   projectDevice: string='';
+  hardwareId: string='';
   otherList:Others[] = this.appService.masterData?.Others ?? [];
   selectedOtherList : Others | undefined;
   otherDetails: string='';
@@ -237,6 +238,61 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  onTrayPartChange(value: any): void {
+    if (typeof value === 'string') {
+      const trimmedValue = value.trim();
+      const exists = this.trayVendor.some(
+        v => v.vendorName.toLowerCase() === trimmedValue.toLowerCase()
+      );
+  
+      if (!exists && trimmedValue) {
+        const newVendor: TrayVendor = {
+          trayVendorId: this.generateVendorID(),
+          vendorName: trimmedValue
+        };
+        this.trayVendor.push(newVendor);
+        this.selectedTrayVendor = newVendor;
+      }
+    } else {
+      this.selectedTrayVendor = value;
+    }
+  }
+  
+  onVendorValueChange(value: any): void {
+    if (typeof value === 'string') {
+      const trimmedValue = value.trim();
+      const exists = this.vendors.some(
+        v => v.VendorName.toLowerCase() === trimmedValue.toLowerCase()
+      );
+  
+      if (!exists && trimmedValue) {
+        const newVendor: Vendor = {
+          VendorID: this.generateVendorID(),
+          VendorName: trimmedValue
+        };
+        this.vendors.push(newVendor);
+        this.vendorSelected = newVendor;
+      }
+    } else {
+      this.vendorSelected = value;
+    }
+  }
+  onQtyChange(value: number): void {
+    // If the value is not a whole number, clear the field
+    if (value != null && !Number.isInteger(value)) {
+      this.selectedQty = null;
+    }
+  }
+  generateVendorID(): number {
+    return Math.max(...this.vendors.map(v => v.VendorID || 0)) + 1;
+  }
+  validatePhone(event: any): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9]/g, '');
+    this.contactPhone = input.value;
+  }
+  
   onSubmit() {
     const ticket: ReceiptJson = {
       ...INIT_RECEIPT,
@@ -285,9 +341,9 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
         Qty: this.trayQty ?? null
       },
       HardwareDetails: {
-        Id: null,
+        Id: this.hardwareId ?? null,
         HardwareTypeId: this.selectedHardwareList?.Id ?? null,
-        DeviceName: this.projectDevice ?? null,
+        ProjectDevice: this.projectDevice ?? null,
         HardwareId: this.selectedHardwareList?.CategoryName ?? null
       },
       OtherDetails: {
@@ -993,18 +1049,22 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       }
     });
   }
-  onPackageCategoryChange(selectedCategories: { id: number; name: string }[]): void {
-    // Ensure there is at least one selection
-    if (selectedCategories && selectedCategories.length > 0) {
-      // Get the most recently added selection.
-      const latestSelection = selectedCategories[selectedCategories.length - 1];
-  
-      // Check if the most recent selection is "Lot"
-      if (latestSelection.name === 'Lot') {
-        this.getGeneratedLotNumber();
-      }
-    }
+  previousCategoryIds: number[] = [];
+
+onPackageCategoryChange(selectedCategories: { id: number; name: string }[]): void {
+  const selectedIds = selectedCategories.map(c => c.id);
+
+  // Check if 'Lot' (id: 1) is newly added
+  const isLotNewlySelected = selectedIds.includes(1) && !this.previousCategoryIds.includes(1);
+
+  if (isLotNewlySelected) {
+    this.getGeneratedLotNumber();
   }
+
+  // Update the previous selection
+  this.previousCategoryIds = [...selectedIds];
+}
+
   
   lotData: any[] = [];
   addLotRow(generatedLotNumber?: string) {
@@ -1031,7 +1091,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       ...this.trayData,
       {
         selectedTrayVendor: null,
-        selectedTrayPart: null,
+        selectedTrayPart: '',
         trayQty: null
       }
     ];
@@ -1043,6 +1103,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       {
         selectedHardwareList: null,
         projectDevice: '',
+        hardwareId: '',
         hardwareQty: null
       }
     ];
@@ -1053,7 +1114,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       ...this.otherData,
       {
         selectedOtherList: null,
-        otherDetails: '',
+        otherDetails: null,
         otherQty: null
       }
     ];

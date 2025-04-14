@@ -1174,9 +1174,9 @@ export interface TrayDetails {
 }
 
 export interface HardwareDetails {
-  Id: number | null;
+  Id: string | null;
   HardwareTypeId: number | null;
-  DeviceName: string | null;
+  ProjectDevice: string | null;
   HardwareId: string | null;
 }
 
@@ -1237,7 +1237,7 @@ export const INIT_RECEIPT: ReceiptJson = {
       HardwareDetails: {
         Id: null,
         HardwareTypeId: null,
-        DeviceName: '',
+        ProjectDevice: '',
         HardwareId: ''
       },
       OtherDetails: {
