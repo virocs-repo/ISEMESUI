@@ -393,6 +393,31 @@
         </kendo-card-body>
       </kendo-card>
   </kendo-pdf-export>
+  <div class="k-d-flex k-align-items-center k-gap-4">
+    <kendo-label text="Attachments">
+      <kendo-fileselect #upFiles1 (select)="onSelectReceiverAttachment($event)" (upload)="onUpload($event)" (remove)="onReceiverFileRemove($event)">
+        [multiple]="true"></kendo-fileselect>
+    </kendo-label>             
+  </div>
+  <div class="k-mt-2">
+    <kendo-grid [data]="filteredReceiverAttachements" class="receipt-attachments" [selectable]="selectableSettings" [resizable]="true">
+      <kendo-grid-column title="#" [width]="40">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="path" title="File Name">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a class="minimal-text link" [href]="downloadFileApi+dataItem.path" target="_blank">{{dataItem.path}}</a>
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column title="Actions" [width]="100">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <button kendoButton [svgIcon]="ICON.trashIcon" themeColor="error" (click)="deleteReceiverAttachment(dataItem)" ></button>
+        </ng-template>
+      </kendo-grid-column>
+    </kendo-grid>
+  </div>
   <div class="k-d-flex k-align-items-center k-gap-4 k-mt-3">
     <div style="display: flex; align-items: center; gap: 4px;">
       <h4 style="margin: 0;">NOTE:</h4>

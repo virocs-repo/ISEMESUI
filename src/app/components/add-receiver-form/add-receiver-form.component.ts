@@ -5,8 +5,10 @@ import { PDFExportComponent } from '@progress/kendo-angular-pdf-export';
 import { map, Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, Employee, HardwareItem, ICON, INIT_DEVICE_ITEM, InterimLot, InterimItem,
-   MESSAGES, PostHardware, ReceiptLocation, Vendor,DeviceFamily,Coo,LotOwners,TrayPart,TrayVendor, INIT_RECEIPT, Others,Hardware, Quotes, PurchaseOrder, Category,ReceiptJson} from 'src/app/services/app.interface';
+   MESSAGES, PostHardware, ReceiptLocation, Vendor,DeviceFamily,Coo,LotOwners,TrayPart,TrayVendor, INIT_RECEIPT, Others,Hardware, Quotes, PurchaseOrder, Category,ReceiptJson,
+   ReceiptRequest} from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
+import { environment } from 'src/environments/environment'
 
 enum TableType {
   Device = 'Device',
@@ -178,7 +180,12 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   PMReceiverSelected:any;
   SelectedPMReceiver:any;
   
-
+  selectedReceiverFiles:any[] = [];
+  receiverFormDetails : any;
+  receiverAttachements:any[] = [];
+  filteredReceiverAttachements:any[] = [];
+  readonly downloadFileApi = environment.apiUrl + 'v1/ise/inventory/download/'
+  
   constructor(public appService: AppService, private apiService: ApiService) { 
     this.getInvUserByRole();
   }
@@ -544,7 +551,43 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       }
     }
   }
-    this.apiService.saveReceiverFormInternal(this.requestID, this.appService.loginId, ticket).subscribe({
+
+  var receiverFiles:any[] = [];
+  if (this.selectedReceiverFiles && this.selectedReceiverFiles.length) {
+    if (this.selectedReceiverFiles.length < 1) {
+      this.appService.errorMessage('Error while selecting package label file(s)');
+      return;
+    }
+
+    this.selectedReceiverFiles.forEach((file:any) => {
+      receiverFiles.push(file.rawFile);
+    })
+  }
+
+    var deletedAttachmentsJson = ''
+    var deletedAttachments:any[] = []
+    
+    this.receiverAttachements.filter(a => a.active == false).forEach((attach:any) => {
+      var attachment: any = {
+        attachmentId: attach.attachmentId,
+        section: attach.Section,
+        path: attach.path,
+        active: attach.active
+      }
+      deletedAttachments.push(attachment);
+    })
+
+    if(deletedAttachments.length > 0)
+      deletedAttachmentsJson = JSON.stringify(deletedAttachments)
+
+    const payload: ReceiptRequest = {
+      ReceiptJson: ticket
+    };
+    
+    const receiverJson = JSON.stringify(payload)
+
+    this.apiService.saveReceiverFormInternal(receiverFiles, receiverJson, this.requestID, this.appService.loginId, deletedAttachmentsJson).subscribe({
+    //this.apiService.saveReceiverFormInternal(this.requestID, this.appService.loginId, ticket).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
         this.onClose.emit();
@@ -1127,5 +1170,36 @@ onPackageCategoryChange(selectedCategories: { id: number; name: string }[]): voi
     ];
   }
   
+  onSelectReceiverAttachment(event: any): void {
+
+    event.files.forEach((f:any) => {
+      this.selectedReceiverFiles.push(f);
+    })
+  }
  
+  onReceiverFileRemove(event: any): void {
+    const fileToRemove = event.files[0]; 
+    this.selectedReceiverFiles = this.selectedReceiverFiles.filter((f:any ) => f.name !== fileToRemove.name);
+  }
+
+  onUpload(event: any): void {
+    debugger;
+    // Send selected files to API
+    const formData = new FormData();
+    event.files.forEach((file: any) => {
+      formData.append('files', file.rawFile);
+    });
+    // Call API
+  }
+
+  deleteReceiverAttachment(dataItem: any) {
+    debugger;
+    dataItem.active = false;
+    var attachment =  this.receiverAttachements.find(a => a.path === dataItem.path);
+    if(attachment != undefined)
+      attachment.active = false;
+
+    this.filteredReceiverAttachements = this.receiverAttachements.filter(a => a.active == true)
+  }
+  
 }

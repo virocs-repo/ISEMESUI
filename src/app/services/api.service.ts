@@ -101,14 +101,28 @@ export class ApiService {
     }
     return this.httpClient.get(`${API}v1/ise/inventory/GetReceiverFormInternal`, { params });
   }
-  saveReceiverFormInternal(receiptId:number|null, loginId: number,payload: ReceiptJson) {
-    const body = {
-      ReceiptJson: JSON.stringify(payload)
-    };
-    return this.httpClient.post(`${API}v1/ise/inventory/save-inventory-receipt?receiptId=${receiptId ?? ''}&loginId=${loginId}`, body);
+  // saveReceiverFormInternal(receiptId:number|null, loginId: number,payload: ReceiptJson) {
+  //   const body = {
+  //     ReceiptJson: JSON.stringify(payload)
+  //   };
+  //   return this.httpClient.post(`${API}v1/ise/inventory/save-inventory-receipt?receiptId=${receiptId ?? ''}&loginId=${loginId}`, body);
+    
+  // }
+  saveReceiverFormInternal(receiverFiles: File[], receiverJson: string, receiptId:number, loginId:number, deletedAttachmentsJson:string) {
+    const formData = new FormData();
+    for (let i = 0; i < receiverFiles.length; i++) {
+      formData.append('ReceiptFiles', receiverFiles[i]); // 'files' is the key name for the file field
+    }
 
+    formData.append('ReceiptId', receiptId.toString());
+    formData.append('LoginId', loginId.toString());
+    formData.append('ReceiptJson', receiverJson);
+    formData.append('DeletedAttachmentsJson', deletedAttachmentsJson);
+    
+    const headers = new HttpHeaders({ 'Accept': '*/*' });
+    return this.httpClient.post(`${API}v1/ise/inventory/save-inventory-receipt`, formData, { headers });
   }
-  
+
   Quotes(customerId: number){
     return this.httpClient.get(`${API}v1/ise/inventory/getQuotes?customerId=${customerId}`);
   }

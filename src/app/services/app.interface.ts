@@ -1127,6 +1127,10 @@ export interface ReceiptJson {
   OtherDetails: OtherDetails;
 }
 
+export interface ReceiptRequest {
+  ReceiptJson: ReceiptJson;
+}
+
 export interface ReceiptDetails {
   IsInterim: boolean;
   CustomerTypeID: number | null;
