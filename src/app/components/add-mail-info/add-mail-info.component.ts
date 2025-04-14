@@ -32,10 +32,12 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   readonly packageCategoryList: PackageCategory[]= this.appService.masterData.PackageCategory;
   gridData: GridDataResult = { 
     data: [
-      { type: null, details: '', qty: '' }  // `type` will hold the selected dropdown value
+      { typeId: null, details: '', qty: '' }  // `type` will hold the selected dropdown value
     ], 
     total: 1 
   };
+  mailId: any;
+  isViewMode: boolean = false;
   awbMailCode='';
   scanLocation='';
   typeList: Others[] = this.appService.masterData?.Others ?? [];  
@@ -171,16 +173,21 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     
   }
 
-init() {
-  debugger;
-    if(this.appService.sharedData.mailRoom.isEditMode || this.appService.sharedData.mailRoom.isEditMode){
-      this.getMailRoomDetails(this.appService.sharedData.mailRoom.dataItem.mailId);
-
-      if(this.appService.sharedData.mailRoom.isEditMode){
-        this.isDisableInterim = true;
+  init() {
+    const mailRoom = this.appService.sharedData.mailRoom;
+      if(this.appService.sharedData.mailRoom.isEditMode || this.appService.sharedData.mailRoom.isViewMode){
+        this.getMailRoomDetails(this.appService.sharedData.mailRoom.dataItem.mailId);
+        this.isViewMode = mailRoom.isViewMode;
+        if(this.appService.sharedData.mailRoom.isEditMode){
+          this.isDisableInterim = true;
+        }
       }
     }
-  }
+    onRequestorChange(selectedEmployee: any) {
+      if (selectedEmployee) {
+        this.contactPerson = selectedEmployee.EmployeeName;
+      }
+    }  
   isCategorySelected(id: number): boolean {
     return this.selectedCategory?.some((item: PackageCategory) => item.id === id);
   }
@@ -449,7 +456,7 @@ init() {
       for (let i = 0; i < this.gridData.data.length; i++) {
         const row = this.gridData.data[i];
   
-        if (!row.type) {
+        if (!row.typeId) {
           this.appService.errorMessage(`Row ${i + 1}: Please select a type.`);
           return;
         }
@@ -490,14 +497,14 @@ init() {
       })
     }
 
-  const otherDetailsArray = this.gridData.data
-  .filter(item => item && item.type && item.details?.trim() && item.qty != null && item.qty !== '')
-  .map(item => ({
-    OtherId: null,
-    TypeId: item.type.id,  
-    Details: item.details.trim(),
-    Qty: item.qty
-  }))|| [];
+    const otherDetailsArray = this.gridData.data
+    .filter(item => item && item.typeId && item.details?.trim() && item.qty != null && item.qty !== '')
+    .map(item => ({
+      OtherId: null,
+      TypeId: item.typeId.id,  
+      Details: item.details.trim(),
+      Qty: item.qty
+    })) || [];
     const MailRoomDetails: MailRoomDetails = {
       CustomerTypeId: this.customerTypeSelected?.customerTypeID,
       CustomerVendorName: this.customerSelected?.CustomerName || this.vendorSelected?.VendorName,
@@ -523,10 +530,10 @@ init() {
       PackageCategory: this.selectedCategory.map(cat => cat.id).join(','),
       POId: this.isePOListSelected?.purchaseOrderId,
       Signaturebase64Data: this.Signaturebase64Data,
+      Phone:this.contactPhone,
       OtherDetails: otherDetailsArray
     };    
 
-    debugger;
     var deletedAttachmentsJson = ''
     var deletedAttachments:any[] = []
     
@@ -633,7 +640,44 @@ init() {
 
   bindMailRoomDetail(){
     debugger;
+    this.mailId = this.appService.sharedData.mailRoom.dataItem.mailRoomId;
     this.awbMailCode = this.mailRoomDetails.awbMailCode;
-    this.scanLocation= this.mailRoomDetails.scanLocation;
+    this.scanLocation = this.mailRoomDetails.scanLocation;
+    
+    this.customerTypeSelected = this.customerTypes.find(ct => ct.customerTypeID === this.mailRoomDetails.customerTypeId);
+    
+    if (this.customerTypeSelected?.customerTypeName === 'Customer') {
+      this.customerSelected = this.customers.find(c => c.CustomerID === this.mailRoomDetails.customerVendorId);
+    } else {
+      this.vendorSelected = this.vendors.find(v => v.VendorID === this.mailRoomDetails.customerVendorId);
+    }
+    
+    this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID === this.mailRoomDetails.behalfId);
+    this.receiptLocationSelected = this.receiptLocation.find(loc => loc.receivingFacilityID === this.mailRoomDetails.locationId);
+    this.recipientSelected = this.employees.find(e => e.EmployeeID === this.mailRoomDetails.recipientId);
+    this.requestorSelected = this.employees.find(e => e.EmployeeID === this.mailRoomDetails.sendorId);
+    this.contactPhone= this.mailRoomDetails.phone;
+    this.isPartialDelivery = this.mailRoomDetails.partialDelivery ?? false;
+    this.isDamaged = this.mailRoomDetails.isDamage ?? false;
+    this.placeLotOnHold = this.mailRoomDetails.isHold ?? false;
+    
+    this.Signaturebase64Data = this.mailRoomDetails.signiture 
+  ? 'data:image/png;base64,' + this.mailRoomDetails.signiture 
+  : '';
+
+    this.deliveryModeSelected = this.deliveryMode.find(d => d.deliveryModeID === this.mailRoomDetails.deliveryMethodId);
+    this.tracking = this.mailRoomDetails.trackingNumber;
+    this.courierSelected = this.couriers.find(c => c.courierDetailID === this.mailRoomDetails.courierId);
+    this.countrySelected = this.countries.find(c => c.countryID === this.mailRoomDetails.sendFromCountryId);
+    this.contactPerson = this.mailRoomDetails.contactPerson;
+    this.email = this.mailRoomDetails.email;
+    this.addressSelected = this.addresses.find(a => a.addressId === this.mailRoomDetails.addressId);
+    this.deliveryComments = this.mailRoomDetails.mailComments;
+    this.selectedQty = this.mailRoomDetails.noofPackages;
+    
+    this.selectedCategory = this.packageCategoryList.filter(cat => this.mailRoomDetails.packageCategory?.includes(cat.id));
+    this.isePOListSelected = this.isePOList.find(po => po.purchaseOrderId === this.mailRoomDetails.poId);
+    this.gridData.data = this.mailRoomDetails.others ?? [];
+    
   }
 }

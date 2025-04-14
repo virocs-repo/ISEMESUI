@@ -1,4 +1,4 @@
-<div class="k-mx-2 minimal-table" id="addReceiptForm" [ngClass]="{'k-pointer-events-none':isDisabled.addReceipt}">
+<div class="k-mx-2 minimal-table" id="addReceiptForm" [ngClass]="{ 'k-pointer-events-none': isViewMode }">
   <kendo-pdf-export #pdfExport>
     <div>
       <div class="k-d-flex k-flex-wrap k-align-items-stretch k-gap-4 k-w-full label-fs">
@@ -59,7 +59,7 @@
               <kendo-label text="Requestor/Sender Name" class="k-w-full">
                 <b class="required-label"></b>
                 <kendo-combobox [data]="employees" [(ngModel)]="requestorSelected" [textField]="'EmployeeName'"
-                [valueField]="'EmployeeID'" placeholder="Select" rounded="large"></kendo-combobox>
+                [valueField]="'EmployeeID'" placeholder="Select" rounded="large"(valueChange)="onRequestorChange($event)"></kendo-combobox>
               </kendo-label>
             </div>
             <div class="k-d-flex k-align-items-center k-gap-4">
@@ -197,14 +197,9 @@
                   class="k-w-full"
                   [filterable]="true"
                   [autoClose]="false"
+                  [checkboxes]="true"
                   placeholder="Select Package Category"
                   [tagMapper]="tagDisplayLimit">
-                  <ng-template kendoMultiSelectItemTemplate let-dataItem>
-                    <input type="checkbox"
-                      [checked]="isCategorySelected(dataItem.id)"
-                      (change)="toggleCategorySelection(dataItem)"/>
-                    {{ dataItem.categoryName }}
-                  </ng-template>
                 </kendo-multiselect>
               </kendo-label>    
             </div>
@@ -235,8 +230,6 @@
             <i class="k-ml-auto"></i>
             <button kendoButton type="button" rounded="large" themeColor="info" (click)="addOthersRow()" 
               [disabled]="isDisabled.addHardware">Add</button>
-            <!-- <button kendoButton type="button" rounded="large" themeColor="info" 
-              [disabled]="isDisabled.addHardware">Save</button> -->
           </div>
           <kendo-grid #grid [kendoGridBinding]="gridData.data" class="bold-column-header cartons">
             
@@ -250,7 +243,8 @@
                   [data]="typeList" 
                   textField="categoryName"
                   valueField="id"
-                  [(ngModel)]="dataItem.type"
+                  [(ngModel)]="dataItem.typeId"
+                  [valuePrimitive]="true"
                   placeholder="Select Type">
                 </kendo-combobox>
               </ng-template>
