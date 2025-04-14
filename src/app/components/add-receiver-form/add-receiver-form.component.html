@@ -243,7 +243,7 @@
               </kendo-grid-column>
               <kendo-grid-column field="customerLot" title="Customer LOT#">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-textbox [(ngModel)]="dataItem.customerLot" placeholder="Enter Customer LOT" ></kendo-textbox>
+                  <kendo-textbox [(ngModel)]="dataItem.customerLot" placeholder="Enter Customer LOT" >{{dataItem.customerLot}}</kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="expectedQty" title="Expected Qty">
@@ -343,22 +343,22 @@
             <kendo-grid [kendoGridBinding]="hardwareData" class="bold-column-header cartons">
               <kendo-grid-column field="hardwareType" title="Hardware Type">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-combobox [data]="hardwareList" [(ngModel)]="dataItem.selectedHardwareList" textField="categoryName"valueField="id" class="combobox" [filterable]="true" placeholder="Select Hardware Type"></kendo-combobox>
+                  <kendo-combobox [data]="hardwareList" [(ngModel)]="dataItem.selectedHardwareList" textField="categoryName"valueField="id" class="combobox" [filterable]="true" placeholder="Select Hardware Type">{{dataItem.selectedHardwareList}}</kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="projectDevice" title="Project/Device Name">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-textbox [(ngModel)]="dataItem.projectDevice" placeholder="Enter Project/Device Name" ></kendo-textbox>
+                  <kendo-textbox [(ngModel)]="dataItem.projectDevice" placeholder="Enter Project/Device Name" >{{dataItem.projectDevice}}</kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="hardwareId" title="Hardware ID">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-textbox [(ngModel)]="dataItem.hardwareId" placeholder="Enter Hardware Id" ></kendo-textbox>
+                  <kendo-textbox [(ngModel)]="dataItem.hardwareId" placeholder="Enter Hardware Id" >{{dataItem.hardwareId}}</kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="hardwareQty" title="Qty">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-numerictextbox [(ngModel)]="dataItem.hardwareQty" placeholder="Enter Qty" ></kendo-numerictextbox>
+                  <kendo-numerictextbox [(ngModel)]="dataItem.hardwareQty" placeholder="Enter Qty" >{{dataItem.hardwareQty}}</kendo-numerictextbox>
                 </ng-template>
               </kendo-grid-column>
             </kendo-grid>
