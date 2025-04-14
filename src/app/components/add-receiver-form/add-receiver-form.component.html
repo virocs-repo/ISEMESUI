@@ -372,19 +372,19 @@
               <button kendoButton (click)="addOtherRow()" themeColor="primary" style="width: 70px;" icon="plus">Add</button>
             </div>
             <kendo-grid [kendoGridBinding]="otherData" class="bold-column-header cartons">
-              <kendo-grid-column field="type" title="Type">
+              <kendo-grid-column field="otherList" title="Type">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-combobox [data]="otherList" [(ngModel)]="dataItem.selectedOtherList" textField="categoryName"valueField="Id" class="combobox" [filterable]="true" placeholder="Select Other"></kendo-combobox>
+                  <kendo-combobox [data]="otherList" [(ngModel)]="selectedOtherList" textField="categoryName"valueField="id" placeholder="Select Other"></kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="otherDetails" title="Details">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-textbox [(ngModel)]="dataItem.otherDetails"placeholder="Enter Details" ></kendo-textbox>
+                  <kendo-textbox [(ngModel)]="dataItem.otherDetails"placeholder="Enter Details" >{{dataItem.otherDetails}}</kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="otherQty" title="Qty">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-numerictextbox [(ngModel)]="dataItem.otherQty" placeholder="Enter Qty" ></kendo-numerictextbox>
+                  <kendo-numerictextbox [(ngModel)]="dataItem.otherQty" placeholder="Enter Qty" >{{dataItem.otherQty}}</kendo-numerictextbox>
                 </ng-template>
               </kendo-grid-column>
             </kendo-grid>
