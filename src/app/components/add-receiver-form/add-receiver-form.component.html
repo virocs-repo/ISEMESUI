@@ -348,12 +348,12 @@
               </kendo-grid-column>
               <kendo-grid-column field="projectDevice" title="Project/Device Name">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-textbox [(ngModel)]="projectDevice" placeholder="Enter Project/Device Name" ></kendo-textbox>
+                  <kendo-textbox [(ngModel)]="dataItem.projectDevice" placeholder="Enter Project/Device Name" ></kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="hardwareId" title="Hardware ID">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-textbox [(ngModel)]="hardwareId" placeholder="Enter Project/Device Name" ></kendo-textbox>
+                  <kendo-textbox [(ngModel)]="dataItem.hardwareId" placeholder="Enter Hardware Id" ></kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="hardwareQty" title="Qty">
@@ -379,7 +379,7 @@
               </kendo-grid-column>
               <kendo-grid-column field="otherDetails" title="Details">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-textbox [(ngModel)]="otherDetails"placeholder="Enter Details" ></kendo-textbox>
+                  <kendo-textbox [(ngModel)]="dataItem.otherDetails"placeholder="Enter Details" ></kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="otherQty" title="Qty">
