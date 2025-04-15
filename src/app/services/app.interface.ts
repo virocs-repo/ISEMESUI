@@ -1122,8 +1122,8 @@ export interface MailRoomDetails {
 export interface ReceiptJson {
     ReceiptDetails: ReceiptDetails;
   LotDetails: LotDetails;
-  TrayDetails: TrayDetails;
   HardwareDetails: HardwareDetails;
+  TrayDetails: TrayDetails;
   OtherDetails: OtherDetails;
 }
 
@@ -1134,7 +1134,7 @@ export interface ReceiptRequest {
 export interface ReceiptDetails {
   IsInterim: boolean;
   CustomerTypeID: number | null;
-  CustomerVendorID: number | null;
+  CustomerVendorName: string | null;
   BehalfID: number | null;
   RecipientId: number | null;
   SendorId: number | null;
@@ -1153,7 +1153,7 @@ export interface ReceiptDetails {
   NoofPackages: number;
   PackageCategory: string | null;
   Quotes: string | null;
-  POId: number | null;
+  PONumber: string | null;
   LotCategoryId: number | null;
 }
 
@@ -1173,7 +1173,7 @@ export interface LotDetails {
 
 export interface TrayDetails {
   Id: number | null;
-  TrayVendorId: number | null;
+  TrayVendorName: string | null;
   TrayPartId: number | null;
   Qty: number | null;
 }
@@ -1198,7 +1198,7 @@ export const INIT_RECEIPT: ReceiptJson = {
     ReceiptDetails: {
       IsInterim: false,
       CustomerTypeID: null,
-      CustomerVendorID: null,
+      CustomerVendorName: null,
       BehalfID: null,
       RecipientId: null,
       SendorId: null,
@@ -1217,7 +1217,7 @@ export const INIT_RECEIPT: ReceiptJson = {
       NoofPackages: 0,
       PackageCategory: '',
       Quotes: '',
-      POId: null,
+      PONumber: null,
       LotCategoryId: null,
       },
       LotDetails: {
@@ -1233,17 +1233,17 @@ export const INIT_RECEIPT: ReceiptJson = {
         LotOwnerID: null,
         LotCategoryId: null
       },
-      TrayDetails: {
-        Id: null,
-        TrayVendorId: null,
-        TrayPartId: null,
-        Qty: null
-      },
       HardwareDetails: {
         Id: null,
         HardwareTypeId: null,
         ProjectDevice: '',
         HardwareId: ''
+      },
+      TrayDetails: {
+        Id: null,
+        TrayVendorName: null,
+        TrayPartId: null,
+        Qty: null
       },
       OtherDetails: {
         Id: null,

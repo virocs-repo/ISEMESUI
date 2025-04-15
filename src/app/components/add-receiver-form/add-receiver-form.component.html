@@ -32,7 +32,7 @@
                 <b class="required-label"></b>
                 <kendo-combobox [data]="vendors" [(ngModel)]="vendorSelected" [allowCustom]="true"
                   [textField]="'VendorName'" [valueField]="'VendorID'" placeholder="Select" rounded="large"
-                  [kendoDropDownFilter]="filterSettings" (valueChange)="onVendorValueChange($event)">
+                  [kendoDropDownFilter]="filterSettings" (valueChange)="onChangeCustomerName()">
                 </kendo-combobox>
               </kendo-label>
             </div>
@@ -158,26 +158,25 @@
         </kendo-card>
       </div>
     </div>
-      <kendo-card class="card-green card-full k-mt-4"[ngClass]="{'k-pointer-events-none': isDisableHoldComments}">
+      <kendo-card class="card-green card-full k-mt-4">
         <kendo-card-body class="card-flex">
           <kendo-label class="k-display-block" [for]="multiselect" text="Package Category">
             <b class="required-label"></b>
             <kendo-multiselect 
               #multiselect
-              [checkboxes]="true"
+              [checkboxes]="{ checkOnClick: false }"
               [autoClose]="false"
               [data]="category" 
               [(ngModel)]="selectedCategories" 
-              textField="name" 
+              textField="categoryName" 
               valueField="id" 
-              [filterable]="true" 
               (valueChange)="onPackageCategoryChange($event)"
               placeholder="Select Package Category"
               style="width: 330px;">
             </kendo-multiselect>
           </kendo-label> 
           <!-- Lot Grid -->
-           <ng-container *ngIf="isCategorySelected(1)">
+           <ng-container *ngIf="isCategorySelected('Lot')">
             <div class="k-mt-6">
             <h2 class="k-m-0">Lot</h2>
             <div class="k-d-flex k-align-items-end k-gap-4">
@@ -201,10 +200,12 @@
                   <b class="required-label"></b>
                 </kendo-label>
                 <kendo-combobox
-                  [data]="custometPurchase"
+                  [data]="appService.masterData.PurchaseOrder || []"
                   [(ngModel)]="selectedCustometPurchase"
+                  [allowCustom]="true"
                   textField="customerPoNumber"
                   valueField="purchaseOrderId"
+                  (valueChange)="onCustomerPOValueChange($event)"
                   class="k-w-full"
                   [filterable]="true"
                   placeholder="Select Customer Purchase Order">
@@ -235,7 +236,7 @@
                 Add
               </button>
             </div>            
-            <kendo-grid [kendoGridBinding]="lotData" class="bold-column-header cartons">
+            <kendo-grid *ngIf="lotData.length > 0" [kendoGridBinding]="lotData" class="bold-column-header cartons">
               <kendo-grid-column field="iseLot" title="ISE LOT#">
                 <ng-template kendoGridCellTemplate let-dataItem>
                   <kendo-textbox [(ngModel)]="dataItem.iseLot" placeholder="Enter ISE LOT" ></kendo-textbox>
@@ -256,7 +257,7 @@
                   <kendo-combobox
                     class="combobox"
                     [(ngModel)]="dataItem.selectedDeviceFamily"
-                    [data]="deviceFamily"  
+                    [data]="appService.masterData.deviceFamily || []"  
                     [textField]="'deviceFamilyName'" 
                     [valueField]="'deviceFamilyId'"
                     placeholder="Select Device Family"></kendo-combobox>
@@ -307,34 +308,8 @@
             </kendo-grid>
             </div>
           </ng-container>
-          <!-- Tray Grid -->
-          <ng-container *ngIf="isCategorySelected(2)">
-            <div class="k-mt-6">
-            <div class="tray-header">
-              <h2 class="k-m-0">Tray</h2>
-              <button kendoButton (click)="addTrayRow()" themeColor="primary" style="width: 70px;" icon="plus">Add</button>
-            </div>
-            <kendo-grid [kendoGridBinding]="trayData" class="bold-column-header cartons">
-              <kendo-grid-column field="trayVendor" title="Tray Vendor">
-                <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-combobox [data]="trayVendor" [(ngModel)]="dataItem.selectedTrayVendor" [allowCustom]="true" textField="vendorName"valueField="trayVendorId" class="combobox" [filterable]="true" [kendoDropDownFilter]="filterSettings" placeholder="Select Tray Vendor" (valueChange) = "onTrayPartChange($event)"></kendo-combobox>
-                </ng-template>
-              </kendo-grid-column>
-              <kendo-grid-column field="trayPart" title="Tray Part#">
-                <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-combobox [data]="trayPart" [(ngModel)]="dataItem.selectedTrayPart" textField="trayNumber"valueField="trayPartId" class="k-w-full" [filterable]="true" placeholder="Select Tray Part"></kendo-combobox>
-                </ng-template>
-              </kendo-grid-column>
-              <kendo-grid-column field="trayQty" title="Qty">
-                <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-numerictextbox [(ngModel)]="dataItem.trayQty" placeholder="Enter Tray Qty" ></kendo-numerictextbox>
-                </ng-template>
-              </kendo-grid-column>
-            </kendo-grid>
-            </div>
-          </ng-container>
           <!-- Hardware Grid -->
-          <ng-container *ngIf="isCategorySelected(3)">
+          <ng-container *ngIf="isCategorySelected('Hardware')">
             <div class="k-mt-6">
             <div class="tray-header">
               <h2 class="k-m-0">Hardware</h2>
@@ -342,7 +317,7 @@
             </div>
             <kendo-grid [kendoGridBinding]="hardwareData" class="bold-column-header cartons">
               <kendo-grid-column field="hardwareType" title="Hardware Type">
-                <ng-template kendoGridCellTemplate let-dataItem>
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <kendo-combobox [data]="hardwareList" [(ngModel)]="dataItem.selectedHardwareList" textField="categoryName"valueField="id" class="combobox" [filterable]="true" placeholder="Select Hardware Type">{{dataItem.selectedHardwareList}}</kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
@@ -364,8 +339,34 @@
             </kendo-grid>
             </div>
           </ng-container>
+          <!-- Tray Grid -->
+          <ng-container *ngIf="isCategorySelected('Tray')">
+            <div class="k-mt-6">
+            <div class="tray-header">
+              <h2 class="k-m-0">Tray</h2>
+              <button kendoButton (click)="addTrayRow()" themeColor="primary" style="width: 70px;" icon="plus">Add</button>
+            </div>
+            <kendo-grid [kendoGridBinding]="trayData" class="bold-column-header cartons">
+              <kendo-grid-column field="trayVendor" title="Tray Vendor">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <kendo-combobox [data]="trayVendor" [(ngModel)]="dataItem.selectedTrayVendor" [allowCustom]="true" textField="vendorName"valueField="trayVendorId" class="combobox" [filterable]="true" [kendoDropDownFilter]="filterSettings" placeholder="Select Tray Vendor" (valueChange) = "onTrayPartChange($event)"></kendo-combobox>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column field="trayPart" title="Tray Part#">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <kendo-combobox [data]="trayPart" [(ngModel)]="dataItem.selectedTrayPart.trayPartId" textField="trayNumber"valueField="trayPartId" class="combobox" placeholder="Select Tray Part"></kendo-combobox>
+                </ng-template>
+              </kendo-grid-column>
+              <kendo-grid-column field="trayQty" title="Qty">
+                <ng-template kendoGridCellTemplate let-dataItem>
+                  <kendo-numerictextbox [(ngModel)]="dataItem.trayQty" placeholder="Enter Tray Qty" ></kendo-numerictextbox>
+                </ng-template>
+              </kendo-grid-column>
+            </kendo-grid>
+            </div>
+          </ng-container>
           <!-- Other Grid -->
-          <ng-container *ngIf="isCategorySelected(4)">
+          <ng-container *ngIf="isCategorySelected('Others')">
             <div class="k-mt-6">
             <div class="tray-header">
               <h2 class="k-m-0">Other</h2>
@@ -374,7 +375,7 @@
             <kendo-grid [kendoGridBinding]="otherData" class="bold-column-header cartons">
               <kendo-grid-column field="otherList" title="Type">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-combobox [data]="otherList" [(ngModel)]="selectedOtherList" textField="categoryName"valueField="id" placeholder="Select Other"></kendo-combobox>
+                  <kendo-combobox [data]="otherList" [(ngModel)]="dataItem.selectedOtherList" textField="categoryName"valueField="id" placeholder="Select Other"></kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="otherDetails" title="Details">

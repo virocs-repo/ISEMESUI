@@ -6,7 +6,7 @@ import { map, Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, Employee, HardwareItem, ICON, INIT_DEVICE_ITEM, InterimLot, InterimItem,
    MESSAGES, PostHardware, ReceiptLocation, Vendor,DeviceFamily,Coo,LotOwners,TrayPart,TrayVendor, INIT_RECEIPT, Others,Hardware, Quotes, PurchaseOrder, Category,ReceiptJson,
-   ReceiptRequest} from 'src/app/services/app.interface';
+   PackageCategory,ReceiptRequest} from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { environment } from 'src/environments/environment'
 
@@ -65,30 +65,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   public trayQty: number | null = null;
   public hardwareQty: number | null = null;
   public otherQty: number | null = null;
-  readonly category = [
-    { id: 1, name: 'Lot' },
-    { id: 2, name: 'Tray' },
-    { id: 3, name: 'Hardware' },
-    { id: 4, name: 'Other' },
-  ];
-  
-  hardwareData = [{   
-    selectedHardwareList: null,
-    projectDevice: '',
-    hardwareId: '',
-    hardwareQty: null}];
-  trayData = [{ 
-    selectedTrayVendor: null,
-    selectedTrayPart: '',
-    trayQty: null  }];
-  otherData = [{ 
-    selectedOtherList: null,
-    otherDetails: null,
-    otherQty: null}];
-  selectedCategories: { id: number; name: string }[] = [];
-  isCategorySelected(categoryId: number): boolean {
-    return this.selectedCategories.some(category => category.id === categoryId);
-  }
+  readonly category : PackageCategory[] = this.appService.masterData.PackageCategory;
   quotesList:Quotes[] = this.appService.masterData?.Quotes ?? [];
   selectedQuotesList : Quotes | undefined;
   custometPurchase:PurchaseOrder[] = this.appService.masterData?.PurchaseOrder ?? [];
@@ -108,11 +85,11 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   selectedTrayVendor : TrayVendor | undefined;
   trayPart: TrayPart[] = this.appService.masterData.trayPart;
   selectedTrayPart : TrayPart | undefined;
-  hardwareList:Hardware[] = this.appService.masterData?.hardware ?? [];
+  hardwareList:Hardware[] = this.appService.masterData?.hardware;
   selectedHardwareList : Hardware | undefined;
   projectDevice: string='';
   hardwareId: string='';
-  otherList:Others[] = this.appService.masterData?.Others ?? [];
+  otherList:Others[] = this.appService.masterData?.Others;
   selectedOtherList : Others | undefined;
   otherDetails: string='';
   requestID : number = 0;
@@ -145,7 +122,6 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       noOfCartons: undefined,//no
       isHold: false,
       trayVendor:"",
-      trayPart:"",
       trayQty:"",
       hardwareQty:"",
       projectDevice:"",
@@ -179,7 +155,23 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   PMReceivers:any[] = [];
   PMReceiverSelected:any;
   SelectedPMReceiver:any;
-  
+  hardwareData = [{   
+    selectedHardwareList: null,
+    projectDevice: '',
+    hardwareId: '',
+    hardwareQty: null}];
+  trayData = [{ 
+    selectedTrayVendor: null,
+    selectedTrayPart: '',
+    trayQty: null  }];
+  otherData = [{ 
+    selectedOtherList: null,
+    otherDetails: null,
+    otherQty: null}];
+    selectedCategories: { id: number; categoryName: string }[] = [];
+    isCategorySelected(categories: string): boolean {
+    return this.selectedCategories.some(category => category.categoryName === categories);
+  }
   selectedReceiverFiles:any[] = [];
   receiverFormDetails : any;
   receiverAttachements:any[] = [];
@@ -189,7 +181,6 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   constructor(public appService: AppService, private apiService: ApiService) { 
     this.getInvUserByRole();
   }
-
   ngOnInit(): void {
     this.init();
     const user = this.employees.find(emp => emp.EmployeeID === this.appService.loginId);
@@ -255,7 +246,28 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       }
     }
   }
+  getISEPOList(selectedId: number , isCustomer: boolean) {
+    this.apiService.getISEPOList(selectedId, null, isCustomer).subscribe({
+      next: (value: any) => {
+        if (value) {
+          this.appService.masterData.PurchaseOrder = value.map((a: PurchaseOrder) => {
+            let props = [a.purchaseOrderId, a.customerPoNumber];
+            props = props.filter(a => a);
+            return a;
+          });
+        }
+      }
+    });
+  }  
 
+  private getDeviceFamilies(customerId: number) {
+    this.apiService.DeviceFamily(customerId).subscribe({
+      next: (value: any) => {
+        this.appService.masterData.deviceFamily = value;
+      }
+    })
+  }
+  
   onTrayPartChange(value: any): void {
     if (typeof value === 'string') {
       const trimmedValue = value.trim();
@@ -265,7 +277,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   
       if (!exists && trimmedValue) {
         const newVendor: TrayVendor = {
-          trayVendorId: this.generateVendorID(),
+          trayVendorId: 1,
           vendorName: trimmedValue
         };
         this.trayVendor.push(newVendor);
@@ -285,7 +297,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   
       if (!exists && trimmedValue) {
         const newVendor: Vendor = {
-          VendorID: this.generateVendorID(),
+          VendorID: 1,
           VendorName: trimmedValue
         };
         this.vendors.push(newVendor);
@@ -295,15 +307,33 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       this.vendorSelected = value;
     }
   }
+
+  onCustomerPOValueChange(value: any): void {
+    if (typeof value === 'string') {
+      const trimmedValue = value.trim();
+      const exists = this.custometPurchase.some(
+        v => v.customerPoNumber.toLowerCase() === trimmedValue.toLowerCase()
+      );
+  
+      if (!exists && trimmedValue) {
+        const newVendor: PurchaseOrder = {
+          purchaseOrderId: 1,
+          customerPoNumber: trimmedValue
+        };
+        this.custometPurchase.push(newVendor);
+        this.selectedCustometPurchase = newVendor;
+      }
+    } else {
+      this.selectedCustometPurchase = value;
+    }
+  }
   onQtyChange(value: number): void {
     // If the value is not a whole number, clear the field
     if (value != null && !Number.isInteger(value)) {
       this.selectedQty = null;
     }
   }
-  generateVendorID(): number {
-    return Math.max(...this.vendors.map(v => v.VendorID || 0)) + 1;
-  }
+  
   validatePhone(event: any): void {
     const input = event.target as HTMLInputElement;
     input.value = input.value.replace(/[^0-9]/g, '');
@@ -316,7 +346,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       ReceiptDetails: {
         IsInterim: this.isInterim,
         CustomerTypeID: this.customerTypeSelected?.customerTypeID ?? null,
-        CustomerVendorID: this.customerSelected?.CustomerID ?? null,
+        CustomerVendorName: this.customerSelected?.CustomerName ?? null,
         BehalfID: this.behalfOfCusotmerSelected?.CustomerID ?? null,
         RecipientId: this.recipientSelected?.EmployeeID ?? null,
         SendorId: this.requestorSelected?.EmployeeID ?? null,
@@ -333,9 +363,9 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
         ReceivingInstructions: this.PickupDropoffComments ?? null,
         Notes: this.notesInformation ?? null,
         NoofPackages: this.selectedQty ?? 0,
-        PackageCategory: this.selectedCategories?.map(c => c.name).join(',') ?? null,
+        PackageCategory: this.selectedCategories?.map(c => c.categoryName).join(',') ?? null,
         Quotes: this.selectedQuotesList?.quote ?? null,
-        POId: this.selectedCustometPurchase?.purchaseOrderId ?? null,
+        PONumber: this.selectedCustometPurchase?.customerPoNumber ?? null,
         LotCategoryId: this.selectedLotCategory?.serviceCategoryId ?? null,
       },
       LotDetails: {
@@ -351,17 +381,17 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
         LotOwnerID: this.selectedLotOwner?.employeeID ?? null,
         LotCategoryId: this.selectedLotCategory?.serviceCategoryId ?? null
       },
-      TrayDetails: {
-        Id: null,
-        TrayVendorId: this.selectedTrayVendor?.trayVendorId ?? null,
-        TrayPartId: this.selectedTrayPart?.trayPartId ?? null,
-        Qty: this.trayQty ?? null
-      },
       HardwareDetails: {
         Id: this.hardwareId ?? null,
         HardwareTypeId: this.selectedHardwareList?.Id ?? null,
         ProjectDevice: this.projectDevice ?? null,
         HardwareId: this.selectedHardwareList?.CategoryName ?? null
+      },
+      TrayDetails: {
+        Id: null,
+        TrayVendorName: this.selectedTrayVendor?.vendorName ?? null,
+        TrayPartId: this.selectedTrayPart?.trayPartId ?? null,
+        Qty: this.trayQty ?? null
       },
       OtherDetails: {
         Id: null,
@@ -379,7 +409,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       ticket.ReceiptDetails.BehalfID = this.behalfOfCusotmerSelected?.CustomerID || null;
       if (this.customerSelected) {
         // custom value by user
-        ticket.ReceiptDetails.CustomerVendorID = this.customerSelected?.CustomerID
+        ticket.ReceiptDetails.CustomerVendorName = this.customerSelected?.CustomerName
         this.receipt.isValid.customer = true;
       } else {
         this.receipt.isValid.customer = false;
@@ -391,9 +421,9 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
         if (this.vendorSelected?.VendorID == 9999) {
           // due to new entry refresh masterdata
           this.appService.refreshVendors = true;
-          ticket.ReceiptDetails.CustomerVendorID = this.vendorSelected.VendorID;
+          ticket.ReceiptDetails.CustomerVendorName = this.vendorSelected.VendorName;
         } else {
-          ticket.ReceiptDetails.CustomerVendorID = this.vendorSelected?.VendorID || null;
+          ticket.ReceiptDetails.CustomerVendorName = this.vendorSelected?.VendorName || null;
         }
         ticket.ReceiptDetails.BehalfID = this.behalfOfCusotmerSelected?.CustomerID || null;
       } else {
@@ -500,7 +530,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       this.appService.errorMessage('Please select Package Category');
       return;
     }
-    if (this.isCategorySelected(1)) {
+    if (this.isCategorySelected("Lot")) {
     for (let i = 0; i < this.lotData.length; i++) {
       const lot = this.lotData[i];
 
@@ -518,12 +548,12 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       }
     }
   }
-    if (this.isCategorySelected(2)) {
+    if (this.isCategorySelected("Tray")) {
     
     for (let i = 0; i < this.trayData.length; i++) {
       const tray = this.trayData[i];
 
-      if (!tray.selectedTrayVendor) {
+      if (!this.selectedTrayVendor?.vendorName) {
         this.appService.errorMessage("Please select Tray Vendor");
         return;
       }
@@ -537,7 +567,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       }
     }
   }
-  if (this.isCategorySelected(3)) {
+  if (this.isCategorySelected("Hardware")) {
     for (let i = 0; i < this.hardwareData.length; i++) {
       const hw = this.hardwareData[i];
 
@@ -1001,14 +1031,23 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     } else {
       this.isDisabledBehalfOfCusotmer = false
     }
+    
   }
   onChangeCustomerName() {
-    if (this.customerTypeSelected?.customerTypeName == 'Customer') {
-      this.isDisabledBehalfOfCusotmer = true
+    if (this.customerTypeSelected?.customerTypeName === 'Customer') {
+      this.isDisabledBehalfOfCusotmer = true;
       this.behalfOfCusotmerSelected = this.customerSelected;
+  
+      const customerId = this.customerSelected?.CustomerID;
+      if (customerId) {
+        this.getISEPOList(customerId, true);  // true indicates Customer
+        this.getDeviceFamilies(customerId)
+      }
     }
+  
     this.onChangeBehalfOfCusotmer();
   }
+  
   onChangeBehalfOfCusotmer() {
     if (this.appService.sharedData.receiving.dataItem) {
       this.appService.sharedData.receiving.dataItem.behalfID = this.behalfOfCusotmerSelected?.CustomerID;
@@ -1089,6 +1128,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     });
   }
   getGeneratedLotNumber(): void {
+    this.lotData = [];
     this.apiService.generateLineItem().subscribe({
       next: (res) => {
         // handle the response
@@ -1101,11 +1141,10 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   }
   previousCategoryIds: number[] = [];
 
-onPackageCategoryChange(selectedCategories: { id: number; name: string }[]): void {
+onPackageCategoryChange(selectedCategories: { id: number; categoryName: string }[]): void {
   const selectedIds = selectedCategories.map(c => c.id);
-
   // Check if 'Lot' (id: 1) is newly added
-  const isLotNewlySelected = selectedIds.includes(1) && !this.previousCategoryIds.includes(1);
+  const isLotNewlySelected = selectedIds.includes(35) && !this.previousCategoryIds.includes(35);
 
   if (isLotNewlySelected) {
     this.getGeneratedLotNumber();

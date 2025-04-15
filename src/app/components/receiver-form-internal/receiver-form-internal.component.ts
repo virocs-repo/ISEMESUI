@@ -15,7 +15,7 @@ import * as moment from 'moment';
 })
 export class ReceiverFormInternalComponent implements OnDestroy {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
-  public isExpected: boolean | null = null;
+  public isExpected: boolean = true;
   selectedReceivingInfoNum : string | null ="";
   customerId : number | undefined;
   deviceFamilyId : number | undefined;
@@ -29,6 +29,7 @@ export class ReceiverFormInternalComponent implements OnDestroy {
   receiptStatus:string | undefined;
   selectedLocation: ReceiptLocation[] = [];
   selectedStatus: ReceiptStatus[] = [];
+  selectedStatuses : ReceiptStatus | undefined;
   selectedServiceCategory:ServiceCategory | undefined;
   facilityIdStr: string | undefined;
   selectedreceivingInfo : string | null = "";
@@ -86,15 +87,20 @@ export class ReceiverFormInternalComponent implements OnDestroy {
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
-    const defaultStatus = this.appService.masterData.receiptStatus.find(
-      status => status.itemText === 'Pending Receive'
-    );
-    if (defaultStatus) {
-      this.selectedStatus = [defaultStatus];
-    }
-  
-    this.isExpected = true;
-    this.location = this.appService.masterData.receiptLocation;
+   
+      // Use a timeout or observable depending on how your data loads
+      setTimeout(() => {
+        this.selectedStatuses = this.appService.masterData.receiptStatus.find(
+          status => status.itemText === 'Pending Receive'
+        );
+        this.appService.masterData.receiptStatus.forEach(e =>{
+          if(e.itemText === 'Pending Receive')
+          {
+            this.selectedStatus.push(e);
+          }
+        })
+        this.search();
+      }, 500);
     this.search();
     this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
       switch (v) {
@@ -143,9 +149,7 @@ export class ReceiverFormInternalComponent implements OnDestroy {
       })
     }
   }
-  isSelected(receivingFacilityID: any): boolean {
-    return this.selectedLocation.some(facility => facility.receivingFacilityID === receivingFacilityID);
-  } 
+  
   isSelectedStatus(masterListItemId: any): boolean {
     return this.selectedStatus.some(facility => facility.masterListItemId === masterListItemId);
   }  
@@ -159,12 +163,7 @@ export class ReceiverFormInternalComponent implements OnDestroy {
       }
     }
   }
-  tagDisplayLimit(tags: any[]): any[] {
-    const maxVisibleTags = 1;
-    return tags.length > maxVisibleTags
-      ? [...tags.slice(0, maxVisibleTags), { receivingFacilityName: `+${tags.length - maxVisibleTags} ` }]
-      : tags;
-  }
+ 
   tagDisplayLimits(tags: any[]): any[] {
     const maxVisibleTags = 1;
     return tags.length > maxVisibleTags
