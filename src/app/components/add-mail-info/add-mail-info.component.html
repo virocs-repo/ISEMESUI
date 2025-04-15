@@ -95,13 +95,23 @@
               </kendo-label>
             </div>
             <kendo-label text="Signature">
-              <kendo-signature 
-                #signature 
+              <kendo-signature
+                #signatureRef
                 [(value)]="Signaturebase64Data"
                 [smooth]="true"
                 [maximizable]="false"
-                [hideLine]="true">
+                [hideLine]="true"
+                [disabled]="isSignatureDisabled">
               </kendo-signature>
+              <div *ngIf="!isViewMode && isSignatureDisabled" class="signature-msg">
+                Please click the clear button to edit the signature.
+              </div>
+              <button
+                *ngIf="!isViewMode && isSignatureDisabled"
+                class="k-button k-button-md k-rounded-md k-button-solid k-button-solid-primary"
+                (click)="onClearSignature()">
+                Clear Signature
+              </button>
             </kendo-label>
           </kendo-card-body>
         </kendo-card>
@@ -306,8 +316,8 @@
       <span style="font-weight: normal;">Please print out the form and attach to the packages</span>
     </div>
     <span style="margin-left: auto;"></span>
-    <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" (click)="submitForm()">Submit</button>
-    <button kendoButton type="button" rounded="large" themeColor="dark" style="width:6rem"
+    <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" [disabled]="isViewMode" (click)="submitForm()">Submit</button>
+    <button kendoButton type="button" rounded="large" themeColor="dark" style="width:6rem" [disabled]="isViewMode"
       (click)="printSection()">Print</button>
   </div>
 </div>
