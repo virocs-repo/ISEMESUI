@@ -37,7 +37,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.getAllEntityData();
     this.getAddresses();
     this.fetchHardwareTypes();
-    this.getDeviceFamilies();
     this.getReceiverStatus();
     this.getServiceCategory();
     this.getCoo();
@@ -48,7 +47,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.getOthersList();
     this.getPackageCategoryHardwareList();
     this.getQuotes();
-    this.getISEPOList();
     this.getLotCategory();
 
     this.subscription.add(this.appService.eventEmitter.subscribe((e) => {
@@ -127,13 +125,6 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getDeviceFamilies() {
-    this.apiService.DeviceFamilies(775).subscribe({
-      next: (value: any) => {
-        this.appService.masterData.deviceFamily = value;
-      }
-    })
-  }
   private getReceiverStatus() {
     this.apiService.ReceiverStatus().subscribe({
       next: (value: any) => {
@@ -169,7 +160,13 @@ export class AppComponent implements OnInit, OnDestroy {
   private getTrayVendor() {
     this.apiService.TrayVendor(775).subscribe({
       next: (value: any) => {
-        
+        if (value) {
+          this.appService.masterData.trayVendor = value.map((a: TrayVendor) => {
+            let props = [a.trayVendorId, a.vendorName]
+            props = props.filter(a => a)
+            return a;
+          })
+        }
           this.appService.masterData.trayVendor = value;
       }
     })
@@ -177,7 +174,13 @@ export class AppComponent implements OnInit, OnDestroy {
   private getTrayPart() {
     this.apiService.TrayPart(775,2).subscribe({
       next: (value: any) => {
-        this.appService.masterData.trayPart = value;
+        if (value) {
+          this.appService.masterData.trayPart = value.map((a: TrayPart) => {
+            let props = [a.trayPartId, a.trayNumber]
+            props = props.filter(a => a)
+            return a;
+          })
+        }
       }
     })
   }
@@ -242,19 +245,7 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     });
   }
-  private getISEPOList() {
-    this.apiService.getISEPOList(775,null,true).subscribe({
-      next: (value: any) => {
-        if (value) {
-          this.appService.masterData.PurchaseOrder = value.map((a:PurchaseOrder) => {
-            let props = [a.purchaseOrderId, a.customerPoNumber]
-            props = props.filter(a => a)
-            return a;
-          })
-        }
-      }
-    });
-  }
+  
   private getLotCategory() {
     this.apiService.getServiceCaetgory().subscribe({
       next: (value: any) => {

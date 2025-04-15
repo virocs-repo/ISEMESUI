@@ -90,9 +90,10 @@ export class ApiService {
     if (status) {
       params = params.set('status', status);
   }
-    if (isExpected) {
-        params = params.set('isExpected', isExpected);
-    }
+  if (isExpected !== null && isExpected !== undefined) {
+    params = params.set('isExpected', String(isExpected));
+  }
+  
     if (fromDate) {
         params = params.set('fromDate', this.formatDate(fromDate));
     }
@@ -131,6 +132,9 @@ export class ApiService {
   }
   DeviceFamilies(customerId: number){
     return this.httpClient.get(`${API}v1/ise/inventory/getDeviceFamilies?customerId=${customerId}`);
+  }
+  DeviceFamily(customerId: number){
+    return this.httpClient.get(`${API}v1/ise/inventory/DeviceFamilies?customerId=${customerId}`);
   }
 
   ReceiverStatus(){
