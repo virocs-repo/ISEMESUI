@@ -85,7 +85,6 @@ export class MailRoomComponent implements OnDestroy {
       this.location = this.appService.masterData.receiptLocation;
        this.getStatusList('MailRoomStatus');
       this.search();
-      console.log("masterdata",this.appService.masterData);
       this.subscription.add(this.appService.sharedData.mailRoom.eventEmitter.subscribe((v) => {
         switch (v) {
           case 'closeDialog':
@@ -300,7 +299,6 @@ export class MailRoomComponent implements OnDestroy {
     this.gridContextMenu.show({ left: originalEvent.pageX, top: originalEvent.pageY });
   }
   onSelectRowActionMenu(e: ContextMenuSelectEvent) {
-    debugger;
     const dataItem = this.dataItemSelected;
     if (!dataItem) {
       console.error('Selected dataItem is not set');

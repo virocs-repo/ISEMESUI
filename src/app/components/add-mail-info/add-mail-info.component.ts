@@ -65,7 +65,8 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   contactPhone = '';
 
   signatureName = ''
-  Signaturebase64Data = ''
+  Signaturebase64Data: string = '';
+isSignatureDisabled: boolean = false;
   readonly signatureTypes: SignatureTypes[] = [
     { customerTypeID: 1, customerTypeName: 'Customer' }, { customerTypeID: 3, customerTypeName: 'Employee' },
   ]
@@ -249,18 +250,26 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     }
   }
   
-  getISEPOList(customerId: number|undefined, divisionId: number|null, isFreezed: boolean|null) {
-    debugger;
-    this.apiService.getISEPOList(customerId,divisionId,isFreezed).subscribe({
-      next: (data: any[]) => { 
-        this.isePOList = Array.isArray(data) ? data : []; 
+  poIdToSelect?: number;
+  getISEPOList(customerId: number | undefined, divisionId: number | null, isFreezed: boolean | null) {
+    this.apiService.getISEPOList(customerId, divisionId, isFreezed).subscribe({
+      next: (data: any[]) => {
+        this.isePOList = Array.isArray(data) ? data : [];
+  
+        if (this.poIdToSelect) {
+          this.isePOListSelected = this.isePOList.find(
+            po => po.purchaseOrderId === this.poIdToSelect
+          );
+  
+          this.poIdToSelect = undefined;
+        }
       },
       error: (err) => {
         console.error('Error fetching isePOList:', err);
         this.isePOList = [];
       }
     });
-  }
+  }  
   
   isDisabledBehalfOfCusotmer = false
   onChangeCustomerType() {
@@ -271,7 +280,6 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     }
   }
   onChangeCustomerName() {
-    debugger;
     if (this.customerTypeSelected?.customerTypeName == 'Customer') {
       this.isDisabledBehalfOfCusotmer = true
       this.behalfOfCusotmerSelected = this.customerSelected;
@@ -501,7 +509,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     .filter(item => item && item.typeId && item.details?.trim() && item.qty != null && item.qty !== '')
     .map(item => ({
       OtherId: null,
-      TypeId: item.typeId.id,  
+      TypeId: item.typeId, 
       Details: item.details.trim(),
       Qty: item.qty
     })) || [];
@@ -603,17 +611,13 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   }
 
   onUpload(event: any): void {
-    debugger;
-    // Send selected files to API
     const formData = new FormData();
     event.files.forEach((file: any) => {
       formData.append('files', file.rawFile);
     });
-    // Call API
   }
 
   deleteMailRoomAttachment(dataItem: any) {
-    debugger;
     dataItem.active = false;
     var attachment =  this.mailAttachements.find(a => a.path === dataItem.path);
     if(attachment != undefined)
@@ -623,7 +627,6 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   }
 
   getMailRoomDetails(mailId:number)  {
-    debugger;
     this.apiService.getMailRoomDetails(mailId).subscribe({
       next : (data:any) => {
         this.mailRoomDetails = data;
@@ -639,7 +642,6 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   }
 
   bindMailRoomDetail(){
-    debugger;
     this.mailId = this.appService.sharedData.mailRoom.dataItem.mailRoomId;
     this.awbMailCode = this.mailRoomDetails.awbMailCode;
     this.scanLocation = this.mailRoomDetails.scanLocation;
@@ -651,7 +653,9 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     } else {
       this.vendorSelected = this.vendors.find(v => v.VendorID === this.mailRoomDetails.customerVendorId);
     }
-    
+    this.poIdToSelect = this.mailRoomDetails.poId;
+    this.getISEPOList(this.customerSelected?.CustomerID,null,null);
+
     this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID === this.mailRoomDetails.behalfId);
     this.receiptLocationSelected = this.receiptLocation.find(loc => loc.receivingFacilityID === this.mailRoomDetails.locationId);
     this.recipientSelected = this.employees.find(e => e.EmployeeID === this.mailRoomDetails.recipientId);
@@ -661,9 +665,19 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     this.isDamaged = this.mailRoomDetails.isDamage ?? false;
     this.placeLotOnHold = this.mailRoomDetails.isHold ?? false;
     
-    this.Signaturebase64Data = this.mailRoomDetails.signiture 
-  ? 'data:image/png;base64,' + this.mailRoomDetails.signiture 
-  : '';
+    if (this.mailRoomDetails?.signiture) {
+      this.Signaturebase64Data = this.mailRoomDetails.signiture 
+      ? 'data:image/png;base64,' + this.mailRoomDetails.signiture 
+      : '';
+      this.isSignatureDisabled = true;
+    } else {
+      this.Signaturebase64Data = '';
+      this.isSignatureDisabled = false;
+    }
+
+  this.expectedDateTime = this.mailRoomDetails.expectedDateTime
+  ? new Date(this.mailRoomDetails.expectedDateTime)
+  : new Date(); 
 
     this.deliveryModeSelected = this.deliveryMode.find(d => d.deliveryModeID === this.mailRoomDetails.deliveryMethodId);
     this.tracking = this.mailRoomDetails.trackingNumber;
@@ -678,6 +692,9 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
     this.selectedCategory = this.packageCategoryList.filter(cat => this.mailRoomDetails.packageCategory?.includes(cat.id));
     this.isePOListSelected = this.isePOList.find(po => po.purchaseOrderId === this.mailRoomDetails.poId);
     this.gridData.data = this.mailRoomDetails.others ?? [];
-    
+  }
+  onClearSignature() {
+    this.Signaturebase64Data = '';
+    this.isSignatureDisabled = false;
   }
 }
