@@ -32,7 +32,7 @@
                 <b class="required-label"></b>
                 <kendo-combobox [data]="vendors" [(ngModel)]="vendorSelected" [allowCustom]="true"
                   [textField]="'VendorName'" [valueField]="'VendorID'" placeholder="Select" rounded="large"
-                  [kendoDropDownFilter]="filterSettings" (valueChange)="onVendorValueChange($event)">
+                  [kendoDropDownFilter]="filterSettings" (valueChange)="onChangeCustomerName()">
                 </kendo-combobox>
               </kendo-label>
             </div>
