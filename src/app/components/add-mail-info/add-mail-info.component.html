@@ -197,7 +197,7 @@
                 [format]="'n0'"
                 [step]="1"
                 [min]="0"></kendo-numerictextbox>
-              </kendo-label>             
+              </kendo-label>
               <kendo-label text="Package Category" class="k-w-full"><b class="required-label"></b>
                 <kendo-multiselect
                   [data]="packageCategoryList"
@@ -209,7 +209,8 @@
                   [autoClose]="false"
                   [checkboxes]="true"
                   placeholder="Select Package Category"
-                  [tagMapper]="tagDisplayLimit">
+                  [tagMapper]="tagDisplayLimit"
+                  (ngModelChange)="onPackageCategoryChange($event)">
                 </kendo-multiselect>
               </kendo-label>    
             </div>
