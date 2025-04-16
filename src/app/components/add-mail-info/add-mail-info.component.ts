@@ -29,10 +29,10 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
 
   readonly customerTypes: CustomerType[] = this.appService.masterData.customerType;
   customerTypeSelected: CustomerType | undefined;
-  readonly packageCategoryList: PackageCategory[]= this.appService.masterData.PackageCategory;
+   packageCategoryList: PackageCategory[]= this.appService.masterData.PackageCategory;
   gridData: GridDataResult = { 
     data: [
-      { typeId: null, details: '', qty: '' }  // `type` will hold the selected dropdown value
+      { typeId: null, details: '', qty: '' }  
     ], 
     total: 1 
   };
@@ -273,6 +273,10 @@ isSignatureDisabled: boolean = false;
   
   isDisabledBehalfOfCusotmer = false
   onChangeCustomerType() {
+    this.behalfOfCusotmerSelected=undefined;
+    this.customerSelected=undefined;
+    this.isePOListSelected = null;
+    this.vendorSelected=undefined;
     if (this.customerTypeSelected?.customerTypeName == 'Customer') {
       this.isDisabledBehalfOfCusotmer = true
     } else {
@@ -340,6 +344,19 @@ isSignatureDisabled: boolean = false;
       return hasTruthyValue
     }
   }
+  previousCategoryIds: number[] = [];
+
+onPackageCategoryChange(selectedCategories: any[] = []) {
+  const currentIds = selectedCategories.map(c => c.id);
+  const previouslyHadOthers = this.previousCategoryIds.includes(38);
+  const nowHasOthers = currentIds.includes(38);
+  if (previouslyHadOthers && !nowHasOthers) {
+    this.gridData.data = [];
+  }
+  this.selectedCategory = selectedCategories;
+  this.previousCategoryIds = [...currentIds];
+}
+
   // print
   @ViewChild('pdfExport', { static: true }) pdfExportComponent!: PDFExportComponent;
   printSection() {
@@ -351,10 +368,9 @@ isSignatureDisabled: boolean = false;
     this.pdfExportComponent.saveAs();
   }
   submitForm(): void {
-
-    var mailRoomId = 0;
-    if(this.appService.sharedData.mailRoom.dataItem.mailRoomId) {
-      mailRoomId = this.appService.sharedData.mailRoom.dataItem.mailRoomId;
+    var mailId = 0;
+    if(this.appService.sharedData.mailRoom.dataItem.mailId) {
+      mailId = this.appService.sharedData.mailRoom.dataItem.mailId;
     }
 
     if (!this.awbMailCode?.trim()) {
@@ -456,11 +472,15 @@ isSignatureDisabled: boolean = false;
       this.appService.errorMessage('Number of Packages is required and must be greater than 0');
       return;
     }
-    // if (!this.selectedCategory || this.selectedCategory.length === 0) {
-    //   this.appService.errorMessage('At least one Package Category must be selected');
-    //   return;
-    // }
+    if (!this.selectedCategory || this.selectedCategory.length === 0) {
+      this.appService.errorMessage('At least one Package Category must be selected');
+      return;
+    }
     if (this.isOtherCategorySelected()) {
+      if (!this.gridData.data || this.gridData.data.length === 0) {
+        this.appService.errorMessage('Please add at least one row in the Others section.');
+        return;
+      }
       for (let i = 0; i < this.gridData.data.length; i++) {
         const row = this.gridData.data[i];
   
@@ -563,9 +583,8 @@ isSignatureDisabled: boolean = false;
     };
 
     const mailJson = JSON.stringify(payload)
-
     const loginId = this.appService.loginId;
-    this.apiService.saveMailRoomInfo(packageLabelFiles, shipmentPaperFiles, mailJson, mailRoomId, loginId, deletedAttachmentsJson).subscribe({
+    this.apiService.saveMailRoomInfo(packageLabelFiles, shipmentPaperFiles, mailJson, mailId, loginId, deletedAttachmentsJson).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
         if (this.customerTypeSelected?.customerTypeName === 'Vendor' && this.vendorSelected?.VendorName) {
@@ -642,21 +661,22 @@ isSignatureDisabled: boolean = false;
   }
 
   bindMailRoomDetail(){
-    this.mailId = this.appService.sharedData.mailRoom.dataItem.mailRoomId;
+    this.mailId = this.appService.sharedData.mailRoom.dataItem.mailId;
     this.awbMailCode = this.mailRoomDetails.awbMailCode;
     this.scanLocation = this.mailRoomDetails.scanLocation;
-    
+
+    this.poIdToSelect = this.mailRoomDetails.poId;
     this.customerTypeSelected = this.customerTypes.find(ct => ct.customerTypeID === this.mailRoomDetails.customerTypeId);
     
     if (this.customerTypeSelected?.customerTypeName === 'Customer') {
       this.customerSelected = this.customers.find(c => c.CustomerID === this.mailRoomDetails.customerVendorId);
+      this.getISEPOList(this.customerSelected?.CustomerID,null,null);
     } else {
       this.vendorSelected = this.vendors.find(v => v.VendorID === this.mailRoomDetails.customerVendorId);
     }
-    this.poIdToSelect = this.mailRoomDetails.poId;
-    this.getISEPOList(this.customerSelected?.CustomerID,null,null);
 
     this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID === this.mailRoomDetails.behalfId);
+    this.getISEPOList(this.behalfOfCusotmerSelected?.CustomerID,null,null);
     this.receiptLocationSelected = this.receiptLocation.find(loc => loc.receivingFacilityID === this.mailRoomDetails.locationId);
     this.recipientSelected = this.employees.find(e => e.EmployeeID === this.mailRoomDetails.recipientId);
     this.requestorSelected = this.employees.find(e => e.EmployeeID === this.mailRoomDetails.sendorId);
