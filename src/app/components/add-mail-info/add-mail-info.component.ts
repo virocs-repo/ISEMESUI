@@ -495,7 +495,7 @@ onPackageCategoryChange(selectedCategories: any[] = []) {
         }
       }
     }
-
+    
     var packageLabelFiles:any[] = [];
     if (this.selectedPackageLabelFiles && this.selectedPackageLabelFiles.length) {
       if (this.selectedPackageLabelFiles.length < 1) {
@@ -563,7 +563,7 @@ onPackageCategoryChange(selectedCategories: any[] = []) {
     this.mailAttachements.filter(a => a.active == false).forEach((attach:any) => {
       var attachment: any = {
         attachmentId: attach.attachmentId,
-        Section: attach.Section,
+        section: attach.section,
         path: attach.path,
         active: attach.active
       }
@@ -603,24 +603,26 @@ onPackageCategoryChange(selectedCategories: any[] = []) {
   }
   
   onSelectPackageLableAttachment(event: any): void {
-
+    
     event.files.forEach((f:any) => {
       this.selectedPackageLabelFiles.push(f);
     })
   }
 
   onPackageLabelFileRemove(event: any): void {
+    
     const fileToRemove = event.files[0]; 
     this.selectedPackageLabelFiles = this.selectedPackageLabelFiles.filter((f:any ) => f.name !== fileToRemove.name);
   }
   onSelectShipmentPaperAttachment(event: any): void {
-
+    
     event.files.forEach((f:any) => {
       this.selectedShipmentPaperFiles.push(f);
     })
   }
 
   onShipmentPaperFileRemove(event: any): void {
+    
     const fileToRemove = event.files[0]; 
     this.selectedShipmentPaperFiles = this.selectedShipmentPaperFiles.filter((f:any ) => f.name !== fileToRemove.name);
   }

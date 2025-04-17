@@ -875,7 +875,7 @@ getShippingAddressData(
     for (let i = 0; i < packageLabelFiles.length; i++) {
       formData.append('PackageLabelFiles', packageLabelFiles[i]); // 'files' is the key name for the file field
     }
-    for (let i = 0; i < packageLabelFiles.length; i++) {
+    for (let i = 0; i < shipmentPaperFiles.length; i++) {
       formData.append('ShipmentPaperFiles', shipmentPaperFiles[i]); // 'files' is the key name for the file field
     }
 
