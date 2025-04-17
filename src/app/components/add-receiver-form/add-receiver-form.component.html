@@ -241,21 +241,21 @@
                   <kendo-textbox [(ngModel)]="dataItem.ISELotNumber" placeholder="Enter ISE LOT" ></kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="customerLotNumber" title="Customer LOT#">
+              <kendo-grid-column field="CustomerLotNumber" title="Customer LOT#">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                  <kendo-textbox [(ngModel)]="dataItem.customerLotNumber" placeholder="Enter Customer LOT" >{{dataItem.customerLotNumber}}</kendo-textbox>
+                  <kendo-textbox [(ngModel)]="dataItem.CustomerLotNumber" placeholder="Enter Customer LOT" >{{dataItem.CustomerLotNumber}}</kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="expectedQty" title="Expected Qty">
+              <kendo-grid-column field="CustomerCount" title="Expected Qty">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                  <kendo-numerictextbox [(ngModel)]="dataItem.expectedQty" [format]="'n0'" placeholder="Enter Expected Qty" [class.ng-touched]="dataItem.error"></kendo-numerictextbox>
+                  <kendo-numerictextbox [(ngModel)]="dataItem.CustomerCount" [format]="'n0'" placeholder="Enter Expected Qty" [class.ng-touched]="dataItem.error"></kendo-numerictextbox>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="deviceTypeID" title="Device Name">
+              <kendo-grid-column field="DeviceTypeID" title="Device Name">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <kendo-combobox
                     class="combobox"
-                    [(ngModel)]="dataItem.deviceTypeID"
+                    [(ngModel)]="dataItem.DeviceTypeID"
                     [data]="appService.masterData.deviceFamily || []"  
                     [textField]="'deviceFamilyName'" 
                     [valueField]="'deviceFamilyId'"
@@ -263,16 +263,16 @@
                     placeholder="Select Device Family"></kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="dateCode" title="Date Code">
+              <kendo-grid-column field="DateCode" title="Date Code">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                  <kendo-textbox [(ngModel)]="dataItem.dateCode" placeholder="Enter Date Code" ></kendo-textbox>
+                  <kendo-textbox [(ngModel)]="dataItem.DateCode" placeholder="Enter Date Code" ></kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="coo" title="COO">
+              <kendo-grid-column field="COO" title="COO">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <kendo-combobox
                   class="combobox"
-                  [(ngModel)]="dataItem.cooId"
+                  [(ngModel)]="dataItem.COO"
                   [data]="coo" 
                   [textField]="'serviceCategoryName'"
                   [valueField]="'serviceCategoryId'" 
@@ -280,21 +280,21 @@
                   placeholder="Select COO"></kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="expedite" title="Expedite">
+              <kendo-grid-column field="Expedite" title="Expedite">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                  <input type="checkbox" [(ngModel)]="dataItem.expedite"/>
+                  <input type="checkbox" [(ngModel)]="dataItem.Expedite"/>
                 </ng-template>
               </kendo-grid-column>        
-              <kendo-grid-column field="iqaOptional" title="IQA Optional">
+              <kendo-grid-column field="IQA" title="IQA Optional">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                  <input type="checkbox" [(ngModel)]="dataItem.iqaOptional"/>
+                  <input type="checkbox" [(ngModel)]="dataItem.IQA"/>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="lotOwnerID" title="Lot Owner">
+              <kendo-grid-column field="LotOwnerID" title="Lot Owner">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <kendo-combobox
                   class="combobox" 
-                  [(ngModel)]="dataItem.lotOwnerID"
+                  [(ngModel)]="dataItem.LotOwnerID"
                   [data]="lotOwner"  
                   [textField]="'employeeName'"
                   [valueField]="'employeeID'" 
@@ -302,9 +302,9 @@
                   placeholder="Select Lot Owner"></kendo-combobox> 
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="isHold" title="Hold">
+              <kendo-grid-column field="IsHold" title="Hold">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                  <input type="checkbox" [(ngModel)]="dataItem.isHold"/>
+                  <input type="checkbox" [(ngModel)]="dataItem.IsHold"/>
                 </ng-template>
               </kendo-grid-column>
             </kendo-grid>
@@ -319,11 +319,11 @@
             </div>
             <kendo-grid [kendoGridBinding]="hardwareDetails" [selectable]="selectableSettings" [sortable]="true"
             [resizable]="true" class="bold-column-header wrap-header-grid">
-              <kendo-grid-column field="hardwareTypeId" title="Hardware Type">
+              <kendo-grid-column field="HardwareTypeId" title="Hardware Type">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <kendo-combobox 
                   [data]="hardwareList" 
-                  [(ngModel)]="dataItem.hardwareTypeId" 
+                  [(ngModel)]="dataItem.HardwareTypeId" 
                   textField="categoryName"
                   valueField="id" 
                   class="combobox" 
@@ -332,19 +332,19 @@
                   placeholder="Select Hardware Type"></kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="projectDevice" title="Project/Device Name">
+              <kendo-grid-column field="DeviceName" title="Project/Device Name">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-textbox [(ngModel)]="dataItem.projectDevice" placeholder="Enter Project/Device Name" ></kendo-textbox>
+                  <kendo-textbox [(ngModel)]="dataItem.DeviceName" placeholder="Enter Project/Device Name" ></kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="hardwareId" title="Hardware ID">
+              <kendo-grid-column field="HardwareId" title="Hardware ID">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-textbox [(ngModel)]="dataItem.hardwareId" placeholder="Enter Hardware Id" ></kendo-textbox>
+                  <kendo-textbox [(ngModel)]="dataItem.HardwareId" placeholder="Enter Hardware Id" ></kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="qty" title="Qty">
+              <kendo-grid-column field="Qty" title="Qty">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-numerictextbox [(ngModel)]="dataItem.qty" placeholder="Enter Qty" ></kendo-numerictextbox>
+                  <kendo-numerictextbox [(ngModel)]="dataItem.Qty" placeholder="Enter Qty" ></kendo-numerictextbox>
                 </ng-template>
               </kendo-grid-column>
             </kendo-grid>
@@ -359,19 +359,19 @@
             </div>
             <kendo-grid [kendoGridBinding]="trayDetails" [selectable]="selectableSettings" [sortable]="true"
             [resizable]="true" class="bold-column-header wrap-header-grid">
-              <kendo-grid-column field="trayVendorName" title="Tray Vendor">
+              <kendo-grid-column field="TrayVendorId" title="Tray Vendor">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-combobox [data]="trayVendor" [(ngModel)]="dataItem.trayVendorName" [allowCustom]="true" textField="vendorName"valueField="trayVendorId" [valuePrimitive]="true" class="combobox" [filterable]="true" [kendoDropDownFilter]="filterSettings" placeholder="Select Tray Vendor"></kendo-combobox>
+                  <kendo-combobox [data]="trayVendor" [(ngModel)]="dataItem.TrayVendorId" [allowCustom]="true" textField="vendorName"valueField="trayVendorId" [valuePrimitive]="true" class="combobox" [filterable]="true" [kendoDropDownFilter]="filterSettings" placeholder="Select Tray Vendor"></kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="trayPartId" title="Tray Part#">
+              <kendo-grid-column field="TrayPartId" title="Tray Part#">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-combobox [data]="trayPart" [(ngModel)]="dataItem.trayPartId" textField="trayNumber"valueField="trayPartId" [valuePrimitive]="true" class="combobox" placeholder="Select Tray Part"></kendo-combobox>
+                  <kendo-combobox [data]="trayPart" [(ngModel)]="dataItem.TrayPartId" textField="trayNumber"valueField="trayPartId" [valuePrimitive]="true" class="combobox" placeholder="Select Tray Part"></kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="qty" title="Qty">
+              <kendo-grid-column field="Qty" title="Qty">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-numerictextbox [(ngModel)]="dataItem.qty" placeholder="Enter Tray Qty" ></kendo-numerictextbox>
+                  <kendo-numerictextbox [(ngModel)]="dataItem.Qty" placeholder="Enter Tray Qty" ></kendo-numerictextbox>
                 </ng-template>
               </kendo-grid-column>
             </kendo-grid>
@@ -386,19 +386,19 @@
             </div>
             <kendo-grid [kendoGridBinding]="otherListDetails" [selectable]="selectableSettings" [sortable]="true"
             [resizable]="true" class="bold-column-header wrap-header-grid">
-              <kendo-grid-column field="type" title="Type">
+              <kendo-grid-column field="TypeId" title="Type">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-combobox [data]="otherList" [(ngModel)]="dataItem.type" textField="categoryName"valueField="id" [valuePrimitive]="true" placeholder="Select Other"></kendo-combobox>
+                  <kendo-combobox [data]="otherList" [(ngModel)]="dataItem.TypeId" textField="categoryName"valueField="id" [valuePrimitive]="true" placeholder="Select Other"></kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="details" title="Details">
+              <kendo-grid-column field="Details" title="Details">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-textbox [(ngModel)]="dataItem.details"placeholder="Enter Details" ></kendo-textbox>
+                  <kendo-textbox [(ngModel)]="dataItem.Details"placeholder="Enter Details" ></kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
-              <kendo-grid-column field="qty" title="Qty">
+              <kendo-grid-column field="Qty" title="Qty">
                 <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-numerictextbox [(ngModel)]="dataItem.qty" placeholder="Enter Qty" ></kendo-numerictextbox>
+                  <kendo-numerictextbox [(ngModel)]="dataItem.Qty" placeholder="Enter Qty" ></kendo-numerictextbox>
                 </ng-template>
               </kendo-grid-column>
             </kendo-grid>

@@ -77,6 +77,12 @@ export class ReceiverFormInternalComponent implements OnDestroy {
   openDialog() {
     this.isDialogOpen = true;
   }
+  openAddDialog(){
+    this.appService.sharedData.internalReceiverForm.dataItem = null;
+    this.appService.sharedData.internalReceiverForm.isEditMode = false;
+    this.appService.sharedData.internalReceiverForm.isViewMode = false;
+    this.isDialogOpen = true;
+  }
   closeDialog() {
     this.isDialogOpen = false;
     this.fetchdata(); 
@@ -102,7 +108,7 @@ export class ReceiverFormInternalComponent implements OnDestroy {
         this.search();
       }, 500);
     this.search();
-    this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
+    this.subscription.add(this.appService.sharedData.internalReceiverForm.eventEmitter.subscribe((v) => {
       switch (v) {
         case 'closeDialog':
           this.closeDialog();
@@ -192,9 +198,9 @@ export class ReceiverFormInternalComponent implements OnDestroy {
   }
   private testReceiptEdit() {
     setTimeout(() => {
-      this.appService.sharedData.receiving.dataItem = this.gridDataResult.data[0]
-      this.appService.sharedData.receiving.isEditMode = true;
-      this.appService.sharedData.receiving.isViewMode = false;
+      this.appService.sharedData.internalReceiverForm.dataItem = this.gridDataResult.data[0]
+      this.appService.sharedData.internalReceiverForm.isEditMode = true;
+      this.appService.sharedData.internalReceiverForm.isViewMode = false;
       this.openDialog()
     }, 3000);
   }
@@ -247,15 +253,15 @@ export class ReceiverFormInternalComponent implements OnDestroy {
         })
         break;
       case 'View Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = false;
-        this.appService.sharedData.receiving.isViewMode = true;
+        this.appService.sharedData.internalReceiverForm.dataItem = dataItem
+        this.appService.sharedData.internalReceiverForm.isEditMode = false;
+        this.appService.sharedData.internalReceiverForm.isViewMode = true;
         this.openDialog()
         break;
       case 'Edit Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = true;
-        this.appService.sharedData.receiving.isViewMode = false;
+        this.appService.sharedData.internalReceiverForm.dataItem = dataItem
+        this.appService.sharedData.internalReceiverForm.isEditMode = true;
+        this.appService.sharedData.internalReceiverForm.isViewMode = false;
         this.openDialog()
         break;
 
@@ -275,7 +281,7 @@ export class ReceiverFormInternalComponent implements OnDestroy {
     }, 300);
   }
   canCloseDialog() {
-    this.appService.sharedData.receiving.eventEmitter.emit('canCloseDialog?')
+    this.appService.sharedData.internalReceiverForm.eventEmitter.emit('canCloseDialog?')
   }
   private isSearchClicked = false; 
   search() {
