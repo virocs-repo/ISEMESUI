@@ -247,7 +247,7 @@
             <!-- Dropdown for Type -->
             <kendo-grid-column field="type">
               <ng-template kendoGridHeaderTemplate>
-                Type <b class="required-label">*</b>
+                Type <b class="required-label"></b>
               </ng-template>
               <ng-template kendoGridCellTemplate let-dataItem>
                 <kendo-combobox
@@ -264,7 +264,7 @@
             <!-- Textbox for Details -->
             <kendo-grid-column field="details">
               <ng-template kendoGridHeaderTemplate>
-                Details <b class="required-label">*</b>
+                Details <b class="required-label"></b>
               </ng-template>
               <ng-template kendoGridCellTemplate let-dataItem>
                 <kendo-textbox [(ngModel)]="dataItem.details" placeholder="Enter Details"></kendo-textbox>
@@ -274,7 +274,7 @@
             <!-- Textbox for Quantity -->
             <kendo-grid-column field="qty">
               <ng-template kendoGridHeaderTemplate>
-                Qty <b class="required-label">*</b>
+                Qty <b class="required-label"></b>
               </ng-template>
               <ng-template kendoGridCellTemplate let-dataItem>
                 <kendo-numerictextbox [(ngModel)]="dataItem.qty" placeholder="Enter Qty"></kendo-numerictextbox>
