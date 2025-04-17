@@ -1158,38 +1158,35 @@ export interface ReceiptDetails {
 }
 
 export interface LotDetails {
-  DeviceId: number | null;
   ISELotNumber: string | null;
-  CustomerLotNumber: string | null;
-  CustomerCount: number | null;
-  DeviceTypeID: number | null;
-  DateCode: string | null;
-  COO: number | null;
-  Expedite: number | null;
-  IQA: number | null;
-  LotOwnerID: number | null;
-  LotCategoryId: number | null;
+  customerLotNumber: string | null;
+  expectedQty: number | null;
+  deviceTypeID: number | null;
+  dateCode: string | null;
+  cooId: number | null;
+  expedite: boolean | null;
+  iqaOptional: boolean | null;
+  lotOwnerID: number | null;
+  isHold: boolean | null;
 }
 
 export interface TrayDetails {
-  Id: number | null;
-  TrayVendorName: string | null;
-  TrayPartId: number | null;
-  Qty: number | null;
+  trayVendorName: number | null;
+  trayPartId: number | null;
+  qty: number | null;
 }
 
 export interface HardwareDetails {
-  Id: string | null;
-  HardwareTypeId: number | null;
-  ProjectDevice: string | null;
-  HardwareId: string | null;
+  hardwareTypeId: number | null;
+  projectDevice: string | null;
+  hardwareId: string | null;
+  qty: number | null
 }
 
 export interface OtherDetails {
-  Id: number | null;
-  Type: string | null;
-  Details: string | null;
-  Qty: number | null;
+  type: string | null;
+  details: string | null;
+  qty: number | null;
 }
 
 
@@ -1221,35 +1218,32 @@ export const INIT_RECEIPT: ReceiptJson = {
       LotCategoryId: null,
       },
       LotDetails: {
-        DeviceId: null,
         ISELotNumber: '',
-        CustomerLotNumber: '',
-        CustomerCount: null,
-        DeviceTypeID: null,
-        DateCode: '',
-        COO: null,
-        Expedite: null,
-        IQA: null,
-        LotOwnerID: null,
-        LotCategoryId: null
+        customerLotNumber: '',
+        expectedQty: null,
+        deviceTypeID: null,
+        dateCode: '',
+        cooId: null,
+        expedite: null,
+        iqaOptional: null,
+        lotOwnerID: null,
+        isHold: null
       },
       HardwareDetails: {
-        Id: null,
-        HardwareTypeId: null,
-        ProjectDevice: '',
-        HardwareId: ''
+        hardwareTypeId: null,
+        projectDevice: '',
+        hardwareId: '',
+        qty:null
       },
       TrayDetails: {
-        Id: null,
-        TrayVendorName: null,
-        TrayPartId: null,
-        Qty: null
+        trayVendorName: null,
+        trayPartId: null,
+        qty: null
       },
       OtherDetails: {
-        Id: null,
-        Type: null,
-        Details: '',
-        Qty: null
+        type: null,
+        details: '',
+        qty: null
       }
 };
 
