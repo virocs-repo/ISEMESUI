@@ -123,6 +123,9 @@ export class ApiService {
     const headers = new HttpHeaders({ 'Accept': '*/*' });
     return this.httpClient.post(`${API}v1/ise/inventory/save-inventory-receipt`, formData, { headers });
   }
+  getReceiverFormInternalList(receiptId:number){
+    return this.httpClient.get(`${API}v1/ise/inventory/getReceiverFormInternalList?receiptId=${receiptId}`)
+  }
 
   Quotes(customerId: number){
     return this.httpClient.get(`${API}v1/ise/inventory/getQuotes?customerId=${customerId}`);

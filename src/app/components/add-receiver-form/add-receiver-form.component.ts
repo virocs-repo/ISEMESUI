@@ -6,9 +6,7 @@ import { map, Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, Employee, HardwareItem, ICON, INIT_DEVICE_ITEM, InterimLot, InterimItem,
    MESSAGES, PostHardware, ReceiptLocation, Vendor,DeviceFamily,Coo,LotOwners,TrayPart,TrayVendor, Others,Hardware, Quotes, PurchaseOrder, Category,ReceiptDetails,
-   PackageCategory,LotDetails,TrayDetails,HardwareDetails,OtherDetails,
-   ReceiptJson,
-   INIT_RECEIPT} from 'src/app/services/app.interface';
+   PackageCategory,LotDetails,TrayDetails,HardwareDetails,OtherDetails,ReceiptJson,} from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { environment } from 'src/environments/environment'
 
@@ -52,11 +50,11 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   deliveryModeSelected: DeliveryMode | undefined;
   contactPhone = '';
   tracking = ''
-  readonly couriers = this.appService.masterData.courierDetails
+  readonly couriers:CourierDetails[] = this.appService.masterData.courierDetails
   courierSelected: CourierDetails | undefined
   readonly countries = this.appService.masterData.country
   countrySelected: Country | undefined;
-  expectedDateTime: Date = new Date();
+  expectedDateTime: Date | null = null;
   contactPerson = this.appService.userName;
   email: string | null = '';
   readonly addresses: Address[] = this.appService.masterData.addresses;
@@ -96,15 +94,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   otherDetails: string='';
   requestID : number = 0;
   format = "MM/dd/yyyy HH:mm";
-  
-  readonly lotIdentifiers = [
-    { name: 'Test', id: 'Test' },
-    { name: 'Test&Rel', id: 'Test&Rel' },
-    { name: 'Rel', id: 'Rel' },
-    { name: 'Customer Lot', id: 'Customer Lot' },
-    { name: 'TBD', id: 'TBD' },
-  ]
-   
+  isViewMode: boolean = false;   
   isHoldCheckboxEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
     featureField?.find(o => o.featureFieldName == 'HoldCheckbox')?.active ?? true;
   isHoldCommentEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
@@ -174,6 +164,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   expedite: boolean = true;
   isHold : boolean = true;
   iqaOptional : boolean = true;
+  num: any;
     isCategorySelected(categories: string): boolean {
     return this.selectedCategories.some(category => category.categoryName === categories);
   }
@@ -194,17 +185,18 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       this.recipientSelected = user;
       this.contactPerson= this.requestorSelected?.EmployeeName;
     }
-    this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
+    this.subscription.add(this.appService.sharedData.internalReceiverForm.eventEmitter.subscribe((v) => {
       switch (v) {
         case 'canCloseDialog?':
           let closeDialog = false;
+          //closeDialog = this.areThereAnyChanges();
           if (closeDialog) {
             closeDialog = confirm('Do you want to Discard changes?')
           } else {
             closeDialog = true
           }
           if (closeDialog) {
-            this.appService.sharedData.receiving.eventEmitter.emit('closeDialog');
+            this.appService.sharedData.internalReceiverForm.eventEmitter.emit('closeDialog');
           }
           break;
         default:
@@ -212,13 +204,13 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       }
     }))
     this.initRoleBasedUI()
-    if(this.appService.sharedData.receiving.isEditMode){
+    if(this.appService.sharedData.internalReceiverForm.isEditMode){
       this.isDisableInterim = true;
     }
   }
   ngOnDestroy(): void {
-    this.appService.sharedData.receiving.isEditMode = false
-    this.appService.sharedData.receiving.isViewMode = false;
+    this.appService.sharedData.internalReceiverForm.isEditMode = false
+    this.appService.sharedData.internalReceiverForm.isViewMode = false;
     this.subscription.unsubscribe();
   }
   isVisibleHoldComments = true;
@@ -233,17 +225,13 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       console.error('No appMenus found');
       return;
     }
-    if (this.appService.sharedData.receiving.isEditMode) {
-      // edit mode
+    if (this.appService.sharedData.internalReceiverForm.isEditMode) {
       const appFeatureFields = appMenu.appFeatures?.find(af => af.featureName == "Receiving Edit")?.appFeatureFields
       if (appFeatureFields) {
         this.initInputFields(appFeatureFields);
       }
-    } else if (this.appService.sharedData.receiving.isViewMode) {
-      // view mode
-      // in view mode all the field are disabled
+    } else if (this.appService.sharedData.internalReceiverForm.isViewMode) {
     } else {
-      // add mode
       const appFeatureFields = appMenu.appFeatures?.find(af => af.featureName == "Receiving Add")?.appFeatureFields
       if (appFeatureFields) {
         this.initInputFields(appFeatureFields);
@@ -343,6 +331,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     input.value = input.value.replace(/[^0-9]/g, '');
     this.contactPhone = input.value;
   }
+  receiptDetails :ReceiptDetails[] = [];
   lotDetails: LotDetails[] = [];
   trayDetails: TrayDetails[] = [];
   hardwareDetails: HardwareDetails[] = [];
@@ -522,15 +511,15 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.lotDetails.length; i++) {
       const lot = this.lotDetails[i];
 
-      if (!lot.customerLotNumber) {
+      if (!lot.CustomerLotNumber) {
         this.appService.errorMessage("Please enter Customer LOT#");
         return;
       }
-      if (!lot.lotOwnerID) {
+      if (!lot.LotOwnerID) {
         this.appService.errorMessage("Please select Lot Owner");
         return;
       }
-      if (!lot.expectedQty) {
+      if (!lot.CustomerCount) {
         this.appService.errorMessage("Please enter Expected Qty");
         return;
       }
@@ -540,15 +529,15 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.hardwareDetails.length; i++) {
       const hw = this.hardwareDetails[i];
 
-      if (!hw.hardwareTypeId) {
+      if (!hw.HardwareTypeId) {
         this.appService.errorMessage("Please select Hardware Type");
         return;
       }
-      if (!hw.projectDevice) {
+      if (!hw.DeviceName) {
         this.appService.errorMessage("Please select Project/Device Name");
         return;
       }
-      if(!hw.hardwareId){
+      if(!hw.HardwareId){
         this.appService.errorMessage("Please select Hardware Id")
       }
     }
@@ -558,15 +547,15 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.trayDetails.length; i++) {
       const tray = this.trayDetails[i];
 
-      if (!tray.trayVendorName) {
+      if (!tray.TrayVendorId) {
         this.appService.errorMessage("Please select Tray Vendor");
         return;
       }
-      if (!tray.trayPartId) {
+      if (!tray.TrayPartId) {
         this.appService.errorMessage("Please select Tray Part");
         return;
       }
-      if (!tray.qty) {
+      if (!tray.Qty) {
         this.appService.errorMessage("Please enter Tray Qty");
         return;
       }
@@ -640,60 +629,107 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   }
 
   private init() {
-    
-    if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
-      const dataItem = this.appService.sharedData.receiving.dataItem;
-
-      this.isFTZ = dataItem.isFTZ;
-      this.isInterim = dataItem.isInterim;
-      this.isExpected = dataItem.isExpected;
-
-      this.customerTypeSelected = this.customerTypes.find(c => c.customerTypeID == dataItem.customerTypeID);
-      this.onChangeCustomerType();
-      if (this.customerTypeSelected) {
-        if (this.customerTypeSelected.customerTypeName == 'Customer') {
-          this.customerSelected = this.customers.find((c) => c.CustomerID == dataItem.customerVendorID);
-        } else {
-          this.vendorSelected = this.vendors.find((v) => v.VendorID == dataItem.customerVendorID);
-          // this.behalfOfVendorSelected = this.vendors.find(v => v.VendorID == dataItem.behalfID);
+    const internalReceiverForm = this.appService.sharedData.internalReceiverForm;
+      if(this.appService.sharedData.internalReceiverForm.isEditMode || this.appService.sharedData.internalReceiverForm.isViewMode){
+        this.getReceiverFormInternalList(this.appService.sharedData.internalReceiverForm.dataItem.receiptID);
+        this.isViewMode = internalReceiverForm.isViewMode;
+        if(this.appService.sharedData.internalReceiverForm.isEditMode){
+          this.isDisableInterim = true;
         }
-        this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID == dataItem.behalfID);
       }
-      this.receiptLocationSelected = this.receiptLocation.find(c => c.receivingFacilityID == dataItem.receivingFacilityID);
-
-     
-      this.deliveryModeSelected = this.deliveryMode.find(c => c.deliveryModeID == dataItem.deliveryModeID);
-      this.tracking = dataItem.trackingNumber || ''
-      if (dataItem.courierDetailID) {
-        this.courierSelected = this.couriers.find(c => c.courierDetailID == dataItem.courierDetailID)
-      }
-      if (dataItem.countryFromID) {
-        this.countrySelected = this.countries.find(c => c.countryID == dataItem.countryFromID)
-      }
-      this.expectedDateTime = new Date(dataItem.expectedDateTime);
-      this.PickupDropoffComments = dataItem.mailComments;
-
-      this.addressSelected = this.addresses.find(a => a.addressId == dataItem.addressID)
-
-      this.gridData[0].noOfCartons = dataItem.noOfCartons
-      this.gridData[0].isHold = dataItem.isHold
-      this.gridData[0].holdComments = dataItem.holdComments
-
-      
-      this.email = dataItem.email || '';
-      this.contactPhone = dataItem.contactPhone
-      this.contactPerson = dataItem.contactPerson
-      this.fetchReceiptEmployees()
-      this.fetchData();
-      if (dataItem.isInterim) {
-        this.listInterimLots();
-        this.fetchDataInterim();
-      }
-    } else {
-    }
-    if (this.appService.sharedData.receiving.isViewMode) {
+    if (this.appService.sharedData.internalReceiverForm.isViewMode) {
       this.disabledAllBtns()
     }
+  }
+  getReceiverFormInternalList(receiptId:number)  {
+    this.apiService.getReceiverFormInternalList(receiptId).subscribe({
+      next : (data:any) => {
+        this.num = data;
+        this.receiptDetails = this.num.receipt;
+        this.lotDetails = this.num.devices;
+        this.hardwareDetails = this.num.hardware;
+        this.trayDetails = this.num.trays;
+        this.otherListDetails = this.num.others;
+        this.bindMailRoomDetail();
+      },
+      error: (err) => {
+
+      }
+    })
+  }
+  bindMailRoomDetail(){
+    this.isInterim = this.appService.sharedData.internalReceiverForm.dataItem.isInterim;
+    this.customerTypeSelected = this.customerTypes.find(ct => ct.customerTypeID === this.num.receipt.customerTypeID);
+    
+    if (this.customerTypeSelected?.customerTypeName === 'Customer') {
+      this.customerSelected = this.customers.find(c => c.CustomerID === this.num.receipt.customerVendorID);
+    } else {
+      this.vendorSelected = this.vendors.find(v => v.VendorID === this.num.receipt.customerVendorID);
+    }
+    this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID === this.num.receipt.behalfID);
+    this.receiptLocationSelected = this.receiptLocation.find(loc => loc.receivingFacilityID === this.num.receipt.receivingFacilityID);
+    this.recipientSelected = this.employees.find(e => e.EmployeeID === this.num.receipt.recipientId);
+    this.requestorSelected = this.employees.find(e => e.EmployeeID === this.num.receipt.sendorId);
+    this.notesInformation = this.num.receipt.notes;
+    this.deliveryModeSelected = this.deliveryMode.find(d => d.deliveryModeID === this.num.receipt.deliveryMethodID);
+    this.tracking = this.num.receipt.trackingNumber;
+    this.courierSelected = this.couriers.find(c => c.courierDetailID === this.num.receipt.courierID);
+    this.countrySelected = this.countries.find(c => c.countryID === this.num.receipt.countryFromID);
+    this.contactPhone = this.num.receipt.contactPhone;
+    this.contactPerson = this.num.receipt.contactPerson;
+    this.email = this.num.receipt.email;
+    this.addressSelected = this.addresses.find(a => a.addressId === this.num.receipt.addressID);
+    this.expectedDateTime = this.num.receipt.expectedDateTime;
+    this.PickupDropoffComments = this.num.receipt.receivingInstructions;
+    this.selectedQty = this.num.receipt.noofPackages;
+    if (this.num?.receipt?.packageCategory) {
+      const categoryNames = this.num.receipt.packageCategory.split(',');
+  
+      // Map names to full category objects using your master category list
+      this.selectedCategories = this.category.filter(cat =>
+        categoryNames.includes(cat.categoryName)
+      );
+  
+      this.previousCategoryIds = this.selectedCategories.map(c => c.id);
+  
+      // Trigger the logic to load grids for pre-selected categories
+      this.onPackageCategoryChange(this.selectedCategories);
+    }
+    this.selectedQuotesList = this.quotesList.find(a => a.quote === this.num.receipt.quotes);
+    this.selectedCustometPurchase = this.custometPurchase.find(a => a.purchaseOrderId === this.num.receipt.poId);
+    this.selectedLotCategory = this.lotCategory.find(a => a.serviceCategoryId === this.num.receipt.lotCategoryId);
+    this.lotDetails = (this.num.devices as any[]).map((d: any) => ({
+      ...d,
+      ISELotNumber: d.iseLotNumber,
+      CustomerLotNumber: d.customerLotNumber,
+      CustomerCount: d.customerCount,
+      DeviceTypeID: d.deviceTypeID,
+      DateCode: d.dateCode,
+      COO: d.coo,
+      Expedite: d.expedite,
+      IQA: d.iqa,
+      LotOwnerID: d.lotOwnerID,
+      IsHold: d.isHols
+    }));
+    this.hardwareDetails = (this.num.hardware as any[]).map((d: any) => ({
+      ...d,
+      HardwareTypeId: d.hardwareTypeId,
+      DeviceName: d.deviceName,
+      HardwareId: d.hardwareId,
+      Qty: d.qty,
+    }));
+    this.trayDetails = (this.num.trays as any[]).map((d: any) => ({
+      ...d,
+      TrayVendorId: d.trayVendorId,
+      TrayPartId: d.trayPartId,
+      Qty: d.qty,
+    }));
+    this.otherListDetails = (this.num.others as any[]).map((d: any) => ({
+      ...d,
+      TypeId: d.typeId,
+      Details: d.details,
+      Qty: d.qty,
+    }));
   }
   onChangeAddress() {
     if (this.addressSelected) {
@@ -708,7 +744,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   currentBehalfID: any;
   private fetchDevicesByCustomer() {
     debugger;
-    const dataItem = this.appService.sharedData.receiving.dataItem;
+    const dataItem = this.appService.sharedData.internalReceiverForm.dataItem;
     if (!dataItem.behalfID) {
       // this is for new form
       return;
@@ -726,7 +762,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   }
   private fetchDataInterim() {
     debugger;
-    const dataItem = this.appService.sharedData.receiving.dataItem;
+    const dataItem = this.appService.sharedData.internalReceiverForm.dataItem;
     if (!dataItem.receiptID) {
       // this is for new form
       return;
@@ -744,7 +780,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   }
  
   private fetchDataHardware() {
-    const dataItem = this.appService.sharedData.receiving.dataItem;
+    const dataItem = this.appService.sharedData.internalReceiverForm.dataItem;
     if (!dataItem.receiptID) {
       // this is for new form
       return;
@@ -764,7 +800,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   }
  
   private fetchReceiptEmployees() {
-    const dateItem = this.appService.sharedData.receiving.dataItem;
+    const dateItem = this.appService.sharedData.internalReceiverForm.dataItem;
     this.apiService.getReceiptEmployees(dateItem.receiptID).subscribe({
       next: (value: any) => {
         const ids = value.map((v: any) => v.employeeID)
@@ -790,11 +826,10 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   public gridDataInterim: InterimItem[] = [];
   addRowInterim() {
     debugger;
-    const dataItem = this.appService.sharedData.receiving.dataItem;
+    const dataItem = this.appService.sharedData.internalReceiverForm.dataItem;
     this.gridDataInterim.splice(0, 0, {
       ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID, recordStatus: "I",
-      lotIdentifierSelected: this.lotIdentifiers[0],
-      lotIdentifier: this.lotIdentifiers[0].id,
+     
       rowActionMenu: this.RowActionMenuDeviceAdd.map(o => ({ ...o })),
 
       interimLotSelected: undefined,
@@ -1053,8 +1088,8 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   }
   
   onChangeBehalfOfCusotmer() {
-    if (this.appService.sharedData.receiving.dataItem) {
-      this.appService.sharedData.receiving.dataItem.behalfID = this.behalfOfCusotmerSelected?.CustomerID;
+    if (this.appService.sharedData.internalReceiverForm.dataItem) {
+      this.appService.sharedData.internalReceiverForm.dataItem.behalfID = this.behalfOfCusotmerSelected?.CustomerID;
       this.fetchDevicesByCustomer();
     }
   }
@@ -1081,12 +1116,10 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     this.isFTZ = false;
     this.isInterim = false;
     this.isExpected = false;
-
     this.customerTypeSelected = undefined
     this.customerSelected = undefined
     this.receiptLocationSelected = undefined
     this.behalfOfCusotmerSelected = undefined
-
     this.deliveryModeSelected = undefined
     this.tracking = ''
     this.courierSelected = undefined
@@ -1118,18 +1151,35 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   }
  
   getInvUserByRole(){
-    const dataItem = this.appService.sharedData.receiving.dataItem;
+    const dataItem = this.appService.sharedData.internalReceiverForm.dataItem;
     const filterKey = 'PMReceiver'
     const isActive = 1
     const condition = null;
     this.apiService.getInvUserByRole(filterKey, isActive, condition).subscribe({
       next: (v:any) => {
         this.PMReceivers = v;
-        if(this.appService.sharedData.receiving.isEditMode || this.appService.sharedData.receiving.isViewMode)
+        if(this.appService.sharedData.internalReceiverForm.isEditMode || this.appService.sharedData.internalReceiverForm.isViewMode)
           this.PMReceiverSelected = this.PMReceivers.find(e => e.employeeID == dataItem.pmReceiverID)
       }
     });
   }
+  
+  clearLotRow(): void {
+    this.lotDetails = []; 
+  }
+  
+  clearHardwareRows(): void {
+    this.hardwareDetails = [];
+  }
+  
+  clearTrayRows(): void {
+    this.trayDetails = []; 
+  }
+  
+  clearOtherRows(): void {
+    this.otherListDetails = [];
+  }
+  
   getGeneratedLotNumber(): void {
     this.apiService.generateLineItem().subscribe({
       next: (res) => {
@@ -1156,21 +1206,23 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   for (const category of newlyAddedCategories) {
     switch (category) {
       case 'Lot':
+        this.clearLotRow();
         this.getGeneratedLotNumber();
         break;
       case 'Hardware':
+        this.clearHardwareRows();
         this.addHardwareRow();
         break;
       case 'Tray':
+        this.clearTrayRows();
         this.addTrayRow();
         break;
       case 'Others':
+        this.clearOtherRows();
         this.addOtherRow();
         break;
     }
   }
-
-  // Update previous selection (keep using IDs for simplicity)
   this.previousCategoryIds = selectedCategories.map(c => c.id);
 }
 
@@ -1179,15 +1231,15 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     const newLotRow =
       {
         ISELotNumber: generatedLotNumber || '',
-        customerLotNumber: '',
-        expectedQty: null,
-        deviceTypeID: null,
-        dateCode: '',
-        cooId: null,
-        expedite: false,
-        iqaOptional: false,
-        lotOwnerID: null,
-        isHold: false
+        CustomerLotNumber : '',
+        CustomerCount : null,
+        DeviceTypeID : null,
+        DateCode : '',
+        COO : null,
+        Expedite : false,
+        IQA : false,
+        LotOwnerID : null,
+        IsHold: false
       }
     this.lotDetails = [...this.lotDetails,newLotRow]
   }
@@ -1195,10 +1247,11 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   addHardwareRow() {
     const newHardwareRow =
       {
-        hardwareTypeId: null,
-        projectDevice: '',
-        hardwareId: null,
-        qty: null
+        Id : null,
+        HardwareTypeId: null,
+        DeviceName: '',
+        HardwareId: null,
+        Qty: null
       }
       this.hardwareDetails = [...this.hardwareDetails,newHardwareRow]
   }
@@ -1206,9 +1259,10 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   addTrayRow() {
     const newTrayRow =
     {
-      trayVendorName: null,
-      trayPartId: null,
-      qty: null
+      Id: null,
+      TrayVendorId: null,
+      TrayPartId: null,
+      Qty: null
     }
     this.trayDetails = [...this.trayDetails,newTrayRow]
   }
@@ -1216,9 +1270,10 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   addOtherRow() {
     const newOtherListDetails =
       {
-        type: null,
-        details: '',
-        qty: null
+        Id: null,
+        TypeId: null,
+        Details: '',
+        Qty: null
       }
     this.otherListDetails = [...this.otherListDetails,newOtherListDetails]
   }

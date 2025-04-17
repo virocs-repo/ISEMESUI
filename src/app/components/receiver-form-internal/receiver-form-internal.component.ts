@@ -36,7 +36,7 @@ export class ReceiverFormInternalComponent implements OnDestroy {
   customer: Customer[] = this.appService.masterData.entityMap.Customer;
   deviceFamily: DeviceFamily[] = this.appService.masterData.deviceFamily;
   location: ReceiptLocation[] = this.appService.masterData.receiptLocation;
-  status: ReceiptStatus[] = this.appService.masterData.receiptStatus;
+  status: ReceiptStatus[] = [];
   serviceCategory: ServiceCategory[] = this.appService.masterData.serviceCategory;
   selectedDeviceFamily : DeviceFamily | undefined;
   selectedCustomer: Customer | undefined;
@@ -77,6 +77,12 @@ export class ReceiverFormInternalComponent implements OnDestroy {
   openDialog() {
     this.isDialogOpen = true;
   }
+  openAddDialog(){
+    this.appService.sharedData.internalReceiverForm.dataItem = null;
+    this.appService.sharedData.internalReceiverForm.isEditMode = false;
+    this.appService.sharedData.internalReceiverForm.isViewMode = false;
+    this.isDialogOpen = true;
+  }
   closeDialog() {
     this.isDialogOpen = false;
     this.fetchdata(); 
@@ -87,22 +93,18 @@ export class ReceiverFormInternalComponent implements OnDestroy {
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
-   
-      // Use a timeout or observable depending on how your data loads
       setTimeout(() => {
-        this.selectedStatuses = this.appService.masterData.receiptStatus.find(
+        this.status = this.appService.masterData.receiptStatus;
+        const pendingStatus = this.status.find(
           status => status.itemText === 'Pending Receive'
         );
-        this.appService.masterData.receiptStatus.forEach(e =>{
-          if(e.itemText === 'Pending Receive')
-          {
-            this.selectedStatus.push(e);
-          }
-        })
+        if (pendingStatus) {
+          this.selectedStatus = [pendingStatus]; // replace instead of push to avoid duplicates
+        }
         this.search();
       }, 500);
     this.search();
-    this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
+    this.subscription.add(this.appService.sharedData.internalReceiverForm.eventEmitter.subscribe((v) => {
       switch (v) {
         case 'closeDialog':
           this.closeDialog();
@@ -192,9 +194,9 @@ export class ReceiverFormInternalComponent implements OnDestroy {
   }
   private testReceiptEdit() {
     setTimeout(() => {
-      this.appService.sharedData.receiving.dataItem = this.gridDataResult.data[0]
-      this.appService.sharedData.receiving.isEditMode = true;
-      this.appService.sharedData.receiving.isViewMode = false;
+      this.appService.sharedData.internalReceiverForm.dataItem = this.gridDataResult.data[0]
+      this.appService.sharedData.internalReceiverForm.isEditMode = true;
+      this.appService.sharedData.internalReceiverForm.isViewMode = false;
       this.openDialog()
     }, 3000);
   }
@@ -247,15 +249,15 @@ export class ReceiverFormInternalComponent implements OnDestroy {
         })
         break;
       case 'View Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = false;
-        this.appService.sharedData.receiving.isViewMode = true;
+        this.appService.sharedData.internalReceiverForm.dataItem = dataItem
+        this.appService.sharedData.internalReceiverForm.isEditMode = false;
+        this.appService.sharedData.internalReceiverForm.isViewMode = true;
         this.openDialog()
         break;
       case 'Edit Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = true;
-        this.appService.sharedData.receiving.isViewMode = false;
+        this.appService.sharedData.internalReceiverForm.dataItem = dataItem
+        this.appService.sharedData.internalReceiverForm.isEditMode = true;
+        this.appService.sharedData.internalReceiverForm.isViewMode = false;
         this.openDialog()
         break;
 
@@ -275,7 +277,7 @@ export class ReceiverFormInternalComponent implements OnDestroy {
     }, 300);
   }
   canCloseDialog() {
-    this.appService.sharedData.receiving.eventEmitter.emit('canCloseDialog?')
+    this.appService.sharedData.internalReceiverForm.eventEmitter.emit('canCloseDialog?')
   }
   private isSearchClicked = false; 
   search() {
