@@ -6,7 +6,7 @@
     rounded="full" (input)="onSearchMaster()" />
   </kendo-label>
   <kendo-label text="Receiving Status" class="k-font-size-sm">
-    <kendo-multiselect [data]="status" [(ngModel)]="selectedStatus" [tagMapper]="tagDisplayLimits" textField="itemText"
+    <kendo-multiselect [data]="status" [(ngModel)]="selectedStatus" textField="itemText"
       valueField="masterListItemId" class="k-w-full" [filterable]="true" placeholder="Select Status">
       <ng-template kendoMultiSelectItemTemplate let-dataItem>
         <input type="checkbox" 

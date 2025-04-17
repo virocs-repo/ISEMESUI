@@ -36,7 +36,7 @@ export class ReceiverFormInternalComponent implements OnDestroy {
   customer: Customer[] = this.appService.masterData.entityMap.Customer;
   deviceFamily: DeviceFamily[] = this.appService.masterData.deviceFamily;
   location: ReceiptLocation[] = this.appService.masterData.receiptLocation;
-  status: ReceiptStatus[] = this.appService.masterData.receiptStatus;
+  status: ReceiptStatus[] = [];
   serviceCategory: ServiceCategory[] = this.appService.masterData.serviceCategory;
   selectedDeviceFamily : DeviceFamily | undefined;
   selectedCustomer: Customer | undefined;
@@ -93,18 +93,14 @@ export class ReceiverFormInternalComponent implements OnDestroy {
   constructor(public appService: AppService, private apiService: ApiService) { }
 
   ngOnInit(): void {
-   
-      // Use a timeout or observable depending on how your data loads
       setTimeout(() => {
-        this.selectedStatuses = this.appService.masterData.receiptStatus.find(
+        this.status = this.appService.masterData.receiptStatus;
+        const pendingStatus = this.status.find(
           status => status.itemText === 'Pending Receive'
         );
-        this.appService.masterData.receiptStatus.forEach(e =>{
-          if(e.itemText === 'Pending Receive')
-          {
-            this.selectedStatus.push(e);
-          }
-        })
+        if (pendingStatus) {
+          this.selectedStatus = [pendingStatus]; // replace instead of push to avoid duplicates
+        }
         this.search();
       }, 500);
     this.search();
