@@ -98,17 +98,16 @@
   class="dialog-round receipt-dialog">
   <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
     <h3 class="k-m-0" style="color: maroon;">Mail Info</h3>
-    <small *ngIf="appService.sharedData.receiving.isViewMode">(View Mode)</small>
-    <small *ngIf="appService.sharedData.receiving.isEditMode">(Edit Mode)</small>
-    <small *ngIf="appService.sharedData.receiving.dataItem?.receiptID">Receipt ID:
-      {{appService.sharedData.receiving.dataItem.receiptID}}</small>
-      
+    <!-- <small *ngIf="appService.sharedData.mailRoom.isViewMode">(View Mode)</small>
+    <small *ngIf="appService.sharedData.mailRoom.isEditMode">(Edit Mode)</small>
+    <small *ngIf="appService.sharedData.mailRoom.dataItem?.mailId">Mail ID:
+      {{appService.sharedData.mailRoom.dataItem.mailId}}</small>
+       -->
     <i class="k-ml-auto"></i>
     <button kendoButton type="button" rounded="full" [svgIcon]="ICON.xIcon" size="small"
       (click)="canCloseDialog()"></button>
   </div>
   <div class="dialog-body k-overflow-y-auto">
-    <!-- <app-receipt (onClose)="closeDialog()" (onRestart)="onClearForm()"></app-receipt> -->
      <app-add-mail-info (onClose)="closeDialog()" (onRestart)="onClearForm()"></app-add-mail-info> 
   </div>
 </kendo-dialog>

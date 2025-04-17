@@ -32,7 +32,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
    packageCategoryList: PackageCategory[]= this.appService.masterData.PackageCategory;
   gridData: GridDataResult = { 
     data: [
-      { typeId: null, details: '', qty: '' }  
+      { otherId: null,typeId: null, details: '', qty: '' }  
     ], 
     total: 1 
   };
@@ -368,11 +368,6 @@ onPackageCategoryChange(selectedCategories: any[] = []) {
     this.pdfExportComponent.saveAs();
   }
   submitForm(): void {
-    var mailId = 0;
-    if(this.appService.sharedData.mailRoom.dataItem.mailId) {
-      mailId = this.appService.sharedData.mailRoom.dataItem.mailId;
-    }
-
     if (!this.awbMailCode?.trim()) {
       this.appService.errorMessage('Please enter AWB / ISE Mailroom Barcode');
       return;
@@ -528,7 +523,7 @@ onPackageCategoryChange(selectedCategories: any[] = []) {
     const otherDetailsArray = this.gridData.data
     .filter(item => item && item.typeId && item.details?.trim() && item.qty != null && item.qty !== '')
     .map(item => ({
-      OtherId: null,
+      OtherId: item.otherId ?? null,
       TypeId: item.typeId, 
       Details: item.details.trim(),
       Qty: item.qty
@@ -584,6 +579,7 @@ onPackageCategoryChange(selectedCategories: any[] = []) {
 
     const mailJson = JSON.stringify(payload)
     const loginId = this.appService.loginId;
+    const mailId = this.mailId ?? 0;
     this.apiService.saveMailRoomInfo(packageLabelFiles, shipmentPaperFiles, mailJson, mailId, loginId, deletedAttachmentsJson).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
@@ -661,7 +657,7 @@ onPackageCategoryChange(selectedCategories: any[] = []) {
   }
 
   bindMailRoomDetail(){
-    this.mailId = this.appService.sharedData.mailRoom.dataItem.mailId;
+    this.mailId = this.mailRoomDetails.mailId;
     this.awbMailCode = this.mailRoomDetails.awbMailCode;
     this.scanLocation = this.mailRoomDetails.scanLocation;
 
@@ -671,6 +667,7 @@ onPackageCategoryChange(selectedCategories: any[] = []) {
     if (this.customerTypeSelected?.customerTypeName === 'Customer') {
       this.customerSelected = this.customers.find(c => c.CustomerID === this.mailRoomDetails.customerVendorId);
       this.getISEPOList(this.customerSelected?.CustomerID,null,null);
+      this.isDisabledBehalfOfCusotmer = true
     } else {
       this.vendorSelected = this.vendors.find(v => v.VendorID === this.mailRoomDetails.customerVendorId);
     }
