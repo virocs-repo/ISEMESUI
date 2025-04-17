@@ -5,8 +5,10 @@ import { PDFExportComponent } from '@progress/kendo-angular-pdf-export';
 import { map, Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, Employee, HardwareItem, ICON, INIT_DEVICE_ITEM, InterimLot, InterimItem,
-   MESSAGES, PostHardware, ReceiptLocation, Vendor,DeviceFamily,Coo,LotOwners,TrayPart,TrayVendor, INIT_RECEIPT, Others,Hardware, Quotes, PurchaseOrder, Category,ReceiptJson,
-   PackageCategory,ReceiptRequest} from 'src/app/services/app.interface';
+   MESSAGES, PostHardware, ReceiptLocation, Vendor,DeviceFamily,Coo,LotOwners,TrayPart,TrayVendor, Others,Hardware, Quotes, PurchaseOrder, Category,ReceiptDetails,
+   PackageCategory,LotDetails,TrayDetails,HardwareDetails,OtherDetails,
+   ReceiptJson,
+   INIT_RECEIPT} from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { environment } from 'src/environments/environment'
 
@@ -169,6 +171,9 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     otherDetails: null,
     otherQty: null}];
     selectedCategories: { id: number; categoryName: string }[] = [];
+  expedite: boolean = true;
+  isHold : boolean = true;
+  iqaOptional : boolean = true;
     isCategorySelected(categories: string): boolean {
     return this.selectedCategories.some(category => category.categoryName === categories);
   }
@@ -207,7 +212,6 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       }
     }))
     this.initRoleBasedUI()
-    debugger;
     if(this.appService.sharedData.receiving.isEditMode){
       this.isDisableInterim = true;
     }
@@ -339,12 +343,13 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     input.value = input.value.replace(/[^0-9]/g, '');
     this.contactPhone = input.value;
   }
-  
+  lotDetails: LotDetails[] = [];
+  trayDetails: TrayDetails[] = [];
+  hardwareDetails: HardwareDetails[] = [];
+  otherListDetails: OtherDetails[] = [];
   onSubmit() {
-    const ticket: ReceiptJson = {
-      ...INIT_RECEIPT,
-      ReceiptDetails: {
-        IsInterim: this.isInterim,
+    const receiptDetails : ReceiptDetails = {
+      IsInterim: this.isInterim,
         CustomerTypeID: this.customerTypeSelected?.customerTypeID ?? null,
         CustomerVendorName: this.customerSelected?.CustomerName ?? null,
         BehalfID: this.behalfOfCusotmerSelected?.CustomerID ?? null,
@@ -367,39 +372,18 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
         Quotes: this.selectedQuotesList?.quote ?? null,
         PONumber: this.selectedCustometPurchase?.customerPoNumber ?? null,
         LotCategoryId: this.selectedLotCategory?.serviceCategoryId ?? null,
-      },
-      LotDetails: {
-        DeviceId: this.selectedDeviceFamily?.deviceFamilyId ?? null,
-        ISELotNumber: this.iseLot ?? null,
-        CustomerLotNumber: this.customerLot ?? null,
-        CustomerCount: this.expectedQty ?? null,
-        DeviceTypeID: this.selectedDeviceFamily?.deviceFamilyId ?? null,
-        DateCode: this.dateCode ?? null,
-        COO: this.selectedCoo?.serviceCategoryId ?? null,
-        Expedite: 1,
-        IQA: 1,
-        LotOwnerID: this.selectedLotOwner?.employeeID ?? null,
-        LotCategoryId: this.selectedLotCategory?.serviceCategoryId ?? null
-      },
-      HardwareDetails: {
-        Id: this.hardwareId ?? null,
-        HardwareTypeId: this.selectedHardwareList?.Id ?? null,
-        ProjectDevice: this.projectDevice ?? null,
-        HardwareId: this.selectedHardwareList?.CategoryName ?? null
-      },
-      TrayDetails: {
-        Id: null,
-        TrayVendorName: this.selectedTrayVendor?.vendorName ?? null,
-        TrayPartId: this.selectedTrayPart?.trayPartId ?? null,
-        Qty: this.trayQty ?? null
-      },
-      OtherDetails: {
-        Id: null,
-        Type: this.selectedOtherList?.categoryName ?? null,
-        Details: this.otherDetails ?? null,
-        Qty: this.otherQty ?? null
-      }
-    };
+    } as ReceiptDetails;
+    const lotDetailss = this.lotDetails;
+    const hardwareDetailss = this.hardwareDetails;
+    const trayDetailss = this.trayDetails;
+    const otherDetailss = this.otherListDetails;
+    const ticket : ReceiptJson = {
+      ReceiptDetails:receiptDetails,
+      LotDetails:lotDetailss[0],
+      HardwareDetails:hardwareDetailss[0],
+      TrayDetails: trayDetailss[0],
+      OtherDetails: otherDetailss[0]
+    }
     console.log(this.otherData);
     if (!this.customerTypeSelected) {
       this.appService.errorMessage('Please select customer/vendor');
@@ -530,15 +514,19 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       this.appService.errorMessage('Please select Package Category');
       return;
     }
+    if (!this.selectedLotCategory) {
+      this.appService.errorMessage('Please select Lot Category');
+      return;
+    }
     if (this.isCategorySelected("Lot")) {
-    for (let i = 0; i < this.lotData.length; i++) {
-      const lot = this.lotData[i];
+    for (let i = 0; i < this.lotDetails.length; i++) {
+      const lot = this.lotDetails[i];
 
-      if (!lot.customerLot) {
+      if (!lot.customerLotNumber) {
         this.appService.errorMessage("Please enter Customer LOT#");
         return;
       }
-      if (!lot.selectedLotOwner) {
+      if (!lot.lotOwnerID) {
         this.appService.errorMessage("Please select Lot Owner");
         return;
       }
@@ -548,35 +536,38 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       }
     }
   }
-    if (this.isCategorySelected("Tray")) {
-    
-    for (let i = 0; i < this.trayData.length; i++) {
-      const tray = this.trayData[i];
-
-      if (!this.selectedTrayVendor?.vendorName) {
-        this.appService.errorMessage("Please select Tray Vendor");
-        return;
-      }
-      if (!tray.selectedTrayPart) {
-        this.appService.errorMessage("Please select Tray Part");
-        return;
-      }
-      if (!tray.trayQty) {
-        this.appService.errorMessage("Please enter Tray Qty");
-        return;
-      }
-    }
-  }
   if (this.isCategorySelected("Hardware")) {
-    for (let i = 0; i < this.hardwareData.length; i++) {
-      const hw = this.hardwareData[i];
+    for (let i = 0; i < this.hardwareDetails.length; i++) {
+      const hw = this.hardwareDetails[i];
 
-      if (!hw.selectedHardwareList) {
+      if (!hw.hardwareTypeId) {
         this.appService.errorMessage("Please select Hardware Type");
         return;
       }
       if (!hw.projectDevice) {
         this.appService.errorMessage("Please select Project/Device Name");
+        return;
+      }
+      if(!hw.hardwareId){
+        this.appService.errorMessage("Please select Hardware Id")
+      }
+    }
+  }
+    if (this.isCategorySelected("Tray")) {
+    
+    for (let i = 0; i < this.trayDetails.length; i++) {
+      const tray = this.trayDetails[i];
+
+      if (!tray.trayVendorName) {
+        this.appService.errorMessage("Please select Tray Vendor");
+        return;
+      }
+      if (!tray.trayPartId) {
+        this.appService.errorMessage("Please select Tray Part");
+        return;
+      }
+      if (!tray.qty) {
+        this.appService.errorMessage("Please enter Tray Qty");
         return;
       }
     }
@@ -610,9 +601,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     if(deletedAttachments.length > 0)
       deletedAttachmentsJson = JSON.stringify(deletedAttachments)
 
-    const payload: ReceiptRequest = {
-      ReceiptJson: ticket
-    };
+    const payload: ReceiptJson= ticket;
     
     const receiverJson = JSON.stringify(payload)
 
@@ -1026,6 +1015,9 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   }
   isDisabledBehalfOfCusotmer = false
   onChangeCustomerType() {
+    this.customerSelected = undefined;
+  this.vendorSelected = undefined;
+  this.behalfOfCusotmerSelected = undefined;
     if (this.customerTypeSelected?.customerTypeName == 'Customer') {
       this.isDisabledBehalfOfCusotmer = true
     } else {
@@ -1034,6 +1026,8 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     
   }
   onChangeCustomerName() {
+    this.behalfOfCusotmerSelected = undefined;
+    this.isDisabledBehalfOfCusotmer = false;
     if (this.customerTypeSelected?.customerTypeName === 'Customer') {
       this.isDisabledBehalfOfCusotmer = true;
       this.behalfOfCusotmerSelected = this.customerSelected;
@@ -1046,6 +1040,16 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     }
   
     this.onChangeBehalfOfCusotmer();
+  }
+
+  onChangeVendorName() {
+    if (this.customerTypeSelected?.customerTypeName === 'Vendor') {  
+      const vendorId = this.vendorSelected?.VendorID;
+      if (vendorId) {
+        this.getISEPOList(vendorId, true);  
+        this.getDeviceFamilies(vendorId)
+      }
+    }  
   }
   
   onChangeBehalfOfCusotmer() {
@@ -1120,7 +1124,6 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     const condition = null;
     this.apiService.getInvUserByRole(filterKey, isActive, condition).subscribe({
       next: (v:any) => {
-        debugger;
         this.PMReceivers = v;
         if(this.appService.sharedData.receiving.isEditMode || this.appService.sharedData.receiving.isViewMode)
           this.PMReceiverSelected = this.PMReceivers.find(e => e.employeeID == dataItem.pmReceiverID)
@@ -1128,7 +1131,6 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     });
   }
   getGeneratedLotNumber(): void {
-    this.lotData = [];
     this.apiService.generateLineItem().subscribe({
       next: (res) => {
         // handle the response
@@ -1141,72 +1143,84 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   }
   previousCategoryIds: number[] = [];
 
-onPackageCategoryChange(selectedCategories: { id: number; categoryName: string }[]): void {
-  const selectedIds = selectedCategories.map(c => c.id);
-  // Check if 'Lot' (id: 1) is newly added
-  const isLotNewlySelected = selectedIds.includes(35) && !this.previousCategoryIds.includes(35);
+  onPackageCategoryChange(selectedCategories: { id: number; categoryName: string }[]): void {
+  const selectedNames = selectedCategories.map(c => c.categoryName);
+  const previousNames = this.previousCategoryIds.map(id => {
+    const previousCategory = this.category.find(c => c.id === id); // you need this array
+    return previousCategory?.categoryName;
+  }).filter(name => !!name); // remove undefined
 
-  if (isLotNewlySelected) {
-    this.getGeneratedLotNumber();
+  // Check for newly added categories
+  const newlyAddedCategories = selectedNames.filter(name => !previousNames.includes(name));
+
+  for (const category of newlyAddedCategories) {
+    switch (category) {
+      case 'Lot':
+        this.getGeneratedLotNumber();
+        break;
+      case 'Hardware':
+        this.addHardwareRow();
+        break;
+      case 'Tray':
+        this.addTrayRow();
+        break;
+      case 'Others':
+        this.addOtherRow();
+        break;
+    }
   }
 
-  // Update the previous selection
-  this.previousCategoryIds = [...selectedIds];
+  // Update previous selection (keep using IDs for simplicity)
+  this.previousCategoryIds = selectedCategories.map(c => c.id);
 }
 
-  
-  lotData: any[] = [];
   addLotRow(generatedLotNumber?: string) {
     
-    this.lotData = [
-      ...this.lotData,
+    const newLotRow =
       {
-        iseLot: generatedLotNumber || '',
-        customerLot: '',
+        ISELotNumber: generatedLotNumber || '',
+        customerLotNumber: '',
         expectedQty: null,
-        selectedDeviceFamily: null,
+        deviceTypeID: null,
         dateCode: '',
-        selectedCoo: null,
+        cooId: null,
         expedite: false,
         iqaOptional: false,
-        selectedLotOwner: null,
+        lotOwnerID: null,
         isHold: false
       }
-    ];
-  }
-  
-  addTrayRow() {
-    this.trayData = [
-      ...this.trayData,
-      {
-        selectedTrayVendor: null,
-        selectedTrayPart: '',
-        trayQty: null
-      }
-    ];
+    this.lotDetails = [...this.lotDetails,newLotRow]
   }
   
   addHardwareRow() {
-    this.hardwareData = [
-      ...this.hardwareData,
+    const newHardwareRow =
       {
-        selectedHardwareList: null,
+        hardwareTypeId: null,
         projectDevice: '',
-        hardwareId: '',
-        hardwareQty: null
+        hardwareId: null,
+        qty: null
       }
-    ];
+      this.hardwareDetails = [...this.hardwareDetails,newHardwareRow]
+  }
+  
+  addTrayRow() {
+    const newTrayRow =
+    {
+      trayVendorName: null,
+      trayPartId: null,
+      qty: null
+    }
+    this.trayDetails = [...this.trayDetails,newTrayRow]
   }
   
   addOtherRow() {
-    this.otherData = [
-      ...this.otherData,
+    const newOtherListDetails =
       {
-        selectedOtherList: null,
-        otherDetails: null,
-        otherQty: null
+        type: null,
+        details: '',
+        qty: null
       }
-    ];
+    this.otherListDetails = [...this.otherListDetails,newOtherListDetails]
   }
   
   onSelectReceiverAttachment(event: any): void {
