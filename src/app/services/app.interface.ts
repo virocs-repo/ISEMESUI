@@ -1121,10 +1121,10 @@ export interface MailRoomDetails {
 // }
 export interface ReceiptJson {
     ReceiptDetails: ReceiptDetails;
-  LotDetails: LotDetails;
-  HardwareDetails: HardwareDetails;
-  TrayDetails: TrayDetails;
-  OtherDetails: OtherDetails;
+  LotDetails: LotDetails[];
+  HardwareDetails: HardwareDetails[];
+  TrayDetails: TrayDetails[];
+  OtherDetails: OtherDetails[];
 }
 
 export interface ReceiptRequest {
@@ -1191,67 +1191,6 @@ export interface OtherDetails {
   Details: string | null;
   Qty: number | null;
 }
-
-
-export const INIT_RECEIPT: ReceiptJson = {
-  
-    ReceiptDetails: {
-      IsInterim: false,
-      CustomerTypeID: null,
-      CustomerVendorName: null,
-      BehalfID: null,
-      RecipientId: null,
-      SendorId: null,
-      ReceivingFacilityID: null,
-      DeliveryMethodID: null,
-      ContactPerson: '',
-      Email: '',
-      CourierID: null,
-      CountryFromID: null,
-      TrackingNumber: '',
-      ExpectedDateTime: '',
-      AddressID: null,
-      ContactPhone: '',
-      ReceivingInstructions: '',
-      Notes: '',
-      NoofPackages: 0,
-      PackageCategory: '',
-      Quotes: '',
-      PONumber: null,
-      LotCategoryId: null,
-      },
-      LotDetails: {
-        ISELotNumber: '',
-        CustomerLotNumber : '',
-        CustomerCount : null,
-        DeviceTypeID : null,
-        DateCode : '',
-        COO : null,
-        Expedite: null,
-        IQA: null,
-        LotOwnerID: null,
-        IsHold: null
-      },
-      HardwareDetails: {
-        Id: null,
-        HardwareTypeId: null,
-        DeviceName: '',
-        HardwareId: '',
-        Qty:null
-      },
-      TrayDetails: {
-        Id: null,
-        TrayVendorId: null,
-        TrayPartId: null,
-        Qty: null
-      },
-      OtherDetails: {
-        Id: null,
-        TypeId: null,
-        Details: '',
-        Qty: null
-      }
-};
 
 export interface MailAttachment {
   attachmentId: number,
