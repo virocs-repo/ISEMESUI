@@ -863,16 +863,6 @@ getShippingAddressData(
   
     return this.httpClient.get<any[]>(url);
   }
-  // saveMailRoomInfo(payload: MailInfoRequest, loginId: number) {
-  //   const body = {
-  //     MailId:null,
-  //     LoginId: loginId,
-  //     MailJson: JSON.stringify(payload)
-  //   };
-  //   return this.httpClient.post(`${API}v1/ise/inventory/savemailroominfo`, body);
-
-  // }
-
   saveMailRoomInfo(packageLabelFiles: File[], shipmentPaperFiles: File[], mailJson: string, mailRoomId:number, loginId: number, deletedAttachmentsJson:string) {
     const formData = new FormData();
     for (let i = 0; i < packageLabelFiles.length; i++) {
@@ -911,5 +901,22 @@ getShippingAddressData(
     const url = `${API}v1/ise/inventory/GetMailRoomDetails?mailId=${mailId}`;
     return this.httpClient.get(url);
   }
-
+  getReceivingSearchData(receivingTypes?: string | null, fromDate?: Date | null, toDate?: Date | null, statusIds?: string | null) {
+    let params = new HttpParams();
+  
+    if (receivingTypes) {
+      params = params.set('receivingTypes', receivingTypes);
+    }
+    if (fromDate) {
+      params = params.set('fromDate', this.formatDate(fromDate));
+    }
+    if (toDate) {
+      params = params.set('toDate', this.formatDate(toDate));
+    }
+    if (statusIds) {
+      params = params.set('statusIds', statusIds);
+    }
+  
+    return this.httpClient.get(`${API}v1/ise/inventory/GetReceivingSearchData`, { params });
+  } 
 }                                                     
