@@ -643,7 +643,7 @@ if (formData && formData.receiptID) {
     this.receiverAttachements.filter(a => a.active == false).forEach((attach:any) => {
       var attachment: any = {
         attachmentId: attach.attachmentId,
-        section: attach.Section,
+        section: attach.section,
         path: attach.path,
         active: attach.active
       }
@@ -713,6 +713,8 @@ if (formData && formData.receiptID) {
         this.hardwareDetails = this.num.hardware;
         this.trayDetails = this.num.trays;
         this.otherListDetails = this.num.others;
+        this.receiverAttachements = this.num.receiptAttachments;
+        this.filteredReceiverAttachements = this.num.receiptAttachments;
         this.bindRecivingDetail();
       },
       error: (err) => {
