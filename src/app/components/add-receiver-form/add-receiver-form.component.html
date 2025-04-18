@@ -115,7 +115,6 @@
                 <b class="required-label"></b>
                 <kendo-datetimepicker [format]="format" [(value)]="expectedDateTime"></kendo-datetimepicker>
               </kendo-label>
-
               <kendo-label
                 *ngIf="deliveryModeSelected?.deliveryModeName=='Customer Drop-Off' || deliveryModeSelected?.deliveryModeName=='Pickup'"
                 text="Contact Name" class="k-w-full">
@@ -333,18 +332,18 @@
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="DeviceName" title="Project/Device Name">
-                <ng-template kendoGridCellTemplate let-dataItem>
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <kendo-textbox [(ngModel)]="dataItem.DeviceName" placeholder="Enter Project/Device Name" ></kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="HardwareId" title="Hardware ID">
-                <ng-template kendoGridCellTemplate let-dataItem>
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <kendo-textbox [(ngModel)]="dataItem.HardwareId" placeholder="Enter Hardware Id" ></kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="Qty" title="Qty">
-                <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-numerictextbox [(ngModel)]="dataItem.Qty" placeholder="Enter Qty" ></kendo-numerictextbox>
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                  <kendo-numerictextbox [(ngModel)]="dataItem.Qty" [format]="'n0'" placeholder="Enter Qty" [class.ng-touched]="dataItem.error"></kendo-numerictextbox>
                 </ng-template>
               </kendo-grid-column>
             </kendo-grid>
@@ -360,18 +359,18 @@
             <kendo-grid [kendoGridBinding]="trayDetails" [selectable]="selectableSettings" [sortable]="true"
             [resizable]="true" class="bold-column-header wrap-header-grid">
               <kendo-grid-column field="TrayVendorId" title="Tray Vendor">
-                <ng-template kendoGridCellTemplate let-dataItem>
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <kendo-combobox [data]="trayVendor" [(ngModel)]="dataItem.TrayVendorId" [allowCustom]="true" textField="vendorName"valueField="trayVendorId" [valuePrimitive]="true" class="combobox" [filterable]="true" [kendoDropDownFilter]="filterSettings" placeholder="Select Tray Vendor"></kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="TrayPartId" title="Tray Part#">
-                <ng-template kendoGridCellTemplate let-dataItem>
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <kendo-combobox [data]="trayPart" [(ngModel)]="dataItem.TrayPartId" textField="trayNumber"valueField="trayPartId" [valuePrimitive]="true" class="combobox" placeholder="Select Tray Part"></kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="Qty" title="Qty">
-                <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-numerictextbox [(ngModel)]="dataItem.Qty" placeholder="Enter Tray Qty" ></kendo-numerictextbox>
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                  <kendo-numerictextbox [(ngModel)]="dataItem.Qty" [format]="'n0'" placeholder="Enter Tray Qty" [class.ng-touched]="dataItem.error"></kendo-numerictextbox>
                 </ng-template>
               </kendo-grid-column>
             </kendo-grid>
@@ -387,18 +386,18 @@
             <kendo-grid [kendoGridBinding]="otherListDetails" [selectable]="selectableSettings" [sortable]="true"
             [resizable]="true" class="bold-column-header wrap-header-grid">
               <kendo-grid-column field="TypeId" title="Type">
-                <ng-template kendoGridCellTemplate let-dataItem>
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <kendo-combobox [data]="otherList" [(ngModel)]="dataItem.TypeId" textField="categoryName"valueField="id" [valuePrimitive]="true" placeholder="Select Other"></kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="Details" title="Details">
-                <ng-template kendoGridCellTemplate let-dataItem>
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <kendo-textbox [(ngModel)]="dataItem.Details"placeholder="Enter Details" ></kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="Qty" title="Qty">
-                <ng-template kendoGridCellTemplate let-dataItem>
-                  <kendo-numerictextbox [(ngModel)]="dataItem.Qty" placeholder="Enter Qty" ></kendo-numerictextbox>
+                <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+                  <kendo-numerictextbox [(ngModel)]="dataItem.Qty" [format]="'n0'" placeholder="Enter Qty" [class.ng-touched]="dataItem.error"></kendo-numerictextbox>
                 </ng-template>
               </kendo-grid-column>
             </kendo-grid>

@@ -54,8 +54,8 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   courierSelected: CourierDetails | undefined
   readonly countries = this.appService.masterData.country
   countrySelected: Country | undefined;
-  expectedDateTime: Date | null = null;
-  contactPerson = this.appService.userName;
+  expectedDateTime: Date = new Date();
+  format = "MM/dd/yyyy HH:mm";  contactPerson = this.appService.userName;
   email: string | null = '';
   readonly addresses: Address[] = this.appService.masterData.addresses;
   addressSelected: Address | undefined;
@@ -93,7 +93,6 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   selectedOtherList : Others | undefined;
   otherDetails: string='';
   requestID : number = 0;
-  format = "MM/dd/yyyy HH:mm";
   isViewMode: boolean = false;   
   isHoldCheckboxEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
     featureField?.find(o => o.featureFieldName == 'HoldCheckbox')?.active ?? true;
@@ -368,10 +367,10 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     const otherDetailss = this.otherListDetails;
     const ticket : ReceiptJson = {
       ReceiptDetails:receiptDetails,
-      LotDetails:lotDetailss[0],
-      HardwareDetails:hardwareDetailss[0],
-      TrayDetails: trayDetailss[0],
-      OtherDetails: otherDetailss[0]
+      LotDetails:lotDetailss,
+      HardwareDetails:hardwareDetailss,
+      TrayDetails: trayDetailss,
+      OtherDetails: otherDetailss
     }
     console.log(this.otherData);
     if (!this.customerTypeSelected) {
@@ -503,11 +502,12 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       this.appService.errorMessage('Please select Package Category');
       return;
     }
-    if (!this.selectedLotCategory) {
-      this.appService.errorMessage('Please select Lot Category');
-      return;
-    }
+    
     if (this.isCategorySelected("Lot")) {
+      if (!this.selectedLotCategory) {
+        this.appService.errorMessage('Please select Lot Category');
+        return;
+      }
     for (let i = 0; i < this.lotDetails.length; i++) {
       const lot = this.lotDetails[i];
 
@@ -650,14 +650,14 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
         this.hardwareDetails = this.num.hardware;
         this.trayDetails = this.num.trays;
         this.otherListDetails = this.num.others;
-        this.bindMailRoomDetail();
+        this.bindRecivingDetail();
       },
       error: (err) => {
 
       }
     })
   }
-  bindMailRoomDetail(){
+  bindRecivingDetail(){
     this.isInterim = this.appService.sharedData.internalReceiverForm.dataItem.isInterim;
     this.customerTypeSelected = this.customerTypes.find(ct => ct.customerTypeID === this.num.receipt.customerTypeID);
     
@@ -679,8 +679,9 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     this.contactPerson = this.num.receipt.contactPerson;
     this.email = this.num.receipt.email;
     this.addressSelected = this.addresses.find(a => a.addressId === this.num.receipt.addressID);
-    this.expectedDateTime = this.num.receipt.expectedDateTime;
-    this.PickupDropoffComments = this.num.receipt.receivingInstructions;
+    this.expectedDateTime = this.num.receipt.expectedDateTime
+    ? new Date(this.num.receipt.expectedDateTime)
+    : new Date();     this.PickupDropoffComments = this.num.receipt.receivingInstructions;
     this.selectedQty = this.num.receipt.noofPackages;
     if (this.num?.receipt?.packageCategory) {
       const categoryNames = this.num.receipt.packageCategory.split(',');
