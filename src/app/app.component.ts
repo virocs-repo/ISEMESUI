@@ -48,6 +48,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.getPackageCategoryHardwareList();
     this.getQuotes();
     this.getLotCategory();
+    this.getReceivingTypes();
 
     this.subscription.add(this.appService.eventEmitter.subscribe((e) => {
       console.log(e);
@@ -258,5 +259,12 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+  private getReceivingTypes() {
+    this.apiService.ServiceCategory("ReceivingTypes").subscribe({
+      next: (value: any) => {
+        this.appService.masterData.receivingTypes = value;
+      }
+    })
   }
 }

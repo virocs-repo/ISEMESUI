@@ -85,6 +85,7 @@ export class AppService {
     courierDetails: [],
     lotCategory: [],
     deviceType: [],
+    receivingTypes:[],
   }
   sharedData: {
     receiving: SharedInfo

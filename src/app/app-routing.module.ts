@@ -21,8 +21,10 @@ import { TicketComponent } from './components/ticket/ticket.component';
 import { ReceiverFormInternalComponent } from './components/receiver-form-internal/receiver-form-internal.component';
 import { ReceiverFormCustomerComponent } from './components/receiver-form-customer/receiver-form-customer.component';
 import { MailRoomComponent } from './components/mail-room/mail-room.component';
+import { ReceivingFormComponent } from './components/receiving-form/receiving-form.component';
 
 const routes: Routes = [
+  { path: 'receiving-form', component: ReceivingFormComponent, canActivate: [authGuard] },
   { path: 'receiving', component: ReceivingComponent, canActivate: [authGuard] },
   { path: 'receiver-form-internal', component: ReceiverFormInternalComponent, canActivate: [authGuard] },
   { path: 'receiver-form-customer', component: ReceiverFormCustomerComponent, canActivate: [authGuard] },

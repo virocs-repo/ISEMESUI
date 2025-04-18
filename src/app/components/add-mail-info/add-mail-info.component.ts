@@ -346,16 +346,16 @@ isSignatureDisabled: boolean = false;
   }
   previousCategoryIds: number[] = [];
 
-onPackageCategoryChange(selectedCategories: any[] = []) {
-  const currentIds = selectedCategories.map(c => c.id);
-  const previouslyHadOthers = this.previousCategoryIds.includes(38);
-  const nowHasOthers = currentIds.includes(38);
-  if (previouslyHadOthers && !nowHasOthers) {
-    this.gridData.data = [];
+  onPackageCategoryChange(selectedCategories: any[] = []) {
+    const currentIds = selectedCategories.map(c => c.id);
+  
+    if (!currentIds.includes(38)) {
+      this.gridData.data = [];
+    }
+  
+    this.selectedCategory = selectedCategories;
   }
-  this.selectedCategory = selectedCategories;
-  this.previousCategoryIds = [...currentIds];
-}
+  
 
   // print
   @ViewChild('pdfExport', { static: true }) pdfExportComponent!: PDFExportComponent;

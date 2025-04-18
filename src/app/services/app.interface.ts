@@ -117,6 +117,7 @@ export interface MasterData {
   courierDetails: CourierDetails[];
   lotCategory: LotCategory[];
   deviceType: DeviceType[];
+  receivingTypes: ReceivingTypes[];
 }
 export interface Receipt {
   receiptID: number;
@@ -685,6 +686,10 @@ export interface LotCategory {
 export interface DeviceType {
   deviceTypeID: number,
   deviceTypeName: string
+}
+export interface ReceivingTypes {
+  serviceCategoryId: number,
+  serviceCategoryName: string
 }
 export interface ShipmentDetails2 {
   ShipmentLineItemID: number | null,

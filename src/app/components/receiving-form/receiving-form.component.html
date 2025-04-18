@@ -1,0 +1,164 @@
+<div class="k-d-flex k-align-items-center  k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
+    <h4>Receiving</h4>
+    <i class="k-ml-auto"></i>
+    <kendo-label text="Search" class="k-font-size-sm">
+      <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search"
+      class="search-input" (input)="onSearchMaster()" />
+    </kendo-label>
+      <kendo-label text="Receiving Type" class="k-font-size-sm">
+        <kendo-multiselect
+          [data]="receivingTypes"
+          [(ngModel)]="selectedReceivingTypes"
+          textField="serviceCategoryName"
+          valueField="serviceCategoryId"
+          class="k-w-full"
+          [filterable]="true"
+          [autoClose]="false"
+          [checkboxes]="true"
+          placeholder="Select Receiving Type"
+          [tagMapper]="tagDisplayLimit">
+        </kendo-multiselect>
+      </kendo-label>    
+      
+      <kendo-label text="Receiving Status" class="k-font-size-sm">
+        <kendo-multiselect
+          [data]="status"
+          [(ngModel)]="selectedStatus"
+          textField="itemText"
+          valueField="masterListItemId"
+          class="k-w-full"
+          [filterable]="true"
+          [autoClose]="false"
+          [checkboxes]="true"
+          placeholder="Select Receiving Status"
+          [tagMapper]="tagDisplayLimit1">
+        </kendo-multiselect>
+      </kendo-label>  
+
+    <kendo-label text="Start Date" class="k-font-size-sm">
+      <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
+    </kendo-label>
+  
+    <kendo-label text="End Date" class="k-font-size-sm">
+      <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
+    </kendo-label>
+    <div>
+      <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
+    </div>
+    <div>
+      <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()" [disabled]="!isAddButtonEnabled">Add</button>
+    </div>
+  </div>
+  <div class="page-body k-m-4">
+    <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings"
+    [columnMenu]="columnMenuSettings" [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
+    [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" 
+    class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
+    <kendo-grid-column field="receivingNo" title="Receiving No" [width]="130">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.receivingNo">{{dataItem.receivingNo}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="mailNo" title="Mailroom No" [width]="130">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.mailNo">{{dataItem.mailNo}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="customerName" title="Customer" [width]="120">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.customerName">{{dataItem.customerName}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="createDate" title="Created Date" [width]="150">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        {{ dataItem.createDate | date: 'MM-dd-yyyy HH:mm a' }}
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="recipient" title="Recipient / Attention To" [width]="190">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.recipient">{{dataItem.recipient}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="deliveryMethod" title="Delivery Method" [width]="150">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.deliveryMethod">{{dataItem.deliveryMethod}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="expectedDate" title="Expected Date" [width]="150">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        {{ dataItem.expectedDate | date: 'MM-dd-yyyy HH:mm a' }}
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="noofPackages" title="No of Package" [width]="150">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.noofPackages">{{dataItem.noofPackages}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="receivingStatus" title="Status" [width]="110">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.receivingStatus">{{dataItem.receivingStatus}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="mailStatus" title="Mail Status" [width]="120">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.mailStatus">{{dataItem.mailStatus}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="senderName" title="Sender Name" [width]="135">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.senderName">{{dataItem.senderName}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="awb" title="AWB" [width]="100">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.awb">{{dataItem.awb}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="location" title="Location" [width]="110">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.location">{{dataItem.location}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="createdBy" title="Created by" [width]="117">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.createdBy">{{dataItem.createdBy}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="device" title="Device Name" [width]="129">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.device">{{dataItem.device}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="iseLotNumbers" title="ISE Lot Number #" [width]="154">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.iseLotNumbers">{{dataItem.iseLotNumbers}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="customerLotNumbers" title="Customer Lot #" [width]="142">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.customerLotNumbers">{{dataItem.customerLotNumbers}}</div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="expectedUnexpected" title="Expected/Unexpected" [width]="180">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="truncate-text" [title]="dataItem.expectedUnexpected">{{dataItem.expectedUnexpected}}</div>
+      </ng-template>
+    </kendo-grid-column>
+  </kendo-grid>
+  </div>
+  
+  <kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
+    #gridContextMenu></kendo-contextmenu>
+  
+  <kendo-dialog *ngIf="isDialogOpen" (close)="closeDialog()" [minWidth]="250" [width]="'95%'"
+    class="dialog-round receipt-dialog">
+    <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
+      <h3 class="k-m-0" style="color: maroon;">Receiving</h3>
+      <i class="k-ml-auto"></i>
+      <button kendoButton type="button" rounded="full" [svgIcon]="ICON.xIcon" size="small"
+        (click)="canCloseDialog()"></button>
+    </div>
+    <div class="dialog-body k-overflow-y-auto">
+       <app-add-mail-info (onClose)="closeDialog()" (onRestart)="onClearForm()"></app-add-mail-info> 
+    </div>
+  </kendo-dialog>
