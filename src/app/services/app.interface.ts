@@ -1163,6 +1163,7 @@ export interface ReceiptDetails {
 }
 
 export interface LotDetails {
+  DeviceId: number| null;
   ISELotNumber: string | null;
   CustomerLotNumber: string | null;
   CustomerCount: number | null;
