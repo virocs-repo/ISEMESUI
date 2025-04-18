@@ -336,6 +336,12 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   hardwareDetails: HardwareDetails[] = [];
   otherListDetails: OtherDetails[] = [];
   onSubmit() {
+    let receiptFormId = 0;
+const formData = this.appService.sharedData?.internalReceiverForm?.dataItem;
+if (formData && formData.receiptID) {
+  receiptFormId = formData.receiptID;
+}
+
     const receiptDetails : ReceiptDetails = {
       IsInterim: this.isInterim,
         CustomerTypeID: this.customerTypeSelected?.customerTypeID ?? null,
@@ -361,10 +367,47 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
         PONumber: this.selectedCustometPurchase?.customerPoNumber ?? null,
         LotCategoryId: this.selectedLotCategory?.serviceCategoryId ?? null,
     } as ReceiptDetails;
-    const lotDetailss = this.lotDetails;
-    const hardwareDetailss = this.hardwareDetails;
-    const trayDetailss = this.trayDetails;
-    const otherDetailss = this.otherListDetails;
+    const lotDetailss = this.lotDetails.map(lot => {
+      return {
+        DeviceId: lot.DeviceId ?? lot.DeviceId ,
+        ISELotNumber: lot.ISELotNumber ?? lot.ISELotNumber ?? '',
+        CustomerLotNumber: lot.CustomerLotNumber ?? lot.CustomerLotNumber ?? '',
+        CustomerCount: lot.CustomerCount ?? lot.CustomerCount ?? 0,
+        DeviceTypeID: lot.DeviceTypeID ?? lot.DeviceTypeID ?? null,
+        DateCode: lot.DateCode ?? lot.DateCode ?? '',
+        COO: lot.COO ?? lot.COO ?? null,
+        Expedite: lot.Expedite ?? lot.Expedite ?? false,
+        IQA: lot.IQA ?? lot.IQA ?? false,
+        LotOwnerID: lot.LotOwnerID ?? lot.LotOwnerID ?? null,
+        IsHold: lot.IsHold ?? false
+      };
+    });
+    const hardwareDetailss = this.hardwareDetails.map(hardware => {
+      return {
+        Id : hardware.Id ?? hardware.Id ,
+        HardwareTypeId: hardware.HardwareTypeId ?? hardware.HardwareTypeId ?? 0,
+        DeviceName: hardware.DeviceName ?? hardware.DeviceName ?? '',
+        HardwareId: hardware.HardwareId ?? hardware.HardwareId ?? '',
+        Qty: hardware.Qty ?? hardware.Qty ?? 0,
+      };
+    });
+    const trayDetailss = this.trayDetails.map(tray => {
+      return {
+        Id : tray.Id ?? tray.Id,
+        TrayVendorId: tray.TrayVendorId ?? tray.TrayVendorId ?? 0,
+        TrayPartId: tray.TrayPartId ?? tray.TrayPartId ?? 0,
+        Qty: tray.Qty ?? tray.Qty ?? 0,
+      };
+    });
+    const otherDetailss = this.otherListDetails.map(other => {
+      return {
+        Id : other.Id ?? other.Id,
+        TypeId: other.TypeId ?? other.TypeId ?? '',
+        Details: other.Details ?? other.Details ?? '',
+        Qty: other.Qty ?? other.Qty ?? 0,
+      };
+    });
+   
     const ticket : ReceiptJson = {
       ReceiptDetails:receiptDetails,
       LotDetails:lotDetailss,
@@ -562,6 +605,26 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     }
   }
 
+  if (this.isCategorySelected("Others")) {
+    
+    for (let i = 0; i < this.otherListDetails.length; i++) {
+      const other = this.otherListDetails[i];
+
+      if (!other.TypeId) {
+        this.appService.errorMessage("Please select Other Type");
+        return;
+      }
+      if (!other.Details) {
+        this.appService.errorMessage("Please select Other Details");
+        return;
+      }
+      if (!other.Qty) {
+        this.appService.errorMessage("Please enter Other Qty");
+        return;
+      }
+    }
+  }
+
   var receiverFiles:any[] = [];
   if (this.selectedReceiverFiles && this.selectedReceiverFiles.length) {
     if (this.selectedReceiverFiles.length < 1) {
@@ -594,7 +657,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     
     const receiverJson = JSON.stringify(payload)
 
-    this.apiService.saveReceiverFormInternal(receiverFiles, receiverJson, this.requestID, this.appService.loginId, deletedAttachmentsJson).subscribe({
+    this.apiService.saveReceiverFormInternal(receiverFiles, receiverJson, receiptFormId, this.appService.loginId, deletedAttachmentsJson).subscribe({
     //this.apiService.saveReceiverFormInternal(this.requestID, this.appService.loginId, ticket).subscribe({
       next: (v: any) => {
         this.appService.successMessage(MESSAGES.DataSaved);
@@ -701,6 +764,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     this.selectedLotCategory = this.lotCategory.find(a => a.serviceCategoryId === this.num.receipt.lotCategoryId);
     this.lotDetails = (this.num.devices as any[]).map((d: any) => ({
       ...d,
+      DeviceId :d.deviceId,
       ISELotNumber: d.iseLotNumber,
       CustomerLotNumber: d.customerLotNumber,
       CustomerCount: d.customerCount,
@@ -714,6 +778,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     }));
     this.hardwareDetails = (this.num.hardware as any[]).map((d: any) => ({
       ...d,
+      Id: d.id,
       HardwareTypeId: d.hardwareTypeId,
       DeviceName: d.deviceName,
       HardwareId: d.hardwareId,
@@ -721,12 +786,14 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     }));
     this.trayDetails = (this.num.trays as any[]).map((d: any) => ({
       ...d,
+      Id: d.id,
       TrayVendorId: d.trayVendorId,
       TrayPartId: d.trayPartId,
       Qty: d.qty,
     }));
     this.otherListDetails = (this.num.others as any[]).map((d: any) => ({
       ...d,
+      Id: d.otherId,
       TypeId: d.typeId,
       Details: d.details,
       Qty: d.qty,
@@ -1054,6 +1121,8 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     this.customerSelected = undefined;
   this.vendorSelected = undefined;
   this.behalfOfCusotmerSelected = undefined;
+  this.selectedCustometPurchase = undefined;
+  this.lotDetails[0].DeviceTypeID = 0;
     if (this.customerTypeSelected?.customerTypeName == 'Customer') {
       this.isDisabledBehalfOfCusotmer = true
     } else {
@@ -1231,6 +1300,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     
     const newLotRow =
       {
+        DeviceId : null,
         ISELotNumber: generatedLotNumber || '',
         CustomerLotNumber : '',
         CustomerCount : null,
