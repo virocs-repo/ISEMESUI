@@ -10,11 +10,11 @@ import * as moment from 'moment';
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 
 @Component({
-  selector: 'app-receiving-form',
-  templateUrl: './receiving-form.component.html',
-  styleUrls: ['./receiving-form.component.scss']
+  selector: 'app-search-receiving',
+  templateUrl: './search-receiving.component.html',
+  styleUrls: ['./search-receiving.component.scss']
 })
-export class ReceivingFormComponent implements OnDestroy {
+export class SearchReceivingComponent implements OnDestroy {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
 
   readonly ICON = ICON;
@@ -89,7 +89,7 @@ export class ReceivingFormComponent implements OnDestroy {
           this.selectedStatus = [pendingStatus]; 
         }
       this.search();
-      this.subscription.add(this.appService.sharedData.mailRoom.eventEmitter.subscribe((v) => {
+      this.subscription.add(this.appService.sharedData.receiving.eventEmitter.subscribe((v) => {
         switch (v) {
           case 'closeDialog':
             this.closeDialog();
@@ -193,9 +193,9 @@ export class ReceivingFormComponent implements OnDestroy {
   }
   private testReceiptEdit() {
     setTimeout(() => {
-      this.appService.sharedData.mailRoom.dataItem = this.gridDataResult.data[0]
-      this.appService.sharedData.mailRoom.isEditMode = true;
-      this.appService.sharedData.mailRoom.isViewMode = false;
+      this.appService.sharedData.receiving.dataItem = this.gridDataResult.data[0]
+      this.appService.sharedData.receiving.isEditMode = true;
+      this.appService.sharedData.receiving.isViewMode = false;
       // access the same in receipt component
       this.openDialog()
     }, 3000);
@@ -237,16 +237,16 @@ export class ReceivingFormComponent implements OnDestroy {
         })
         break;
       case 'View Data':
-        this.appService.sharedData.mailRoom.dataItem = dataItem
-        this.appService.sharedData.mailRoom.isEditMode = false;
-        this.appService.sharedData.mailRoom.isViewMode = true;
+        this.appService.sharedData.receiving.dataItem = dataItem
+        this.appService.sharedData.receiving.isEditMode = false;
+        this.appService.sharedData.receiving.isViewMode = true;
         // access the same in receipt component
         this.openDialog()
         break;
       case 'Edit Data':
-        this.appService.sharedData.mailRoom.dataItem = dataItem
-        this.appService.sharedData.mailRoom.isEditMode = true;
-        this.appService.sharedData.mailRoom.isViewMode = false;
+        this.appService.sharedData.receiving.dataItem = dataItem
+        this.appService.sharedData.receiving.isEditMode = true;
+        this.appService.sharedData.receiving.isViewMode = false;
         // access the same in receipt component
         this.openDialog()
         break;
@@ -296,16 +296,16 @@ export class ReceivingFormComponent implements OnDestroy {
         })
         break;
       case 'View Data':
-        this.appService.sharedData.mailRoom.dataItem = dataItem
-        this.appService.sharedData.mailRoom.isEditMode = false;
-        this.appService.sharedData.mailRoom.isViewMode = true;
+        this.appService.sharedData.receiving.dataItem = dataItem
+        this.appService.sharedData.receiving.isEditMode = false;
+        this.appService.sharedData.receiving.isViewMode = true;
         // access the same in receipt component
         this.openDialog()
         break;
       case 'Edit Data':
-        this.appService.sharedData.mailRoom.dataItem = dataItem
-        this.appService.sharedData.mailRoom.isEditMode = true;
-        this.appService.sharedData.mailRoom.isViewMode = false;
+        this.appService.sharedData.receiving.dataItem = dataItem
+        this.appService.sharedData.receiving.isEditMode = true;
+        this.appService.sharedData.receiving.isViewMode = false;
         // access the same in receipt component
         this.openDialog()
         break;
@@ -326,7 +326,7 @@ export class ReceivingFormComponent implements OnDestroy {
     }, 300);
   }
   canCloseDialog() {
-    this.appService.sharedData.mailRoom.eventEmitter.emit('canCloseDialog?')
+    this.appService.sharedData.receiving.eventEmitter.emit('canCloseDialog?')
   }
   search() {
     this.fetchdata()

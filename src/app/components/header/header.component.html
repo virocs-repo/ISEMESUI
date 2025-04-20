@@ -13,7 +13,7 @@
         [disabled]="!(appService.userPreferences || (appService.userPreferences && appService.activeNavigationUrls.includes('Receiving')))">Receiving</button> -->
 
         <div class="kendo-dropdown-wrapper">
-        <button kendoButton fillMode="flat" class="parent-menu-button" routerLink="/receiving" routerLinkActive="active"
+        <button kendoButton fillMode="flat" class="parent-menu-button" routerLinkActive="active"
           [disabled]="!(appService.userPreferences || (appService.userPreferences && appService.activeNavigationUrls.includes('Receiving')))">
           Receiving
           <kendo-icon name="arrow-down" class="menu-icon"></kendo-icon>
@@ -28,7 +28,7 @@
           <button kendoButton fillMode="flat" routerLink="/mail-room" routerLinkActive="active">
             Mail Room
           </button>
-          <button kendoButton fillMode="flat" routerLink="/receiving-form" routerLinkActive="active">
+          <button kendoButton fillMode="flat" routerLink="/search-receiving" routerLinkActive="active">
             Receiving
           </button>
           <button kendoButton fillMode="flat" routerLink="/int-transfer-receiving" routerLinkActive="active">

@@ -21,11 +21,11 @@ import { TicketComponent } from './components/ticket/ticket.component';
 import { ReceiverFormInternalComponent } from './components/receiver-form-internal/receiver-form-internal.component';
 import { ReceiverFormCustomerComponent } from './components/receiver-form-customer/receiver-form-customer.component';
 import { MailRoomComponent } from './components/mail-room/mail-room.component';
-import { ReceivingFormComponent } from './components/receiving-form/receiving-form.component';
+import { SearchReceivingComponent } from './components/search-receiving/search-receiving.component';
 
 const routes: Routes = [
-  { path: 'receiving-form', component: ReceivingFormComponent, canActivate: [authGuard] },
-  { path: 'receiving', component: ReceivingComponent, canActivate: [authGuard] },
+  { path: 'search-receiving', component: SearchReceivingComponent, canActivate: [authGuard] },
+  //{ path: 'receiving', component: ReceivingComponent, canActivate: [authGuard] },
   { path: 'receiver-form-internal', component: ReceiverFormInternalComponent, canActivate: [authGuard] },
   { path: 'receiver-form-customer', component: ReceiverFormCustomerComponent, canActivate: [authGuard] },
   { path: 'mail-room', component: MailRoomComponent, canActivate: [authGuard] },
@@ -44,7 +44,7 @@ const routes: Routes = [
   { path: 'ticket', component: TicketComponent, canActivate: [authGuard] },
   { path: 'home', component: HomeComponent, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent },
-  { path: '', component: ReceivingComponent, canActivate: [authGuard] },
+  { path: '', component: ReceiverFormInternalComponent, canActivate: [authGuard] },
   { path: '**', component: HomeComponent }
 ];
 
