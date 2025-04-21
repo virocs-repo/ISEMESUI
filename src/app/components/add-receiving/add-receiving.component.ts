@@ -97,19 +97,14 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
   rowActionMenu: MenuItem[] = [
     { text: 'Receive', svgIcon: ICON.cartIcon },
     { text: 'Undo Receive', svgIcon: ICON.cartIcon, disabled: true },
-    // { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
     { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
-    // { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
-    // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
     { text: 'Remove', svgIcon: ICON.trashIcon },
   ];
   private readonly RowActionMenuDevice: MenuItem[] = [
     { text: 'Receive', svgIcon: ICON.cartIcon },
     { text: 'Undo Receive', svgIcon: ICON.cartIcon, disabled: true },
     { text: 'Print', svgIcon: ICON.printIcon },
-    { text: 'Hold', svgIcon: ICON.kpiStatusHoldIcon },
-    { text: 'Edit Data', svgIcon: ICON.pencilIcon },
-    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon }
+   
   ]
   private readonly RowActionMenuDeviceAdd: MenuItem[] = [
     { text: 'Remove', svgIcon: ICON.trashIcon }
@@ -186,29 +181,6 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
   private init() {
     
     this.fetchDataDevice();
-
-    // if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
-    //   const dataItem = this.appService.sharedData.receiving.dataItem;
-    //   debugger;
-    //   if(this.appService.userName == 'PM') {
-    //     this.isPMRole = true;
-    //   }
-    //   else if(this.appService.userName == 'Receiving' || this.appService.userName == 'Male') {
-    //     this.isReceiverOrMail = true;      
-    //   }
-    //   else {
-    //     this.isPMRole = this.isReceiverOrMail = true;
-    //   }
-
-    // } else {
-    //   this.appService.sharedData.receiving.isEditMode = false
-    //   this.appService.sharedData.receiving.isViewMode = false
-    //   this.appService.sharedData.receiving.dataItem = {}
-
-    // }
-    // if (this.appService.sharedData.receiving.isViewMode) {
-    //   this.disabledAllBtns()
-    // }
   }
 
   onChangeBehalfOfCusotmer() {
@@ -248,9 +220,11 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
     //   return;
     // }
 
-    this.apiService.getDeviceData('1').subscribe({
+    this.apiService.getDeviceData('1',null).subscribe({
       next: (v: any) => {
         this.gridDataDevice = v;
+        console.log("apiresp",v);
+        console.log("ui resp",this.gridDataDevice);
         // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Device')
         this.gridDataDevice.forEach((d, index) => {
           d.employeeSelected = this.employees.find(e => e.EmployeeID == d.lotOwnerID);
@@ -407,28 +381,31 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
   // }
   
   onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, rowIndex: number) {
+    debugger;
+    console.log(dataItem)
+    console.log(e.item.text)
     switch (e.item.text) {
-      case 'Edit Data': 
-      this.doEditRow(dataItem);
-        break;
+      // case 'Edit Data': 
+      // this.doEditRow(dataItem);
+      //   break;
       case 'Receive':
         this.receiveRow(dataItem);
         break;
       case 'Undo Receive':
         this.canUndoReceive(dataItem);
         break;
-      case 'Hold':
-        this.doHoldUnHold(dataItem);
-        break;
+      // case 'Hold':
+      //   this.doHoldUnHold(dataItem);
+      //   break;
       case 'Print':
         this.doPrint(dataItem)
         break;
-      case 'Void Data':
-        this.doVoidData(dataItem, rowIndex)
-        break;
-      case 'Remove':
-        this.doRemoveRow(rowIndex);
-        break;
+      // case 'Void Data':
+      //   this.doVoidData(dataItem, rowIndex)
+      //   break;
+      // case 'Remove':
+      //   this.doRemoveRow(rowIndex);
+      //   break;
 
       default:
         break;
@@ -447,58 +424,23 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
     const receiveMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Receive);
     const undoRreceiveMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.UndoReceive);
     const printMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Print);
-    const voidMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.VoidData);
-    const editMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.EditData);
-    const removeMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Remove);
-    const holdMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Hold);
-
-    if (dataItem.recordStatus != 'I') {
-      if (removeMenuItem)
-        removeMenuItem.disabled = true;
+    if(dataItem.isReceived){
+      if(undoRreceiveMenuItem)
+              undoRreceiveMenuItem.disabled = false
       if (printMenuItem)
-        printMenuItem.disabled = false;
-
-      if(dataItem.isReceived == true) {
-        if(undoRreceiveMenuItem)
-          undoRreceiveMenuItem.disabled = false
-        if(receiveMenuItem)
-          receiveMenuItem.disabled = true
-        if(editMenuItem)
-          editMenuItem.disabled = true
-        if(voidMenuItem)
-          voidMenuItem.disabled = true
-        if(holdMenuItem)
-          holdMenuItem.disabled = true;
-      }
-      else {
-        if(undoRreceiveMenuItem)
-          undoRreceiveMenuItem.disabled = true
-        if(receiveMenuItem)
-          receiveMenuItem.disabled = false
-        if(editMenuItem)
-          editMenuItem.disabled = false
-        if(voidMenuItem)
-          voidMenuItem.disabled = false
-        if(holdMenuItem)
-          holdMenuItem.disabled = false;
-      }
+             printMenuItem.disabled = false;
+      if (receiveMenuItem)
+        receiveMenuItem.disabled = true;
     }
-    else {
-      if (removeMenuItem)
-        removeMenuItem.disabled = false;
-      if(printMenuItem)
-        printMenuItem.disabled = true;
+    else{
       if(undoRreceiveMenuItem)
         undoRreceiveMenuItem.disabled = true
-      if(receiveMenuItem)
-        receiveMenuItem.disabled = true
-      if(editMenuItem)
-        editMenuItem.disabled = true
-      if(voidMenuItem)
-        voidMenuItem.disabled = true
-      if(holdMenuItem)
-        holdMenuItem.disabled = true;
+if (printMenuItem)
+       printMenuItem.disabled = false;
+if (receiveMenuItem)
+  receiveMenuItem.disabled = false;
     }
+    
   }
 
   doEditRow(dataItem:any) {
