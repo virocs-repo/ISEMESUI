@@ -46,9 +46,18 @@ export class ApiService {
 
     return this.httpClient.get(`${API}v1/ise/inventory/receiptdata`, { params });
   }
-  getDeviceData(receiptId: string) {
-    return this.httpClient.get(`${API}v1/ise/inventory/devicedata?receiptId=${receiptId}`);
-  }
+  getDeviceData(mailRoomNo: string|null, stagingLocation: string|null) {
+    let params = new HttpParams();
+  
+    if (mailRoomNo != null) {
+      params = params.set('mailRoomNo', mailRoomNo);
+    }
+    if (stagingLocation != null) {
+      params = params.set('stagingLocation', stagingLocation);
+    }
+  
+    return this.httpClient.get(`${API}v1/ise/inventory/devicedata`, { params });
+  }  
   getHardwaredata(receiptId: string) {
     return this.httpClient.get(`${API}v1/ise/inventory/hardwaredata?receiptId=${receiptId}`);
   }
