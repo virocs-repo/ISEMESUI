@@ -928,4 +928,12 @@ getShippingAddressData(
   
     return this.httpClient.get(`${API}v1/ise/inventory/GetReceivingSearchData`, { params });
   } 
+  processReceivingData(receivingJson: string, receiptId:number, loginId: number) {
+    const body = {
+      jsondata: receivingJson,
+      receiptId: receiptId,
+      loginId: loginId
+    };
+    return this.httpClient.post(`${API}v1/ise/inventory/processReceivingData`, body);
+  }
 }                                                     
