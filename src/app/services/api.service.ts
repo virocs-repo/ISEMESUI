@@ -157,6 +157,11 @@ export class ApiService {
   TrayPart(customerId: number,vendorId: number){
     return this.httpClient.get(`${API}v1/ise/inventory/getInventoryReceiptTraysByVendorId?customerId=${customerId}&vendorId=${vendorId}`);
   }
+  CustomerLogin(loginID: number): Observable<string> {
+    return this.httpClient.get(`${API}v1/ise/inventory/getCustomersLoginIdAsync?loginId=${loginID}`, {
+      responseType: 'text' 
+    });
+  }  
 
   // Receipt
   getDevicesByCustomer(customerId: number) {

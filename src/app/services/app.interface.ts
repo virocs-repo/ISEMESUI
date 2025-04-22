@@ -1141,8 +1141,8 @@ export interface ReceiptDetails {
   CustomerTypeID: number | null;
   CustomerVendorName: string | null;
   BehalfID: number | null;
-  RecipientId: number | null;
-  SendorId: number | null;
+  Recipient: string | null;
+  Sendor: string | null;
   ReceivingFacilityID: number | null;
   DeliveryMethodID: number | null;
   ContactPerson: string;
