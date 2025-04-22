@@ -253,6 +253,9 @@ export interface DeviceItem {
   // custom
   error?: boolean
   isReceived?: boolean
+  isEditable?: boolean;
+  canEdit?: boolean;
+  lotId:number;
   rowActionMenu: MenuItem[]
 }
 export const INIT_DEVICE_ITEM: DeviceItem = {
@@ -276,14 +279,15 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   iqa: false,
   recordStatus: 'I',
   deviceTypeID: 0,
-  deviceType:'',
+  deviceType: '',
   employeeSelected: undefined,
   countrySelected: undefined,
   deviceTypeSelected: undefined,
   lotCategoryID: 0,
   lotIdentifierSelected: undefined,
 
-  rowActionMenu: []
+  rowActionMenu: [],
+  lotId: 0
 };
 export interface JSON_Object {
   [key: string]: any
@@ -1118,12 +1122,15 @@ export interface MailRoomDetails {
   
 }
 
-// export interface OtherDetails {
-//   otherId?: number | null;
-//   typeId: number;
-//   details: string;
-//   qty: number;
-// }
+export interface ReceivingDetails {
+  DeviceId: number|undefined;
+  LabelCount: number|undefined;
+  LotId: number |undefined;
+  DateCode: string;
+  COO: number|undefined;
+  IsReceived: number|undefined;
+}
+
 export interface ReceiptJson {
     ReceiptDetails: ReceiptDetails;
   LotDetails: LotDetails[];

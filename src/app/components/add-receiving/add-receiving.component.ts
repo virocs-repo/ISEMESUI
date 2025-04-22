@@ -97,19 +97,14 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
   rowActionMenu: MenuItem[] = [
     { text: 'Receive', svgIcon: ICON.cartIcon },
     { text: 'Undo Receive', svgIcon: ICON.cartIcon, disabled: true },
-    // { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon },
     { text: 'Edit Data', icon: 'edit', svgIcon: ICON.pencilIcon },
-    // { text: 'View Data', icon: 'eye', svgIcon: ICON.eyeIcon },
-    // { text: 'Export Data', icon: 'export', svgIcon: ICON.exportIcon }
     { text: 'Remove', svgIcon: ICON.trashIcon },
   ];
   private readonly RowActionMenuDevice: MenuItem[] = [
     { text: 'Receive', svgIcon: ICON.cartIcon },
     { text: 'Undo Receive', svgIcon: ICON.cartIcon, disabled: true },
     { text: 'Print', svgIcon: ICON.printIcon },
-    { text: 'Hold', svgIcon: ICON.kpiStatusHoldIcon },
-    { text: 'Edit Data', svgIcon: ICON.pencilIcon },
-    { text: 'Void Data', icon: 'close', svgIcon: ICON.xIcon }
+   
   ]
   private readonly RowActionMenuDeviceAdd: MenuItem[] = [
     { text: 'Remove', svgIcon: ICON.trashIcon }
@@ -185,30 +180,7 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
 
   private init() {
     
-    this.fetchDataDevice();
-
-    // if (this.appService.sharedData.receiving.isViewMode || this.appService.sharedData.receiving.isEditMode) {
-    //   const dataItem = this.appService.sharedData.receiving.dataItem;
-    //   debugger;
-    //   if(this.appService.userName == 'PM') {
-    //     this.isPMRole = true;
-    //   }
-    //   else if(this.appService.userName == 'Receiving' || this.appService.userName == 'Male') {
-    //     this.isReceiverOrMail = true;      
-    //   }
-    //   else {
-    //     this.isPMRole = this.isReceiverOrMail = true;
-    //   }
-
-    // } else {
-    //   this.appService.sharedData.receiving.isEditMode = false
-    //   this.appService.sharedData.receiving.isViewMode = false
-    //   this.appService.sharedData.receiving.dataItem = {}
-
-    // }
-    // if (this.appService.sharedData.receiving.isViewMode) {
-    //   this.disabledAllBtns()
-    // }
+    // this.fetchDataDevice();
   }
 
   onChangeBehalfOfCusotmer() {
@@ -241,17 +213,44 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
       error: (e: any) => { }
     })
   }
-
+  onSearch() {
+    const mailroom = this.mailroomNumber?.trim() || null;
+    const staging = this.stagingLocation?.trim() || null;
+  
+    if (mailroom || staging) {
+      this.apiService.getDeviceData(mailroom,staging).subscribe({
+        next: (v: any) => {
+          this.gridDataDevice = v;
+          console.log("apiresp",this.gridDataDevice)
+          this.gridDataDevice.forEach((d, index) => {
+            // d.employeeSelected = this.employees.find(e => e.EmployeeID == d.lotOwnerID);
+            d.countrySelected = this.countries.find(c => c.countryName == d.coo)
+            d.deviceTypeSelected = this.deviceTypes.find(dt => dt.deviceTypeID == d.deviceTypeID)
+            // if (index == 0) {
+            //   this.lotCategorySelected = this.lotCategories.find(c => c.lotCategoryID == d.lotCategoryID)
+            // }
+            if (d.lotIdentifier) {
+              d.lotIdentifierSelected = this.lotIdentifiers.find(l => l.id == d.lotIdentifier);
+            }
+            d.isEditable = !!(d.isReceived && d.canEdit);
+            d.rowActionMenu = this.RowActionMenuDevice.map(o => ({ ...o }));
+          })
+          
+          // if(this.gridDataDevice.length > 0)
+          //   this.disableReceipt();
+        }
+      });
+    }
+  }  
   private fetchDataDevice() {
     
     // if(this.mailroomNumber !== '' || this.stagingLocation !== '') {
     //   return;
     // }
 
-    this.apiService.getDeviceData('1').subscribe({
+    this.apiService.getDeviceData('1',null).subscribe({
       next: (v: any) => {
         this.gridDataDevice = v;
-        // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Device')
         this.gridDataDevice.forEach((d, index) => {
           d.employeeSelected = this.employees.find(e => e.EmployeeID == d.lotOwnerID);
           d.countrySelected = this.countries.find(c => c.countryName == d.coo)
@@ -270,166 +269,187 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
       }
     });
   }
-  // addDevice
+  onEdit(dataItem: DeviceItem) {
+    if (dataItem.deviceID > 0) {
+      dataItem.recordStatus = 'U';
+    }
+  }  
   
   saveReceiving() {
-    if (!this.lotCategorySelected?.lotCategoryID) {
-      this.appService.errorMessage("Please select Lot Category!")
-      return;
-    }
-    const lotCategoryIDSelected = this.lotCategorySelected.lotCategoryID;
-    this.gridDataDevice.forEach(d => {
-      if (d.lotCategoryID != 0 && d.lotCategoryID != lotCategoryIDSelected) {
-        d.lotCategoryID = lotCategoryIDSelected;
-        d.recordStatus = "U";
-      }
-    })
-
     if (!this.gridDataDevice || !this.gridDataDevice.length) {
       this.appService.infoMessage(MESSAGES.NoChanges)
     }
-    const filteredRecords = this.gridDataDevice.filter(d => d.recordStatus == "I" || d.recordStatus == "U")
-    if (!filteredRecords || filteredRecords.length < 1) {
-      this.appService.infoMessage(MESSAGES.NoChanges);
+    const updatedRows = this.gridDataDevice.filter(d => d.recordStatus === 'U');
+    if (updatedRows.length === 0) {
+      this.appService.infoMessage(MESSAGES.NoChanges)
       return;
     }
-    const DeviceDetails: PostDevice[] = []
-    for (let index = 0; index < filteredRecords.length; index++) {
-      const r = filteredRecords[index];
-      const mandatoryFields = [
-        r.dateCode, r.countrySelected, r.deviceTypeSelected?.deviceTypeID
-      ]
-      const isValid = !mandatoryFields.some(v => !v);
-      if (!r.customerLotNumber) {
-        r.error = true;
-        this.appService.errorMessage("Customer Lot# is required!");
-        return;
-      }
-      if (!r.customerCount || r.customerCount < 1) {
-        r.error = true;
-        this.appService.errorMessage("Customer Count should be greater than zero!");
-        return;
-      }
-      if (!r.deviceTypeSelected) {
-        r.error = true;
-        this.appService.errorMessage("Please select Device Type!");
-        return;
-      }
-      if (r.isReceived) {
-        if (!r.labelCount || r.labelCount < 1) {
-          r.error = true;
-          this.appService.errorMessage("Label count should be greater than zero!")
-          return;
-        }
-        if (!r.dateCode) {
-          r.error = true;
-          this.appService.errorMessage("Date Code is required!")
-          return;
-        }
-        if (!r.countrySelected) {
-          r.error = true;
-          this.appService.errorMessage("Please select COO!")
-          return;
-        }
-      }
-      const clnStr = r.customerCount.toString() || ''
-      const cln = parseInt(clnStr);
-      const lcStr = r.labelCount?.toString() || '';
-      const lc = parseInt(lcStr);
+    // const invalidRows = updatedRows.filter(d =>
+    //   !d.deviceID || !d.receiptID || !d.dateCode?.toString().trim()||!d.labelCount?.toString().trim()||!d.coo||d.lotId
+    // );
+    // if (invalidRows.length > 0) {
+    //   this.appService.errorMessage('Device, Lot, and Date Code are required for all edited rows.')
+    //   return;
+    // }
+    const missingDevice = updatedRows.filter(d => !d.deviceID);
+const missingReceipt = updatedRows.filter(d => !d.receiptID);
+const missingDateCode = updatedRows.filter(d => !d.dateCode?.toString().trim());
+const missingLabelCount = updatedRows.filter(d => !d.labelCount?.toString().trim());
+const missingCOO = updatedRows.filter(d => !d.coo);
+const missingLotId = updatedRows.filter(d => !d.lotId);
 
-      if (r.isReceived) {
-        if (cln != lc) {
-          r.isHold = true;
-        } else {
-          r.isHold = false
-        }
-      }
-      const postDevice: PostDevice = {
-        // @ts-ignore
-        IseLotNumber: r.iseLotNumber,
-        DeviceID: r.deviceID,
-        ReceiptID: r.receiptID,
-        CustomerLotNumber: r.customerLotNumber,
-        CustomerCount: r.customerCount,
-        Expedite: r.expedite,
-        IQA: r.iqa,
-        LotIdentifier: r.lotIdentifier,
-        LotOwnerID: r.employeeSelected?.EmployeeID || this.appService.loginId,
-        LabelCount: r.labelCount,
-        DateCode: r.dateCode?.toString() || '',
-        COO: r.countrySelected?.countryID || null,
-        IsHold: r.isHold,
-        HoldComments: r.holdComments,
-        RecordStatus: r.recordStatus || 'I',
-        Active: r.active,
-        LoginId: this.appService.loginId,
-        LotCategoryID: this.lotCategorySelected?.lotCategoryID || 1,
-        DeviceTypeID: r.deviceTypeSelected?.deviceTypeID || 1,
-        IsReceived: r.isReceived == undefined ? false : r.isReceived
-      }
+if (missingDevice.length > 0) {
+  this.appService.errorMessage('Device is required for all edited rows.');
+  return;
+}
+if (missingReceipt.length > 0) {
+  this.appService.errorMessage('Receipt ID is required for all edited rows.');
+  return;
+}
+if (missingDateCode.length > 0) {
+  this.appService.errorMessage('Date Code is required for all edited rows.');
+  return;
+}
+if (missingLabelCount.length > 0) {
+  this.appService.errorMessage('Label Count is required for all edited rows.');
+  return;
+}
+if (missingCOO.length > 0) {
+  this.appService.errorMessage('COO is required for all edited rows.');
+  return;
+}
+if (missingLotId.length > 0) {
+  this.appService.errorMessage('Lot ID is required for all edited rows.');
+  return;
+}
 
-      if (postDevice.RecordStatus == "I") {
-        postDevice.DeviceID = null;
-      }
+    const receivingDetails = updatedRows.map(d => ({
+      DeviceId: d.deviceID,
+      LabelCount: d.labelCount,
+      LotId: d.lotId,
+      DateCode: d.dateCode,
+      COO: d.coo,
+      IsReceived: d.isReceived,
+    }));
+        const receivingJson = JSON.stringify(receivingDetails)
+        const receiptId = updatedRows[0]?.receiptID;
+        const loginId = this.appService.loginId;
+        this.apiService.processReceivingData(receivingJson, receiptId, loginId).subscribe({
+          next: (v: any) => {
+            this.appService.successMessage(MESSAGES.DataSaved);
+            this.onClose.emit();
+          },
+          error: (err) => {
+            this.appService.errorMessage(MESSAGES.DataSaveError);
+            console.log(err);
+          }
+        });
+    // const DeviceDetails: PostDevice[] = []
+    // for (let index = 0; index < filteredRecords.length; index++) {
+    //   const r = filteredRecords[index];
+    //   const mandatoryFields = [
+    //     r.dateCode, r.countrySelected, r.deviceTypeSelected?.deviceTypeID
+    //   ]
+    //   const isValid = !mandatoryFields.some(v => !v);
+    //   if (!r.customerLotNumber) {
+    //     r.error = true;
+    //     this.appService.errorMessage("Customer Lot# is required!");
+    //     return;
+    //   }
+    //   if (!r.customerCount || r.customerCount < 1) {
+    //     r.error = true;
+    //     this.appService.errorMessage("Customer Count should be greater than zero!");
+    //     return;
+    //   }
+    //   if (!r.deviceTypeSelected) {
+    //     r.error = true;
+    //     this.appService.errorMessage("Please select Device Type!");
+    //     return;
+    //   }
+    //   if (r.isReceived) {
+    //     if (!r.labelCount || r.labelCount < 1) {
+    //       r.error = true;
+    //       this.appService.errorMessage("Label count should be greater than zero!")
+    //       return;
+    //     }
+    //     if (!r.dateCode) {
+    //       r.error = true;
+    //       this.appService.errorMessage("Date Code is required!")
+    //       return;
+    //     }
+    //     if (!r.countrySelected) {
+    //       r.error = true;
+    //       this.appService.errorMessage("Please select COO!")
+    //       return;
+    //     }
+    //   }
+    //   const clnStr = r.customerCount.toString() || ''
+    //   const cln = parseInt(clnStr);
+    //   const lcStr = r.labelCount?.toString() || '';
+    //   const lc = parseInt(lcStr);
 
-      DeviceDetails.push(postDevice)
-    }
+    //   if (r.isReceived) {
+    //     if (cln != lc) {
+    //       r.isHold = true;
+    //     } else {
+    //       r.isHold = false
+    //     }
+    //   }
+    //   const postDevice: PostDevice = {
+    //     // @ts-ignore
+    //     IseLotNumber: r.iseLotNumber,
+    //     DeviceID: r.deviceID,
+    //     ReceiptID: r.receiptID,
+    //     CustomerLotNumber: r.customerLotNumber,
+    //     CustomerCount: r.customerCount,
+    //     Expedite: r.expedite,
+    //     IQA: r.iqa,
+    //     LotIdentifier: r.lotIdentifier,
+    //     LotOwnerID: r.employeeSelected?.EmployeeID || this.appService.loginId,
+    //     LabelCount: r.labelCount,
+    //     DateCode: r.dateCode?.toString() || '',
+    //     COO: r.countrySelected?.countryID || null,
+    //     IsHold: r.isHold,
+    //     HoldComments: r.holdComments,
+    //     RecordStatus: r.recordStatus || 'I',
+    //     Active: r.active,
+    //     LoginId: this.appService.loginId,
+    //     LotCategoryID: this.lotCategorySelected?.lotCategoryID || 1,
+    //     DeviceTypeID: r.deviceTypeSelected?.deviceTypeID || 1,
+    //     IsReceived: r.isReceived == undefined ? false : r.isReceived
+    //   }
+
+    //   if (postDevice.RecordStatus == "I") {
+    //     postDevice.DeviceID = null;
+    //   }
+
+    //   DeviceDetails.push(postDevice)
+    // }
     
-    this.apiService.postProcessDevice({ DeviceDetails }).subscribe({
-      next: (v: any) => {
-        this.appService.successMessage(MESSAGES.DataSaved);
-        this.fetchDataDevice();
-      },
-      error: (err) => {
-        this.appService.errorMessage(MESSAGES.DataSaveError);
-      }
-    });
+    // this.apiService.postProcessDevice({ DeviceDetails }).subscribe({
+    //   next: (v: any) => {
+    //     this.appService.successMessage(MESSAGES.DataSaved);
+    //     // this.fetchDataDevice();
+    //   },
+    //   error: (err) => {
+    //     this.appService.errorMessage(MESSAGES.DataSaveError);
+    //   }
+    // });
   }
-  // addRowDevice() {
-  //   const dataItem = this.appService.sharedData.receiving.dataItem;
-  //   this.appService.isLoading = true;
-  //   this.apiService.generateLineItem().subscribe({
-  //     next: (v: any) => {
-  //       this.appService.isLoading = false;
-  //       this.gridDataDevice.splice(0, 0, {
-  //         ...INIT_DEVICE_ITEM, receiptID: dataItem.receiptID, recordStatus: "I",
-  //         lotIdentifierSelected: this.lotIdentifiers[0],
-  //         lotIdentifier: this.lotIdentifiers[0].id,
-  //         iseLotNumber: v.data + '',
-  //         rowActionMenu: this.RowActionMenuDeviceAdd.map(o => ({ ...o }))
-  //       });
-  //     },
-  //     error: (e: any) => {
-  //       this.appService.isLoading = false;
-  //       this.appService.errorMessage('Unable to add new device row');
-  //     }
-  //   })
-  // }
   
   onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, rowIndex: number) {
     switch (e.item.text) {
-      case 'Edit Data': 
-      this.doEditRow(dataItem);
-        break;
+     
       case 'Receive':
         this.receiveRow(dataItem);
         break;
       case 'Undo Receive':
         this.canUndoReceive(dataItem);
         break;
-      case 'Hold':
-        this.doHoldUnHold(dataItem);
-        break;
+    
       case 'Print':
         this.doPrint(dataItem)
         break;
-      case 'Void Data':
-        this.doVoidData(dataItem, rowIndex)
-        break;
-      case 'Remove':
-        this.doRemoveRow(rowIndex);
-        break;
-
       default:
         break;
     }
@@ -447,58 +467,32 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
     const receiveMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Receive);
     const undoRreceiveMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.UndoReceive);
     const printMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Print);
-    const voidMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.VoidData);
-    const editMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.EditData);
-    const removeMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Remove);
-    const holdMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Hold);
-
-    if (dataItem.recordStatus != 'I') {
-      if (removeMenuItem)
-        removeMenuItem.disabled = true;
-      if (printMenuItem)
-        printMenuItem.disabled = false;
-
-      if(dataItem.isReceived == true) {
-        if(undoRreceiveMenuItem)
-          undoRreceiveMenuItem.disabled = false
-        if(receiveMenuItem)
-          receiveMenuItem.disabled = true
-        if(editMenuItem)
-          editMenuItem.disabled = true
-        if(voidMenuItem)
-          voidMenuItem.disabled = true
-        if(holdMenuItem)
-          holdMenuItem.disabled = true;
-      }
-      else {
-        if(undoRreceiveMenuItem)
-          undoRreceiveMenuItem.disabled = true
-        if(receiveMenuItem)
-          receiveMenuItem.disabled = false
-        if(editMenuItem)
-          editMenuItem.disabled = false
-        if(voidMenuItem)
-          voidMenuItem.disabled = false
-        if(holdMenuItem)
-          holdMenuItem.disabled = false;
+    if (dataItem.isReceived) {
+      if (dataItem.canEdit) {
+        if (undoRreceiveMenuItem) 
+          undoRreceiveMenuItem.disabled = false;
+        if (printMenuItem) 
+          printMenuItem.disabled = false;
+        if (receiveMenuItem) 
+          receiveMenuItem.disabled = true;
+      } else {
+        if (undoRreceiveMenuItem) 
+          undoRreceiveMenuItem.disabled = true;
+        if (printMenuItem) 
+          printMenuItem.disabled = false;
+        if (receiveMenuItem) 
+          receiveMenuItem.disabled = true;
       }
     }
-    else {
-      if (removeMenuItem)
-        removeMenuItem.disabled = false;
-      if(printMenuItem)
-        printMenuItem.disabled = true;
+    else{
       if(undoRreceiveMenuItem)
-        undoRreceiveMenuItem.disabled = true
-      if(receiveMenuItem)
-        receiveMenuItem.disabled = true
-      if(editMenuItem)
-        editMenuItem.disabled = true
-      if(voidMenuItem)
-        voidMenuItem.disabled = true
-      if(holdMenuItem)
-        holdMenuItem.disabled = true;
+         undoRreceiveMenuItem.disabled = true
+      if (printMenuItem)
+         printMenuItem.disabled = false;
+      if (receiveMenuItem)
+         receiveMenuItem.disabled = false;
     }
+    
   }
 
   doEditRow(dataItem:any) {
@@ -763,11 +757,9 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
         }
       }})
   }
-
   private receiveRow(dataItem:any) {
-    if (dataItem.recordStatus != 'I') {
-      dataItem.recordStatus = 'U';
-    }
+    
+    dataItem.isEditable = true;
     dataItem.isReceived = true;
     dataItem.dateCode = parseInt(dataItem.dateCode) || '';
     if (dataItem.rowActionMenu) {

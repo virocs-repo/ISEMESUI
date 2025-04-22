@@ -397,7 +397,7 @@ export class ReceiptComponent implements OnInit, OnDestroy {
       // this is for new form
       return;
     }
-    this.apiService.getDeviceData(dataItem.receiptID).subscribe({
+    this.apiService.getDeviceData(dataItem.receiptID,null).subscribe({
       next: (v: any) => {
         this.gridDataDevice = v;
         // this.goodsTypeSelected = this.goodsType.find(v => v.goodsTypeName == 'Device')
