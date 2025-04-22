@@ -44,7 +44,6 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   receiptLocationSelected: ReceiptLocation | undefined;
   readonly employee: Employee[] = this.appService.masterData.entityMap.Employee
   recipientSelected: Employee | undefined;
-  requestorSelected: Employee | undefined;
   notesInformation: string = '';
   readonly deliveryMode: DeliveryMode[] = this.appService.masterData.deliveryMode;
   deliveryModeSelected: DeliveryMode | undefined;
@@ -57,6 +56,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   expectedDateTime: Date = new Date();
   format = "MM/dd/yyyy HH:mm";  contactPerson = this.appService.userName;
   email: string | null = '';
+  requestorSelected: string | null = '';
   readonly addresses: Address[] = this.appService.masterData.addresses;
   addressSelected: Address | undefined;
   PickupDropoffComments: string = '';
@@ -180,9 +180,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     this.init();
     const user = this.employees.find(emp => emp.EmployeeID === this.appService.loginId);
     if (user) {
-      this.requestorSelected = user;
       this.recipientSelected = user;
-      this.contactPerson= this.requestorSelected?.EmployeeName;
     }
     this.subscription.add(this.appService.sharedData.internalReceiverForm.eventEmitter.subscribe((v) => {
       switch (v) {
@@ -347,8 +345,8 @@ if (formData && formData.receiptID) {
         CustomerTypeID: this.customerTypeSelected?.customerTypeID ?? null,
         CustomerVendorName: this.customerSelected?.CustomerName ?? null,
         BehalfID: this.behalfOfCusotmerSelected?.CustomerID ?? null,
-        RecipientId: this.recipientSelected?.EmployeeID ?? null,
-        SendorId: this.requestorSelected?.EmployeeID ?? null,
+        Recipient: this.recipientSelected?.EmployeeName ?? null,
+        Sendor: this.requestorSelected ?? null,
         ReceivingFacilityID: this.receiptLocationSelected?.receivingFacilityID ?? null,
         DeliveryMethodID: this.deliveryModeSelected?.deliveryModeID ?? null,
         ContactPerson: this.contactPerson ?? null,
@@ -733,8 +731,8 @@ if (formData && formData.receiptID) {
     }
     this.behalfOfCusotmerSelected = this.customers.find(c => c.CustomerID === this.num.receipt.behalfID);
     this.receiptLocationSelected = this.receiptLocation.find(loc => loc.receivingFacilityID === this.num.receipt.receivingFacilityID);
-    this.recipientSelected = this.employees.find(e => e.EmployeeID === this.num.receipt.recipientId);
-    this.requestorSelected = this.employees.find(e => e.EmployeeID === this.num.receipt.sendorId);
+    this.recipientSelected = this.employees.find(e => e.EmployeeName === this.num.receipt.recipient);
+    this.requestorSelected = this.num.receipt.sendor;
     this.notesInformation = this.num.receipt.notes;
     this.deliveryModeSelected = this.deliveryMode.find(d => d.deliveryModeID === this.num.receipt.deliveryMethodID);
     this.tracking = this.num.receipt.trackingNumber;
