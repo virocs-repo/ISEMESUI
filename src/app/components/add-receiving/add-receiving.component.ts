@@ -242,33 +242,7 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
       });
     }
   }  
-  private fetchDataDevice() {
-    
-    // if(this.mailroomNumber !== '' || this.stagingLocation !== '') {
-    //   return;
-    // }
 
-    this.apiService.getDeviceData('1',null).subscribe({
-      next: (v: any) => {
-        this.gridDataDevice = v;
-        this.gridDataDevice.forEach((d, index) => {
-          d.employeeSelected = this.employees.find(e => e.EmployeeID == d.lotOwnerID);
-          d.countrySelected = this.countries.find(c => c.countryName == d.coo)
-          d.deviceTypeSelected = this.deviceTypes.find(dt => dt.deviceTypeID == d.deviceTypeID)
-          if (index == 0) {
-            this.lotCategorySelected = this.lotCategories.find(c => c.lotCategoryID == d.lotCategoryID)
-          }
-          if (d.lotIdentifier) {
-            d.lotIdentifierSelected = this.lotIdentifiers.find(l => l.id == d.lotIdentifier);
-          }
-          d.rowActionMenu = this.RowActionMenuDevice.map(o => ({ ...o }));
-        })
-        
-        if(this.gridDataDevice.length > 0)
-          this.disableReceipt();
-      }
-    });
-  }
   onEdit(dataItem: DeviceItem) {
     if (dataItem.deviceID > 0) {
       dataItem.recordStatus = 'U';
@@ -284,13 +258,6 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
       this.appService.infoMessage(MESSAGES.NoChanges)
       return;
     }
-    // const invalidRows = updatedRows.filter(d =>
-    //   !d.deviceID || !d.receiptID || !d.dateCode?.toString().trim()||!d.labelCount?.toString().trim()||!d.coo||d.lotId
-    // );
-    // if (invalidRows.length > 0) {
-    //   this.appService.errorMessage('Device, Lot, and Date Code are required for all edited rows.')
-    //   return;
-    // }
     const missingDevice = updatedRows.filter(d => !d.deviceID);
 const missingReceipt = updatedRows.filter(d => !d.receiptID);
 const missingDateCode = updatedRows.filter(d => !d.dateCode?.toString().trim());
@@ -323,15 +290,19 @@ if (missingLotId.length > 0) {
   return;
 }
 
-    const receivingDetails = updatedRows.map(d => ({
-      DeviceId: d.deviceID,
-      LabelCount: d.labelCount,
-      LotId: d.lotId,
-      DateCode: d.dateCode,
-      COO: d.coo,
-      IsReceived: d.isReceived,
-    }));
-        const receivingJson = JSON.stringify(receivingDetails)
+const receivingDetails = updatedRows.map(d => ({
+  DeviceId: d.deviceID,
+  LabelCount: d.labelCount,
+  LotId: d.lotId,
+  DateCode: d.dateCode,
+  COO: d.countrySelected?.countryID, 
+  IsReceived: d.isReceived ? 1 : 0,
+}));
+const payload = {
+  ReceivedDetails: receivingDetails 
+};
+
+        const receivingJson = JSON.stringify(payload);
         const receiptId = updatedRows[0]?.receiptID;
         const loginId = this.appService.loginId;
         this.apiService.processReceivingData(receivingJson, receiptId, loginId).subscribe({
@@ -344,97 +315,6 @@ if (missingLotId.length > 0) {
             console.log(err);
           }
         });
-    // const DeviceDetails: PostDevice[] = []
-    // for (let index = 0; index < filteredRecords.length; index++) {
-    //   const r = filteredRecords[index];
-    //   const mandatoryFields = [
-    //     r.dateCode, r.countrySelected, r.deviceTypeSelected?.deviceTypeID
-    //   ]
-    //   const isValid = !mandatoryFields.some(v => !v);
-    //   if (!r.customerLotNumber) {
-    //     r.error = true;
-    //     this.appService.errorMessage("Customer Lot# is required!");
-    //     return;
-    //   }
-    //   if (!r.customerCount || r.customerCount < 1) {
-    //     r.error = true;
-    //     this.appService.errorMessage("Customer Count should be greater than zero!");
-    //     return;
-    //   }
-    //   if (!r.deviceTypeSelected) {
-    //     r.error = true;
-    //     this.appService.errorMessage("Please select Device Type!");
-    //     return;
-    //   }
-    //   if (r.isReceived) {
-    //     if (!r.labelCount || r.labelCount < 1) {
-    //       r.error = true;
-    //       this.appService.errorMessage("Label count should be greater than zero!")
-    //       return;
-    //     }
-    //     if (!r.dateCode) {
-    //       r.error = true;
-    //       this.appService.errorMessage("Date Code is required!")
-    //       return;
-    //     }
-    //     if (!r.countrySelected) {
-    //       r.error = true;
-    //       this.appService.errorMessage("Please select COO!")
-    //       return;
-    //     }
-    //   }
-    //   const clnStr = r.customerCount.toString() || ''
-    //   const cln = parseInt(clnStr);
-    //   const lcStr = r.labelCount?.toString() || '';
-    //   const lc = parseInt(lcStr);
-
-    //   if (r.isReceived) {
-    //     if (cln != lc) {
-    //       r.isHold = true;
-    //     } else {
-    //       r.isHold = false
-    //     }
-    //   }
-    //   const postDevice: PostDevice = {
-    //     // @ts-ignore
-    //     IseLotNumber: r.iseLotNumber,
-    //     DeviceID: r.deviceID,
-    //     ReceiptID: r.receiptID,
-    //     CustomerLotNumber: r.customerLotNumber,
-    //     CustomerCount: r.customerCount,
-    //     Expedite: r.expedite,
-    //     IQA: r.iqa,
-    //     LotIdentifier: r.lotIdentifier,
-    //     LotOwnerID: r.employeeSelected?.EmployeeID || this.appService.loginId,
-    //     LabelCount: r.labelCount,
-    //     DateCode: r.dateCode?.toString() || '',
-    //     COO: r.countrySelected?.countryID || null,
-    //     IsHold: r.isHold,
-    //     HoldComments: r.holdComments,
-    //     RecordStatus: r.recordStatus || 'I',
-    //     Active: r.active,
-    //     LoginId: this.appService.loginId,
-    //     LotCategoryID: this.lotCategorySelected?.lotCategoryID || 1,
-    //     DeviceTypeID: r.deviceTypeSelected?.deviceTypeID || 1,
-    //     IsReceived: r.isReceived == undefined ? false : r.isReceived
-    //   }
-
-    //   if (postDevice.RecordStatus == "I") {
-    //     postDevice.DeviceID = null;
-    //   }
-
-    //   DeviceDetails.push(postDevice)
-    // }
-    
-    // this.apiService.postProcessDevice({ DeviceDetails }).subscribe({
-    //   next: (v: any) => {
-    //     this.appService.successMessage(MESSAGES.DataSaved);
-    //     // this.fetchDataDevice();
-    //   },
-    //   error: (err) => {
-    //     this.appService.errorMessage(MESSAGES.DataSaveError);
-    //   }
-    // });
   }
   
   onSelectRowActionMenu(e: ContextMenuSelectEvent, dataItem: any, rowIndex: number) {
@@ -712,11 +592,6 @@ if (missingLotId.length > 0) {
     }
   }
 
-  onCountUIChange(value: any): string {
-
-    // Return the UI value without leading zeros
-    return value.replace(/^0+/, '');
-  }
  
   onLotValueChange(selectLot: any, dataItem:any, indx :any): void {
     
@@ -733,38 +608,48 @@ if (missingLotId.length > 0) {
     })
   }
 
-  canUndoReceive(dataItem:any) {
+  // canUndoReceive(dataItem:any) {
     
-    if(!dataItem.inventoryID || dataItem.inventoryID < 1) {
-      return;
-    }
+  //   if(!dataItem.inventoryID || dataItem.inventoryID < 1) {
+  //     return;
+  //   }
 
-    this.apiService.canUndoReceive(dataItem.inventoryID).subscribe({
-      next: (v:any) => {
+  //   this.apiService.canUndoReceive(dataItem.inventoryID).subscribe({
+  //     next: (v:any) => {
         
-        if(v == true)
-        {
-          dataItem.recordStatus = 'U';
-          dataItem.isReceived = false;
-          if (dataItem.rowActionMenu) {
-            dataItem.rowActionMenu[0].disabled = false;
-            dataItem.rowActionMenu[1].disabled = true;
-          }
-        }
-        else
-        {
-          alert("You are not allowed to undo recieve this line item now.");
-        }
-      }})
-  }
+  //       if(v == true)
+  //       {
+  //         dataItem.recordStatus = 'U';
+  //         dataItem.isReceived = false;
+  //         if (dataItem.rowActionMenu) {
+  //           dataItem.rowActionMenu[0].disabled = false;
+  //           dataItem.rowActionMenu[1].disabled = true;
+  //         }
+  //       }
+  //       else
+  //       {
+  //         alert("You are not allowed to undo recieve this line item now.");
+  //       }
+  //     }})
+  // }
   private receiveRow(dataItem:any) {
     
     dataItem.isEditable = true;
     dataItem.isReceived = true;
-    dataItem.dateCode = parseInt(dataItem.dateCode) || '';
+    // dataItem.dateCode = parseInt(dataItem.dateCode) || '';
     if (dataItem.rowActionMenu) {
       dataItem.rowActionMenu[0].disabled = true;
       dataItem.rowActionMenu[1].disabled = false;
+    }
+  }
+  private canUndoReceive(dataItem:any) {
+    
+    // dataItem.isEditable = true;
+    dataItem.isReceived = false;
+    // dataItem.dateCode = parseInt(dataItem.dateCode) || '';
+    if (dataItem.rowActionMenu) {
+      dataItem.rowActionMenu[0].disabled = false;
+      dataItem.rowActionMenu[1].disabled = true;
     }
   }
 
