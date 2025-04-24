@@ -35,7 +35,7 @@
     <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
   </div>
   <div>
-    <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()" [disabled]="!isAddButtonEnabled">Add</button>
+    <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openAddDialog()">Add</button>
   </div>
 </div>
 <div
@@ -67,7 +67,7 @@
       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="recipient" title="Recipient" [width]="120"></kendo-grid-column>
-    <kendo-grid-column field="deliveryMethod" title="Delivery Method" [width]="140">
+    <kendo-grid-column field="deliveryMethod" title="Delivery Method" [width]="170">
      
     </kendo-grid-column>
     <kendo-grid-column field="expectedDate" title="Expected Date" [width]="150">
@@ -98,11 +98,11 @@
   class="dialog-round receipt-dialog">
   <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
     <h3 class="k-m-0" style="color: maroon;">Mail Info</h3>
-    <!-- <small *ngIf="appService.sharedData.mailRoom.isViewMode">(View Mode)</small>
+     <small *ngIf="appService.sharedData.mailRoom.isViewMode">(View Mode)</small>
     <small *ngIf="appService.sharedData.mailRoom.isEditMode">(Edit Mode)</small>
     <small *ngIf="appService.sharedData.mailRoom.dataItem?.mailId">Mail ID:
       {{appService.sharedData.mailRoom.dataItem.mailId}}</small>
-       -->
+       
     <i class="k-ml-auto"></i>
     <button kendoButton type="button" rounded="full" [svgIcon]="ICON.xIcon" size="small"
       (click)="canCloseDialog()"></button>

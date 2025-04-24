@@ -68,6 +68,12 @@ export class MailRoomComponent implements OnDestroy {
   openDialog() {
     this.isDialogOpen = true;
   }
+  openAddDialog(){
+    this.appService.sharedData.mailRoom.dataItem = null;
+    this.appService.sharedData.mailRoom.isEditMode = false;
+    this.appService.sharedData.mailRoom.isViewMode = false;
+    this.isDialogOpen = true;
+  }
   closeDialog() {
     this.isDialogOpen = false;
     this.fetchdata(); // because there might be changes from dialog
