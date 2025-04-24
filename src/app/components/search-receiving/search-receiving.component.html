@@ -64,12 +64,12 @@
         <div class="truncate-text" [title]="dataItem.mailNo">{{dataItem.mailNo}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="customerName" title="Customer" [width]="120">
+    <kendo-grid-column field="customerName" title="Customer" [width]="200">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.customerName">{{dataItem.customerName}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="createDate" title="Created Date" [width]="150">
+    <kendo-grid-column field="createDate" title="Created Date" [width]="180">
       <ng-template kendoGridCellTemplate let-dataItem>
         {{ dataItem.createDate | date: 'MM-dd-yyyy HH:mm a' }}
       </ng-template>
@@ -84,7 +84,7 @@
         <div class="truncate-text" [title]="dataItem.deliveryMethod">{{dataItem.deliveryMethod}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="expectedDate" title="Expected Date" [width]="150">
+    <kendo-grid-column field="expectedDate" title="Expected Date" [width]="180">
       <ng-template kendoGridCellTemplate let-dataItem>
         {{ dataItem.expectedDate | date: 'MM-dd-yyyy HH:mm a' }}
       </ng-template>
@@ -94,7 +94,7 @@
         <div class="truncate-text" [title]="dataItem.noofPackages">{{dataItem.noofPackages}}</div>
       </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="receivingStatus" title="Status" [width]="110">
+    <kendo-grid-column field="receivingStatus" title="Status" [width]="150">
       <ng-template kendoGridCellTemplate let-dataItem>
         <div class="truncate-text" [title]="dataItem.receivingStatus">{{dataItem.receivingStatus}}</div>
       </ng-template>

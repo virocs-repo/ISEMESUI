@@ -173,7 +173,6 @@ isSignatureDisabled: boolean = false;
     }))
     
   }
-
   init() {
     const mailRoom = this.appService.sharedData.mailRoom;
       if(this.appService.sharedData.mailRoom.isEditMode || this.appService.sharedData.mailRoom.isViewMode){

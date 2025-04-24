@@ -51,8 +51,6 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
   isHoldCommentEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
     featureField?.find(o => o.featureFieldName == "HoldComments")?.active ?? true;
 
-  //@ViewChild('noOfCartons', { static: false, }) noOfCartons: ElementRef | undefined;
-
   isDisabled: any = {
     clearReceipt: false,
     addReceipt: false,
@@ -134,7 +132,7 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
           break;
       }
     }))
-    this.initRoleBasedUI()
+    // this.initRoleBasedUI()
   }
   ngOnDestroy(): void {
     this.appService.sharedData.receiving.isEditMode = false
@@ -221,23 +219,15 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
       this.apiService.getDeviceData(mailroom,staging).subscribe({
         next: (v: any) => {
           this.gridDataDevice = v;
-          console.log("apiresp",this.gridDataDevice)
           this.gridDataDevice.forEach((d, index) => {
-            // d.employeeSelected = this.employees.find(e => e.EmployeeID == d.lotOwnerID);
             d.countrySelected = this.countries.find(c => c.countryName == d.coo)
             d.deviceTypeSelected = this.deviceTypes.find(dt => dt.deviceTypeID == d.deviceTypeID)
-            // if (index == 0) {
-            //   this.lotCategorySelected = this.lotCategories.find(c => c.lotCategoryID == d.lotCategoryID)
-            // }
             if (d.lotIdentifier) {
               d.lotIdentifierSelected = this.lotIdentifiers.find(l => l.id == d.lotIdentifier);
             }
             d.isEditable = !!(d.isReceived && d.canEdit);
             d.rowActionMenu = this.RowActionMenuDevice.map(o => ({ ...o }));
           })
-          
-          // if(this.gridDataDevice.length > 0)
-          //   this.disableReceipt();
         }
       });
     }
@@ -435,8 +425,7 @@ const payload = {
             <div class="row"><span class="label">Customer Count:</span> ${data.Cust_Cnt}</div>
             <div class="row"><span class="label">Expedite:</span> ${data.Expedite}</div>
             <div class="row"><span class="label">IQA Optional:</span> ${data.IQA_Optional}</div>
-            <div class="row"><span class="label">Device Type Name:</span> ${data.deviceTypes}</div>
-            <div class="row"><span class="label">Device:</span> ${data.device}</div>
+            <div class="row"><span class="label">Device Type Name:</span> ${data.Device_Type_Name}</div>
             <div class="row"><span class="label">Lot Owner:</span> ${data.Lot_Owner}</div>
             <div class="row"><span class="label">Lot Identifier:</span> ${data.Lot_Identifier}</div>
             <div class="row"><span class="label">Label Count:</span> ${data.Label_Count}</div>
@@ -454,9 +443,9 @@ const payload = {
       Cust_Lot: dataItem.customerLotNumber,  
       Cust_Cnt: dataItem.customerCount,  
       Expedite: dataItem.expedite,  
+      IQA_Optional: dataItem.iqa,
       Device_Type_Name : dataItem.deviceType,
-      Device: dataItem.devi,  
-      Lot_Owner: dataItem.lot,  
+      Lot_Owner: dataItem.lotOwner,  
       Lot_Identifier: dataItem.lotIdentifier,  
       Label_Count: dataItem.labelCount,  
       Date_Code: dataItem.dateCode,  

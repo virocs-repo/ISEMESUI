@@ -242,7 +242,7 @@
             <button kendoButton type="button" rounded="large" themeColor="info" (click)="addOthersRow()" 
               [disabled]="isDisabled.addHardware">Add</button>
           </div>
-          <kendo-grid #grid [kendoGridBinding]="gridData.data" class="bold-column-header cartons">
+          <kendo-grid #grid [kendoGridBinding]="gridData.data" class="bold-column-header wrap-header-grid">
             
             <!-- Dropdown for Type -->
             <kendo-grid-column field="type">
