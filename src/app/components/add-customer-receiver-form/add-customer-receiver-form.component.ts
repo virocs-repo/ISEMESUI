@@ -7,7 +7,8 @@ import { map, Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, Employee, HardwareItem, ICON, INIT_DEVICE_ITEM, InterimLot, InterimItem,
   MESSAGES, PostHardware, ReceiptLocation, Vendor,DeviceFamily,Coo,LotOwners,TrayPart,TrayVendor, Others,Hardware, Quotes, PurchaseOrder, Category,ReceiptDetails,
-  PackageCategory,LotDetails,TrayDetails,HardwareDetails,OtherDetails,ReceiptJson,} from 'src/app/services/app.interface';
+  PackageCategory,LotDetails,TrayDetails,HardwareDetails,OtherDetails,ReceiptJson,
+  CustomersLogin,} from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { environment } from 'src/environments/environment';
 
@@ -40,8 +41,8 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
     readonly vendors: Vendor[] = this.appService.masterData.entityMap.Vendor;
     vendorSelected: Vendor | undefined;
     behalfOfCusotmerSelected: Customer | undefined;
-    customerOptions: string[] = [];
-    customerSelected: string = '';
+    customerOptions: CustomersLogin[] = [];
+    customerSelected: CustomersLogin | undefined;
     readonly receiptLocation: ReceiptLocation[] = this.appService.masterData.receiptLocation
     receiptLocationSelected: ReceiptLocation | undefined;
     readonly employee: Employee[] = this.appService.masterData.entityMap.Employee
@@ -67,7 +68,7 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
     public trayQty: number | null = null;
     public hardwareQty: number | null = null;
     public otherQty: number | null = null;
-    readonly category : PackageCategory[] = this.appService.masterData.PackageCategory;
+    category : PackageCategory[] = this.appService.masterData.PackageCategory;
     quotesList:Quotes[] = this.appService.masterData?.Quotes ?? [];
     selectedQuotesList : Quotes | undefined;
     custometPurchase:PurchaseOrder[] = this.appService.masterData?.PurchaseOrder ?? [];
@@ -166,6 +167,7 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
     isHold : boolean = true;
     iqaOptional : boolean = true;
     num: any;
+  isCustomerForm: boolean = true;
       isCategorySelected(categories: string): boolean {
       return this.selectedCategories.some(category => category.categoryName === categories);
     }
@@ -180,12 +182,15 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
     }
     ngOnInit(): void {
       this.init();
+      this.category = this.appService.masterData.PackageCategory.filter(
+        c => c.categoryName.toLowerCase() !== 'others'
+      );      
       const user = this.employees.find(emp => emp.EmployeeID === this.appService.loginId);
-      // if (user) {
-      //   this.requestorSelected = user;
-      //   this.recipientSelected = user;
+      if (user) {
+        this.requestorSelected = user.EmployeeName;
+        //this.recipientSelected = user.EmployeeName;
       //   this.contactPerson= this.requestorSelected?.EmployeeName;
-      // }
+      }
       this.subscription.add(this.appService.sharedData.internalReceiverForm.eventEmitter.subscribe((v) => {
         switch (v) {
           case 'canCloseDialog?':
@@ -208,12 +213,29 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
       if(this.appService.sharedData.internalReceiverForm.isEditMode){
         this.isDisableInterim = true;
       }
-      this.apiService.CustomerLogin(this.appService.loginId).subscribe((res: string) => {
-        if (res) {
-          this.customerOptions = [res]; 
-          this.customerSelected = res; 
+      this.apiService.CustomerLogin(this.appService.loginId).subscribe({
+        next: (value: any) => {
+          this.customerOptions = value || [];
+      
+          // Set default selected value to the first item
+          if (this.customerOptions.length > 0) {
+            this.customerSelected = this.customerOptions[0];
+          }
+      
+          // Optionally: Save to appService if needed
+          this.appService.masterData.customersLogin = this.customerOptions;
+        },
+        error: (err) => {
+          console.error('Error loading customer login data', err);
         }
       });
+      if (this.isCustomerForm) {
+        this.selectedLotCategory = this.lotCategory.find(
+          category => category.serviceCategoryName === 'Engineering'
+        );
+      }
+      this.getISEPOList(775,true);
+      this.getDeviceFamilies(775)
     }
     ngOnDestroy(): void {
       this.appService.sharedData.internalReceiverForm.isEditMode = false
@@ -245,7 +267,8 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
         }
       }
     }
-    getISEPOList(selectedId: number , isCustomer: boolean) {
+    
+    getISEPOList(selectedId: number | undefined , isCustomer: boolean) {
       this.apiService.getISEPOList(selectedId, null, isCustomer).subscribe({
         next: (value: any) => {
           if (value) {
@@ -258,7 +281,6 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
         }
       });
     }  
-  
     private getDeviceFamilies(customerId: number) {
       this.apiService.DeviceFamily(customerId).subscribe({
         next: (value: any) => {
@@ -530,10 +552,6 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
           this.appService.errorMessage("Please enter Customer LOT#");
           return;
         }
-        if (!lot.LotOwnerID) {
-          this.appService.errorMessage("Please select Lot Owner");
-          return;
-        }
         if (!lot.CustomerCount) {
           this.appService.errorMessage("Please enter Expected Qty");
           return;
@@ -552,9 +570,9 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
           this.appService.errorMessage("Please select Project/Device Name");
           return;
         }
-        if(!hw.HardwareId){
-          this.appService.errorMessage("Please select Hardware Id")
-        }
+        //if(!hw.HardwareId){
+          //this.appService.errorMessage("Please select Hardware Id")
+        //}
       }
     }
       if (this.isCategorySelected("Tray")) {
@@ -1103,32 +1121,6 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
         this.isDisabledBehalfOfCusotmer = false
       }
       
-    }
-    onChangeCustomerName() {
-      this.behalfOfCusotmerSelected = undefined;
-      this.isDisabledBehalfOfCusotmer = false;
-      if (this.customerTypeSelected?.customerTypeName === 'Customer') {
-        this.isDisabledBehalfOfCusotmer = true;
-        //this.behalfOfCusotmerSelected = this.customerSelected;
-    
-        //const customerId = this.customerSelected?.CustomerID;
-        // if (customerId) {
-        //   this.getISEPOList(customerId, true);  // true indicates Customer
-        //   this.getDeviceFamilies(customerId)
-        // }
-      }
-    
-      this.onChangeBehalfOfCusotmer();
-    }
-  
-    onChangeVendorName() {
-      if (this.customerTypeSelected?.customerTypeName === 'Vendor') {  
-        const vendorId = this.vendorSelected?.VendorID;
-        if (vendorId) {
-          this.getISEPOList(vendorId, true);  
-          this.getDeviceFamilies(vendorId)
-        }
-      }  
     }
     
     onChangeBehalfOfCusotmer() {
