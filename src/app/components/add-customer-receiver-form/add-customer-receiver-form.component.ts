@@ -352,9 +352,7 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
   
       const receiptDetails : ReceiptDetails = {
         IsInterim: this.isInterim,
-          CustomerTypeID: this.customerTypeSelected?.customerTypeID ?? null,
-          //CustomerVendorName: this.customerSelected?.CustomerName ?? null,
-          BehalfID: this.behalfOfCusotmerSelected?.CustomerID ?? null,
+          CustomerVendorName: this.customerSelected ?? null,
           Recipient: this.recipientSelected ?? null,
           Sendor: this.requestorSelected ?? null,
           ReceivingFacilityID: this.receiptLocationSelected?.receivingFacilityID ?? null,
@@ -424,40 +422,6 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
         OtherDetails: otherDetailss
       }
       console.log(this.otherData);
-      if (!this.customerTypeSelected) {
-        this.appService.errorMessage('Please select customer/vendor');
-        return;
-      }
-      if (this.customerTypeSelected?.customerTypeName == 'Customer') {
-        ticket.ReceiptDetails.BehalfID = this.behalfOfCusotmerSelected?.CustomerID || null;
-        if (this.customerSelected) {
-          // custom value by user
-          //ticket.ReceiptDetails.CustomerVendorName = this.customerSelected?.CustomerName
-          this.receipt.isValid.customer = true;
-        } else {
-          this.receipt.isValid.customer = false;
-          this.appService.errorMessage('Please select customer');
-          return;
-        }
-      } else {
-        if (this.vendorSelected) {
-          if (this.vendorSelected?.VendorID == 9999) {
-            // due to new entry refresh masterdata
-            this.appService.refreshVendors = true;
-            ticket.ReceiptDetails.CustomerVendorName = this.vendorSelected.VendorName;
-          } else {
-            ticket.ReceiptDetails.CustomerVendorName = this.vendorSelected?.VendorName || null;
-          }
-          ticket.ReceiptDetails.BehalfID = this.behalfOfCusotmerSelected?.CustomerID || null;
-        } else {
-          this.appService.errorMessage('Please select vendor');
-          return;
-        }
-      }
-      if (!this.behalfOfCusotmerSelected) {
-        this.appService.errorMessage('Please select Behalf of Customer');
-        return;
-      }
       
       if (!this.receiptLocationSelected) {
         this.appService.errorMessage('Please select ISE destination location');

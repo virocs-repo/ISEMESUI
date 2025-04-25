@@ -14,6 +14,7 @@
           <kendo-card-body class="card-flex">
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label text="Customer / Vendor" class="k-w-full">
+                <b class="required-label"></b>
                 <kendo-combobox [data]="customerTypes" [(ngModel)]="customerTypeSelected"
                   (ngModelChange)="onChangeCustomerType()" [textField]="'customerTypeName'"
                   [valueField]="'customerTypeID'" [kendoDropDownFilter]="filterSettings" placeholder="Select"
@@ -38,6 +39,7 @@
             </div>
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label text="Behalf of Customer" class="k-w-full">
+                <b class="required-label"></b>
                 <kendo-combobox [data]="customers" [(ngModel)]="behalfOfCusotmerSelected" [textField]="'CustomerName'"
                   [valueField]="'CustomerID'" placeholder="Select" rounded="large"
                   (ngModelChange)="onChangeBehalfOfCusotmer()" [kendoDropDownFilter]="filterSettings"
