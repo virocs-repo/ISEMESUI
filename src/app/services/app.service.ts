@@ -86,6 +86,7 @@ export class AppService {
     lotCategory: [],
     deviceType: [],
     receivingTypes:[],
+    customersLogin:[]
   }
   sharedData: {
     receiving: SharedInfo

@@ -92,6 +92,11 @@ export interface Category{
   serviceCategoryId: number
   serviceCategoryName: string
 }
+export interface CustomersLogin
+{
+  customerId : number
+  customerName : string
+}
 export interface MasterData {
   customerType: CustomerType[]
   receiptLocation: ReceiptLocation[]
@@ -118,6 +123,7 @@ export interface MasterData {
   lotCategory: LotCategory[];
   deviceType: DeviceType[];
   receivingTypes: ReceivingTypes[];
+  customersLogin: CustomersLogin[];
 }
 export interface Receipt {
   receiptID: number;
