@@ -939,4 +939,8 @@ getShippingAddressData(
     };
     return this.httpClient.post(`${API}v1/ise/inventory/processReceivingData`, body);
   }
+  getRecevingFormDetails(receiptId: number) {
+    const url = `${API}v1/ise/inventory/GetReceivingById?receiptId=${receiptId}`;
+    return this.httpClient.get(url);
+  }
 }                                                     

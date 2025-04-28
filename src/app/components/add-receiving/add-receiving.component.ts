@@ -78,7 +78,8 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
   isDisableHoldComments = false;
   isDisableReceipt = false;
   behalfOfCusotmerSelected:any;
-
+  isViewMode: boolean = false;
+  isEditMode: boolean = false;
   
   readonly employees: Employee[] = this.appService.masterData.entityMap.Employee
   selectableSettings: any = {
@@ -107,6 +108,7 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
   private readonly RowActionMenuDeviceAdd: MenuItem[] = [
     { text: 'Remove', svgIcon: ICON.trashIcon }
   ]
+  recevingFormDetails: any;
 
   constructor(public appService: AppService, private apiService: ApiService) { 
     
@@ -132,67 +134,52 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
           break;
       }
     }))
-    // this.initRoleBasedUI()
   }
   ngOnDestroy(): void {
-    this.appService.sharedData.receiving.isEditMode = false
-    this.appService.sharedData.receiving.isViewMode = false;
+    this.appService.sharedData.receivingForm.isEditMode = false
+    this.appService.sharedData.receivingForm.isViewMode = false;
     this.subscription.unsubscribe();
   }
 
-  private initRoleBasedUI() {
-    const appMenu = this.appService.userPreferences?.roles.appMenus.find(am => am.menuTitle == "Receiving Menu");
-    if (!appMenu) {
-      console.error('No appMenus found');
-      return;
-    }
-    if (this.appService.sharedData.receiving.isEditMode) {
-      // edit mode
-      const appFeatureFields = appMenu.appFeatures?.find(af => af.featureName == "Receiving Edit")?.appFeatureFields
-      if (appFeatureFields) {
-        this.initInputFields(appFeatureFields);
-      }
-    } else if (this.appService.sharedData.receiving.isViewMode) {
-      // view mode
-      // in view mode all the field are disabled
-    } else {
-      // add mode
-      const appFeatureFields = appMenu.appFeatures?.find(af => af.featureName == "Receiving Add")?.appFeatureFields
-      if (appFeatureFields) {
-        this.initInputFields(appFeatureFields);
+    init() {
+      if(this.appService.sharedData.receivingForm.isEditMode || this.appService.sharedData.receivingForm.isViewMode){
+        this.getRecevingFormDetails(this.appService.sharedData.receivingForm.dataItem.receiptId);
+        this.isViewMode = this.appService.sharedData.receivingForm.isViewMode;
+        this.isEditMode = this.appService.sharedData.receivingForm.isEditMode;
       }
     }
-  }
-  private initInputFields(appFeatureFields: AppFeatureField[]) {
-    appFeatureFields.forEach(aff => {
-      switch (aff.featureFieldName) {
-        case "ReceiptHold":
-          debugger;
-          this.isDisableHoldComments = !aff.isWriteOnly
-          break;
-        default:
-          break;
-      }
-    });
-  }
-
-  private init() {
-    
-    // this.fetchDataDevice();
-  }
-
-  onChangeBehalfOfCusotmer() {
-    if (this.appService.sharedData.receiving.dataItem) {
-      this.appService.sharedData.receiving.dataItem.behalfID = this.behalfOfCusotmerSelected?.CustomerID;
-      this.fetchDevicesByCustomer();
+    getRecevingFormDetails(receiptId:number)  {
+      this.apiService.getRecevingFormDetails(receiptId).subscribe({
+        next : (data:any) => {
+          this.recevingFormDetails = data;
+          this.bindData();
+        },
+        error: (err) => {
+  
+        }
+      })
     }
-  }
+    bindData() {
+      if (this.recevingFormDetails) {
+        this.mailroomNumber = this.recevingFormDetails.mailRoomNo || '';
+        this.stagingLocation = this.recevingFormDetails.stagingLocation || '';
+        this.gridDataDevice = this.recevingFormDetails.devices || [];
+        this.gridDataDevice.forEach((d, index) => {
+          d.countrySelected = this.countries.find(c => c.countryName == d.coo);
+          d.deviceTypeSelected = this.deviceTypes.find(dt => dt.deviceTypeID == d.deviceTypeID);
+          if (d.lotIdentifier) {
+            d.lotIdentifierSelected = this.lotIdentifiers.find(l => l.id == d.lotIdentifier);
+          }
+          d.isEditable = !!(d.isReceived && d.canEdit);
+          d.rowActionMenu = this.RowActionMenuDevice.map(o => ({ ...o }));
+        })
+      }
+    }    
 
   private fetchDevicesByCustomer() {
     
     const dataItem = this.appService.sharedData.receiving.dataItem;
     if (!dataItem.behalfID) {
-      // this is for new form
       return;
     }
     if (this.currentBehalfID == dataItem.behalfID) {
@@ -249,11 +236,11 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
       return;
     }
     const missingDevice = updatedRows.filter(d => !d.deviceID);
-const missingReceipt = updatedRows.filter(d => !d.receiptID);
-const missingDateCode = updatedRows.filter(d => !d.dateCode?.toString().trim());
-const missingLabelCount = updatedRows.filter(d => !d.labelCount?.toString().trim());
-const missingCOO = updatedRows.filter(d => !d.coo);
-const missingLotId = updatedRows.filter(d => !d.lotId);
+    const missingReceipt = updatedRows.filter(d => !d.receiptID);
+    const missingDateCode = updatedRows.filter(d => !d.dateCode?.toString().trim());
+    const missingLabelCount = updatedRows.filter(d => !d.labelCount?.toString().trim());
+    const missingCOO = updatedRows.filter(d => !d.coo);
+    const missingLotId = updatedRows.filter(d => !d.lotId);
 
 if (missingDevice.length > 0) {
   this.appService.errorMessage('Device is required for all edited rows.');
@@ -536,26 +523,29 @@ const payload = {
     });
   }
   
-  valueNormalizerCustomer = (text: Observable<string>) => text.pipe(map((content: string) => {
-    const customer: Customer = { CustomerID: 9999, CustomerName: content };
-    return customer;
-  }));
-  valueNormalizerVendor = (text: Observable<string>) => text.pipe(map((content: string) => {
-    const vendor: Vendor = { VendorID: 9999, VendorName: content };
-    return vendor
-  }));
-  
-  
-  private areThereAnyChanges() {
-    // new form
-    const valuesToCheck = [
-      this.stagingLocation,
-      
-    ]
-    const hasTruthyValue = valuesToCheck.some(v => v);
-    return hasTruthyValue
+  private areThereAnyChanges(): boolean {
+    if (this.appService.sharedData.receivingForm.isViewMode || this.appService.sharedData.receivingForm.isEditMode) {
+      return false
+    }
+    else{
+      const valuesToCheck = [
+        this.mailroomNumber,
+        this.stagingLocation,
+        ...(this.gridDataDevice || []) 
+      ];
+    
+      const hasTruthyValue = valuesToCheck.some(v => {
+        if (Array.isArray(v)) {
+          return v.length > 0;
+        }
+        return !!v;
+      });
+    
+      return hasTruthyValue;
+    }
+    
   }
-
+  
   // print
   @ViewChild('pdfExport', { static: true }) pdfExportComponent!: PDFExportComponent;
   printSection() {
@@ -596,36 +586,10 @@ const payload = {
       }
     })
   }
-
-  // canUndoReceive(dataItem:any) {
-    
-  //   if(!dataItem.inventoryID || dataItem.inventoryID < 1) {
-  //     return;
-  //   }
-
-  //   this.apiService.canUndoReceive(dataItem.inventoryID).subscribe({
-  //     next: (v:any) => {
-        
-  //       if(v == true)
-  //       {
-  //         dataItem.recordStatus = 'U';
-  //         dataItem.isReceived = false;
-  //         if (dataItem.rowActionMenu) {
-  //           dataItem.rowActionMenu[0].disabled = false;
-  //           dataItem.rowActionMenu[1].disabled = true;
-  //         }
-  //       }
-  //       else
-  //       {
-  //         alert("You are not allowed to undo recieve this line item now.");
-  //       }
-  //     }})
-  // }
   private receiveRow(dataItem:any) {
     
     dataItem.isEditable = true;
     dataItem.isReceived = true;
-    // dataItem.dateCode = parseInt(dataItem.dateCode) || '';
     if (dataItem.rowActionMenu) {
       dataItem.rowActionMenu[0].disabled = true;
       dataItem.rowActionMenu[1].disabled = false;
@@ -633,9 +597,7 @@ const payload = {
   }
   private canUndoReceive(dataItem:any) {
     
-    // dataItem.isEditable = true;
     dataItem.isReceived = false;
-    // dataItem.dateCode = parseInt(dataItem.dateCode) || '';
     if (dataItem.rowActionMenu) {
       dataItem.rowActionMenu[0].disabled = false;
       dataItem.rowActionMenu[1].disabled = true;
