@@ -296,17 +296,15 @@ export class SearchReceivingComponent implements OnDestroy {
         })
         break;
       case 'View Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = false;
-        this.appService.sharedData.receiving.isViewMode = true;
-        // access the same in receipt component
+        this.appService.sharedData.receivingForm.dataItem = dataItem
+        this.appService.sharedData.receivingForm.isEditMode = false;
+        this.appService.sharedData.receivingForm.isViewMode = true;
         this.openDialog()
         break;
       case 'Edit Data':
-        this.appService.sharedData.receiving.dataItem = dataItem
-        this.appService.sharedData.receiving.isEditMode = true;
-        this.appService.sharedData.receiving.isViewMode = false;
-        // access the same in receipt component
+        this.appService.sharedData.receivingForm.dataItem = dataItem
+        this.appService.sharedData.receivingForm.isEditMode = true;
+        this.appService.sharedData.receivingForm.isViewMode = false;
         this.openDialog()
         break;
 

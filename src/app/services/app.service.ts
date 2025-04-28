@@ -100,6 +100,7 @@ export class AppService {
     customerReceiverForm:SharedInfo
     internalReceiverForm:SharedInfo
     mailRoom:SharedInfo
+    receivingForm:SharedInfo
 
   } = {
       receiving: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
@@ -112,7 +113,8 @@ export class AppService {
       addTicket: {isEditMode:false, isViewMode:false, dataItem: {}, eventEmitter: new EventEmitter()},
       customerReceiverForm: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()},
       internalReceiverForm: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()},
-      mailRoom: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()}
+      mailRoom: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()},
+      receivingForm: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()}
     }
   hardwareTypes: HardwareType[] = []
   userData: UserData = { email: '', name: '', firstName: '' }

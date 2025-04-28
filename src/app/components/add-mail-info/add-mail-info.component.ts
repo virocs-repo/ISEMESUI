@@ -276,6 +276,7 @@ isSignatureDisabled: boolean = false;
     this.customerSelected=undefined;
     this.isePOListSelected = null;
     this.vendorSelected=undefined;
+    this.isePOList = [];
     if (this.customerTypeSelected?.customerTypeName == 'Customer') {
       this.isDisabledBehalfOfCusotmer = true
     } else {

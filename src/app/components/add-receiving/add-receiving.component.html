@@ -1,6 +1,6 @@
-<div class="k-mx-2 minimal-table" id="addReceiptForm" [ngClass]="{'k-pointer-events-none':isDisabled.addReceipt}">
+<div class="k-mx-2 minimal-table" id="addReceiptForm" [ngClass]="{ 'k-pointer-events-none': isViewMode }">
       <div>
-      <div class="k-d-flex k-flex-wrap k-align-items-stretch k-gap-4 k-w-full label-fs" [ngClass]="{'k-pointer-events-none': isDisableReceipt}">
+      <div class="k-d-flex k-flex-wrap k-align-items-stretch k-gap-4 k-w-full label-fs" >
         <kendo-card class="card-blue k-flex-1 flex-auto-md">
           <kendo-card-body class="card-flex">
             <div class="k-d-flex k-flex-row k-align-items-end k-gap-6">
@@ -9,7 +9,7 @@
                 <kendo-label text="Scan Mailroom Number" class="k-w-full">
                   <b class="required-label"></b>
                   <kendo-textbox [(ngModel)]="mailroomNumber" placeholder="Scan Mailroom Number" rounded="large"
-                  >
+                  [disabled]="isEditMode">
                   </kendo-textbox>
                 </kendo-label>
               </div>
@@ -19,14 +19,14 @@
                 <kendo-label text="Scan Staging Location" class="k-w-full">
                   <b class="required-label"></b>
                   <kendo-textbox [(ngModel)]="stagingLocation" placeholder="Scan Staging Location" rounded="large"
-                    >
+                  [disabled]="isEditMode">
                   </kendo-textbox>
                 </kendo-label>
               </div>
         
               <!-- Submit Button -->
               <div>
-                <button kendoButton themeColor="info" (click)="onSearch()" rounded="large">
+                <button kendoButton themeColor="info" (click)="onSearch()" rounded="large" [disabled]="isEditMode">
                   Get Data
                 </button>
               </div>
@@ -44,21 +44,21 @@
             <!-- <kendo-grid-checkbox-column [width]="40" class="custom-kendo-checkbox"></kendo-grid-checkbox-column> -->
 
 
-            <kendo-grid-column field="iseLotNumber" title="ISE Lot#" [width]="100">
+            <kendo-grid-column field="iseLotNumber" title="ISE Lot#" [width]="80">
               <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                 <span [title]="dataItem.iseLotNumber">{{ dataItem.iseLotNumber }}</span>
               </ng-template>
             </kendo-grid-column>
 
 
-            <kendo-grid-column field="customerLotNumber" title="Cust lot#" [width]="70">
+            <kendo-grid-column field="customerLotNumber" title="Customer Lot#" [width]="100">
               <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <span [title]="dataItem.customerLotNumber">{{dataItem.customerLotNumber}}</span>
               </ng-template>
             </kendo-grid-column>
 
 
-            <kendo-grid-column field="customerCount" title="Cust Cnt" [width]="70">
+            <kendo-grid-column field="customerCount" title="Customer Count" [width]="100">
               <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <span [title]="dataItem.customerCount">{{dataItem.customerCount}}</span>
               </ng-template>
@@ -72,7 +72,7 @@
             </kendo-grid-column>
 
 
-            <kendo-grid-column field="iqa" title="IQA Optional" [width]="70">
+            <kendo-grid-column field="iqa" title="IQA Optional" [width]="100">
               <ng-template kendoGridCellTemplate let-dataItem>
                 <input type="checkbox" name="iqa" [(ngModel)]="dataItem.iqa" disabled kendoCheckBox>
               </ng-template>
@@ -100,7 +100,7 @@
             </kendo-grid-column>
 
 
-            <kendo-grid-column field="lotIdentifier" title="Lot Identifier" [width]="200">
+            <kendo-grid-column field="lotIdentifier" title="Lot Identifier" [width]="150">
               <ng-template kendoGridCellTemplate let-dataItem>
                 <kendo-combobox [data]="lotIdentifiers" [(ngModel)]="dataItem.lotIdentifierSelected" [textField]="'name'"
                   (ngModelChange)="onChangeLotIdentifier(dataItem)" [valueField]="'id'" placeholder="Select"
@@ -109,7 +109,7 @@
             </kendo-grid-column>
 
 
-            <kendo-grid-column field="labelCount" title="Label Count" [width]="80">
+            <kendo-grid-column field="labelCount" title="Received Count" [width]="100">
               <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                 <ng-container  *ngIf="dataItem.isEditable; else showValue">
                   <kendo-textbox [(ngModel)]="dataItem.labelCount" placeholder="Label Count"
@@ -175,8 +175,8 @@
       </div>
       <span style="margin-left: auto;"></span>
       <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" (click)="saveReceiving()"
-        [disabled]="isDisabled.addReceipt">Submit</button>
-      <button kendoButton type="button" rounded="large" themeColor="dark" style="width:6rem"
+      [disabled]="isViewMode">Submit</button>
+      <button kendoButton type="button" rounded="large" themeColor="dark" style="width:6rem" 
         (click)="printSection()">Print</button>
     </div>
   </div>
