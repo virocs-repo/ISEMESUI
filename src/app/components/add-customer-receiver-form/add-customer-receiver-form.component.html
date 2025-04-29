@@ -22,7 +22,7 @@
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label text="ISE destination location" class="k-w-full">
                 <b class="required-label"></b>
-                <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
+                <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected" [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode"
                   [textField]="'receivingFacilityName'" [valueField]="'receivingFacilityID'" [allowCustom]="true"
                   [kendoDropDownFilter]="filterSettings" placeholder="Select" rounded="large"></kendo-combobox>
               </kendo-label>
@@ -30,19 +30,19 @@
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label text="Recipient / Attention To" class="k-w-full">
                 <b class="required-label"></b>
-                <kendo-textbox [(ngModel)]="recipientSelected" placeholder="Enter recipient name" class="k-w-full k-rounded-lg"></kendo-textbox>
+                <kendo-textbox [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode" [(ngModel)]="recipientSelected" placeholder="Enter recipient name" class="k-w-full k-rounded-lg"></kendo-textbox>
               </kendo-label>
             
               <kendo-label text="Requestor / Sender Name" class="k-w-full">
                 <b class="required-label"></b>
-                <kendo-textbox [(ngModel)]="requestorSelected" placeholder="Enter requestor name" class="k-w-full k-rounded-lg"></kendo-textbox>
+                <kendo-textbox [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode" [(ngModel)]="requestorSelected" placeholder="Enter requestor name" class="k-w-full k-rounded-lg"></kendo-textbox>
               </kendo-label>
             </div>
             
           
               <div class="k-d-flex k-align-items-center k-gap-4">
                 <kendo-label text="Notes/Information" class="k-w-full">
-                  <kendo-textarea [(ngModel)]="notesInformation" [rows]="3" placeholder="Enter Notes/Information"
+                  <kendo-textarea [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode" [(ngModel)]="notesInformation" [rows]="3" placeholder="Enter Notes/Information"
                     rounded="large"></kendo-textarea>
                 </kendo-label>
               </div>
@@ -56,33 +56,33 @@
                 <b class="required-label"></b>
                 <kendo-combobox [data]="deliveryMode" [(ngModel)]="deliveryModeSelected"
                   [textField]="'deliveryModeName'" [valueField]="'deliveryModeID'" placeholder="Select" rounded="large"
-                  [kendoDropDownFilter]="filterSettings"
+                  [kendoDropDownFilter]="filterSettings" [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode"
                   [class.invalid]="!receipt.isValid.deliveryMode"></kendo-combobox>
               </kendo-label>
               <kendo-label
                 *ngIf="deliveryModeSelected?.deliveryModeName=='Customer Drop-Off' || deliveryModeSelected?.deliveryModeName=='Pickup'"
                 text="Phone" class="k-w-full">
                 <b *ngIf="deliveryModeSelected?.deliveryModeName=='Pickup'" class="required-label"></b>
-                <kendo-textbox [(ngModel)]="contactPhone" placeholder="Enter phone" rounded="large"
+                <kendo-textbox [(ngModel)]="contactPhone" placeholder="Enter phone" rounded="large" [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode"
                   [class.invalid]="!receipt.isValid.contactPhone" [attr.type]="'tel'" pattern="[0-9]*" (input)="validatePhone($event)"></kendo-textbox>
               </kendo-label>
               <kendo-label *ngIf="deliveryModeSelected?.deliveryModeName=='Courier'" text="Tracking/AWB#"
                 class="k-w-full">
                 <b class="required-label"></b>
-                <kendo-textbox [(ngModel)]="tracking" placeholder="Tracking/AWB" rounded="large"
+                <kendo-textbox [(ngModel)]="tracking" placeholder="Tracking/AWB" rounded="large" [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode"
                   [class.invalid]="!receipt.isValid.tracking"></kendo-textbox>
               </kendo-label>
             </div>
             <div *ngIf="deliveryModeSelected?.deliveryModeName=='Courier'"
               class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label text="Courier Name" class="k-w-full">
-                <kendo-combobox [data]="couriers" [(ngModel)]="courierSelected" [textField]="'courierName'"
+                <kendo-combobox [data]="couriers" [(ngModel)]="courierSelected" [textField]="'courierName'" [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode"
                   [kendoDropDownFilter]="filterSettings" [valueField]="'courierDetailID'" placeholder="Select"
                   rounded="large"></kendo-combobox>
               </kendo-label>
               <kendo-label text="Country From" class="k-w-full">
                 <b class="required-label"></b>
-                <kendo-combobox [data]="countries" [(ngModel)]="countrySelected" [textField]="'countryName'"
+                <kendo-combobox [data]="countries" [(ngModel)]="countrySelected" [textField]="'countryName'" [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode"
                   [kendoDropDownFilter]="filterSettings" [valueField]="'countryID'" placeholder="Select"
                   rounded="large"></kendo-combobox>
               </kendo-label>
@@ -90,20 +90,20 @@
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label text="Expected Date & Time" class="k-w-full">
                 <b class="required-label"></b>
-                <kendo-datetimepicker [format]="format" [(value)]="expectedDateTime"></kendo-datetimepicker>
+                <kendo-datetimepicker [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode" [format]="format" [(value)]="expectedDateTime"></kendo-datetimepicker>
               </kendo-label>
               <kendo-label
                 *ngIf="deliveryModeSelected?.deliveryModeName=='Customer Drop-Off' || deliveryModeSelected?.deliveryModeName=='Pickup'"
                 text="Contact Name" class="k-w-full">
                 <b class="required-label"></b>
-                <kendo-textbox [(ngModel)]="contactPerson" placeholder="Enter Contact Name" rounded="large"></kendo-textbox>
+                <kendo-textbox [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode" [(ngModel)]="contactPerson" placeholder="Enter Contact Name" rounded="large"></kendo-textbox>
               </kendo-label>
             </div>
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label
                 *ngIf="deliveryModeSelected?.deliveryModeName=='Customer Drop-Off' || deliveryModeSelected?.deliveryModeName=='Pickup'"
                 text="Email" class="k-w-full">
-                <kendo-textbox [(ngModel)]="email" placeholder="Enter your email" rounded="large"></kendo-textbox>
+                <kendo-textbox [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode" [(ngModel)]="email" placeholder="Enter your email" rounded="large"></kendo-textbox>
               </kendo-label>
             </div>
             <div class="k-d-flex k-align-items-center k-gap-4" kendoTooltip>
@@ -112,20 +112,20 @@
                 <b class="required-label"></b>
                 <kendo-combobox [data]="addresses" [(ngModel)]="addressSelected" (ngModelChange)="onChangeAddress()"
                   [textField]="'fullAddress'" [valueField]="'addressId'" placeholder="Select"
-                  [kendoDropDownFilter]="filterSettings" rounded="large"
+                  [kendoDropDownFilter]="filterSettings" rounded="large" [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode"
                   [title]="addressSelected?.fullAddress || ''"></kendo-combobox>
               </kendo-label>
             </div>
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label text="Pick Up/DropOff Instructions for Receiving" class="k-w-full">
-                <kendo-textarea [(ngModel)]="PickupDropoffComments" [rows]="3" placeholder="Enter Pick Up/DropOff Instructions for Receiving"
+                <kendo-textarea [(ngModel)]="PickupDropoffComments" [rows]="3" placeholder="Enter Pick Up/DropOff Instructions for Receiving" [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode"
                   rounded="large"></kendo-textarea>
               </kendo-label>
             </div>
             <div class="k-d-flex k-align-items-center k-gap-4">
               <kendo-label text="Number of Packages" class="k-font-size-sm">
                 <b class="required-label"></b>
-                <kendo-numerictextbox [(ngModel)]="selectedQty" [min]="0" 
+                <kendo-numerictextbox [(ngModel)]="selectedQty" [min]="0"  [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode"
                 [format]="'n0'"  [spinners]="true" (valueChange)="onQtyChange($event)"
                 [step]="1"placeholder="Enter"></kendo-numerictextbox>
               </kendo-label>
@@ -193,6 +193,7 @@
                   <b class="required-label"></b>
                 </kendo-label>
                 <kendo-combobox
+                  [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode"
                   [data]="lotCategory"
                   [(ngModel)]="selectedLotCategory"
                   [textField]="'serviceCategoryName'"
@@ -204,6 +205,7 @@
               </div>           
               <button
                 kendoButton
+                [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode"
                 (click)="getGeneratedLotNumber()"
                 themeColor="primary"
                 icon="plus"
@@ -216,17 +218,17 @@
             [resizable]="true" class="bold-column-header wrap-header-grid">
               <kendo-grid-column field="ISELotNumber" title="ISE LOT#">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                  <kendo-textbox [(ngModel)]="dataItem.ISELotNumber" placeholder="Enter ISE LOT" ></kendo-textbox>
+                  <kendo-textbox [disabled]="!canEdit && this.appService.sharedData.internalReceiverForm.isEditMode" [(ngModel)]="dataItem.ISELotNumber" placeholder="Enter ISE LOT" ></kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="CustomerLotNumber" title="Customer LOT#">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                  <kendo-textbox [(ngModel)]="dataItem.CustomerLotNumber" placeholder="Enter Customer LOT" >{{dataItem.CustomerLotNumber}}</kendo-textbox>
+                  <kendo-textbox [disabled]="!canEdit && this.appService.sharedData.internalReceiverForm.isEditMode" [(ngModel)]="dataItem.CustomerLotNumber" placeholder="Enter Customer LOT" >{{dataItem.CustomerLotNumber}}</kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="CustomerCount" title="Expected Qty">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                  <kendo-numerictextbox [(ngModel)]="dataItem.CustomerCount" [format]="'n0'" placeholder="Enter Expected Qty" [class.ng-touched]="dataItem.error"></kendo-numerictextbox>
+                  <kendo-numerictextbox [disabled]="!canEdit && this.appService.sharedData.internalReceiverForm.isEditMode" [(ngModel)]="dataItem.CustomerCount" [format]="'n0'" placeholder="Enter Expected Qty" [class.ng-touched]="dataItem.error"></kendo-numerictextbox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="DeviceTypeID" title="Device Name">
@@ -238,12 +240,13 @@
                     [textField]="'deviceFamilyName'" 
                     [valueField]="'deviceFamilyId'"
                     [valuePrimitive]="true"
+                    [disabled]="!canEdit && this.appService.sharedData.internalReceiverForm.isEditMode"
                     placeholder="Select Device Family"></kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="DateCode" title="Date Code">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
-                  <kendo-textbox [(ngModel)]="dataItem.DateCode" placeholder="Enter Date Code" ></kendo-textbox>
+                  <kendo-textbox [disabled]="!canEdit && this.appService.sharedData.internalReceiverForm.isEditMode" [(ngModel)]="dataItem.DateCode" placeholder="Enter Date Code" ></kendo-textbox>
                 </ng-template>
               </kendo-grid-column>
               <kendo-grid-column field="COO" title="COO">
@@ -255,6 +258,7 @@
                   [textField]="'serviceCategoryName'"
                   [valueField]="'serviceCategoryId'" 
                   [valuePrimitive]="true"
+                  [disabled]="!canEdit && this.appService.sharedData.internalReceiverForm.isEditMode"
                   placeholder="Select COO"></kendo-combobox>
                 </ng-template>
               </kendo-grid-column>
@@ -266,7 +270,7 @@
             <div class="k-mt-6">
             <div class="tray-header">
               <h2 class="k-m-0">Hardware</h2>
-              <button kendoButton (click)="addHardwareRow()" themeColor="primary" style="width: 70px;" icon="plus">Add</button>
+              <button kendoButton (click)="addHardwareRow()" themeColor="primary" style="width: 70px;" icon="plus" [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode">Add</button>
             </div>
             <kendo-grid [kendoGridBinding]="hardwareDetails" [selectable]="selectableSettings" [sortable]="true"
             [resizable]="true" class="bold-column-header wrap-header-grid">
@@ -306,7 +310,7 @@
             <div class="k-mt-6">
             <div class="tray-header">
               <h2 class="k-m-0">Tray</h2>
-              <button kendoButton (click)="addTrayRow()" themeColor="primary" style="width: 70px;" icon="plus">Add</button>
+              <button kendoButton (click)="addTrayRow()" themeColor="primary" style="width: 70px;" icon="plus" [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode">Add</button>
             </div>
             <kendo-grid [kendoGridBinding]="trayDetails" [selectable]="selectableSettings" [sortable]="true"
             [resizable]="true" class="bold-column-header wrap-header-grid">
