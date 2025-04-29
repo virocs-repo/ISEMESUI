@@ -97,6 +97,8 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
     otherDetails: string='';
     requestID : number = 0;
     isViewMode: boolean = false;   
+    canEditHeader: boolean = false;
+    canEdit: boolean = false; 
     isHoldCheckboxEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
       featureField?.find(o => o.featureFieldName == 'HoldCheckbox')?.active ?? true;
     isHoldCommentEnabled: boolean = this.appService.feature.find(o => o.featureName == "Receiving Add")?.
@@ -705,6 +707,8 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
           this.otherListDetails = this.num.others;
           this.receiverAttachements = this.num.receiptAttachments;
           this.filteredReceiverAttachements = this.num.receiptAttachments;
+          this.canEditHeader = this.num.receipt.canEditHeader;
+          this.canEdit = this.num.devices[0].canEditHeader;
           this.bindRecivingDetail();
         },
         error: (err) => {
