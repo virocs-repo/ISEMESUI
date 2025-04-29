@@ -38,7 +38,7 @@
       <div>
         <h3 class="k-my-2">Device</h3>
       </div>
-        <div class="page-body">
+        <div class="page-body" #contextMenu>
           <kendo-grid [kendoGridBinding]="gridDataDevice" [selectable]="selectableSettings" [sortable]="true"
             [resizable]="true" [scrollable]="'scrollable'" class="bold-column-header wrap-header-grida">
             <!-- <kendo-grid-checkbox-column [width]="40" class="custom-kendo-checkbox"></kendo-grid-checkbox-column> -->
@@ -112,8 +112,11 @@
             <kendo-grid-column field="labelCount" title="Received Count" [width]="100">
               <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                 <ng-container  *ngIf="dataItem.isEditable; else showValue">
-                  <kendo-textbox [(ngModel)]="dataItem.labelCount" placeholder="Label Count"
-                    [class.ng-touched]="dataItem.error" required></kendo-textbox>
+                  <kendo-numerictextbox [(ngModel)]="dataItem.labelCount" placeholder="Label Count"[decimals]="0"
+                  [format]="'n0'"
+                  [step]="1"
+                  [min]="0"
+                    [class.ng-touched]="dataItem.error" (ngModelChange)="onEdit(dataItem)" required></kendo-numerictextbox>
                 </ng-container>
                 <ng-template #showValue>
                   <span>{{dataItem.labelCount}}</span>
@@ -126,7 +129,7 @@
               <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                 <ng-container  *ngIf="dataItem.isEditable; else showValue">
                   <kendo-textbox [(ngModel)]="dataItem.dateCode" placeholder="Date Code"
-                    [class.ng-touched]="dataItem.error" required></kendo-textbox>
+                    [class.ng-touched]="dataItem.error" (ngModelChange)="onEdit(dataItem)" required></kendo-textbox>
                 </ng-container>
                 <ng-template #showValue>
                   <span>{{dataItem.dateCode}}</span>
@@ -148,7 +151,7 @@
               </ng-template>
             </kendo-grid-column>
 
-          
+
             <kendo-grid-column field="isHold" title="Hold" [width]="60">
               <ng-template kendoGridCellTemplate let-dataItem >
                 <input type="checkbox" name="isHold" [(ngModel)]="dataItem.isHold" disabled kendoCheckBox>
@@ -160,8 +163,16 @@
               <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                 <button kendoButton [svgIcon]="ICON.moreVerticalIcon" class="k-ml-auto"
                   (click)="onOpenRowActionMenu(dataItem)" #rowActionMenuTarget></button>
-                <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="dataItem.rowActionMenu"
-                  (select)="onSelectRowActionMenu($event, dataItem, rowIndex)"></kendo-contextmenu>
+                <!-- <kendo-contextmenu showOn="click" [target]="rowActionMenuTarget" [items]="dataItem.rowActionMenu"
+                  (select)="onSelectRowActionMenu($event, dataItem, rowIndex)"></kendo-contextmenu> -->
+                  <div >
+                    <kendo-contextmenu
+                        showOn="click"
+                        [target]="rowActionMenuTarget"
+                        [items]="dataItem.rowActionMenu"
+                        (select)="onSelectRowActionMenu($event, dataItem, rowIndex)">
+                    </kendo-contextmenu>
+                  </div>
               </ng-template>
             </kendo-grid-column>
 

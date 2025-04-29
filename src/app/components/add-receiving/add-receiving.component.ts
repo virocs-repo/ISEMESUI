@@ -1,7 +1,7 @@
-import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { ActiveColorClickEvent } from '@progress/kendo-angular-inputs';
-import { ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
+import { ContextMenuComponent, ContextMenuEvent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
 import { PDFExportComponent } from '@progress/kendo-angular-pdf-export';
 import { map, Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
@@ -31,7 +31,7 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
   
   @Output() onClose = new EventEmitter<void>();
   @Output() onRestart = new EventEmitter<void>();
-  
+  @ViewChild('contextMenu', { static: false }) contextMenu!: ElementRef;
   readonly lotCategories = this.appService.masterData.lotCategory;
   lotCategorySelected: LotCategory | undefined;
   
@@ -135,12 +135,26 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
       }
     }))
   }
+  ngAfterViewInit() {
+   if (this.contextMenu) {
+      debugger;
+       this.contextMenu.nativeElement.addEventListener('wheel', this.preventScroll, { passive: false });
+     }
+   }
+ 
   ngOnDestroy(): void {
     this.appService.sharedData.receivingForm.isEditMode = false
     this.appService.sharedData.receivingForm.isViewMode = false;
     this.subscription.unsubscribe();
+    if (this.contextMenu) {
+       this.contextMenu.nativeElement.removeEventListener('wheel', this.preventScroll);
+     }
   }
 
+  private preventScroll(event: WheelEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
     init() {
       if(this.appService.sharedData.receivingForm.isEditMode || this.appService.sharedData.receivingForm.isViewMode){
         this.getRecevingFormDetails(this.appService.sharedData.receivingForm.dataItem.receiptId);
