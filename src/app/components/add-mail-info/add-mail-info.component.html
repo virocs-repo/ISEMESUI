@@ -1,4 +1,4 @@
-<div class="k-mx-2 minimal-table" id="addReceiptForm" [ngClass]="{ 'k-pointer-events-none': isViewMode }">
+<div class="k-mx-2 minimal-table" id="addReceiptForm" [ngClass]="{ 'k-pointer-events-none': isViewMode|| !isCanEdit }">
   <kendo-pdf-export #pdfExport>
     <div>
       <div class="k-d-flex k-flex-wrap k-align-items-stretch k-gap-4 k-w-full label-fs">
@@ -88,31 +88,47 @@
                   <div *ngIf="isDamaged" class="k-ml-4">
                     <label class="k-font-size-sm k-d-flex k-align-items-center">
                       <input type="checkbox" kendoCheckBox [(ngModel)]="placeLotOnHold" />
-                      <span class="k-ml-2">Place Lot on Hold</span>
+                      <span class="k-ml-2">Hold</span>
                     </label>
                   </div>
                 </div>
               </kendo-label>
             </div>
-            <kendo-label text="Signature">
-              <kendo-signature
-                #signatureRef
-                [(value)]="Signaturebase64Data"
-                [smooth]="true"
-                [maximizable]="false"
-                [hideLine]="true"
-                [disabled]="isSignatureDisabled">
-              </kendo-signature>
-              <div *ngIf="!isViewMode && isSignatureDisabled" class="signature-msg">
-                Please click the clear button to edit the signature.
-              </div>
-              <button
-                *ngIf="!isViewMode && isSignatureDisabled"
-                class="k-button k-button-md k-rounded-md k-button-solid k-button-solid-primary"
-                (click)="onClearSignature()">
-                Clear Signature
-              </button>
-            </kendo-label>
+            <div class="k-d-flex k-align-items-start k-gap-4">
+              <kendo-label text="Signature" class="k-w-full">
+                <div style="width: 100%; height: 110px;">
+                  <kendo-signature
+                    #signatureRef
+                    [(value)]="Signaturebase64Data"
+                    [smooth]="true"
+                    [maximizable]="false"
+                    [hideLine]="true"
+                    [disabled]="isSignatureDisabled"
+                    style="height: 100%; width: 100%;">
+                  </kendo-signature>
+                </div>
+            
+                <div *ngIf="!isViewMode && isSignatureDisabled" class="signature-msg mt-2">
+                  Please click the clear button to edit the signature.
+                </div>
+            
+                <button
+                  *ngIf="!isViewMode && isSignatureDisabled"
+                  class="k-button k-button-md k-rounded-md k-button-solid k-button-solid-primary mt-2"
+                  (click)="onClearSignature()">
+                  Clear Signature
+                </button>
+              </kendo-label>
+            
+              <kendo-label text="Hold Comments" class="k-w-full" *ngIf="placeLotOnHold">
+                <kendo-textarea
+                  [(ngModel)]="holdComments"
+                  placeholder="Enter hold comments"
+                  rounded="large"
+                  style="height: 110px; width: 100%;">
+                </kendo-textarea>
+              </kendo-label>
+            </div>                       
           </kendo-card-body>
         </kendo-card>
         <kendo-card class="card-blue k-flex-1 flex-auto-md">
@@ -317,7 +333,7 @@
       <span style="font-weight: normal;">Please print out the form and attach to the packages</span>
     </div>
     <span style="margin-left: auto;"></span>
-    <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" [disabled]="isViewMode" (click)="submitForm()">Submit</button>
+    <button kendoButton type="button" rounded="large" themeColor="success" style="width:6rem" [disabled]="isViewMode || !isCanEdit" (click)="submitForm()">Submit</button>
     <button kendoButton type="button" rounded="large" themeColor="dark" style="width:6rem" 
       (click)="printSection()">Print</button>
   </div>

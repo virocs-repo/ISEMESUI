@@ -38,6 +38,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   };
   mailId: any;
   isViewMode: boolean = false;
+  isCanEdit: boolean = true;
   awbMailCode='';
   scanLocation='';
   typeList: Others[] = this.appService.masterData?.Others ?? [];  
@@ -55,6 +56,7 @@ export class AddMailInfoComponent implements OnInit, OnDestroy {
   isPartialDelivery: boolean | undefined;
   isDamaged: boolean | undefined;
   placeLotOnHold: boolean = false;
+  holdComments: string = '';
   selectedCategory: PackageCategory[] = [];
   readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
   customerSelected: Customer | undefined;
@@ -178,9 +180,7 @@ isSignatureDisabled: boolean = false;
       if(this.appService.sharedData.mailRoom.isEditMode || this.appService.sharedData.mailRoom.isViewMode){
         this.getMailRoomDetails(this.appService.sharedData.mailRoom.dataItem.mailId);
         this.isViewMode = mailRoom.isViewMode;
-        if(this.appService.sharedData.mailRoom.isEditMode){
-          this.isDisableInterim = true;
-        }
+        this.isCanEdit = this.appService.sharedData.mailRoom.dataItem.canEdit;
       }
     }
     onRequestorChange(selectedEmployee: any) {
@@ -554,6 +554,7 @@ isSignatureDisabled: boolean = false;
       POId: this.isePOListSelected?.purchaseOrderId,
       Signaturebase64Data: this.Signaturebase64Data,
       Phone:this.contactPhone,
+      HoldComments:this.holdComments,
       OtherDetails: otherDetailsArray
     };    
 
@@ -710,6 +711,7 @@ isSignatureDisabled: boolean = false;
     
     this.selectedCategory = this.packageCategoryList.filter(cat => this.mailRoomDetails.packageCategory?.includes(cat.id));
     this.isePOListSelected = this.isePOList.find(po => po.purchaseOrderId === this.mailRoomDetails.poId);
+    this.holdComments = this.mailRoomDetails.holdComments;
     this.gridData.data = this.mailRoomDetails.others ?? [];
   }
   onClearSignature() {

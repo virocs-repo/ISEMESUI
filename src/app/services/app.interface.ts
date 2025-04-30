@@ -153,7 +153,8 @@ export interface Receipt {
   receivingStatus: string; // Corrected typo from "receivingStatus"
   signaturebase64Data: string;
   signatureDate: string;
-  active: boolean
+  active: boolean;
+  canEdit: boolean
 }
 export interface HardwareItem {
   hardwareID: number;
@@ -1119,6 +1120,7 @@ export interface MailRoomDetails {
   POId: number;
   Signaturebase64Data:string|null;
   Phone:string;
+  HoldComments: string|undefined;
   OtherDetails: {
     OtherId?: number | null;
     TypeId: number;
