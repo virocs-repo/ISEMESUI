@@ -137,7 +137,6 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
   }
   ngAfterViewInit() {
    if (this.contextMenu) {
-      debugger;
        this.contextMenu.nativeElement.addEventListener('wheel', this.preventScroll, { passive: false });
      }
    }

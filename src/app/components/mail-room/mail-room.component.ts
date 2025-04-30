@@ -357,8 +357,6 @@ export class MailRoomComponent implements OnDestroy {
     this.appService.sharedData.mailRoom.eventEmitter.emit('canCloseDialog?')
   }
   search() {
-    // this.fromDate = moment(this.range.start).format('MM-DD-YYYY');
-    // this.toDate = moment(this.range.end).format('MM-DD-YYYY');
     this.fetchdata()
   }
 
