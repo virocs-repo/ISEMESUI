@@ -113,6 +113,17 @@ isSignatureDisabled: boolean = false;
   hardware = {
     isItemsRemoved: false
   }
+  showConfirmationDialog = false;
+confirmationMessage = '';
+
+pendingSaveData: {
+  packageLabelFiles: File[],
+  shipmentPaperFiles: File[],
+  mailJson: string,
+  mailId: number,
+  loginId: number,
+  deletedAttachmentsJson: string
+} | null = null;
   tracking = ''
   customVendorName: string | undefined;
   readonly hardwareTypes = this.appService.hardwareTypes;
@@ -581,9 +592,45 @@ isSignatureDisabled: boolean = false;
     const mailJson = JSON.stringify(payload)
     const loginId = this.appService.loginId;
     const mailId = this.mailId ?? 0;
+    this.apiService.validateMailRoomInfoAsync(mailJson,mailId).subscribe({
+      next: (res: any) => {
+        if (res.success && res.returnCode > 0) {
+          this.proceedToSave(packageLabelFiles, shipmentPaperFiles, mailJson, mailId, loginId, deletedAttachmentsJson);
+        } else {
+          this.pendingSaveData = {
+            packageLabelFiles,
+            shipmentPaperFiles,
+            mailJson,
+            mailId,
+            loginId,
+            deletedAttachmentsJson
+          };
+          this.confirmationMessage = res.message;
+          this.showConfirmationDialog = true;          
+        }
+      },
+      error: () => {
+        this.appService.errorMessage('Validation failed. Please try again.');
+      }
+    });
+   
+  }
+  onDialogClose(confirmed: boolean): void {
+    this.showConfirmationDialog = false;
+  
+    if (confirmed && this.pendingSaveData) {
+      const { packageLabelFiles, shipmentPaperFiles, mailJson, mailId, loginId, deletedAttachmentsJson } = this.pendingSaveData;
+      this.proceedToSave(packageLabelFiles, shipmentPaperFiles, mailJson, mailId, loginId, deletedAttachmentsJson);
+    } else {
+      this.appService.errorMessage('Save operation cancelled.');
+    }
+  
+    this.pendingSaveData = null; // clear
+  }  
+  proceedToSave(packageLabelFiles: File[], shipmentPaperFiles: File[], mailJson:string, mailId:number, loginId:number, deletedAttachmentsJson:string) {
     this.apiService.saveMailRoomInfo(packageLabelFiles, shipmentPaperFiles, mailJson, mailId, loginId, deletedAttachmentsJson).subscribe({
       next: (v: any) => {
-        this.appService.successMessage(MESSAGES.DataSaved);
+        this.appService.successMessage(v?.message ?? MESSAGES.DataSaved);
         if (this.customerTypeSelected?.customerTypeName === 'Vendor' && this.vendorSelected?.VendorName) {
           this.apiService.getEntitiesName('Vendor').subscribe({
             next: (value: any) => {
@@ -597,7 +644,8 @@ isSignatureDisabled: boolean = false;
         this.onClose.emit();
       },
       error: (err) => {
-        this.appService.errorMessage(MESSAGES.DataSaveError);
+        const errorMsg = err?.error?.message ?? MESSAGES.DataSaveError;
+        this.appService.errorMessage(errorMsg);
         console.log(err);
       }
     });

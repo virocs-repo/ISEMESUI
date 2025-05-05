@@ -122,11 +122,11 @@
             
               <kendo-label text="Hold Comments" class="k-w-full" *ngIf="placeLotOnHold">
                 <kendo-textarea
-                  [(ngModel)]="holdComments"
-                  placeholder="Enter hold comments"
-                  rounded="large"
-                  style="height: 110px; width: 100%;">
-                </kendo-textarea>
+                [(ngModel)]="holdComments"
+                placeholder="Enter hold comments"
+                rounded="large"
+                style="height: 110px; width: 100%;">
+              </kendo-textarea>            
               </kendo-label>
             </div>                       
           </kendo-card-body>
@@ -337,4 +337,16 @@
     <button kendoButton type="button" rounded="large" themeColor="dark" style="width:6rem" 
       (click)="printSection()">Print</button>
   </div>
+  <kendo-dialog *ngIf="showConfirmationDialog" [minWidth]="450">
+    <kendo-dialog-titlebar>
+      Confirmation
+    </kendo-dialog-titlebar>
+  
+    <p>{{ confirmationMessage }}</p>
+  
+    <kendo-dialog-actions>
+      <button kendoButton (click)="onDialogClose(false)">No</button>
+      <button kendoButton themeColor="primary" (click)="onDialogClose(true)">Yes</button>
+    </kendo-dialog-actions>
+  </kendo-dialog>  
 </div>
