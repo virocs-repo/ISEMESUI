@@ -892,7 +892,13 @@ getShippingAddressData(
     const headers = new HttpHeaders({ 'Accept': '*/*' });
     return this.httpClient.post(`${API}v1/ise/inventory/savemailroominfo`, formData, { headers });
   }
-
+  validateMailRoomInfoAsync(mailJson: string, mailRoomId:number) {
+    const body = {
+      mailJson: mailJson,
+      mailRoomId: mailRoomId,
+    };
+    return this.httpClient.post(`${API}v1/ise/inventory/validatemailroom`, body);
+  }
   getSearchMailRoomReceiptData(statusID?: string | null, fromDate?: Date | null, toDate?: Date | null) {
     let params = new HttpParams();
   
