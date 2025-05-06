@@ -4,8 +4,15 @@
       <div class="k-d-flex k-flex-wrap k-align-items-center k-gap-6 k-mb-2">
         <i class="k-ml-auto d-none-sm"></i>
         <div class="k-d-flex k-align-items-center k-gap-2">
-          <input type="checkbox" name="IsInterim" id="IsInterim" [(ngModel)]="isInterim" [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode"
-            (ngModelChange)="onChangeInterim()" [disabled]="isDisableInterim" style="border: 1px solid" kendoCheckBox>
+          <input 
+            type="checkbox" 
+            name="IsInterim" 
+            id="IsInterim" 
+            [(ngModel)]="isInterim" 
+            [disabled]="!canEditHeader && this.appService.sharedData.internalReceiverForm.isEditMode"
+            (ngModelChange)="onChangeInterim()"
+            [disabled]="isDisableInterim" 
+            style="border: 1px solid" kendoCheckBox>
           <label for="IsInterim" kendoLabel> Is Interim</label>
         </div>
       </div>
@@ -160,7 +167,23 @@
     </div>
       <kendo-card class="card-green card-full k-mt-4">
         <kendo-card-body class="card-flex">
-          <kendo-label class="k-display-block" [for]="multiselect" text="Package Category">
+          <kendo-grid
+            [kendoGridBinding]="interimData"
+            *ngIf="isInterim"
+            [selectable]="{ checkboxOnly: true, mode: 'multiple' }"
+            [selectedKeys]="selectedInterimIds"
+            [sortable]="true"
+            [resizable]="true"
+            [kendoGridSelectBy]="'lotId'"
+            class="bold-column-header wrap-header-grid"
+            (selectedKeysChange)="onSelectedInterimKeysChange($event)">
+            <kendo-grid-checkbox-column [width]="40"></kendo-grid-checkbox-column>
+            <kendo-grid-column field="customerName" title="Customer"></kendo-grid-column>
+            <kendo-grid-column field="lotNumber" title="ISE Lot#"></kendo-grid-column>
+            <kendo-grid-column field="customerLotNumber" title="Customer Lot#"></kendo-grid-column>
+            <kendo-grid-column field="createdOn" title="Created On"></kendo-grid-column>
+          </kendo-grid>
+          <kendo-label *ngIf="!isInterim" class="k-display-block" [for]="multiselect" text="Package Category">
             <b class="required-label"></b>
             <kendo-multiselect 
               #multiselect
@@ -176,7 +199,7 @@
             </kendo-multiselect>
           </kendo-label> 
           <!-- Lot Grid -->
-           <ng-container *ngIf="isCategorySelected('Lot')">
+           <ng-container *ngIf="isCategorySelected('Lot') && !isInterim">
             <div class="k-mt-6">
             <h2 class="k-m-0">Lot</h2>
             <div class="k-d-flex k-align-items-end k-gap-4">
@@ -316,7 +339,7 @@
             </div>
           </ng-container>
           <!-- Hardware Grid -->
-          <ng-container *ngIf="isCategorySelected('Hardware')">
+          <ng-container *ngIf="isCategorySelected('Hardware') && !isInterim">
             <div class="k-mt-6">
             <div class="tray-header">
               <h2 class="k-m-0">Hardware</h2>
@@ -356,7 +379,7 @@
             </div>
           </ng-container>
           <!-- Tray Grid -->
-          <ng-container *ngIf="isCategorySelected('Tray')">
+          <ng-container *ngIf="isCategorySelected('Tray') && !isInterim">
             <div class="k-mt-6">
             <div class="tray-header">
               <h2 class="k-m-0">Tray</h2>
@@ -383,7 +406,7 @@
             </div>
           </ng-container>
           <!-- Other Grid -->
-          <ng-container *ngIf="isCategorySelected('Others')">
+          <ng-container *ngIf="isCategorySelected('Others') && !isInterim">
             <div class="k-mt-6">
             <div class="tray-header">
               <h2 class="k-m-0">Other</h2>

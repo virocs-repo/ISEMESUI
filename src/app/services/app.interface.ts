@@ -1140,11 +1140,12 @@ export interface ReceivingDetails {
 }
 
 export interface ReceiptJson {
-    ReceiptDetails: ReceiptDetails;
+  ReceiptDetails: ReceiptDetails;
   LotDetails: LotDetails[];
   HardwareDetails: HardwareDetails[];
   TrayDetails: TrayDetails[];
   OtherDetails: OtherDetails[];
+  InterimDetails: InterimDetails[];
 }
 
 export interface ReceiptRequest {
@@ -1213,6 +1214,12 @@ export interface OtherDetails {
   Qty: number | null;
 }
 
+export interface InterimDetails {
+  Id : number | null;
+  LotId: number | null;
+  InterimShippingId: number | null;
+  IsSelect: boolean;
+}
 export interface MailAttachment {
   attachmentId: number,
   objectID: number,
