@@ -136,6 +136,10 @@ export class ApiService {
     return this.httpClient.get(`${API}v1/ise/inventory/getReceiverFormInternalList?receiptId=${receiptId}`)
   }
 
+  getSearchInterimCustomerId(mailId?:number,customerId?:number){
+    return this.httpClient.get(`${API}v1/ise/inventory/getSearchInterimCustomerIdAsync?mailId=${mailId}&customerId=${customerId}`);
+  }
+
   Quotes(customerId: number){
     return this.httpClient.get(`${API}v1/ise/inventory/getQuotes?customerId=${customerId}`);
   }

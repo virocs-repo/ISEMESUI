@@ -8,7 +8,8 @@ import { ApiService } from 'src/app/services/api.service';
 import { Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, Employee, HardwareItem, ICON, INIT_DEVICE_ITEM, InterimLot, InterimItem,
   MESSAGES, PostHardware, ReceiptLocation, Vendor,DeviceFamily,Coo,LotOwners,TrayPart,TrayVendor, Others,Hardware, Quotes, PurchaseOrder, Category,ReceiptDetails,
   PackageCategory,LotDetails,TrayDetails,HardwareDetails,OtherDetails,ReceiptJson,
-  CustomersLogin,} from 'src/app/services/app.interface';
+  CustomersLogin,
+  InterimDetails,} from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { environment } from 'src/environments/environment';
 
@@ -367,6 +368,8 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
     trayDetails: TrayDetails[] = [];
     hardwareDetails: HardwareDetails[] = [];
     otherListDetails: OtherDetails[] = [];
+    interimDetails: InterimDetails[] = [];
+  
     onSubmit() {
       let receiptFormId = 0;
   const formData = this.appService.sharedData?.internalReceiverForm?.dataItem;
@@ -437,13 +440,22 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
           Qty: other.Qty ?? other.Qty ?? 0,
         };
       });
+      const interimDetailss = this.interimDetails.map(hardware => {
+        return {
+          Id : hardware.Id ?? hardware.Id ,
+          LotId: hardware.LotId ?? hardware.LotId ?? 0,
+          InterimShippingId: hardware.InterimShippingId ?? hardware.InterimShippingId ?? 0,
+          IsSelect: hardware.IsSelect ?? true
+        };
+      });    
      
       const ticket : ReceiptJson = {
         ReceiptDetails:receiptDetails,
         LotDetails:lotDetailss,
         HardwareDetails:hardwareDetailss,
         TrayDetails: trayDetailss,
-        OtherDetails: otherDetailss
+        OtherDetails: otherDetailss,
+        InterimDetails: interimDetailss
       }
       console.log(this.otherData);
       
@@ -537,12 +549,12 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
         this.appService.errorMessage('Please select Number of Packages')
         return;
       }
-      if (!this.selectedCategories || this.selectedCategories.length === 0) {
+      if (!this.isInterim && (!this.selectedCategories || this.selectedCategories.length === 0)) {
         this.appService.errorMessage('Please select Package Category');
         return;
       }
       
-      if (this.isCategorySelected("Lot")) {
+      if (this.isCategorySelected("Lot") && !this.isInterim) {
         if (!this.selectedLotCategory) {
           this.appService.errorMessage('Please select Lot Category');
           return;
@@ -560,7 +572,7 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
         }
       }
     }
-    if (this.isCategorySelected("Hardware")) {
+    if (this.isCategorySelected("Hardware") && !this.isInterim) {
       for (let i = 0; i < this.hardwareDetails.length; i++) {
         const hw = this.hardwareDetails[i];
   
@@ -577,7 +589,7 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
         //}
       }
     }
-      if (this.isCategorySelected("Tray")) {
+      if (this.isCategorySelected("Tray") && !this.isInterim) {
       
       for (let i = 0; i < this.trayDetails.length; i++) {
         const tray = this.trayDetails[i];
@@ -597,7 +609,7 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
       }
     }
   
-    if (this.isCategorySelected("Others")) {
+    if (this.isCategorySelected("Others") && !this.isInterim) {
       
       for (let i = 0; i < this.otherListDetails.length; i++) {
         const other = this.otherListDetails[i];

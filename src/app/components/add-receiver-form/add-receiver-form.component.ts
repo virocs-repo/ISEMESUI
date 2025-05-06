@@ -6,7 +6,8 @@ import { map, Observable, Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { Address, AppFeatureField, Country, CourierDetails, Customer, CustomerType, DeliveryMode, Employee, HardwareItem, ICON, INIT_DEVICE_ITEM, InterimLot, InterimItem,
    MESSAGES, PostHardware, ReceiptLocation, Vendor,DeviceFamily,Coo,LotOwners,TrayPart,TrayVendor, Others,Hardware, Quotes, PurchaseOrder, Category,ReceiptDetails,
-   PackageCategory,LotDetails,TrayDetails,HardwareDetails,OtherDetails,ReceiptJson,} from 'src/app/services/app.interface';
+   PackageCategory,LotDetails,TrayDetails,HardwareDetails,OtherDetails,ReceiptJson,
+   InterimDetails,} from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { environment } from 'src/environments/environment'
 
@@ -33,6 +34,8 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   @Output() onClose = new EventEmitter<void>();
   @Output() onRestart = new EventEmitter<void>();
   isInterim: boolean = false;
+  interimData: any[] = [];
+  public selectedInterimIds: number[] = [];
   readonly customerTypes: CustomerType[] = this.appService.masterData.customerType;
   customerTypeSelected: CustomerType | undefined;
   readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
@@ -330,18 +333,55 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     input.value = input.value.replace(/[^0-9]/g, '');
     this.contactPhone = input.value;
   }
+  
+  onChangeInterim(): void {
+    const mailId = this.appService.sharedData.internalReceiverForm.dataItem?.mailId || null;
+    const customerId = this.customerSelected?.CustomerID;
+    if (this.isInterim) {
+      if (customerId) {
+        this.apiService.getSearchInterimCustomerId(mailId, customerId).subscribe({
+          next: (data : any) => {
+            this.interimData = data as any[];
+          },
+          error: (err) => {
+            console.error('Error fetching interim data', err);
+          }
+        });
+      }
+    } else {
+      this.interimData = [];
+    }
+  }
+
+  onSelectedInterimKeysChange(selectedKeys: number[]) {
+    console.log('Selected Keys:', selectedKeys);
+  
+    this.selectedInterimIds = [...selectedKeys];
+  
+    this.interimDetails = this.interimData
+      .filter(item => selectedKeys.includes(item.lotId))
+      .map(item => ({
+        Id: null, // Assuming new entry
+        LotId: item.lotId,
+        InterimShippingId: item.interimShippingId,
+        IsSelect: true  // Or false, depending on your logic
+      }));
+  
+    console.log('Mapped Interim Details:', this.interimDetails);
+  }  
+  
   receiptDetails :ReceiptDetails[] = [];
   lotDetails: LotDetails[] = [];
   trayDetails: TrayDetails[] = [];
   hardwareDetails: HardwareDetails[] = [];
   otherListDetails: OtherDetails[] = [];
+  interimDetails: InterimDetails[] = [];
   onSubmit() {
     let receiptFormId = 0;
-const formData = this.appService.sharedData?.internalReceiverForm?.dataItem;
-if (formData && formData.receiptID) {
-  receiptFormId = formData.receiptID;
-}
-
+    const formData = this.appService.sharedData?.internalReceiverForm?.dataItem;
+    if (formData && formData.receiptID) {
+      receiptFormId = formData.receiptID;
+    }
     const receiptDetails : ReceiptDetails = {
       IsInterim: this.isInterim,
         CustomerTypeID: this.customerTypeSelected?.customerTypeID ?? null,
@@ -407,13 +447,22 @@ if (formData && formData.receiptID) {
         Qty: other.Qty ?? other.Qty ?? 0,
       };
     });
+    const interimDetailss = this.interimDetails.map(interim => {
+      return {
+        Id: interim.Id ?? null,
+        LotId: interim.LotId ?? interim.LotId ?? 0,
+        InterimShippingId: interim.InterimShippingId ?? interim.InterimShippingId ?? 0,
+        IsSelect: interim.IsSelect?? false
+      };
+    });    
    
     const ticket : ReceiptJson = {
       ReceiptDetails:receiptDetails,
       LotDetails:lotDetailss,
       HardwareDetails:hardwareDetailss,
       TrayDetails: trayDetailss,
-      OtherDetails: otherDetailss
+      OtherDetails: otherDetailss,
+      InterimDetails: interimDetailss
     }
     console.log(this.otherData);
     if (!this.customerTypeSelected) {
@@ -541,12 +590,12 @@ if (formData && formData.receiptID) {
       this.appService.errorMessage('Please select Number of Packages')
       return;
     }
-    if (!this.selectedCategories || this.selectedCategories.length === 0) {
+    if (!this.isInterim && (!this.selectedCategories || this.selectedCategories.length === 0)) {
       this.appService.errorMessage('Please select Package Category');
       return;
     }
     
-    if (this.isCategorySelected("Lot")) {
+    if (!this.isInterim && this.isCategorySelected("Lot")) {
       if (!this.selectedLotCategory) {
         this.appService.errorMessage('Please select Lot Category');
         return;
@@ -568,7 +617,7 @@ if (formData && formData.receiptID) {
       }
     }
   }
-  if (this.isCategorySelected("Hardware")) {
+  if (!this.isInterim && this.isCategorySelected("Hardware")) {
     for (let i = 0; i < this.hardwareDetails.length; i++) {
       const hw = this.hardwareDetails[i];
 
@@ -585,7 +634,7 @@ if (formData && formData.receiptID) {
       }
     }
   }
-    if (this.isCategorySelected("Tray")) {
+    if (!this.isInterim && this.isCategorySelected("Tray")) {
     
     for (let i = 0; i < this.trayDetails.length; i++) {
       const tray = this.trayDetails[i];
@@ -605,7 +654,7 @@ if (formData && formData.receiptID) {
     }
   }
 
-  if (this.isCategorySelected("Others")) {
+  if (!this.isInterim && this.isCategorySelected("Others")) {
     
     for (let i = 0; i < this.otherListDetails.length; i++) {
       const other = this.otherListDetails[i];
@@ -704,6 +753,7 @@ if (formData && formData.receiptID) {
       this.disabledAllBtns()
     }
   }
+  public selectedLotIds: number[] = [];
   getReceiverFormInternalList(receiptId:number)  {
     this.apiService.getReceiverFormInternalList(receiptId).subscribe({
       next : (data:any) => {
@@ -716,8 +766,11 @@ if (formData && formData.receiptID) {
         this.receiverAttachements = this.num.receiptAttachments;
         this.filteredReceiverAttachements = this.num.receiptAttachments;
         this.canEditHeader = this.num.receipt.canEditHeader;
-        this.canEdit = this.num.devices[0].canEditHeader;
         this.bindRecivingDetail();
+        if(this.isCategorySelected("Lot"))
+        {
+          this.canEdit = this.num.devices[0].canEdit;
+        }
       },
       error: (err) => {
 
@@ -725,7 +778,7 @@ if (formData && formData.receiptID) {
     })
   }
   bindRecivingDetail(){
-    this.isInterim = this.appService.sharedData.internalReceiverForm.dataItem.isInterim;
+    this.isInterim = this.num.receipt.isInterim;
     this.customerTypeSelected = this.customerTypes.find(ct => ct.customerTypeID === this.num.receipt.customerTypeID);
     
     if (this.customerTypeSelected?.customerTypeName === 'Customer') {
@@ -832,24 +885,6 @@ if (formData && formData.receiptID) {
       error: (e: any) => { }
     })
   }
-  private fetchDataInterim() {
-    debugger;
-    const dataItem = this.appService.sharedData.internalReceiverForm.dataItem;
-    if (!dataItem.receiptID) {
-      // this is for new form
-      return;
-    }
-    this.apiService.listInterimDevices(dataItem.receiptID).subscribe({
-      next: (v: any) => {
-        debugger;
-        this.gridDataInterim = v;
-        this.gridDataInterim.forEach((d, index) => {
-          d.rowActionMenu = this.RowActionMenuDevice.map(o => ({ ...o }));
-          d.interimLotSelected = this.interimLotsList.find(o => o.iseLotNumber == d.iseLotNumber);
-        })
-      }
-    });
-  }
  
   private fetchDataHardware() {
     const dataItem = this.appService.sharedData.internalReceiverForm.dataItem;
@@ -871,17 +906,6 @@ if (formData && formData.receiptID) {
     });
   }
  
-  private fetchReceiptEmployees() {
-    const dateItem = this.appService.sharedData.internalReceiverForm.dataItem;
-    this.apiService.getReceiptEmployees(dateItem.receiptID).subscribe({
-      next: (value: any) => {
-        const ids = value.map((v: any) => v.employeeID)
-        if (ids) {
-          this.employeesSelected = this.employees.filter(e => ids.includes(e.EmployeeID))
-        }
-      }
-    })
-  }
   receipt = {
     isValid: {
       customer: true,
@@ -914,12 +938,7 @@ if (formData && formData.receiptID) {
     });
   }
   
-  onChangeInterim() {
-    if (this.isInterim) {
-      this.listInterimLots();
-      this.fetchDataInterim();
-    }
-  }
+
   interimLotsList: InterimLot[] = [];
   private listInterimLots() {
     if (this.interimLotsList.length) {
@@ -1126,7 +1145,7 @@ if (formData && formData.receiptID) {
   this.vendorSelected = undefined;
   this.behalfOfCusotmerSelected = undefined;
   this.selectedCustometPurchase = undefined;
-  this.lotDetails[0].DeviceTypeID = 0;
+ // this.lotDetails[0].DeviceId = 0;
     if (this.customerTypeSelected?.customerTypeName == 'Customer') {
       this.isDisabledBehalfOfCusotmer = true
     } else {
