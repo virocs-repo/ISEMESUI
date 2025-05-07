@@ -36,6 +36,8 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
     @Output() onClose = new EventEmitter<void>();
     @Output() onRestart = new EventEmitter<void>();
     isInterim: boolean = false;
+    interimData: any[] = [];
+    public selectedInterimIds: number[] = [];
     readonly customerTypes: CustomerType[] = this.appService.masterData.customerType;
     customerTypeSelected: CustomerType | undefined;
     readonly customers: Customer[] = this.appService.masterData.entityMap.Customer;
@@ -363,6 +365,49 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
       input.value = input.value.replace(/[^0-9]/g, '');
       this.contactPhone = input.value;
     }
+
+    onChangeInterim(): void {
+      const mailId = this.appService.sharedData.internalReceiverForm.dataItem?.mailId || null;
+      const customerId = this.customerSelected?.customerId;
+      if (this.isInterim) {
+        if (customerId) {
+          this.apiService.getSearchInterimCustomerId(mailId, customerId).subscribe({
+            next: (data : any) => {
+              this.interimData = data;
+              if (this.interimIdsLoadedFromReceipt && this.selectedInterimIds.length) {
+                setTimeout(() => {
+                  this.onSelectedInterimKeysChange(this.selectedInterimIds);
+                });
+                this.interimIdsLoadedFromReceipt = false;
+              }
+            },
+            error: (err) => {
+              console.error('Error fetching interim data', err);
+            }
+          });
+        }
+      } else {
+        this.interimData = [];
+      }
+    }
+  
+    onSelectedInterimKeysChange(selectedKeys: number[]) {
+      console.log('Selected Keys:', selectedKeys);
+    
+      this.selectedInterimIds = [...selectedKeys];
+    
+      this.interimDetails = this.interimData
+        .filter(item => selectedKeys.includes(item.interimShippingId))
+        .map(item => ({
+          Id: null,
+          LotId: item.lotId,
+          InterimShippingId: item.interimShippingId,
+          IsSelect: true  
+        }));
+    
+      console.log('Mapped Interim Details:', this.interimDetails);
+    }  
+
     receiptDetails :ReceiptDetails[] = [];
     lotDetails: LotDetails[] = [];
     trayDetails: TrayDetails[] = [];
@@ -372,11 +417,10 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
   
     onSubmit() {
       let receiptFormId = 0;
-  const formData = this.appService.sharedData?.internalReceiverForm?.dataItem;
-  if (formData && formData.receiptID) {
-    receiptFormId = formData.receiptID;
-  }
-  
+      const formData = this.appService.sharedData?.internalReceiverForm?.dataItem;
+      if (formData && formData.receiptID) {
+        receiptFormId = formData.receiptID;
+      }
       const receiptDetails : ReceiptDetails = {
         IsInterim: this.isInterim,
           CustomerVendorName: this.customerSelected ?? null,
@@ -708,6 +752,8 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
         this.disabledAllBtns()
       }
     }
+    public selectedLotIds: number[] = [];
+    private interimIdsLoadedFromReceipt: boolean = false;
     getReceiverFormInternalList(receiptId:number)  {
       this.apiService.getReceiverFormInternalList(receiptId).subscribe({
         next : (data:any) => {
@@ -720,8 +766,17 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
           this.receiverAttachements = this.num.receiptAttachments;
           this.filteredReceiverAttachements = this.num.receiptAttachments;
           this.canEditHeader = this.num.receipt.canEditHeader;
-          this.canEdit = this.num.devices[0].canEditHeader;
           this.bindRecivingDetail();
+          if(this.isCategorySelected("Lot"))
+          {
+            this.canEdit = this.num.devices[0].canEdit;
+          }
+          const interimIds = this.num.receipt.interimShippingIds;
+          this.selectedInterimIds = interimIds
+            ? interimIds.split(',').map((id: string) => Number(id.trim()))
+            : [];
+          this.interimIdsLoadedFromReceipt = true;
+          this.onChangeInterim(); 
         },
         error: (err) => {
   
@@ -729,7 +784,7 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
       })
     }
     bindRecivingDetail(){
-      this.isInterim = this.appService.sharedData.internalReceiverForm.dataItem.isInterim;
+      this.isInterim = this.num.receipt.isInterim;
       this.customerTypeSelected = this.customerTypes.find(ct => ct.customerTypeID === this.num.receipt.customerTypeID);
       
       if (this.customerTypeSelected?.customerTypeName === 'Customer') {
@@ -918,12 +973,6 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
       });
     }
     
-    onChangeInterim() {
-      if (this.isInterim) {
-        this.listInterimLots();
-        this.fetchDataInterim();
-      }
-    }
     interimLotsList: InterimLot[] = [];
     private listInterimLots() {
       if (this.interimLotsList.length) {

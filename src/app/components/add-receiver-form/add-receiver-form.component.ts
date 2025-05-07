@@ -364,14 +364,19 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   
     this.selectedInterimIds = [...selectedKeys];
   
-    this.interimDetails = this.interimData
-      .filter(item => selectedKeys.includes(item.interimShippingId))
-      .map(item => ({
-        Id: null,
-        LotId: item.lotId,
-        InterimShippingId: item.interimShippingId,
-        IsSelect: true  
-      }));
+    if (selectedKeys.length === 0) {
+      // Clear interimDetails if nothing is selected
+      this.interimDetails = [];
+    } else {
+      this.interimDetails = this.interimData
+        .filter(item => selectedKeys.includes(item.interimShippingId))
+        .map(item => ({
+          Id: null,
+          LotId: item.lotId,
+          InterimShippingId: item.interimShippingId,
+          IsSelect: true  
+        }));
+    }
   
     console.log('Mapped Interim Details:', this.interimDetails);
   }  
@@ -779,10 +784,9 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
           this.canEdit = this.num.devices[0].canEdit;
         }
         const interimIds = this.num.receipt.interimShippingIds;
-this.selectedInterimIds = interimIds
-  ? interimIds.split(',').map((id: string) => Number(id.trim()))
-  : [];
-
+        this.selectedInterimIds = interimIds
+          ? interimIds.split(',').map((id: string) => Number(id.trim()))
+          : [];
         this.interimIdsLoadedFromReceipt = true;
         this.onChangeInterim(); 
       },
@@ -1177,10 +1181,12 @@ this.selectedInterimIds = interimIds
       if (customerId) {
         this.getISEPOList(customerId, true);  // true indicates Customer
         this.getDeviceFamilies(customerId)
+
       }
     }
   
     this.onChangeBehalfOfCusotmer();
+    this.onChangeInterim();
   }
 
   onChangeVendorName() {
@@ -1188,9 +1194,10 @@ this.selectedInterimIds = interimIds
       const vendorId = this.vendorSelected?.VendorID;
       if (vendorId) {
         this.getISEPOList(vendorId, true);  
-        this.getDeviceFamilies(vendorId)
+        this.getDeviceFamilies(vendorId);
       }
     }  
+    this.onChangeInterim();
   }
   
   onChangeBehalfOfCusotmer() {
