@@ -254,7 +254,7 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
     const missingLabelCount = updatedRows.filter(
       d => (d.labelCount === null || d.labelCount === undefined || d.labelCount <= 0) && !d.wasUndoReceive
     );
-    const missingCOO = updatedRows.filter(d => !d.coo);
+    const missingCOO = updatedRows.filter(d => !d.countrySelected);
     const missingLotId = updatedRows.filter(d => !d.lotId);
 
 if (missingDevice.length > 0) {
