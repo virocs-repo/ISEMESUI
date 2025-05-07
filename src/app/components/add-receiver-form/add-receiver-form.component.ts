@@ -341,7 +341,13 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       if (customerId) {
         this.apiService.getSearchInterimCustomerId(mailId, customerId).subscribe({
           next: (data : any) => {
-            this.interimData = data as any[];
+            this.interimData = data;
+            if (this.interimIdsLoadedFromReceipt && this.selectedInterimIds.length) {
+              setTimeout(() => {
+                this.onSelectedInterimKeysChange(this.selectedInterimIds);
+              });
+              this.interimIdsLoadedFromReceipt = false;
+            }
           },
           error: (err) => {
             console.error('Error fetching interim data', err);
@@ -359,12 +365,12 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     this.selectedInterimIds = [...selectedKeys];
   
     this.interimDetails = this.interimData
-      .filter(item => selectedKeys.includes(item.lotId))
+      .filter(item => selectedKeys.includes(item.interimShippingId))
       .map(item => ({
-        Id: null, // Assuming new entry
+        Id: null,
         LotId: item.lotId,
         InterimShippingId: item.interimShippingId,
-        IsSelect: true  // Or false, depending on your logic
+        IsSelect: true  
       }));
   
     console.log('Mapped Interim Details:', this.interimDetails);
@@ -754,6 +760,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
     }
   }
   public selectedLotIds: number[] = [];
+  private interimIdsLoadedFromReceipt: boolean = false;
   getReceiverFormInternalList(receiptId:number)  {
     this.apiService.getReceiverFormInternalList(receiptId).subscribe({
       next : (data:any) => {
@@ -771,9 +778,11 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
         {
           this.canEdit = this.num.devices[0].canEdit;
         }
+        this.selectedInterimIds = this.num.receipt.interimShippingIds || [];
+        this.interimIdsLoadedFromReceipt = true;
+        this.onChangeInterim(); 
       },
       error: (err) => {
-
       }
     })
   }
