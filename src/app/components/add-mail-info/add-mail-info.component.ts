@@ -605,7 +605,7 @@ pendingSaveData: {
             loginId,
             deletedAttachmentsJson
           };
-          this.confirmationMessage = res.message;
+          this.confirmationMessage = res.message.replace(/\\n/g, '<br>');
           this.showConfirmationDialog = true;          
         }
       },

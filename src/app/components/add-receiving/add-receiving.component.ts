@@ -251,7 +251,9 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
     const missingDevice = updatedRows.filter(d => !d.deviceID);
     const missingReceipt = updatedRows.filter(d => !d.receiptID);
     const missingDateCode = updatedRows.filter(d => !d.dateCode?.toString().trim());
-    const missingLabelCount = updatedRows.filter(d => !d.labelCount?.toString().trim());
+    const missingLabelCount = updatedRows.filter(
+      d => (d.labelCount === null || d.labelCount === undefined || d.labelCount <= 0) && !d.wasUndoReceive
+    );
     const missingCOO = updatedRows.filter(d => !d.coo);
     const missingLotId = updatedRows.filter(d => !d.lotId);
 
@@ -611,10 +613,14 @@ const payload = {
   private canUndoReceive(dataItem:any) {
     
     dataItem.isReceived = false;
+    dataItem.wasUndoReceive = true;
     if (dataItem.rowActionMenu) {
       dataItem.rowActionMenu[0].disabled = false;
       dataItem.rowActionMenu[1].disabled = true;
     }
+    dataItem.labelCount = 0;
+    dataItem.isEditable = false;
+    dataItem.recordStatus = 'U';
   }
 
   receiveLineItem(dataItem:any){

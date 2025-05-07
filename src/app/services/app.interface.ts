@@ -263,6 +263,7 @@ export interface DeviceItem {
   isEditable?: boolean;
   canEdit?: boolean;
   lotId:number;
+  wasUndoReceive:boolean;
   rowActionMenu: MenuItem[]
 }
 export const INIT_DEVICE_ITEM: DeviceItem = {
@@ -294,7 +295,8 @@ export const INIT_DEVICE_ITEM: DeviceItem = {
   lotIdentifierSelected: undefined,
 
   rowActionMenu: [],
-  lotId: 0
+  lotId: 0,
+  wasUndoReceive: false
 };
 export interface JSON_Object {
   [key: string]: any
