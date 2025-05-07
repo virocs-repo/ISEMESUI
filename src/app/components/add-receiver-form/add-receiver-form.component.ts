@@ -778,7 +778,11 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
         {
           this.canEdit = this.num.devices[0].canEdit;
         }
-        this.selectedInterimIds = this.num.receipt.interimShippingIds || [];
+        const interimIds = this.num.receipt.interimShippingIds;
+this.selectedInterimIds = interimIds
+  ? interimIds.split(',').map((id: string) => Number(id.trim()))
+  : [];
+
         this.interimIdsLoadedFromReceipt = true;
         this.onChangeInterim(); 
       },
