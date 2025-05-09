@@ -297,13 +297,13 @@
               <kendo-grid-column field="COO" title="COO">
                 <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
                   <kendo-combobox
+                  [disabled]="!canEdit && this.appService.sharedData.internalReceiverForm.isEditMode"
                   class="combobox"
                   [(ngModel)]="dataItem.COO"
-                  [data]="coo" 
+                  [data]="this.appService.masterData.coo || []" 
                   [textField]="'serviceCategoryName'"
                   [valueField]="'serviceCategoryId'" 
                   [valuePrimitive]="true"
-                  [disabled]="!canEdit && this.appService.sharedData.internalReceiverForm.isEditMode"
                   placeholder="Select COO"></kendo-combobox>
                 </ng-template>
               </kendo-grid-column>

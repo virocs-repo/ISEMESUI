@@ -335,7 +335,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
   }
   
   onChangeInterim(): void {
-    const mailId = this.appService.sharedData.internalReceiverForm.dataItem?.mailId || null;
+    const mailId = this.num.receipt?.receiptId || null;
     const customerId = this.customerSelected?.CustomerID;
     if (this.isInterim) {
       if (customerId) {
@@ -844,7 +844,7 @@ export class AddReceiverFormInternalComponent implements OnInit, OnDestroy {
       CustomerCount: d.customerCount,
       DeviceTypeID: d.deviceTypeID,
       DateCode: d.dateCode,
-      COO: d.coo,
+      COO: d.coo ? Number(d.coo) : null,
       Expedite: d.expedite,
       IQA: d.iqa,
       LotOwnerID: d.lotOwnerID,
