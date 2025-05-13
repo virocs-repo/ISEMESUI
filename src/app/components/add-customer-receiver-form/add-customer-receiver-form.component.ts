@@ -422,6 +422,7 @@ export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
         receiptFormId = formData.receiptID;
       }
       const receiptDetails : ReceiptDetails = {
+        MailId: this.appService.sharedData.internalReceiverForm.dataItem?.mailId || null,
         IsInterim: this.isInterim,
           CustomerVendorName: this.customerSelected ?? null,
           Recipient: this.recipientSelected ?? null,
