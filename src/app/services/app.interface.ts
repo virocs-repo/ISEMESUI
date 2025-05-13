@@ -1155,6 +1155,7 @@ export interface ReceiptRequest {
 }
 
 export interface ReceiptDetails {
+  MailId: number | null;
   IsInterim: boolean;
   CustomerTypeID: number | null;
   CustomerVendorName: string | null;
