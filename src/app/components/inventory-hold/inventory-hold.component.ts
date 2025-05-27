@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import { CellClickEvent, GridDataResult, PageChangeEvent } from "@progress/kendo-angular-grid";
 import { ContextMenuComponent, ContextMenuSelectEvent } from "@progress/kendo-angular-menu";
 import { ApiService } from "src/app/services/api.service";
@@ -18,6 +19,7 @@ export class InventoryHoldComponent implements OnInit {
   private originalData: any[] = [];
   public isEditMode: boolean = true;
   public searchTerm: string = '';
+  inventoryId!: number; 
   selectableSettings: any = {
     checkboxOnly: true,
     mode: 'single',
@@ -52,10 +54,20 @@ export class InventoryHoldComponent implements OnInit {
   public dataItemSelected: any;
   viewOrEdit: string ='';
 
-  constructor(private apiService: ApiService,public appService: AppService) { }
+  constructor(private apiService: ApiService,public appService: AppService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.loadGridData();
+     const data = history.state.data;
+  if (data) {
+   const parsedData = data;
+      this.dataItemSelected = parsedData;
+      this.isEditMode = true;
+      this.holdData = { ...parsedData };
+      this.viewOrEdit = 'edit';
+      this.openDialog();
+    console.log(data);
+  }
+  this.loadGridData();
   }
 
   loadGridData(): void {
