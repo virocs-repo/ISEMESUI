@@ -1,6 +1,6 @@
 import { MenuItem } from "@progress/kendo-angular-menu";
 
-import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, kpiStatusHoldIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, printIcon, selectBoxIcon, trashIcon, userIcon, windowRestoreIcon, xIcon, saveIcon, mapMarkerIcon } from "@progress/kendo-svg-icons";
+import { cartIcon, clipboardTextIcon, closedCaptionsIcon, crosstabIcon, editToolsIcon, exportIcon, eyeIcon, eyeSlashIcon, gearIcon, jsIcon, kpiStatusHoldIcon, logoutIcon, menuIcon, moreVerticalIcon, pencilIcon, printIcon, selectBoxIcon, trashIcon, userIcon, windowRestoreIcon, xIcon, saveIcon, mapMarkerIcon, pauseIcon } from "@progress/kendo-svg-icons";
 
 export interface CustomerType {
   customerTypeID: number;
@@ -322,7 +322,8 @@ export const ICON = {
   kpiStatusHoldIcon,
   trashIcon,
   saveIcon,
-  mapMarkerIcon
+  mapMarkerIcon,
+  pauseIcon
 }
 
 export const MESSAGES = {

@@ -1,4 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { ActiveColorClickEvent } from '@progress/kendo-angular-inputs';
 import { ContextMenuComponent, ContextMenuEvent, ContextMenuSelectEvent, MenuItem } from '@progress/kendo-angular-menu';
@@ -103,14 +104,14 @@ export class AddReceivingComponent implements OnInit, OnDestroy {
     { text: 'Receive', svgIcon: ICON.cartIcon },
     { text: 'Undo Receive', svgIcon: ICON.cartIcon, disabled: true },
     { text: 'Print', svgIcon: ICON.printIcon },
-   
+    { text:  'Hold', icon:'hold', svgIcon: ICON.pauseIcon}   
   ]
   private readonly RowActionMenuDeviceAdd: MenuItem[] = [
     { text: 'Remove', svgIcon: ICON.trashIcon }
   ]
   recevingFormDetails: any;
 
-  constructor(public appService: AppService, private apiService: ApiService) { 
+  constructor(public appService: AppService, private apiService: ApiService, private router: Router) { 
     
   }
 
@@ -322,6 +323,9 @@ const payload = {
       case 'Print':
         this.doPrint(dataItem)
         break;
+      case 'Hold':
+        this.goToHold(dataItem);
+        break;
       default:
         break;
     }
@@ -339,6 +343,7 @@ const payload = {
     const receiveMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Receive);
     const undoRreceiveMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.UndoReceive);
     const printMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Print);
+    const holdMenuItem = dataItem.rowActionMenu.find((a: any) => a.text == ActionType.Hold);
     if (dataItem.isReceived) {
       if (dataItem.canEdit) {
         if (undoRreceiveMenuItem) 
@@ -347,6 +352,8 @@ const payload = {
           printMenuItem.disabled = false;
         if (receiveMenuItem) 
           receiveMenuItem.disabled = true;
+        if (holdMenuItem) 
+          holdMenuItem.disabled = false;
       } else {
         if (undoRreceiveMenuItem) 
           undoRreceiveMenuItem.disabled = true;
@@ -354,6 +361,8 @@ const payload = {
           printMenuItem.disabled = false;
         if (receiveMenuItem) 
           receiveMenuItem.disabled = true;
+        if (holdMenuItem) 
+         holdMenuItem.disabled = false;
       }
     }
     else{
@@ -363,8 +372,9 @@ const payload = {
          printMenuItem.disabled = false;
       if (receiveMenuItem)
          receiveMenuItem.disabled = false;
-    }
-    
+      if (holdMenuItem)
+        holdMenuItem.disabled = false;
+    }    
   }
 
   doEditRow(dataItem:any) {
@@ -622,6 +632,11 @@ const payload = {
     dataItem.isEditable = false;
     dataItem.recordStatus = 'U';
   }
+  goToHold(dataItem: any): void {
+  this.router.navigate(['/inventory-hold'], {
+     state: { data: dataItem }
+  });
+}
 
   receiveLineItem(dataItem:any){
     if (dataItem.recordStatus != 'I') {
