@@ -3,7 +3,8 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-inventory-details',
   templateUrl: './inventory-details.component.html',
-  styleUrls: ['./inventory-details.component.scss']
+  styleUrls: ['./inventory-details.component.scss'],
+  standalone: false
 })
 export class InventoryDetailsComponent {
   public gridData = [

@@ -8,7 +8,8 @@ import { AppService } from 'src/app/services/app.service';
 @Component({
   selector: 'app-inventory-checkinCheckout',
   templateUrl: './inventory-checkinCheckout.component.html',
-  styleUrls: ['./inventory-checkinCheckout.component.scss']
+  styleUrls: ['./inventory-checkinCheckout.component.scss'],
+  standalone: false
 })
 export class InventorycheckinCheckoutComponent implements OnInit{
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;

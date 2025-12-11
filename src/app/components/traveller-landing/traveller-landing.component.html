@@ -1,0 +1,34 @@
+<div class="traveller-landing-container">
+  <div class="k-d-flex k-flex-row k-align-items-center k-justify-content-center k-gap-4 content-wrapper">
+    <button 
+      kendoButton 
+      themeColor="primary" 
+      size="large"
+      class="action-button checkin-button"
+      (click)="navigateToCheckIn()">
+      Check-In
+    </button>
+    <button 
+      kendoButton 
+      themeColor="primary" 
+      size="large"
+      class="action-button checkout-button"
+      (click)="navigateToCheckOut()">
+      Check-Out
+    </button>
+  </div>
+</div>
+
+@if (isScanBadgeDialogOpen) {
+  <kendo-dialog 
+    (close)="onBadgeCancelled()" 
+    [width]="450" 
+    [minWidth]="400"
+    class="scan-badge-dialog-container">
+    <app-scan-badge 
+      (authorized)="onBadgeAuthorized($event)"
+      (cancelled)="onBadgeCancelled()">
+    </app-scan-badge>
+  </kendo-dialog>
+}
+

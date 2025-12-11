@@ -6,7 +6,8 @@ import { ApiService } from 'src/app/services/api.service';
 @Component({
   selector: 'app-edit-inventory-hold',
   templateUrl: './edit-inventory-hold.component.html',
-  styleUrls: ['./edit-inventory-hold.component.scss']
+  styleUrls: ['./edit-inventory-hold.component.scss'],
+  standalone: false
 })
 export class EditInventoryHoldComponent implements OnInit {
   @Output() cancel = new EventEmitter<void>();

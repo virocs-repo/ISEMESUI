@@ -6,7 +6,8 @@ import { AppService } from 'src/app/services/app.service';
 @Component({
   selector: 'app-add-device',
   templateUrl: './add-device.component.html',
-  styleUrls: ['./add-device.component.scss']
+  styleUrls: ['./add-device.component.scss'],
+  standalone: false
 })
 export class AddDeviceComponent implements OnInit {
   readonly customers: Customer[] =this.appService.masterData.entityMap.Customer;

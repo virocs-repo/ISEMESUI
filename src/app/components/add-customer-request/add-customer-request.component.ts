@@ -10,7 +10,8 @@ import { AddShippingAddressComponent } from '../add-shipping-address/add-shippin
 @Component({
   selector: 'app-add-customer-request',
   templateUrl: './add-customer-request.component.html',
-  styleUrls: ['./add-customer-request.component.scss']
+  styleUrls: ['./add-customer-request.component.scss'],
+  standalone: false
 })
 export class AddCustomerRequestComponent implements OnInit {
   readonly ICON = ICON

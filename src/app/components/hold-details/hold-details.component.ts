@@ -4,7 +4,8 @@ import { ICON } from 'src/app/services/app.interface';
 @Component({
   selector: 'app-hold-details',
   templateUrl: './hold-details.component.html',
-  styleUrls: ['./hold-details.component.scss']
+  styleUrls: ['./hold-details.component.scss'],
+  standalone: false
 })
 export class HoldDetailsComponent {
   readonly ICON = ICON

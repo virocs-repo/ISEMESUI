@@ -15,8 +15,8 @@
           <kendo-icon name="lock" size="medium" class="k-icon"></kendo-icon>
           <kendo-textbox [(ngModel)]="password" [type]="isPasswordVisible ? 'text' : 'password'" placeholder="Password"
             size="large" rounded="large" fillMode="solid" class="login-input"></kendo-textbox>
-          <kendo-button [svgIcon]="isPasswordVisible?ICON.eyeSlashIcon:ICON.eyeIcon"
-            (click)="togglePasswordVisibility()" class="toggle-btn"></kendo-button>
+          <button kendoButton [svgIcon]="isPasswordVisible?ICON.eyeSlashIcon:ICON.eyeIcon"
+            (click)="togglePasswordVisibility()" class="toggle-btn"></button>
         </div>
         <div class="flex-box">
           <label for="rememberMe" class="remember-me">

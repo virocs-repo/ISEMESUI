@@ -10,7 +10,8 @@ import * as XLSX from 'xlsx';
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
-  styleUrls: ['./reports.component.scss']
+  styleUrls: ['./reports.component.scss'],
+  standalone: false
 })
 export class ReportsComponent  implements OnInit {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;
@@ -65,6 +66,7 @@ export class ReportsComponent  implements OnInit {
   format: string = 'yyyy-MM-dd'; // Date format for kendo-datetimepicker
   fromDate: Date | null = null;  // Variable to store the selected 'from' date
   toDate: Date | null = null;    // Variable to store the selected 'to' date
+  searchTerm: string = ''; // Search term for filtering
 
   constructor(private apiService: ApiService,public appService: AppService) { }
 
@@ -152,6 +154,27 @@ export class ReportsComponent  implements OnInit {
       'highlighted-row': context.index === this.selectedRowIndex
     };
   }
+  onSearchMaster(): void {
+    // Real-time search filtering as user types
+    if (!this.searchTerm || this.searchTerm.trim() === '') {
+      this.gridDataResult.data = this.allData;
+      this.gridDataResult.total = this.allData.length;
+      return;
+    }
+
+    const searchLower = this.searchTerm.toLowerCase().trim();
+    const filtered = this.allData.filter((item: any) => {
+      return Object.values(item).some((value: any) => {
+        if (value === null || value === undefined) return false;
+        return String(value).toLowerCase().includes(searchLower);
+      });
+    });
+
+    this.gridDataResult.data = filtered;
+    this.gridDataResult.total = filtered.length;
+    this.skip = 0;
+  }
+
   onSearch(): void {
     this.skip = 0;
 

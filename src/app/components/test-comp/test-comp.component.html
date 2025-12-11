@@ -1,0 +1,137 @@
+
+<div class="k-form k-form-horizontal form-grid">
+    
+    <div>
+      <label class="k-label" for="identifier">Identifier :</label>
+      <kendo-combobox [data]="identifiers" id="identifier"></kendo-combobox>
+    </div>
+    <div>
+      <label class="k-label" for="lotStatus">Lot Status :</label>
+      <kendo-combobox [data]="lotStatuses" id="lotStatus"></kendo-combobox>
+    </div>
+    <div>
+      <label class="k-label" for="travelerStatus">Traveler Status :</label>
+      <kendo-combobox [data]="travelerStatuses" id="travelerStatus"></kendo-combobox>
+    </div>
+    <div>
+      <label class="k-label" for="hold">Hold :</label>
+      <kendo-combobox [data]="holdOptions" id="hold"></kendo-combobox>
+    </div>
+  
+    
+    <div>
+      <label class="k-label" for="customer">Customer :</label>
+      <kendo-combobox [data]="customers" id="customer"></kendo-combobox>
+    </div>
+    <div>
+      <label class="k-label" for="deviceFamily">Device Family :</label>
+      <kendo-combobox [data]="deviceFamilies" id="deviceFamily"></kendo-combobox>
+    </div>
+    <div>
+      <label class="k-label" for="device">Device :</label>
+      <kendo-combobox [data]="devices" id="device"></kendo-combobox>
+    </div>
+    <div>
+      <label class="k-label" for="deviceAlias">Device Alias :</label>
+      <kendo-combobox [data]="deviceAliases" id="deviceAlias"></kendo-combobox>
+    </div>
+  
+    
+    <div>
+      <label class="k-label" for="receiving">Receiving # :</label>
+      <input kendoTextBox id="receiving" />
+    </div>
+    <div>
+      <label class="k-label" for="lotPull">Lot/FGI Pull # :</label>
+      <input kendoTextBox id="lotPull" />
+    </div>
+    <div>
+      <label class="k-label" for="customerLot">Customer Lot # :</label>
+      <input kendoTextBox id="customerLot" />
+    </div>
+    <div>
+      <label class="k-label" for="mail">Mail # :</label>
+      <input kendoTextBox id="mail" />
+    </div>
+  
+    
+    <div>
+      <label class="k-label" for="location">Location :</label>
+      <kendo-combobox [data]="locations" id="location"></kendo-combobox>
+    </div>
+  </div>
+
+  <!-- <div class="form-grid-inline">
+   
+    <label for="identifier" class="k-label align-right">Identifier :</label>
+    <kendo-combobox [data]="identifiers" id="identifier"></kendo-combobox>
+  
+    <label for="lotStatus" class="k-label align-right">Lot Status :</label>
+    <kendo-combobox [data]="lotStatuses" id="lotStatus"></kendo-combobox>
+  
+    <label for="travelerStatus" class="k-label align-right">Traveler Status :</label>
+    <kendo-combobox [data]="travelerStatuses" id="travelerStatus"></kendo-combobox>
+  
+    <label for="hold" class="k-label align-right">Hold :</label>
+    <kendo-combobox [data]="holdOptions" id="hold"></kendo-combobox>
+  
+   
+    <label for="customer" class="k-label align-right">Customer :</label>
+    <kendo-combobox [data]="customers" id="customer"></kendo-combobox>
+  
+    <label for="deviceFamily" class="k-label align-right">Device Family :</label>
+    <kendo-combobox [data]="deviceFamilies" id="deviceFamily"></kendo-combobox>
+  
+    <label for="device" class="k-label align-right">Device :</label>
+    <kendo-combobox [data]="devices" id="device"></kendo-combobox>
+  
+    <label for="deviceAlias" class="k-label align-right">Device Alias :</label>
+    <kendo-combobox [data]="deviceAliases" id="deviceAlias"></kendo-combobox>
+  
+    
+    <label for="receiving" class="k-label align-right">Receiving # :</label>
+    <input kendoTextBox id="receiving" />
+  
+    <label for="lotPull" class="k-label align-right">Lot/FGI Pull # :</label>
+    <input kendoTextBox id="lotPull" />
+  
+    <label for="customerLot" class="k-label align-right">Customer Lot # :</label>
+    <input kendoTextBox id="customerLot" />
+  
+    <label for="mail" class="k-label align-right">Mail # :</label>
+    <input kendoTextBox id="mail" />
+  
+    
+    <label for="location" class="k-label align-right">Location :</label>
+    <kendo-combobox [data]="locations" id="location"></kendo-combobox>
+    
+    <div></div><div></div><div></div><div></div><div></div><div></div>
+  </div>
+   -->
+  <div class="page-body k-m-4">
+    <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings"
+      [columnMenu]="columnMenuSettings" [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
+      [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)" 
+      class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
+      <kendo-grid-column field="lotId" title="Lot #" [width]="112"></kendo-grid-column>
+      <kendo-grid-column field="customerName" title="Customer Name" [width]="135"></kendo-grid-column>
+      <kendo-grid-column field="iseLotNumber" title="ISELot #" [width]="175"></kendo-grid-column>
+      <kendo-grid-column field="deviceFamily" title="Device Family" [width]="175"></kendo-grid-column>
+      <kendo-grid-column field="device" title="Device" [width]="170"></kendo-grid-column>
+      <kendo-grid-column field="travelerStatus" title="Traveler Status" [width]="160"></kendo-grid-column>
+      <kendo-grid-column field="lotStatus" title="Lot Status" [width]="160"></kendo-grid-column>
+      <kendo-grid-column field="customerLotNumber" title="Customer Lot #" [width]="125"></kendo-grid-column>
+      <kendo-grid-column field="expectedCount" title="Expected Count" [width]="150"></kendo-grid-column>
+      <kendo-grid-column field="runningCount" title="Running Count" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="lotQty" title="Lot Qty" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="expectedDate" title="Expected Date" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="identifier" title="Identifier" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="receivingNo" title="Receiving No" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="shippingMethod" title="Shipping Method" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="soStatus" title="SO Status" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="currentStep" title="Current Step" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="nextStep" title="Next Step" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="currentLocation" title="Current Location" [width]="180"></kendo-grid-column>
+
+    </kendo-grid>
+  </div>

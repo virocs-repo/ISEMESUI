@@ -12,7 +12,8 @@ import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 @Component({
   selector: 'app-receiving',
   templateUrl: './receiving.component.html',
-  styleUrls: ['./receiving.component.scss']
+  styleUrls: ['./receiving.component.scss'],
+  standalone: false
 })
 export class ReceivingComponent implements OnDestroy {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;

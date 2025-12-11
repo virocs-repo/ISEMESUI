@@ -9,12 +9,30 @@
       <div class="k-loading-panel-text">Processing please wait...</div>
     </div>
   </div>
+
+  <!-- Main Content with Drawer -->
+  <div class="main-content-container">
+    <kendo-drawer-container>
+      <kendo-drawer 
+        #drawer 
+        [items]="currentDrawerItems" 
+        [isItemExpanded]="isItemExpanded"
+        mode="push" 
+        [(expanded)]="appService.isDrawerExpanded"
+        [autoCollapse]="false"
+        [mini]="false"
+        [position]="'start'"
+        (select)="onSelect($event)"
+        class="main-drawer">
+      </kendo-drawer>
+      <kendo-drawer-content>
+        <div class="content-panel">
+          <router-outlet></router-outlet>
+        </div>
+      </kendo-drawer-content>
+    </kendo-drawer-container>
+  </div>
 </ng-container>
 
-<kendo-drawer-container>
-  <kendo-drawer #drawer [items]="items" mode="overlay" [(expanded)]="appService.isDrawerExpanded"
-    (select)="onSelect($event)"></kendo-drawer>
-  <kendo-drawer-content>
-    <router-outlet></router-outlet>
-  </kendo-drawer-content>
-</kendo-drawer-container>
+<!-- Login Component (no tabs) -->
+<router-outlet *ngIf="!authService.isLoggedIn"></router-outlet>

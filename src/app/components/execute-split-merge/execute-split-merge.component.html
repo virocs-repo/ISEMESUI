@@ -1,0 +1,15 @@
+<div class="k-d-flex k-align-items-center k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
+  <p>{{ mergedLotNumbers }}</p>
+  @if (!mergedLotNumbers) {
+    <p>No Lots available to execute merge.</p>
+  }
+  <p> {{ mergeMessage }} </p>
+</div>
+
+@if (mergeLotIdStr) {
+  <kendo-dialog-actions>
+    <button kendoButton (click)="OnExecuteMerge();">Execute Merge</button>
+  </kendo-dialog-actions>
+}
+
+

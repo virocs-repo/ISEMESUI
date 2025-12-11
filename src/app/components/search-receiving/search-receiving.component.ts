@@ -12,7 +12,8 @@ import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 @Component({
   selector: 'app-search-receiving',
   templateUrl: './search-receiving.component.html',
-  styleUrls: ['./search-receiving.component.scss']
+  styleUrls: ['./search-receiving.component.scss'],
+  standalone: false
 })
 export class SearchReceivingComponent implements OnDestroy {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;

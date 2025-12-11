@@ -24,7 +24,8 @@ enum ActionType {
 @Component({
   selector: 'app-add-receiving',
   templateUrl: './add-receiving.component.html',
-  styleUrls: ['./add-receiving.component.scss']
+  styleUrls: ['./add-receiving.component.scss'],
+  standalone: false
 })
 
 export class AddReceivingComponent implements OnInit, OnDestroy {

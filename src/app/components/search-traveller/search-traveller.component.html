@@ -1,0 +1,97 @@
+<div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-4 page-header page-header-desktop">
+  <kendo-label text="Search" class="k-font-size-sm">
+    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input"
+      rounded="full" (input)="onSearchMaster()" />
+  </kendo-label>
+  <kendo-label text="Traveller Status" class="k-font-size-sm">
+    <kendo-combobox [data]="travellerStatuses" [(ngModel)]="selectedTravellerStatuses"
+      [textField]="'itemText'" [valueField]="'masterListItemId'" placeholder="Select" rounded="full">
+    </kendo-combobox>
+  </kendo-label>
+  <kendo-label text="Lot Status" class="k-font-size-sm">
+    <kendo-multiselect
+      [data]="lotStatuses || []"
+      [(ngModel)]="selectedLotStatuses"
+      [tagMapper]="tagDisplayLimit"
+      [textField]="'itemText'"
+      [valueField]="'masterListItemId'"
+      placeholder="Select Lot Status"
+      rounded="full">
+    </kendo-multiselect>
+  </kendo-label>
+  <kendo-label text="Start Date" class="k-font-size-sm">
+    <kendo-datepicker [format]="format" [(value)]="fromDate" rounded="full"></kendo-datepicker>
+  </kendo-label>
+  <kendo-label text="End Date" class="k-font-size-sm">
+    <kendo-datepicker [format]="format" [(value)]="toDate" rounded="full"></kendo-datepicker>
+  </kendo-label>
+  <div class="k-ml-auto k-d-flex k-gap-2">
+    <button kendoButton rounded="full" themeColor="success" (click)="search()">Search</button>
+  </div>
+</div>
+  <div
+    class="k-d-flex k-align-items-center k-gap-2 k-py-2 k-px-2 k-flex-wrap k-justify-content-between page-header page-header-mobile">
+    <h2 class="k-m-0">Receiving</h2>
+    <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openDialog()">Add</button>
+    <div class="search-box k-w-full k-ml-auto">
+      <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
+      <input kendoTextBox type="search" placeholder="Search" class="search-input k-w-full" rounded="full" />
+      <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
+    </div>
+  </div>
+  <div class="page-body k-m-4">
+    <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings"
+      [columnMenu]="columnMenuSettings" [filterable]="true" [sortable]="true" [resizable]="true" [pageSize]="pageSize"
+      [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
+      class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
+      <kendo-grid-column field="lotId" title="Lot #" [width]="112"></kendo-grid-column>
+      <kendo-grid-column field="customerName" title="Customer Name" [width]="135"></kendo-grid-column>
+      <kendo-grid-column field="iseLotNumber" title="ISELot #" [width]="175"></kendo-grid-column>
+      <kendo-grid-column field="deviceFamily" title="Device Family" [width]="175"></kendo-grid-column>
+      <kendo-grid-column field="device" title="Device" [width]="170"></kendo-grid-column>
+      <kendo-grid-column field="travelerStatus" title="Traveler Status" [width]="160"></kendo-grid-column>
+      <kendo-grid-column field="lotStatus" title="Lot Status" [width]="160"></kendo-grid-column>
+      <kendo-grid-column field="customerLotNumber" title="Customer Lot #" [width]="125"></kendo-grid-column>
+      <kendo-grid-column field="expectedCount" title="Expected Count" [width]="150"></kendo-grid-column>
+      <kendo-grid-column field="runningCount" title="Running Count" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="lotQty" title="Lot Qty" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="expectedDate" title="Expected Date" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="identifier" title="Identifier" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="receivingNo" title="Receiving No" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="shippingMethod" title="Shipping Method" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="soStatus" title="SO Status" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="currentStep" title="Current Step" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="nextStep" title="Next Step" [width]="180"></kendo-grid-column>
+      <kendo-grid-column field="currentLocation" title="Current Location" [width]="180"></kendo-grid-column>
+
+    </kendo-grid>
+  </div>
+
+  <kendo-contextmenu [items]="rowActionMenu" (select)="onSelectRowActionMenu($event)" size="large"
+  #gridContextMenu></kendo-contextmenu>
+
+  @if (isDialogOpen) {
+    <kendo-dialog (close)="closeDialog()" [minWidth]="250" [width]="'95%'"
+      class="dialog-round receipt-dialog">
+      <div class="k-d-flex k-align-items-center k-mb-3 k-gap-3">
+        <h3 class="k-m-0">Add/Edit Traveller</h3>
+        @if (appService.sharedData.receiving.isViewMode) {
+          <small>(View Mode)</small>
+        }
+        @if (appService.sharedData.receiving.isEditMode) {
+          <small>(Edit Mode)</small>
+        }
+        <!-- receiptID -->
+        @if (appService.sharedData.receiving.dataItem?.receiptID) {
+          <small>Receipt ID:
+          {{appService.sharedData.receiving.dataItem.receiptID}}</small>
+        }
+        <i class="k-ml-auto"></i>
+        <button kendoButton type="button" rounded="full" [svgIcon]="ICON.xIcon" size="small"
+        (click)="canCloseDialog()"></button>
+      </div>
+      <div class="dialog-body k-overflow-y-auto">
+        <app-edit-traveller (close)="closeDialog()" (onRestart)="onClearForm()"></app-edit-traveller>
+      </div>
+    </kendo-dialog>
+  }

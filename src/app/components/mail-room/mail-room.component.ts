@@ -12,7 +12,8 @@ import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 @Component({
   selector: 'app-mail-room',
   templateUrl: './mail-room.component.html',
-  styleUrls: ['./mail-room.component.scss']
+  styleUrls: ['./mail-room.component.scss'],
+  standalone: false
 })
 export class MailRoomComponent implements OnDestroy {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;

@@ -11,7 +11,8 @@ import { AppService } from 'src/app/services/app.service';
 @Component({
   selector: 'app-customer-order',
   templateUrl: './customer-order.component.html',
-  styleUrls: ['./customer-order.component.scss']
+  styleUrls: ['./customer-order.component.scss'],
+  standalone: false
 })
 export class CustomerOrderComponent implements OnInit {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;

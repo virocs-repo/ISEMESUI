@@ -6,7 +6,8 @@ import { AppService } from 'src/app/services/app.service';
 @Component({
   selector: 'app-int-tranfer-receiving-add',
   templateUrl: './int-tranfer-receiving-add.component.html',
-  styleUrls: ['./int-tranfer-receiving-add.component.scss']
+  styleUrls: ['./int-tranfer-receiving-add.component.scss'],
+  standalone: false
 })
 export class IntTranferReceivingAddComponent implements OnDestroy {
   shipmentNumber: string = ''

@@ -9,7 +9,8 @@ import { AppService } from "src/app/services/app.service";
 @Component({
   selector: 'app-inventory-hold',
   templateUrl: './inventory-hold.component.html',
-  styleUrls: ['./inventory-hold.component.scss']
+  styleUrls: ['./inventory-hold.component.scss'],
+  standalone: false
 })
 export class InventoryHoldComponent implements OnInit {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;

@@ -1,0 +1,74 @@
+.status-box {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+  
+  .status-green {
+    background-color: green;
+  }
+  
+  .status-yellow {
+    background-color: yellow;
+  }
+  
+  .status-red {
+    background-color: red;
+  }
+  .row-container {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;            
+    gap: 10px;                      
+  }
+  .condition-good{
+    background-color: palevioletred;
+  }
+  .condition-reject{
+    background-color: greenyellow;
+  }
+::ng-deep .splitFuture-grid .k-table td {
+  font-weight: bold !important;
+  color: indianred !important;
+}
+::ng-deep .splitFuture-grid .k-table th {
+  font-weight: bold !important;
+  color: indianred !important;
+  
+}
+::ng-deep .splitFuture-grid-good {
+  background-color: yellowgreen !important;
+}
+
+::ng-deep .splitFuture-grid-reject {
+  background-color: pink !important;
+}
+::ng-deep .trash-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+::ng-deep .delete-icon {
+  cursor: pointer;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: red;
+}
+::ng-deep .delete-icon:hover {
+  background: red;
+  border-radius: 4px;
+}
+
+
+
+

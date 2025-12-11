@@ -1,0 +1,497 @@
+<div class="page-header page-header-desktop k-px-4">
+  <!-- Row 1 -->
+  <div class="k-d-grid k-grid-cols-6 k-gap-4 k-py-2" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem;">
+    <kendo-label text="Lot Number" class="k-w-full">
+      <input kendoTextBox [(ngModel)]="lotNumber" placeholder="enter" rounded="full" />
+    </kendo-label>
+
+    <kendo-label text="Customer" class="k-w-full">
+      <kendo-combobox [data]="customers" [(ngModel)]="customerSelected"
+        [textField]="'CustomerName'" [valueField]="'CustomerID'" placeholder="Select" rounded="large"
+      (valueChange)="onCustomerChange($event)"></kendo-combobox>
+    </kendo-label>
+
+    <kendo-label text="Category" class="k-w-full">
+      <kendo-combobox
+        [data]="categoryList"
+        [(ngModel)]="selectedCategory"
+        [textField]="'text'"
+        [valueField]="'value'"
+        [valuePrimitive]="true"
+        placeholder="Select"
+        rounded="large">
+      </kendo-combobox>
+    </kendo-label>
+
+    <kendo-label text="Device Family" class="k-w-full">
+      <kendo-combobox [data]="devicefamilyList" [(ngModel)]="devicefamilySelected" (valueChange)="onDeviceFamilyChange($event)"
+        [textField]="'deviceFamilyName'" [valueField]="'deviceFamilyId'" placeholder="Select" rounded="large"
+      ></kendo-combobox>
+    </kendo-label>
+
+    <kendo-label text="FG Part" class="k-w-full">
+      <kendo-combobox [data]="Customerlist" [(ngModel)]="Selectedcustomer"
+        [textField]="'deliveryModeName'" [valueField]="'deliveryModeID'" placeholder="Select" rounded="large"
+      ></kendo-combobox>
+    </kendo-label>
+
+    <kendo-label text="Inphi Test Mode" class="k-w-full">
+      <kendo-combobox [data]="TestModelist" [(ngModel)]="Selectedtestmode"
+        [textField]="'itemText'" [valueField]="'masterListItemId'" placeholder="Select" rounded="large"
+      ></kendo-combobox>
+    </kendo-label>
+  </div>
+
+  <!-- Row 2 -->
+  <div class="k-d-grid k-grid-cols-6 k-gap-4 k-py-2" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem;">
+    <kendo-label text="Device" class="k-w-full">
+      <kendo-combobox [data]="deviceList" [(ngModel)]="deviceSelected" (valueChange)="onDeviceChange($event)"
+        [textField]="'deviceName'" [valueField]="'deviceId'" placeholder="Select" rounded="large"
+      ></kendo-combobox>
+    </kendo-label>
+
+    <kendo-label text="Device Alias" class="k-w-full">
+      <kendo-combobox [data]="devicealiaslist" [(ngModel)]="Selecteddevicealias"
+        [textField]="'aliasName'" [valueField]="'aliasId'" placeholder="Select" rounded="large"
+      ></kendo-combobox>
+    </kendo-label>
+
+    <kendo-label text="Actual Qty" class="k-w-full">
+      <input kendoTextBox [(ngModel)]="actualQty" type="enter" placeholder="Search" rounded="full" />
+    </kendo-label>
+
+    <kendo-label text="Current Qty" class="k-w-full">
+      <input kendoTextBox [(ngModel)]="currentQty" type="enter" placeholder="Search" rounded="full" />
+    </kendo-label>
+
+    <kendo-label text="Running Qty" class="k-w-full">
+      <input kendoTextBox [(ngModel)]="runningQty" type="enter" placeholder="Search" rounded="full" />
+    </kendo-label>
+
+    <kendo-label text="ShipTo" class="k-w-full">
+      <kendo-combobox
+        [data]="shipToList"
+        [(ngModel)]="selectedShipTo"
+        [textField]="'text'"
+        [valueField]="'value'"
+        placeholder="Select"
+        rounded="large">
+      </kendo-combobox>
+    </kendo-label>
+  </div>
+
+  <!-- Row 3 -->
+  <div class="k-d-grid k-grid-cols-6 k-gap-4 k-py-2" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem;">
+    <kendo-label text="Lot Owner" class="k-w-full">
+      <kendo-combobox [data]="lotOwnersList" [(ngModel)]="selectedLotOwner"
+        [textField]="'employeeName'" [valueField]="'ownerId'" placeholder="Select" rounded="large"
+      ></kendo-combobox>
+    </kendo-label>
+
+    <kendo-label text="DQP ID" class="k-w-full">
+      <kendo-combobox [data]="Customerlist" [(ngModel)]="Selectedcustomer"
+        [textField]="'deliveryModeName'" [valueField]="'deliveryModeID'" placeholder="Select" rounded="large"
+      ></kendo-combobox>
+    </kendo-label>
+
+    <kendo-label text="Lot Type" class="k-w-full">
+      <kendo-combobox [data]="lotTypelist" [(ngModel)]="SelectedlotType"
+        [textField]="'itemText'" [valueField]="'masterListItemId'" placeholder="Select" rounded="large"
+      ></kendo-combobox>
+    </kendo-label>
+
+    <kendo-label text="Country of Origin" class="k-w-full">
+      <kendo-combobox [data]="Coolist" [(ngModel)]="Selectedcoo"
+        [textField]="'itemText'" [valueField]="'masterListItemId'" placeholder="Select" rounded="large"
+      ></kendo-combobox>
+    </kendo-label>
+
+    <kendo-label text="Date Code" class="k-w-full">
+      <input kendoTextBox [(ngModel)]="dateCode" placeholder="enter" rounded="full" />
+    </kendo-label>
+
+    <kendo-label text="Part Type" class="k-w-full">
+      <input kendoTextBox [(ngModel)]="parttype" placeholder="enter" rounded="full" />
+    </kendo-label>
+  </div>
+  <!-- Row 4 -->
+  <div class="k-d-grid k-grid-cols-6 k-gap-4 k-py-2" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem;">
+    <kendo-label text="Customer Lot#" class="k-w-full">
+      <input kendoTextBox [(ngModel)]="custLot" placeholder="enter" rounded="full" />
+    </kendo-label>
+
+    <kendo-label text="Test Category" class="k-w-full">
+      <kendo-combobox [data]="Testcategorylist" [(ngModel)]="SelectedTestcategory"
+      [textField]="'itemText'" [valueField]="'masterListItemId'" placeholder="Select" rounded="large"></kendo-combobox>
+    </kendo-label>
+
+    <kendo-label text="Assembly" class="k-w-full">
+      <kendo-combobox [data]="Assemblylist" [(ngModel)]="Selectedassembly"
+      [textField]="'itemText'" [valueField]="'masterListItemId'" placeholder="Select" rounded="large"></kendo-combobox>
+    </kendo-label>
+
+    <kendo-label text="Contact Info" class="k-w-full">
+      <input kendoTextBox [(ngModel)]="contactInfo" placeholder="enter" rounded="full" />
+    </kendo-label>
+
+    <kendo-label text="Tray/Tubes" class="k-w-full">
+      <kendo-combobox [data]="Customerlist" [(ngModel)]="Selectedcustomer"
+        [textField]="'deliveryModeName'" [valueField]="'deliveryModeID'" placeholder="Select" rounded="large"
+      ></kendo-combobox>
+    </kendo-label>
+
+    <kendo-label text="Missing Qty" class="k-w-full">
+      <input kendoTextBox [(ngModel)]="missingQty" placeholder="enter" rounded="full" />
+    </kendo-label>
+  </div>
+  <!-- Row 5 -->
+  <div class="k-d-grid k-grid-cols-6 k-gap-4 k-py-2" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem;">
+    <kendo-label text="Units on Reel  " class="k-w-full">
+      <kendo-checkbox [(ngModel)]="unitsOnReel"></kendo-checkbox>
+    </kendo-label>
+
+    <kendo-label text="Scrap Lot  " class="k-w-full">
+      <kendo-checkbox [(ngModel)]="scrapLot"></kendo-checkbox>
+    </kendo-label>
+
+    <kendo-label text="Expedite  " class="k-w-full">
+      <kendo-checkbox id="expedite" [(ngModel)]="expedite"></kendo-checkbox>
+    </kendo-label>
+
+    <kendo-label text="Return to Customer  " class="k-w-full">
+      <kendo-checkbox [(ngModel)]="rturntoCust"></kendo-checkbox>
+    </kendo-label>
+
+    <kendo-label text="Terminated  " class="k-w-full">
+      <kendo-checkbox [(ngModel)]="terminated"></kendo-checkbox>
+    </kendo-label>
+
+    <kendo-label text="IQA optional " class="k-w-full">
+      <kendo-checkbox [(ngModel)]="iQAoptional"></kendo-checkbox>
+    </kendo-label>
+  </div>
+  <!-- Row 6 -->
+  <div class="k-d-grid k-grid-cols-6 k-gap-4 k-py-2" style="margin-top: -0.5rem;">
+
+    <kendo-label text="Lot Identifier" class="k-w-full">
+      <kendo-combobox
+        [data]="lotIdentifierList"
+        [(ngModel)]="selectedLotIdentifier"
+        [textField]="'name'"
+        [valueField]="'id'"
+        placeholder="Select"
+        rounded="large">
+      </kendo-combobox>
+    </kendo-label>
+  </div>
+</div>
+
+@if (isMergePopupVisible) {
+  <kendo-dialog (close)="isMergePopupVisible = false">
+    <kendo-dialog-titlebar>Merge Details</kendo-dialog-titlebar>
+    <!-- Loading State -->
+    @if (isLoadingMergeLots) {
+      <p>Loading...</p>
+    }
+    <!-- No Records / Error Message -->
+    @if (!isLoadingMergeLots && mergeMessage) {
+      <p>{{ mergeMessage }}</p>
+      <ng-container kendo-dialog-actions>
+        <kendo-dialog-actions>
+          <button kendoButton (click)="isMergePopupVisible = false">OK</button>
+        </kendo-dialog-actions>
+      </ng-container>
+    }
+    <!-- Data Grid -->
+    @if (!isLoadingMergeLots && mergeLots.length > 0) {
+      <div style="width: 800px; height: 300px; overflow: auto;">
+        <kendo-grid
+          [data]="mergeLots"
+          [selectable]="{ checkboxOnly: true, mode: 'multiple' }"
+          kendoGridSelectBy="lotId"
+          [selectedKeys]="selectedMergeLotIds"
+          (selectionChange)="onLotSelectionChange($event)">
+          <kendo-grid-checkbox-column></kendo-grid-checkbox-column>
+          <kendo-grid-column field="iseLotNumber" title="Lot #"></kendo-grid-column>
+          <kendo-grid-column field="runningCount" title="Running Count"></kendo-grid-column>
+          <kendo-grid-column field="travelerStatus" title="Status"></kendo-grid-column>
+          <kendo-grid-column field="isReceived" title="Received"></kendo-grid-column>
+        </kendo-grid>
+      </div>
+      <!-- Action Buttons -->
+      <ng-container kendo-dialog-actions>
+        <kendo-dialog-actions>
+          @if (showVoidButton) {
+            <button kendoButton (click)="onVoidMerge()">Void</button>
+          }
+          <button kendoButton (click)="onRequestMerge()">Request Merge</button>
+          <button kendoButton (click)="isMergePopupVisible = false">Cancel</button>
+        </kendo-dialog-actions>
+      </ng-container>
+    }
+  </kendo-dialog>
+}
+
+@if (isSplitPopupVisible) {
+  <kendo-dialog class="splitFuture-grid" (close)="isSplitPopupVisible = false" [width]="950">
+    <kendo-dialog-titlebar>Split Details</kendo-dialog-titlebar>
+    <kendo-tabstrip>
+      @if (!isHideSplitVisible) {
+        <kendo-tabstrip-tab title="Split" [selected]="!isHideSplitVisible">
+          @if (!isHideSplitVisible) {
+            <ng-template kendoTabContent>
+              <!-- Data Grid -->
+              <ng-container>
+                <div style="width: 900px; height: 400px;">
+                  <div class="row-container">
+                    <button kendoButton (click)="addRow()">Add Split</button>
+                    <label>Split Type :
+                      <kendo-combobox [disabled]="splitTypes.length <= 1"
+                        [data]="splitTypes"
+                        [textField]="'text'"
+                        [valueField]="'value'"
+                        [(ngModel)]="selectedSplitType" style="width: 200px;">
+                      </kendo-combobox>
+                    </label>
+                  </div>
+                  <kendo-grid
+                    [data]="pivotedData" style="width: 900px;height:350px" [scrollable]="'scrollable'">
+                    <kendo-grid-column title="Actions" [width]="120">
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        @if (dataItem.Id !== 0) {
+                          <button kendoGridRemoveCommand [svgIcon]="ICON.trashIcon" (click)="deleteRow(dataItem,'Split')" title="Delete">
+                          </button>
+                        }
+                      </ng-template>
+                    </kendo-grid-column>
+                    <!-- Dynamic Lot Columns -->
+                    @for (col of splitColumns; track col) {
+                      <kendo-grid-column  [field]="col" [title]="col" [width]="120" class="splitFuture-grid" [headerClass]="getHeaderClass(col, 'Split')" >
+                        <!-- <ng-template kendoGridCellTemplate let-dataItem let-field="field">
+                        <input kendoTextBox [(ngModel)]="dataItem[col]" type="number" />
+                      </ng-template> -->
+                      <ng-template kendoGridCellTemplate let-dataItem let-field="field" let-rowIndex="rowIndex">
+                        <!-- Show plain text if column is in readonly list -->
+                        @if (dataItem.Id === 0) {
+                          {{ col == "Description" ? "Quantity" : dataItem.values[col]?.SplitQty }}
+                        } @else {
+                          @if (col === 'CopySteps' || col === 'CopyShipping') {
+                            <kendo-combobox
+                              [name]="col + '_' + dataItem.Id"
+                              [data]="yesNoOptions"
+                              [textField]="'text'"
+                              [valueField]="'value'"
+                              [valuePrimitive]="true"
+                              [(ngModel)]="dataItem[col]">
+                            </kendo-combobox>
+                          }
+                          @if (col === 'Description') {
+                            {{dataItem[col]}}
+                          }
+                          @if (col !== 'Description' && col !== 'CopySteps' && col !== 'CopyShipping') {
+                            <input  [name]="col + '_' + dataItem.Id"  kendoTextBox [(ngModel)]="dataItem.values[col].SplitQty" type="number"
+                              (change)="bindSplitTotal(dataItem, col)" [disabled]="isTextboxDisabled(col,dataItem, 'Split')"/>
+                            }
+                            @if (col == 'Description') {
+                              <ng-template kendoGridFooterTemplate>
+                                <ng-container>
+                                  {{ 'Total' }}
+                                </ng-container>
+                              </ng-template>
+                            }
+                            @if (col !== 'Description' && col !== 'CopySteps' && col !== 'CopyShipping') {
+                              <ng-template kendoGridFooterTemplate>
+                                <ng-container>
+                                  {{ getSplitTotal(col) }}
+                                </ng-container>
+                              </ng-template>
+                            }
+                          }
+                        </ng-template>
+                      </kendo-grid-column>
+                    }
+                  </kendo-grid>
+                </div>
+                <!-- Action Buttons -->
+                <kendo-dialog-actions>
+                  <button kendoButton (click)="saveSplit()">Save</button>
+                  <button kendoButton (click)="isSplitPopupVisible = false">Cancel</button>
+                </kendo-dialog-actions>
+              </ng-container>
+            </ng-template>
+          }
+        </kendo-tabstrip-tab>
+      }
+      @if (!isHideFutureSplitVisible) {
+        <kendo-tabstrip-tab title="Future Split" [selected]="isHideSplitVisible && !isHideFutureSplitVisible">
+          @if (!isHideFutureSplitVisible) {
+            <ng-template kendoTabContent>
+              <!-- Data Grid -->
+              <ng-container>
+                <div style="width: 900px; height: 300px;">
+                  <div class="row-container">
+                    <button kendoButton (click)="addFutureRow()">Add Split</button>
+                    <b><label>{{ "Running Qty : " +currentQty }}</label></b>
+                    @if (futureSplitTypes.length > 1) {
+                      <label>Split Type :
+                        <kendo-combobox [disabled]="futureSplitTypes.length <= 1"
+                          [data]="futureSplitTypes"
+                          [textField]="'text'"
+                          [valueField]="'value'"
+                          [(ngModel)]="selectedSplitType" style="width: 200px;">
+                        </kendo-combobox>
+                      </label>
+                    }
+                  </div>
+                  <kendo-grid
+                    [data]="activeFuturePivotedData" [scrollable]="'scrollable'" style="width: 900px">
+                    <kendo-grid-column title="Actions" [width]="120">
+                      <ng-template kendoGridCellTemplate let-dataItem>
+                        <ng-container>
+                          <button kendoButton [svgIcon]="ICON.trashIcon" (click)="deleteRow(dataItem, 'FutureSplit')">
+                            <span class="k-icon k-i-delete"></span>
+                          </button>
+                        </ng-container>
+                      </ng-template>
+                    </kendo-grid-column>
+                    @for (col of futureSplitColumns; track col) {
+                      <kendo-grid-column  [field]="col" [title]="col" [width]="120" [headerClass]="getHeaderClass(col, 'FutureSplit')">
+                        <ng-template kendoGridCellTemplate let-dataItem let-field="field">
+                          <!-- Show plain text if column is in readonly list -->
+                          @if (col === 'CopySteps' || col === 'CopyShipping') {
+                            <kendo-combobox
+                              [name]="col + '_future_' + dataItem.Id"
+                              [data]="yesNoOptions"
+                              [textField]="'text'"
+                              [valueField]="'value'"
+                              [valuePrimitive]="true"
+                              [(ngModel)]="dataItem[col]">
+                            </kendo-combobox>
+                          }
+                          @if (col != 'Id' && col !== 'CopySteps' && col !== 'CopyShipping' && col !== 'FSId' && col !== 'IsDeleted') {
+                            <input  [name]="col + '_future_' + dataItem.Id"  kendoTextBox [(ngModel)]="dataItem.values[col].SplitQty" type="number"
+                              (change)="bindFutureSplitTotal(dataItem, col)" [disabled]="isTextboxDisabled(col,dataItem, 'FutureSplit')"/>
+                            }
+                          </ng-template>
+                        </kendo-grid-column>
+                      }
+                      <!--   <kendo-grid-column field="Amount" title="Amount">
+                      <ng-template kendoGridFooterTemplate let-data>
+                        Total: {{ totalAmount }}
+                      </ng-template>
+                    </kendo-grid-column>  -->
+                  </kendo-grid>
+                </div>
+                <!-- Action Buttons -->
+                <kendo-dialog-actions>
+                  <button kendoButton (click)="saveFutureSplit()">Save</button>
+                  <button kendoButton (click)="isSplitPopupVisible = false">Cancel</button>
+                </kendo-dialog-actions>
+              </ng-container>
+            </ng-template>
+          }
+        </kendo-tabstrip-tab>
+      }
+    </kendo-tabstrip>
+  </kendo-dialog>
+}
+
+<!-- Void PopUp -->
+@if (showVoidSuccessDialog) {
+  <kendo-dialog [width]="'300px'" [height]="'200px'">
+    <kendo-dialog-titlebar>
+      Traveler
+    </kendo-dialog-titlebar>
+    <p>Void successful.</p>
+    <kendo-dialog-actions>
+      <button kendoButton (click)="onVoidDialogClose()">OK</button>
+    </kendo-dialog-actions>
+  </kendo-dialog>
+}
+
+<!-- Confirmation PopUp -->
+@if (showMergeConfirmDialog) {
+  <kendo-dialog [width]="'300px'" [height]="'200px'">
+    <kendo-dialog-titlebar>
+      Traveler
+    </kendo-dialog-titlebar>
+    <p>Do you want to merge?</p>
+    <kendo-dialog-actions>
+      <button kendoButton (click)="onMergeConfirm()">Yes</button>
+      <button kendoButton (click)="onMergeCancel()">No</button>
+    </kendo-dialog-actions>
+  </kendo-dialog>
+}
+
+<!-- Confirmation PopUp -->
+@if (showMergeSuccessDialog) {
+  <kendo-dialog [width]="'300px'" [height]="'200px'">
+    <kendo-dialog-titlebar>
+      Traveler
+    </kendo-dialog-titlebar>
+    <p style="padding: 20px;">Merge request added successfully.</p>
+    <kendo-dialog-actions>
+      <button kendoButton (click)="onSuccessDialogClose()">OK</button>
+    </kendo-dialog-actions>
+  </kendo-dialog>
+}
+@if (showSplitUnavailableDialog) {
+  <kendo-dialog [width]="'500px'" [height]="'250px'">
+    <kendo-dialog-titlebar>
+      Future Split/Split
+    </kendo-dialog-titlebar>
+    <p style="padding: 20px;">At Present Future Splits's or Split's are unable to add on this Step.Please try later.</p>
+    <kendo-dialog-actions>
+      <button kendoButton (click)="closeSplitUnavailableDialog()">OK</button>
+    </kendo-dialog-actions>
+  </kendo-dialog>
+}
+
+<div class="page-body k-m-4">
+  <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings"
+    [columnMenu]="columnMenuSettings" [resizable]="true" [pageSize]="pageSize"
+    [skip]="skip" [pageable]="true" (pageChange)="pageChange($event)"
+    class="grid-header-sm grid-header-bold" (cellClick)="onCellClick($event)" [rowClass]="rowCallback">
+    <kendo-grid-column title="" [width]="120">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          @if (dataItem.status) {
+            <span
+              class="status-box"
+              [ngClass]="getStatusColor(dataItem.status)"
+              [title]="dataItem.status"
+            ></span>
+          }
+          @if (dataItem.showMerge === 1) {
+            <button (click)="onMergeClick(dataItem)" class="k-button k-button-icontext">M</button>
+          }
+          @if (dataItem.showFS === 1 || (dataItem.spliAvailable == 1 || dataItem.editSplit == 1)) {
+            <button class="k-button k-button-icontext" (click)="onSplitClick(dataItem)">S</button>
+          }
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="sequence" title="Step #" [width]="112"></kendo-grid-column>
+    <kendo-grid-column field="stepName" title="Process" [width]="135"></kendo-grid-column>
+    <kendo-grid-column field="description" title="Description" [width]="175"></kendo-grid-column>
+    <kendo-grid-column field="alertComments" title="Alert" [width]="175"></kendo-grid-column>
+    <kendo-grid-column field="totalQty" title="In" [width]="170"></kendo-grid-column>
+    <kendo-grid-column field="goodQty" title="Out" [width]="160"></kendo-grid-column>
+    <kendo-grid-column field="goodQty" title="Good" [width]="160"></kendo-grid-column>
+    <kendo-grid-column field="rejectQty" title="Reject" [width]="125"></kendo-grid-column>
+    <kendo-grid-column field="Missing" title="missingQty" [width]="150"></kendo-grid-column>
+    <kendo-grid-column field="qualifiedRejectQty" title="Other Rejects" [width]="180"></kendo-grid-column>
+    <kendo-grid-column field="processedQty" title="Processed Qty" [width]="180"></kendo-grid-column>
+    <kendo-grid-column field="remainingQty" title="UnProcessed Qty" [width]="180"></kendo-grid-column>
+    <kendo-grid-column field="startTime" title="Date-In" [width]="180"></kendo-grid-column>
+    <kendo-grid-column field="endTime" title="Date-Out" [width]="180"></kendo-grid-column>
+    <kendo-grid-column field="source" title="Source" [width]="180"></kendo-grid-column>
+    <kendo-grid-column field="status" title="Status" [width]="180"></kendo-grid-column>
+    <kendo-grid-column field="overAllYield" title="Overall Yield (%)" [width]="180"></kendo-grid-column>
+    <kendo-grid-column field="actualYeild" title="Actual Yield (%)" [width]="180"></kendo-grid-column>
+    <kendo-grid-column field="ispartialInvoice" title="Partial Inv" [width]="180"></kendo-grid-column>
+    <kendo-grid-column field="batchNo" title="Batch" [width]="180"></kendo-grid-column>
+    <kendo-grid-column field="batchInvoiceStatus" title="Batch Invoice Status" [width]="180"></kendo-grid-column>
+
+  </kendo-grid>
+</div>

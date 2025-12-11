@@ -19,7 +19,8 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-add-mail-info',
   templateUrl: './add-mail-info.component.html',
-  styleUrls: ['./add-mail-info.component.scss']
+  styleUrls: ['./add-mail-info.component.scss'],
+  standalone: false
 })
 
 export class AddMailInfoComponent implements OnInit, OnDestroy {

@@ -35,8 +35,8 @@ export interface ServiceCategory {
   serviceCategoryName: string;
 }
 export interface Coo {
-  serviceCategoryId: number;
-  serviceCategoryName: string;
+  masterListItemId: number;
+  itemText: string;
 }
 export interface LotOwners {
   employeeID: number;
@@ -124,6 +124,11 @@ export interface MasterData {
   deviceType: DeviceType[];
   receivingTypes: ReceivingTypes[];
   customersLogin: CustomersLogin[];
+  Travellerlist: Travellerlist[];
+  Testcategorylist: Testcategorylist[];
+  Assemblylist: Assemblylist[];
+  TestModelist: TestModelist[];
+  lotTypelist: LotTypeList[];
 }
 export interface Receipt {
   receiptID: number;
@@ -303,34 +308,42 @@ export interface JSON_Object {
 }
 
 export const ICON = {
-  moreVerticalIcon,
-  xIcon,
-  pencilIcon,
-  eyeIcon,
-  exportIcon,
-  eyeSlashIcon,
-  menuIcon,
-  selectBoxIcon,
   cartIcon,
-  windowRestoreIcon,
-  jsIcon,
   clipboardTextIcon,
-  userIcon,
+  closedCaptionsIcon,
+  crosstabIcon,
+  editToolsIcon,
+  exportIcon,
+  eyeIcon,
+  eyeSlashIcon,
   gearIcon,
-  logoutIcon,
-  printIcon,
+  jsIcon,
   kpiStatusHoldIcon,
+  logoutIcon,
+  menuIcon,
+  moreVerticalIcon,
+  pencilIcon,
+  printIcon,
+  selectBoxIcon,
   trashIcon,
+  userIcon,
+  windowRestoreIcon,
+  xIcon,
   saveIcon,
   mapMarkerIcon,
   pauseIcon
-}
+};
 
 export const MESSAGES = {
   DataSaved: "Data Saved!",
   DataSaveError: 'Error while saving data, try again!',
   NoChanges: 'No changes, nothing to update or insert',
   AllFieldsRequired: 'All the fields are required'
+}
+
+export const PSCode = {
+  Split: 'Split',
+  FutureSplit: 'FutureSplit'
 }
 export interface UserData {
   name: string;
@@ -1239,4 +1252,75 @@ export interface MailAttachmentDto {
   attachmentName: string,
   path: string,
   active: boolean,
+}
+
+export interface Traveller {
+  currentLocation: string;
+  currentStep: string;
+  customerLotNumber: string;
+  customerName: string;
+  device: string;
+  deviceFamily: string;
+  expectedCount:number;
+  expectedDate:string;
+  identifier:string;
+  iseLotNumber:string;
+  lotId: number;
+  lotQty:number;
+  lotStatus:string;
+  nextStep:string;
+  receivingNo:string;
+  runningCount:number;
+  shippingMethod:string;
+  soStatus:string;
+  travelerStatus:string;
+  trvStepId:number;
+}
+
+export interface Travellerlist {
+  masterListItemId: number;
+  itemText: string;
+}
+
+export interface SplitPreviewSteps {
+  stepName: string | null;
+  stepId: number | null;
+  qty: string | null;
+}
+
+export interface SplitPreviewHeader {
+  lotNumber: string | null;
+  customer: string | null;
+  deviceFamily: string | null;
+  device: string | null;
+  category: string | null;
+  dqpId: string | null;
+  totalQty: string | null;
+  runningQty: string | null;
+  currentQty: string | null;
+  previewSteps: SplitPreviewSteps[];
+}
+
+export interface PreviewHeaderResponse {
+  previewHeader: SplitPreviewHeader[];
+}
+
+export interface Testcategorylist {
+  masterListItemId: number;
+  itemText: string;
+}
+
+export interface Assemblylist {
+  masterListItemId: number;
+  itemText: string;
+}
+
+export interface TestModelist {
+  masterListItemId: number;
+  itemText: string;
+}
+
+export interface LotTypeList {
+  masterListItemId: number;
+  itemText: string;
 }

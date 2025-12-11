@@ -1,0 +1,14 @@
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #c8d2d9; /* match your screenshot */
+  }
+  
+  .k-label {
+    color: purple;
+    display: block;
+    margin-bottom: 0.25rem;
+  }

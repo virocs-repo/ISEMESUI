@@ -21,7 +21,8 @@ enum ActionType {
 @Component({
   selector: 'app-add-ticket',
   templateUrl: './add-ticket.component.html',
-  styleUrls: ['./add-ticket.component.scss']
+  styleUrls: ['./add-ticket.component.scss'],
+  standalone: false
 })
 export class AddTicketComponent implements OnInit, OnDestroy {
   readonly ICON = ICON;
@@ -71,7 +72,7 @@ export class AddTicketComponent implements OnInit, OnDestroy {
   filteredTicketAttachments:TicketAttachment[] = []
   commentsAttachments:CommentsAttachment[] = []
   filteredCommentsAttachments:CommentsAttachment[] = []
-  readonly downloadFileApi = environment.apiUrl + 'v1/ise/inventory/ticket/download/'
+  readonly downloadFileApi = environment.apiUrl + 'v1/ise/ticketing/ticket/download/'
 
   constructor(public appService: AppService, private apiService: ApiService) { 
     this.getTicketTypes();
@@ -553,7 +554,7 @@ showHideButtons(){
   
   downloadFile(d: CommentsAttachment) {
     debugger;
-    this.apiService.downloadFile(d.fileName).subscribe();
+    this.apiService.downloadTicketFile(d.fileName).subscribe();
   }
   
   deleteTicketFile(dataItem: TicketAttachment) {

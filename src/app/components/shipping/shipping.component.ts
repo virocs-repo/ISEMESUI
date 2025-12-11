@@ -10,7 +10,8 @@ import { AppService } from 'src/app/services/app.service';
 @Component({
   selector: 'app-shipping',
   templateUrl: './shipping.component.html',
-  styleUrls: ['./shipping.component.scss']
+  styleUrls: ['./shipping.component.scss'],
+  standalone: false
 })
 export class ShippingComponent implements OnDestroy {
   readonly ICON = ICON;

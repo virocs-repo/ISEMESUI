@@ -9,7 +9,8 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-shipping-record',
   templateUrl: './shipping-record.component.html',
-  styleUrls: ['./shipping-record.component.scss']
+  styleUrls: ['./shipping-record.component.scss'],
+  standalone: false
 })
 export class ShippingRecordComponent implements OnDestroy {
   shipmentNumber: string = ''

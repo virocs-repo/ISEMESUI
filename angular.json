@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "play-k16": {
+    "isemesui": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/play-k16",
+            "outputPath": "dist/isemesui",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -72,12 +72,15 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "buildTarget": "isemesui:build:development"
+          },
           "configurations": {
             "production": {
-              "browserTarget": "play-k16:build:production"
+              "buildTarget": "isemesui:build:production"
             },
             "development": {
-              "browserTarget": "play-k16:build:development"
+              "buildTarget": "isemesui:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -85,7 +88,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "play-k16:build"
+            "browserTarget": "isemesui:build"
           }
         },
         "test": {

@@ -9,73 +9,22 @@
 
   <kendo-appbar-section width="100%">
     <div class="nav-bar k-d-flex k-align-items-center k-justify-content-center k-gap-3">
-      <!--       <button kendoButton fillMode="flat" routerLink="/receiving" routerLinkActive="active"
-        [disabled]="!(appService.userPreferences || (appService.userPreferences && appService.activeNavigationUrls.includes('Receiving')))">Receiving</button> -->
-
-        <div class="kendo-dropdown-wrapper">
-        <button kendoButton fillMode="flat" class="parent-menu-button" routerLinkActive="active"
-          [disabled]="!(appService.userPreferences || (appService.userPreferences && appService.activeNavigationUrls.includes('Receiving')))">
-          Receiving
-          <kendo-icon name="arrow-down" class="menu-icon"></kendo-icon>
-        </button>
-        <div class="submenu">
-          <button kendoButton fillMode="flat" routerLink="/receiver-form-internal" routerLinkActive="active">
-            Receiver Form(Internal)
-          </button>
-          <button kendoButton fillMode="flat" routerLink="/receiver-form-customer" routerLinkActive="active">
-            Receiver Form(Customer)
-          </button>
-          <button kendoButton fillMode="flat" routerLink="/mail-room" routerLinkActive="active">
-            Mail Room
-          </button>
-          <button kendoButton fillMode="flat" routerLink="/search-receiving" routerLinkActive="active">
-            Receiving
-          </button>
-          <button kendoButton fillMode="flat" routerLink="/int-transfer-receiving" routerLinkActive="active">
-            Internal Tranfer Receiving
-          </button>
-        </div>
-      </div>
-      <button kendoButton fillMode="flat" routerLink="/inventory-hold" routerLinkActive="active"
-        [disabled]="!(appService.userPreferences || (appService.userPreferences && appService.activeNavigationUrls.includes('Hold')))">Hold</button>
-
-      <!-- Submenu for Checkin/Checkout under Inventory Move -->
-      <div class="kendo-dropdown-wrapper">
-        <button kendoButton fillMode="flat" class="parent-menu-button" routerLink="/inventory-move"
-          routerLinkActive="active">
-          Inventory Move
-          <kendo-icon name="arrow-down" class="menu-icon"></kendo-icon>
-        </button>
-        <div class="submenu">
-          <button kendoButton fillMode="flat" routerLink="/inventory-checkinCheckout" routerLinkActive="active"
-            [disabled]="!(appService.userPreferences || (appService.userPreferences && appService.activeNavigationUrls.includes('MoveIn')))">
-            Checkin/Checkout
-          </button>
-        </div>
-      </div>
-
-      <div class="kendo-dropdown-wrapper">
-        <button kendoButton fillMode="flat" class="parent-menu-button" routerLink="/shipping" routerLinkActive="active">
-          Shipping
-          <kendo-icon name="arrow-down" class="menu-icon"></kendo-icon>
-        </button>
-        <div class="submenu">
-          <button kendoButton fillMode="flat" routerLink="/another-shipping" routerLinkActive="active">
-            Other Inventory Shipment
-          </button>
-          <button kendoButton fillMode="flat" routerLink="/combined-lot" routerLinkActive="active">
-            Combined Lot Shipment
-          </button>
-        </div>
-      </div>
-
-      <button kendoButton fillMode="flat" routerLink="/inventory" routerLinkActive="active">Inventory</button>
-      <button kendoButton fillMode="flat" routerLink="/customer-order" routerLinkActive="active">Customer
-        Order/Scrap</button>
-      <button kendoButton fillMode="flat" routerLink="/reports" routerLinkActive="active">Reports</button>
-      <!--<button kendoButton fillMode="flat" routerLink="/ticket" routerLinkActive="active">Ticket</button> -->
-      <!--    <button kendoButton fillMode="flat" routerLink="/another-shipping" routerLinkActive="active">Other Inventory Shipment</button>
-      <button kendoButton fillMode="flat" routerLink="/combined-lot" routerLinkActive="active">Combined Lot Shipment</button> -->
+      <button 
+        kendoButton 
+        fillMode="flat" 
+        [class.active]="selectedTabIndex === 0"
+        (click)="onMainMenuSelect(0)"
+        class="main-menu-btn">
+        Inventory
+      </button>
+      <button 
+        kendoButton 
+        fillMode="flat" 
+        [class.active]="selectedTabIndex === 1"
+        (click)="onMainMenuSelect(1)"
+        class="main-menu-btn">
+        Ticketing System
+      </button>
     </div>
   </kendo-appbar-section>
 

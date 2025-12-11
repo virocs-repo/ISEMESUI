@@ -8,7 +8,8 @@ import { ICON } from 'src/app/services/app.interface';
 @Component({
   selector: 'app-add-shipping',
   templateUrl: './add-shipping.component.html',
-  styleUrls: ['./add-shipping.component.scss']
+  styleUrls: ['./add-shipping.component.scss'],
+  standalone: false
 })
 export class AddShippingComponent  implements OnDestroy {
   readonly ICON = ICON;

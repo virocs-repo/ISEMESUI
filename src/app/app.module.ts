@@ -75,6 +75,16 @@ import { AddCustomerReceiverFormComponent } from './components/add-customer-rece
 import { AddMailInfoComponent } from './components/add-mail-info/add-mail-info.component';
 import { SearchReceivingComponent } from './components/search-receiving/search-receiving.component';
 import { AddReceivingComponent } from './components/add-receiving/add-receiving.component';
+import { SearchTravellerComponent } from './components/search-traveller/search-traveller.component';
+import { IcrDashboardComponent } from './components/icr-dashboard/icr-dashboard.component';
+import { ProcessStepsComponent } from './components/process-steps/process-steps.component';
+import { ExecuteSplitMergeComponent } from './components/execute-split-merge/execute-split-merge.component';
+import { TestCompComponent } from './components/test-comp/test-comp.component';
+import { EditTravellerComponent } from './components/edit-traveller/edit-traveller.component';
+import { MergeRequestComponent } from './components/merge-request/merge-request.component';
+import { AddSplitComponent } from './components/add-split/add-split.component';
+import { TravellerLandingComponent } from './components/traveller-landing/traveller-landing.component';
+import { ScanBadgeComponent } from './components/scan-badge/scan-badge.component';
 
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1;
@@ -164,7 +174,17 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     AddCustomerReceiverFormComponent,
     AddMailInfoComponent,
     SearchReceivingComponent,
-    AddReceivingComponent
+    AddReceivingComponent,
+    SearchTravellerComponent,
+    IcrDashboardComponent,
+    ProcessStepsComponent,
+    ExecuteSplitMergeComponent,
+    TestCompComponent,
+    EditTravellerComponent,
+    MergeRequestComponent,
+    AddSplitComponent,
+    TravellerLandingComponent,
+    ScanBadgeComponent
   ],
   imports: [
     BrowserModule,

@@ -7,7 +7,8 @@ import { AppService } from 'src/app/services/app.service';
 @Component({
   selector: 'app-add-combined-lot',
   templateUrl: './add-combined-lot.component.html',
-  styleUrls: ['./add-combined-lot.component.scss']
+  styleUrls: ['./add-combined-lot.component.scss'],
+  standalone: false
 })
 export class AddCombinedLotComponent implements OnDestroy {
   shipmentNumber: string = ''

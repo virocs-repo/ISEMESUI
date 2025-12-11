@@ -5,7 +5,8 @@ import { ICON } from 'src/app/services/app.interface';
 @Component({
   selector: 'app-onoff-hold',
   templateUrl: './onoff-hold.component.html',
-  styleUrls: ['./onoff-hold.component.scss']
+  styleUrls: ['./onoff-hold.component.scss'],
+  standalone: false
 })
 export class OnoffHoldComponent {
   readonly ICON = ICON

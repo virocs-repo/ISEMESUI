@@ -10,7 +10,8 @@ import { ApiService } from 'src/app/services/api.service';
 @Component({
   selector: 'app-add-shipping-address',
   templateUrl: './add-shipping-address.component.html',
-  styleUrls: ['./add-shipping-address.component.scss']
+  styleUrls: ['./add-shipping-address.component.scss'],
+  standalone: false
 })
 export class AddShippingAddressComponent implements OnInit{
   readonly ICON = ICON

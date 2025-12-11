@@ -11,7 +11,8 @@ import * as moment from 'moment';
 @Component({
   selector: 'app-receiver-form-customer',
   templateUrl: './receiver-form-customer.component.html',
-  styleUrls: ['./receiver-form-customer.component.scss']
+  styleUrls: ['./receiver-form-customer.component.scss'],
+  standalone: false
 })
 
 export class ReceiverFormCustomerComponent implements OnDestroy {
@@ -114,7 +115,7 @@ export class ReceiverFormCustomerComponent implements OnDestroy {
             break;
         }
       }));
-  
+
       this.initRoleBasedUI();
     }
     ngOnDestroy(): void {

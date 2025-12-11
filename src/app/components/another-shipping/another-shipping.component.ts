@@ -12,6 +12,8 @@ import { DatePipe } from '@angular/common';
   templateUrl: './another-shipping.component.html',
   styleUrls: ['./another-shipping.component.scss'],
   providers:[DatePipe]
+,
+  standalone: false
 })
 export class AnotherShippingComponent implements OnDestroy {
   readonly ICON = ICON;

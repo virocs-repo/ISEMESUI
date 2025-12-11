@@ -6,7 +6,8 @@ import { AppService } from 'src/app/services/app.service';
 @Component({
   selector: 'app-add-inventory-move',
   templateUrl: './add-inventory-move.component.html',
-  styleUrls: ['./add-inventory-move.component.scss']
+  styleUrls: ['./add-inventory-move.component.scss'],
+  standalone: false
 })
 export class AddInventoryMoveComponent implements OnDestroy {
   shipmentNumber: string = ''

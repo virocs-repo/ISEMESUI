@@ -28,7 +28,8 @@ const COURIER = 'Courier'
 @Component({
   selector: 'add-customer-receiver-form',
   templateUrl: './add-customer-receiver-form.component.html',
-  styleUrls: ['./add-customer-receiver-form.component.scss']
+  styleUrls: ['./add-customer-receiver-form.component.scss'],
+  standalone: false
 })
 export class AddCustomerReceiverFormComponent implements OnInit, OnDestroy {
   readonly ICON = ICON;

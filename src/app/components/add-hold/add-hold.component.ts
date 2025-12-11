@@ -9,7 +9,8 @@ import { SelectEvent } from '@progress/kendo-angular-upload';
 @Component({
   selector: 'app-add-hold',
   templateUrl: './add-hold.component.html',
-  styleUrls: ['./add-hold.component.scss']
+  styleUrls: ['./add-hold.component.scss'],
+  standalone: false
 })
 export class AddHoldComponent implements OnInit {
   @Output() dataUpdated = new EventEmitter<void>();

@@ -1,13 +1,11 @@
-<div class="k-d-flex k-align-items-center  k-gap-1 k-py-0 k-px-4 page-header">
-  <h4>Receiver Form (Customer)</h4>
-  <i class="k-ml-auto"></i>
+<div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-4 page-header">
   <kendo-label text="Search" class="k-font-size-sm">
-    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
-    rounded="full" (input)="onSearchMaster()" />
+    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input"
+      rounded="full" (input)="onSearchMaster()" />
   </kendo-label>
   <kendo-label text="Receiving Status" class="k-font-size-sm">
     <kendo-multiselect [data]="status" [(ngModel)]="selectedStatus" textField="itemText"
-      valueField="masterListItemId" class="k-w-full" [filterable]="true" placeholder="Select Status">
+      valueField="masterListItemId" [filterable]="true" placeholder="Select Status" rounded="full">
       <ng-template kendoMultiSelectItemTemplate let-dataItem>
         <input type="checkbox" 
         [checked]="isSelectedStatus(dataItem.masterListItemId)" 
@@ -16,26 +14,26 @@
       </ng-template>
     </kendo-multiselect>
   </kendo-label>
-  <kendo-label text="" class="k-font-size-sm k-col-span-1"> 
-    <div class="k-d-flex k-align-items-center k-gap-4">
-      <label class="k-font-size-sm k-d-flex k-align-items-center">
-        <input type="radio" kendoRadioButton [value]="true" [(ngModel)]="isExpected" />
-        <span class="k-ml-2">Expected</span>
-      </label>
-      <label class="k-font-size-sm k-d-flex k-align-items-center">
-        <input type="radio" kendoRadioButton [value]="false" [(ngModel)]="isExpected" />
-        <span class="k-ml-2">UnExpected</span>
-      </label>      
-    </div>
-  </kendo-label>
+  <div class="k-d-flex k-align-items-center k-gap-2">
+    <label class="k-font-size-sm k-d-flex k-align-items-center">
+      <input type="radio" kendoRadioButton [value]="true" [(ngModel)]="isExpected" />
+      <span class="k-ml-2">Expected</span>
+    </label>
+    <label class="k-font-size-sm k-d-flex k-align-items-center">
+      <input type="radio" kendoRadioButton [value]="false" [(ngModel)]="isExpected" />
+      <span class="k-ml-2">UnExpected</span>
+    </label>      
+  </div>
   <kendo-label text="Start Date" class="k-font-size-sm">
-    <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
+    <kendo-datepicker [format]="format" [(value)]="fromDate" rounded="full"></kendo-datepicker>
   </kendo-label>
   <kendo-label text="End Date" class="k-font-size-sm">
-    <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
+    <kendo-datepicker [format]="format" [(value)]="toDate" rounded="full"></kendo-datepicker>
   </kendo-label>
-  <button kendoButton rounded="full" themeColor="success" class="k-w-25"  (click)="search()">Search</button>
-  <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openAddDialog()">Add</button>
+  <div class="k-ml-auto k-d-flex k-gap-2">
+    <button kendoButton rounded="full" themeColor="success" (click)="search()">Search</button>
+    <button kendoButton rounded="full" themeColor="info" (click)="openAddDialog()">Add</button>
+  </div>
 </div>
   <div></div>
 <div

@@ -1,0 +1,14 @@
+::ng-deep .receipt-dialog {
+  max-height: 90vw;      
+  overflow: hidden;      
+}
+
+::ng-deep .receipt-dialog .k-dialog-content {
+  max-height: 80vh;
+  overflow: auto;    
+}
+
+::ng-deep .receipt-dialog .k-dialog-titlebar {
+  position: fixed;   
+  z-index: 10;          
+}

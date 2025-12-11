@@ -36,9 +36,9 @@
           </kendo-autocomplete>
         </kendo-label>
 
-      <kendo-button themeColor="success" rounded="large" style="width: 7rem" (click)="onSearch()"  [disabled]="!addCustomerMode" >
+      <button kendoButton themeColor="success" rounded="large" style="width: 7rem" (click)="onSearch()"  [disabled]="!addCustomerMode" >
           Search
-      </kendo-button>
+      </button>
   </div>
 
   <kendo-grid   #grid  [kendoGridBinding]="gridDataResult.data" class="k-my-3" [height]="300" 

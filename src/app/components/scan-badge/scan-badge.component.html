@@ -1,0 +1,57 @@
+<div class="scan-badge-dialog">
+  <div class="k-d-flex k-align-items-center k-justify-content-between k-mb-4">
+    <h3 class="k-m-0">Scan Badge</h3>
+    <button 
+      kendoButton 
+      type="button" 
+      fillMode="flat" 
+      [svgIcon]="ICON.xIcon" 
+      size="small"
+      (click)="cancel()"
+      class="close-button">
+    </button>
+  </div>
+  
+  <div class="k-mb-4">
+    <p class="instruction-text">Please scan your badge using your 2D scanner.</p>
+  </div>
+  
+  <div class="k-mb-4">
+    <kendo-label text="Badge Scan" class="k-w-full">
+      <input 
+        #badgeInput
+        kendoTextBox 
+        [(ngModel)]="badgeScanValue" 
+        placeholder="Scan your badge..." 
+        class="k-w-full"
+        rounded="full"
+        (input)="onBadgeInput($event)"
+        (paste)="onBadgeScan($event)"
+        (keydown)="onKeyDown($event)"
+        autocomplete="off"
+        [disabled]="isAuthorizing" />
+    </kendo-label>
+  </div>
+  
+  <div class="k-d-flex k-gap-3 k-justify-content-end">
+    <button 
+      kendoButton 
+      type="button" 
+      rounded="full" 
+      themeColor="base"
+      (click)="cancel()"
+      [disabled]="isAuthorizing">
+      Cancel
+    </button>
+    <button 
+      kendoButton 
+      type="button" 
+      rounded="full" 
+      themeColor="error"
+      (click)="authorize()"
+      [disabled]="!badgeScanValue.trim() || isAuthorizing">
+      Authorize
+    </button>
+  </div>
+</div>
+

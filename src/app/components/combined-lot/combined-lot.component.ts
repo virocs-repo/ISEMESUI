@@ -9,7 +9,8 @@ import { AppService } from 'src/app/services/app.service';
 @Component({
   selector: 'app-combined-lot',
   templateUrl: './combined-lot.component.html',
-  styleUrls: ['./combined-lot.component.scss']
+  styleUrls: ['./combined-lot.component.scss'],
+  standalone: false
 })
 export class CombinedLotComponent implements OnDestroy {
   readonly ICON = ICON;

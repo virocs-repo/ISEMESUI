@@ -1,51 +1,19 @@
 
-  <div class="k-d-flex k-align-items-center k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
-  
-    <h4>Other Inventory Shipment</h4>
-    <div class="k-d-flex k-gap-3 k-ml-auto">
-      <kendo-label text="Search" class="k-font-size-sm">
-        <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
-          rounded="full" (input)="onSearchMaster()" />
-      </kendo-label>
-  <kendo-label text="Customer" class="k-w-full k-font-size-sm" [hidden]="true" >
-    <kendo-combobox id="customer" [data]="customers" [(ngModel)]="customerSelected"
-          [textField]="'CustomerName'" [valueField]="'CustomerID'" placeholder="Select" rounded="large"
-          ></kendo-combobox>
-</kendo-label>
-<kendo-label text="Employee" class="k-w-full k-font-size-sm" [hidden]="true" >
-  <kendo-combobox id="employee" [data]="employees" [(ngModel)]="employeeSelected"
-        [textField]="'EmployeeName'" [valueField]="'EmployeeID'" placeholder="Select" rounded="large"
-        ></kendo-combobox>
-</kendo-label>
-<kendo-label text="Status" class="k-w-full k-font-size-sm" [hidden]="true" >
-<kendo-combobox id="status" [data]="statuses" [(ngModel)]="statusSelected"
-      [textField]="'name'" [valueField]="'id'" placeholder="Select" rounded="large"
-      ></kendo-combobox>
-</kendo-label>
-<kendo-label text="From Date" class="k-font-size-sm">
-<kendo-datepicker [format]="format" [(value)]="fromDate" ></kendo-datepicker>
-</kendo-label>
-<kendo-label text="To Date" class="k-font-size-sm">
-<kendo-datepicker [format]="format" [(value)]="toDate" ></kendo-datepicker>
-</kendo-label>
-  <!-- <div class="k-d-flex k-flex-col k-gap-2 k-ml-auto">
-    <div class="k-d-flex k-gap-3">
-      <kendo-label text="From Date" class="k-w-full k-font-size-sm">
-      <kendo-datepicker [format]="format" [(value)]="fromDate" ></kendo-datepicker>
-    </kendo-label>
-
-    <kendo-label text="To Date" class="k-w-full k-font-size-sm">
-      <kendo-datepicker [format]="format" [(value)]="toDate" ></kendo-datepicker>
-    </kendo-label>
-  
-      </div>
-  </div> -->
-</div>
-    <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="fetchdata()">Search</button>
-  
-    <button kendoButton rounded="full" themeColor="info" class="k-w-25" (click)="addAnotherShipment()">Add</button>
-  
-
+<div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-4 page-header page-header-desktop">
+  <kendo-label text="Search" class="k-font-size-sm">
+    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input"
+      rounded="full" (input)="onSearchMaster()" />
+  </kendo-label>
+  <kendo-label text="From Date" class="k-font-size-sm">
+    <kendo-datepicker [format]="format" [(value)]="fromDate" rounded="full"></kendo-datepicker>
+  </kendo-label>
+  <kendo-label text="To Date" class="k-font-size-sm">
+    <kendo-datepicker [format]="format" [(value)]="toDate" rounded="full"></kendo-datepicker>
+  </kendo-label>
+  <div class="k-ml-auto k-d-flex k-gap-2">
+    <button kendoButton rounded="full" themeColor="success" (click)="fetchdata()">Search</button>
+    <button kendoButton rounded="full" themeColor="info" (click)="addAnotherShipment()">Add</button>
+  </div>
 </div>
 <div class="page-body k-m-4">
   <kendo-grid [kendoGridBinding]="gridDataResult.data" [selectable]="selectableSettings" [resizable]="true"

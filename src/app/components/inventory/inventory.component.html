@@ -1,78 +1,22 @@
-<div class="k-d-flex k-align-items-center k-gap-1 k-py-0 k-px-4 page-header">
-  <h4>Inventory</h4>
-  <i class="k-ml-auto"></i>
-  <div style="margin-left: 20%;">
-    <kendo-label text="Search" class="k-font-size-sm">
-      <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
-        rounded="full" (input)="onSearchMaster()" />
-    </kendo-label>
-  </div>
-  <div class="k-d-flex k-gap-3 k-ml-auto">
-
-       <!--  <kendo-label text="Customer / Vendor" class="k-w-full k-font-size-sm">
-          
-          <kendo-combobox [data]="entityType" placeholder="Type" rounded="large" [(ngModel)]="entityTypeSelected"  >
-          </kendo-combobox>
-      </kendo-label>
-      <kendo-label text="Customer" class="k-w-full k-font-size-sm">
-       
-        <kendo-combobox [data]="customer" [(ngModel)]="customerSelected" [textField]="'CustomerName'"
-            [valueField]="'CustomerID'" placeholder="Select" rounded="large" ></kendo-combobox>
-    </kendo-label>
-    <kendo-label text="Behalf of Customer" class="k-w-full k-font-size-sm">
-      <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
-    </kendo-label>
-    <kendo-label text="Receiving Location" class="k-w-full k-font-size-sm">
-      <kendo-combobox placeholder="Select" rounded="large"></kendo-combobox>
-    </kendo-label>
-    <div class="search-box k-ml-auto" style="padding-right: 90px;">
-      <button kendoButton rounded="full" themeColor="success" class="search-btn" >Search</button> 
-      </div> -->
-
-<!--       <kendo-label text="Customer / Vendor" class="k-w-full k-font-size-sm">
-        <kendo-combobox [data]="customerTypes" [(ngModel)]="customerTypeSelected"
-            (ngModelChange)="onChangeCustomerType()" [textField]="'customerTypeName'" [valueField]="'customerTypeID'"
-            placeholder="Select" rounded="large"></kendo-combobox>
-
-    </kendo-label> -->
-
-   
-    <kendo-label text="Customer" class="k-w-full k-font-size-sm">
-     
-      <kendo-combobox id="customer" [data]="customer" [(ngModel)]="customerSelected"
-            [textField]="customerTextField" [valueField]="customerValueField" placeholder="Select" rounded="large"
-            ></kendo-combobox>
-
+<div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-4 page-header">
+  <kendo-label text="Search" class="k-font-size-sm">
+    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input"
+      rounded="full" (input)="onSearchMaster()" />
   </kendo-label>
-  <kendo-label text="From Date" class="k-w-full k-font-size-sm">
-          
-    <kendo-datepicker [format]="format" [(value)]="fromDate" ></kendo-datepicker>
-</kendo-label>
-<kendo-label text="To Date" class="k-w-full k-font-size-sm">
-
-    <kendo-datepicker [format]="format" [(value)]="toDate" ></kendo-datepicker>
-</kendo-label>
-  <!-- <kendo-label text="Behalf of Customer" class="k-w-full k-font-size-sm">
-   <kendo-combobox [data]="customer" [(ngModel)]="behalfOfCusotmerSelected" [textField]="customerTextField"
-            [valueField]="customerValueField" placeholder="Select" rounded="large"
-           ></kendo-combobox>
-
-  </kendo-label> -->
- <!--  <kendo-label text="Receiving Location" class="k-w-full k-font-size-sm">
-    <kendo-combobox [data]="receiptLocation" [(ngModel)]="receiptLocationSelected"
-            [textField]="'receivingFacilityName'" [valueField]="'receivingFacilityID'" [allowCustom]="true"
-            placeholder="Select" rounded="large"></kendo-combobox>
-  </kendo-label> -->
-    <div class="search-box k-ml-auto" style="padding-right: 90px;">
-      <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="onSearch()">Search</button> 
-      </div>
-
+  <kendo-label text="Customer" class="k-font-size-sm">
+    <kendo-combobox id="customer" [data]="customer" [(ngModel)]="customerSelected"
+      [textField]="customerTextField" [valueField]="customerValueField" placeholder="Select" rounded="full">
+    </kendo-combobox>
+  </kendo-label>
+  <kendo-label text="From Date" class="k-font-size-sm">
+    <kendo-datepicker [format]="format" [(value)]="fromDate" rounded="full"></kendo-datepicker>
+  </kendo-label>
+  <kendo-label text="To Date" class="k-font-size-sm">
+    <kendo-datepicker [format]="format" [(value)]="toDate" rounded="full"></kendo-datepicker>
+  </kendo-label>
+  <div class="k-ml-auto k-d-flex k-gap-2">
+    <button kendoButton rounded="full" themeColor="success" (click)="onSearch()">Search</button>
   </div>
-
- <!--  <div class="search-box k-w-full k-ml-auto">
-
-    <button kendoButton rounded="full" themeColor="success" class="search-btn">Search</button>
-  </div> -->
 
 </div>
 <div class="k-m-4" *ngIf="!false">

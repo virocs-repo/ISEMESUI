@@ -11,7 +11,8 @@ import * as moment from 'moment';
 @Component({
   selector: 'app-receiver-form-internal',
   templateUrl: './receiver-form-internal.component.html',
-  styleUrls: ['./receiver-form-internal.component.scss']
+  styleUrls: ['./receiver-form-internal.component.scss'],
+  standalone: false
 })
 export class ReceiverFormInternalComponent implements OnDestroy {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;

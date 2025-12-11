@@ -1,0 +1,28 @@
+.info-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.info-table td {
+  padding: 8px 12px;
+  vertical-align: top;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.label {
+  display: inline-block;
+  width: 130px; /* adjust as needed */
+  text-align: right;
+  font-weight: bold;
+  color: #333;
+  margin-right: 8px;
+}
+
+.value {
+  display: inline-block;
+  color: #d9534f; /* optional highlight */
+  font-weight: bold;
+}

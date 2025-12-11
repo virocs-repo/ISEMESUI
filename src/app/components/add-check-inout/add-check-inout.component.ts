@@ -10,7 +10,8 @@ import { AppService } from 'src/app/services/app.service';
 @Component({
   selector: 'app-add-check-inout',
   templateUrl: './add-check-inout.component.html',
-  styleUrls: ['./add-check-inout.component.scss']
+  styleUrls: ['./add-check-inout.component.scss'],
+  standalone: false
 })
 export class AddCheckInoutComponent implements OnInit {
   @ViewChild('gridContextMenu') public gridContextMenu!: ContextMenuComponent;

@@ -46,7 +46,8 @@ interface SharedInfo {
 })
 export class AppService {
   isLoading = false
-  isDrawerExpanded: boolean = false;
+  isDrawerExpanded: boolean = true; // Always visible by default
+  selectedTabIndex: number = 0; // 0 = Inventory, 1 = Ticketing System
   userPreferences: UserPreferences | null = null;
   accessToken = '';
   activeNavigationUrls: string[] = []
@@ -86,7 +87,12 @@ export class AppService {
     lotCategory: [],
     deviceType: [],
     receivingTypes:[],
-    customersLogin:[]
+    customersLogin:[],
+    Travellerlist:[],
+    Testcategorylist:[],
+    Assemblylist:[],
+    TestModelist:[],
+    lotTypelist:[]
   }
   sharedData: {
     receiving: SharedInfo
@@ -101,6 +107,8 @@ export class AppService {
     internalReceiverForm:SharedInfo
     mailRoom:SharedInfo
     receivingForm:SharedInfo
+    traveller:SharedInfo
+    icrDashboard:SharedInfo
 
   } = {
       receiving: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
@@ -114,7 +122,9 @@ export class AppService {
       customerReceiverForm: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()},
       internalReceiverForm: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()},
       mailRoom: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()},
-      receivingForm: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()}
+      receivingForm: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()},
+      traveller: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()},
+      icrDashboard: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()}
     }
   hardwareTypes: HardwareType[] = []
   userData: UserData = { email: '', name: '', firstName: '' }

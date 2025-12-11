@@ -1,31 +1,18 @@
-<div class="k-d-flex k-align-items-center  k-gap-1 k-py-0 k-px-4 page-header">
-  <h4>Customer Order</h4>
-  <i class="k-ml-auto"></i>
-<!--    <div class="search-box k-ml-auto">
-      <kendo-icon name="search" themeColor="secondary" class="search-icon"></kendo-icon>
-      <input kendoTextBox [(ngModel)]="searchTerm"  type="search" placeholder="Search"
-          class="search-input" rounded="full" (input)="onSearch()" />
-    <button kendoButton rounded="full" themeColor="success" class="search-btn" (click)="onSearch()">Search</button> 
-  </div> -->
-
+<div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-4 page-header">
   <kendo-label text="Search" class="k-font-size-sm">
-    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input k-w-full"
+    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input"
       rounded="full" (input)="onSearchMaster()" />
   </kendo-label>
-
-
   <kendo-label text="From Date" class="k-font-size-sm">
-    <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
+    <kendo-datepicker [format]="format" [(value)]="fromDate" rounded="full"></kendo-datepicker>
   </kendo-label>
   <kendo-label text="To Date" class="k-font-size-sm">
-    <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
+    <kendo-datepicker [format]="format" [(value)]="toDate" rounded="full"></kendo-datepicker>
   </kendo-label>
-
-    <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="onSearch()">Search</button>
-
-  <button rounded="full" themeColor="info" style="padding: 0.3rem 1.2rem"  (click)="onAddButtonClick()" kendoButton>Add
-      Customer Request</button>
-    
+  <div class="k-ml-auto k-d-flex k-gap-2">
+    <button kendoButton rounded="full" themeColor="success" (click)="onSearch()">Search</button>
+    <button kendoButton rounded="full" themeColor="info" (click)="onAddButtonClick()">Add Customer Request</button>
+  </div>
 </div>
 
 

@@ -9,7 +9,8 @@ import { AppService } from 'src/app/services/app.service';
 @Component({
   selector: 'app-inventory-move',
   templateUrl: './inventory-move.component.html',
-  styleUrls: ['./inventory-move.component.scss']
+  styleUrls: ['./inventory-move.component.scss'],
+  standalone: false
 })
 export class InventoryMoveComponent implements OnDestroy {
   readonly ICON = ICON;

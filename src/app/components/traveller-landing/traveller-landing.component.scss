@@ -1,0 +1,57 @@
+.traveller-landing-container {
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.content-wrapper {
+  width: 100%;
+  height: 100vh;
+  min-height: 100%;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.action-button {
+  min-width: 200px;
+  min-height: 80px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.checkin-button {
+  background-color: #ff6b6b;
+  border-color: #ff6b6b;
+  color: white;
+  
+  &:hover {
+    background-color: #ff5252;
+    border-color: #ff5252;
+  }
+}
+
+.checkout-button {
+  background-color: #ff6b6b;
+  border-color: #ff6b6b;
+  color: white;
+  
+  &:hover {
+    background-color: #ff5252;
+    border-color: #ff5252;
+  }
+}
+
+::ng-deep .scan-badge-dialog-container {
+  .k-dialog-content {
+    padding: 0;
+  }
+}
+

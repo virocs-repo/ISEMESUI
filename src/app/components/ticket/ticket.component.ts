@@ -18,6 +18,8 @@ enum ActionType {
   templateUrl: './ticket.component.html',
   styleUrls: ['./ticket.component.scss'],
   providers:[DatePipe]
+,
+  standalone: false
 })
 export class TicketComponent implements OnDestroy {
   readonly ICON = ICON;

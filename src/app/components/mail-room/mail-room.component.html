@@ -1,41 +1,17 @@
-<div class="k-d-flex k-align-items-center  k-gap-1 k-py-0 k-px-4 page-header page-header-desktop">
-  <h4>Mail Room</h4>
-  <i class="k-ml-auto"></i>
+<div class="k-d-flex k-align-items-center k-gap-3 k-py-2 k-px-4 page-header page-header-desktop">
   <kendo-label text="Search" class="k-font-size-sm">
-    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search"
-    class="search-input" (input)="onSearchMaster()" />
+    <input kendoTextBox [(ngModel)]="searchTerm" type="search" placeholder="Search" class="search-input"
+      rounded="full" (input)="onSearchMaster()" />
   </kendo-label>
-  <!-- <kendo-label text="Status" class="k-font-size-sm">
-    <kendo-multiselect
-      [data]="statusList"
-      [(ngModel)]="selectedStatus"
-      [textField]="'itemText'"
-      [valueField]="'masterListItemId'"
-      placeholder="Select Status"
-      [tagMapper]="statusTagDisplayLimit">
-      <ng-template kendoMultiSelectItemTemplate let-dataItem>
-        <input
-          type="checkbox"
-          [checked]="isStatusSelected(dataItem.masterListItemId)"
-          (change)="toggleStatusSelection(dataItem)"
-          style="margin-right: 8px;"/>
-        {{ dataItem.itemText }}
-      </ng-template>
-    </kendo-multiselect>
-  </kendo-label> -->
-  
   <kendo-label text="Start Date" class="k-font-size-sm">
-    <kendo-datepicker [format]="format" [(value)]="fromDate"></kendo-datepicker>
+    <kendo-datepicker [format]="format" [(value)]="fromDate" rounded="full"></kendo-datepicker>
   </kendo-label>
-
   <kendo-label text="End Date" class="k-font-size-sm">
-    <kendo-datepicker [format]="format" [(value)]="toDate"></kendo-datepicker>
+    <kendo-datepicker [format]="format" [(value)]="toDate" rounded="full"></kendo-datepicker>
   </kendo-label>
-  <div>
-    <button kendoButton rounded="full" themeColor="success" class="k-w-25" (click)="search()">Search</button>
-  </div>
-  <div>
-    <button kendoButton rounded="full" themeColor="info" class="add-btn" (click)="openAddDialog()">Add</button>
+  <div class="k-ml-auto k-d-flex k-gap-2">
+    <button kendoButton rounded="full" themeColor="success" (click)="search()">Search</button>
+    <button kendoButton rounded="full" themeColor="info" (click)="openAddDialog()">Add</button>
   </div>
 </div>
 <div

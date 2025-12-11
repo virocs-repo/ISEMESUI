@@ -24,7 +24,8 @@ enum ActionType {
 @Component({
   selector: 'app-add-another-shipping',
   templateUrl: './add-another-shipping.component.html',
-  styleUrls: ['./add-another-shipping.component.scss']
+  styleUrls: ['./add-another-shipping.component.scss'],
+  standalone: false
 })
 export class AddAnotherShippingComponent implements OnInit, OnDestroy {
   readonly ICON = ICON;

@@ -10,7 +10,8 @@ import { AppService } from 'src/app/services/app.service';
 @Component({
   selector: 'app-int-tranfer-receiving',
   templateUrl: './int-tranfer-receiving.component.html',
-  styleUrls: ['./int-tranfer-receiving.component.scss']
+  styleUrls: ['./int-tranfer-receiving.component.scss'],
+  standalone: false
 })
 export class IntTranferReceivingComponent implements OnDestroy {
   readonly ICON = ICON;
