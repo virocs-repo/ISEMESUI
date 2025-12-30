@@ -45,6 +45,9 @@ export class AppComponent implements OnInit, OnDestroy {
   // Cached ticketing items that update when submenu state changes
   public ticketingDrawerItems: Array<DrawerItemExtra> = [];
   
+  // Cached device master items
+  public deviceMasterDrawerItems: Array<DrawerItemExtra> = [];
+  
   // Callback to determine if an item is expanded (for hierarchical drawer)
   public isItemExpanded = (item: DrawerItemExtra): boolean => {
     return item.id !== undefined && this.expandedIndices.indexOf(item.id) >= 0;
@@ -54,8 +57,10 @@ export class AppComponent implements OnInit, OnDestroy {
   public get currentDrawerItems(): Array<DrawerItemExtra> {
     if (this.appService.selectedTabIndex === 0) {
       return this.inventoryDrawerItems;
-    } else {
+    } else if (this.appService.selectedTabIndex === 1) {
       return this.ticketingDrawerItems;
+    } else {
+      return this.deviceMasterDrawerItems;
     }
   }
   
@@ -85,6 +90,9 @@ export class AppComponent implements OnInit, OnDestroy {
     const ID_INVENTORY = 5;
     const ID_CUSTOMER_ORDER = 6;
     const ID_REPORTS = 7;
+    const ID_DEVICE_MASTER = 8;
+    const ID_DEVICE_MASTER_FAMILY = 81;
+    const ID_DEVICE_MASTER_DEVICE = 82;
     
     // Add Receiving (parent)
     items.push({
@@ -212,6 +220,32 @@ export class AppComponent implements OnInit, OnDestroy {
     // Update the array reference to trigger change detection
     this.ticketingDrawerItems = [...items];
   }
+  
+  // Build device master drawer items
+  private buildDeviceMasterDrawerItems(): void {
+    const items: Array<DrawerItemExtra> = [];
+    
+    // Add Device Family (default/selected)
+    items.push({
+      id: 1,
+      text: 'Device Family',
+      svgIcon: ICON.gearIcon,
+      routerLink: '/devicemaster/device-family',
+      selected: true
+    });
+    
+    // Add Device
+    items.push({
+      id: 2,
+      text: 'Device',
+      svgIcon: ICON.gearIcon,
+      routerLink: '/devicemaster/device'
+    });
+    
+    // Update the array reference to trigger change detection
+    this.deviceMasterDrawerItems = [...items];
+  }
+  
   readonly subscription = new Subscription()
 
   constructor(public authService: AuthService, public appService: AppService, private router: Router, private apiService: ApiService, private cdr: ChangeDetectorRef, private titleService: Title) { }
@@ -233,7 +267,9 @@ export class AppComponent implements OnInit, OnDestroy {
     // If item has no routerLink and has children (parent item), toggle expansion
     if (item.id !== undefined && !item.routerLink) {
       // Check if it's a parent item (has children by checking if any items have this as parentId)
-      const currentItems = this.appService.selectedTabIndex === 0 ? this.inventoryDrawerItems : this.ticketingDrawerItems;
+      const currentItems = this.appService.selectedTabIndex === 0 ? this.inventoryDrawerItems : 
+                          this.appService.selectedTabIndex === 1 ? this.ticketingDrawerItems : 
+                          this.deviceMasterDrawerItems;
       const hasChildren = currentItems.some(i => (i as DrawerItemExtra).parentId === item.id);
       
       if (hasChildren) {
@@ -245,7 +281,7 @@ export class AppComponent implements OnInit, OnDestroy {
           this.expandedIndices.push(item.id);
         }
         this.cdr.detectChanges();
-        return; // Don't navigate for parent items
+        return; // Don't navigate for parent items (except special case above)
       }
     }
     
@@ -286,6 +322,11 @@ export class AppComponent implements OnInit, OnDestroy {
         resetSelection(this.ticketingDrawerItems);
         // Then select the clicked item
         findAndSelect(this.ticketingDrawerItems, ev.item.routerLink);
+      } else if (this.appService.selectedTabIndex === 2) {
+        // Reset all device master drawer items first
+        resetSelection(this.deviceMasterDrawerItems);
+        // Then select the clicked item
+        findAndSelect(this.deviceMasterDrawerItems, ev.item.routerLink);
       }
       
       // Navigate
@@ -341,6 +382,9 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.appService.selectedTabIndex === 1) {
       // Ticketing System selected
       this.titleService.setTitle('ISEMES Ticketing');
+    } else if (this.appService.selectedTabIndex === 2) {
+      // Device Master selected
+      this.titleService.setTitle('ISEMES Device Master');
     } else {
       // Inventory selected
       this.titleService.setTitle('ISEMES Inventory');
@@ -358,6 +402,11 @@ export class AppComponent implements OnInit, OnDestroy {
       // Build ticketing drawer items on initialization if on ticketing tab
       this.buildTicketingDrawerItems();
       this.updatePageTitle(); // Update title for ticketing
+    } else if (currentPath.startsWith('/devicemaster')) {
+      this.appService.selectedTabIndex = 2;
+      // Build device master drawer items on initialization if on device master tab
+      this.buildDeviceMasterDrawerItems();
+      this.updatePageTitle(); // Update title for device master
     } else {
       this.appService.selectedTabIndex = 0;
       // Build inventory drawer items on initialization if on inventory tab
@@ -380,6 +429,8 @@ export class AppComponent implements OnInit, OnDestroy {
         const previousTabIndex = this.appService.selectedTabIndex;
         if (path.startsWith('/ticketing')) {
           this.appService.selectedTabIndex = 1;
+        } else if (path.startsWith('/devicemaster')) {
+          this.appService.selectedTabIndex = 2;
         } else if (path.startsWith('/inventory') || path === '/' || path === '') {
           this.appService.selectedTabIndex = 0;
         }
@@ -387,6 +438,8 @@ export class AppComponent implements OnInit, OnDestroy {
         if (previousTabIndex !== this.appService.selectedTabIndex) {
           if (this.appService.selectedTabIndex === 1) {
             this.buildTicketingDrawerItems(); // Rebuild when switching to ticketing
+          } else if (this.appService.selectedTabIndex === 2) {
+            this.buildDeviceMasterDrawerItems(); // Rebuild when switching to device master
           } else {
             this.buildInventoryDrawerItems(); // Rebuild when switching to inventory
           }

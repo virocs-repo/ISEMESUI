@@ -19,7 +19,7 @@ export class HeaderComponent {
   readonly ICON = ICON
   public menuIcon: SVGIcon = menuIcon;
   profilePicture = "";
-  selectedTabIndex = 0; // 0 = Inventory, 1 = Ticketing System
+  selectedTabIndex = 0; // 0 = Inventory, 1 = Ticketing System, 2 = Device Master
 
   isDialogOpen = false;
 
@@ -40,6 +40,9 @@ export class HeaderComponent {
     if (path.startsWith('/ticketing')) {
       this.selectedTabIndex = 1;
       this.titleService.setTitle('ISEMES Ticketing');
+    } else if (path.startsWith('/devicemaster')) {
+      this.selectedTabIndex = 2;
+      this.titleService.setTitle('ISEMES Device Master');
     } else {
       this.selectedTabIndex = 0;
       this.titleService.setTitle('ISEMES Inventory');
@@ -53,6 +56,9 @@ export class HeaderComponent {
       if (currentPath.startsWith('/ticketing')) {
         this.selectedTabIndex = 1;
         this.titleService.setTitle('ISEMES Ticketing');
+      } else if (currentPath.startsWith('/devicemaster')) {
+        this.selectedTabIndex = 2;
+        this.titleService.setTitle('ISEMES Device Master');
       } else if (currentPath.startsWith('/inventory') || currentPath === '/' || currentPath === '') {
         this.selectedTabIndex = 0;
         this.titleService.setTitle('ISEMES Inventory');
@@ -69,6 +75,8 @@ export class HeaderComponent {
     // Update page title based on selected tab
     if (index === 1) {
       this.titleService.setTitle('ISEMES Ticketing');
+    } else if (index === 2) {
+      this.titleService.setTitle('ISEMES Device Master');
     } else {
       this.titleService.setTitle('ISEMES Inventory');
     }
@@ -77,6 +85,8 @@ export class HeaderComponent {
       this.router.navigate(['/inventory/receiver-form-internal']);
     } else if (index === 1) {
       this.router.navigate(['/ticketing/ticket']);
+    } else if (index === 2) {
+      this.router.navigate(['/devicemaster/device-family']);
     }
   }
 

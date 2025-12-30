@@ -7,14 +7,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // Kendo
 import { NavigationModule } from '@progress/kendo-angular-navigation';
 import { DrawerModule, LayoutModule } from '@progress/kendo-angular-layout';
-import { CheckBoxModule, InputsModule } from '@progress/kendo-angular-inputs';
+import { CheckBoxModule, InputsModule, SwitchModule } from '@progress/kendo-angular-inputs';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { IconsModule, SVGIconModule } from '@progress/kendo-angular-icons';
 import { ContextMenuModule, MenuModule } from '@progress/kendo-angular-menu';
 import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
 import { ExcelModule, GridModule, PDFService } from '@progress/kendo-angular-grid';
 import { LabelModule } from '@progress/kendo-angular-label';
-import { AutoCompleteModule, ComboBoxModule, MultiSelectModule } from '@progress/kendo-angular-dropdowns';
+import { AutoCompleteModule, ComboBoxModule, MultiSelectModule, DropDownListModule } from '@progress/kendo-angular-dropdowns';
 import { DialogsModule } from '@progress/kendo-angular-dialog';
 import { UploadsModule } from '@progress/kendo-angular-upload';
 import { TabStripModule } from '@progress/kendo-angular-layout';
@@ -85,6 +85,9 @@ import { MergeRequestComponent } from './components/merge-request/merge-request.
 import { AddSplitComponent } from './components/add-split/add-split.component';
 import { TravellerLandingComponent } from './components/traveller-landing/traveller-landing.component';
 import { ScanBadgeComponent } from './components/scan-badge/scan-badge.component';
+import { DeviceMasterComponent } from './components/device-master/device-master.component';
+import { DeviceFamilyComponent } from './components/device-family/device-family.component';
+import { DeviceComponent } from './components/device/device.component';
 
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1;
@@ -184,7 +187,10 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     MergeRequestComponent,
     AddSplitComponent,
     TravellerLandingComponent,
-    ScanBadgeComponent
+    ScanBadgeComponent,
+    DeviceMasterComponent,
+    DeviceFamilyComponent,
+    DeviceComponent
   ],
   imports: [
     BrowserModule,
@@ -205,9 +211,11 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     GridModule,
     LabelModule,
     ComboBoxModule,
+    DropDownListModule,
     DialogsModule,
     ContextMenuModule,
     CheckBoxModule,
+    SwitchModule,
     AutoCompleteModule,
     UploadsModule,
     HttpClientModule,

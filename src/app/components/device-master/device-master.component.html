@@ -1,0 +1,17 @@
+<div class="k-d-flex k-flex-column k-h-full">
+  <div class="page-body k-m-4 k-flex-grow">
+    <kendo-tabstrip (tabSelect)="onTabSelect($event)">
+      <kendo-tabstrip-tab [title]="''" [selected]="selectedTabIndex === 0">
+        <ng-template kendoTabContent>
+          <app-device-family></app-device-family>
+        </ng-template>
+      </kendo-tabstrip-tab>
+      <kendo-tabstrip-tab [title]="''" [selected]="selectedTabIndex === 1">
+        <ng-template kendoTabContent>
+          <app-device></app-device>
+        </ng-template>
+      </kendo-tabstrip-tab>
+    </kendo-tabstrip>
+  </div>
+</div>
+

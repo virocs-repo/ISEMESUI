@@ -1,0 +1,144 @@
+<div class="k-d-flex k-align-items-center k-gap-4 k-py-2 k-px-4 page-header">
+  <kendo-label text="Customer" class="k-font-size-sm">
+    <kendo-combobox
+      [data]="customers"
+      [valuePrimitive]="true"
+      [textField]="'CustomerName'"
+      [valueField]="'CustomerID'"
+      [(ngModel)]="selectedCustomerID"
+      (ngModelChange)="onCustomerChange($event)"
+      [filterable]="true"
+      [kendoDropDownFilter]="filterSettings"
+      [allowCustom]="false"
+      [popupSettings]="{ width: 'auto', height: 300 }"
+      placeholder="Select or type to search customer..."
+      class="search-dropdown">
+      <ng-template kendoComboBoxNoDataTemplate>
+        <div class="k-p-2">No customer found</div>
+      </ng-template>
+    </kendo-combobox>
+  </kendo-label>
+  <kendo-label text="Device Family" class="k-font-size-sm">
+    <kendo-combobox
+      [data]="deviceFamilies"
+      [valuePrimitive]="true"
+      [textField]="'deviceFamilyName'"
+      [valueField]="'deviceFamilyId'"
+      [(ngModel)]="selectedDeviceFamilyId"
+      [filterable]="true"
+      [kendoDropDownFilter]="filterSettings"
+      [allowCustom]="false"
+      [popupSettings]="{ width: 'auto', height: 300 }"
+      [disabled]="!selectedCustomerID || selectedCustomerID === -1 || selectedCustomerID === null"
+      placeholder="Select or type to search device family..."
+      class="search-dropdown">
+      <ng-template kendoComboBoxNoDataTemplate>
+        <div class="k-p-2">No device family found</div>
+      </ng-template>
+    </kendo-combobox>
+  </kendo-label>
+  <kendo-label text="Active" class="k-font-size-sm k-d-flex k-align-items-center">
+    <kendo-checkbox [(ngModel)]="selectedActive" class="k-ml-2"></kendo-checkbox>
+  </kendo-label>
+  <div class="k-ml-auto k-d-flex k-gap-2">
+    <button kendoButton rounded="full" themeColor="success" (click)="onSearch()">Search</button>
+    <button kendoButton rounded="full" themeColor="info" (click)="openAddDialog()">Add</button>
+    <button kendoButton rounded="full" (click)="onClear()">Clear</button>
+  </div>
+</div>
+<div class="k-m-4">
+  <kendo-grid
+    [kendoGridBinding]="gridDataResult.data"
+    [selectable]="selectableSettings"
+    [columnMenu]="columnMenuSettings"
+    [filterable]="true"
+    [sortable]="true"
+    [resizable]="true"
+    [pageSize]="pageSize"
+    [skip]="skip"
+    [pageable]="{
+      buttonCount: 5,
+      info: true,
+      type: 'numeric',
+      pageSizes: [25, 50, 100],
+      previousNext: true
+    }"
+    (pageChange)="pageChange($event)"
+    (cellClick)="onCellClick($event)"
+    class="inventory-grid"
+    [rowClass]="rowCallback">
+    <kendo-grid-column title="Actions" [width]="120" [locked]="false">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="k-d-flex k-gap-2">
+          <button kendoButton size="small" themeColor="primary" [svgIcon]="ICON.pencilIcon" 
+            (click)="onEdit(dataItem)" title="Edit"></button>
+          <button kendoButton size="small" themeColor="info" [svgIcon]="ICON.eyeIcon" 
+            (click)="onView(dataItem)" title="View"></button>
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title" [width]="c.width">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <ng-container *ngIf="c.field === 'active'; else regularCell">
+          <span [class.k-text-success]="dataItem.active" [class.k-text-error]="!dataItem.active">
+            {{dataItem.active ? 'True' : 'False'}}
+          </span>
+        </ng-container>
+        <ng-template #regularCell>
+          <span class="truncate-text" [title]="dataItem?.[c.field] || ''">
+            {{ dataItem?.[c.field] || '' }}
+          </span>
+        </ng-template>
+      </ng-template>
+    </kendo-grid-column>
+  </kendo-grid>
+</div>
+
+<!-- Add/Edit Dialog -->
+<kendo-dialog
+  *ngIf="isDialogOpen"
+  (close)="closeDialog()"
+  [minWidth]="250"
+  [width]="'68%'"
+  class="dialog-round">
+  <div class="k-d-flex k-align-items-center k-mb-3">
+    <h2 class="k-m-0">{{ isViewMode ? 'View Device Family' : (isEditMode ? 'Edit Device Family' : 'Add Device Family') }}</h2>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+      (click)="closeDialog()"></button>
+  </div>
+  <div class="k-d-flex k-flex-column k-gap-3 k-p-4">
+    <kendo-label text="Customer *" class="k-font-size-sm">
+      <kendo-combobox
+        [data]="customersList"
+        [valuePrimitive]="true"
+        [textField]="'CustomerName'"
+        [valueField]="'CustomerID'"
+        [(ngModel)]="deviceFamilyData.customerID"
+        [filterable]="true"
+        [kendoDropDownFilter]="filterSettings"
+        [allowCustom]="false"
+        [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
+        [disabled]="isEditMode || isViewMode"
+        placeholder="Select or type to search customer..."
+        class="w-100">
+        <ng-template kendoComboBoxNoDataTemplate>
+          <div class="k-p-2">No customer found</div>
+        </ng-template>
+      </kendo-combobox>
+    </kendo-label>
+    <kendo-label text="Device Family Name *" class="k-font-size-sm">
+      <input kendoTextBox [(ngModel)]="deviceFamilyData.deviceFamilyName" type="text"
+        placeholder="Enter Device Family Name" class="w-100" [disabled]="isViewMode" />
+    </kendo-label>
+    <kendo-label text="Active" class="k-font-size-sm">
+      <kendo-switch [(ngModel)]="deviceFamilyData.isActive" [disabled]="!isEditMode || isViewMode"></kendo-switch>
+    </kendo-label>
+    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3" *ngIf="!isViewMode">
+      <button kendoButton (click)="closeDialog()">Cancel</button>
+      <button kendoButton themeColor="primary" (click)="saveDeviceFamily()">Save</button>
+    </div>
+    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3" *ngIf="isViewMode">
+      <button kendoButton (click)="closeDialog()">Close</button>
+    </div>
+  </div>
+</kendo-dialog>

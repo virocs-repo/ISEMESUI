@@ -1065,7 +1065,7 @@ getShippingAddressData(
   }
 
   getDeviceAlias(customerId: number, deviceFamilyId: number, deviceId: number): Observable<any[]> {
-    let url = `${API}v1/ise/inventory/getDeviceAlias?customerId=${customerId}&deviceFamilyId=${deviceFamilyId}&deviceId=${deviceId}`;
+    let url = `${API}v1/ise/inventory/splitmerge/getDeviceAlias?customerId=${customerId}&deviceFamilyId=${deviceFamilyId}&deviceId=${deviceId}`;
     return this.httpClient.get<any[]>(url);
   }
 
@@ -1106,5 +1106,45 @@ getShippingAddressData(
   getInventoryLot(lotId: number, type: string): Observable<any> {
     let url = `${API}v1/ise/inventory/splitmerge/getInventoryLot?lotId=${lotId}&type=${type}`;
     return this.httpClient.get(url);
+  }
+
+  // Device Master APIs
+  addUpdateDeviceFamily(body: any): Observable<number> {
+    return this.httpClient.post<number>(`${API}v1/ise/devicemaster/devicefamily`, body);
+  }
+
+  addUpdateDevice(body: any): Observable<number> {
+    return this.httpClient.post<number>(`${API}v1/ise/devicemaster/device`, body);
+  }
+
+  searchDeviceFamily(customerID?: number | null, deviceFamilyName?: string | null, active?: boolean | null): Observable<any[]> {
+    let params = new HttpParams();
+    if (customerID != null && customerID !== -1) {
+      params = params.set('customerID', customerID.toString());
+    }
+    if (deviceFamilyName != null && deviceFamilyName !== '') {
+      params = params.set('deviceFamilyName', deviceFamilyName);
+    }
+    if (active !== null && active !== undefined) {
+      params = params.set('active', active.toString());
+    }
+    return this.httpClient.get<any[]>(`${API}v1/ise/devicemaster/devicefamily/search`, { params });
+  }
+
+  searchDevice(customerID?: number | null, deviceFamilyId?: number | null, deviceName?: string | null, active?: boolean | null): Observable<any[]> {
+    let params = new HttpParams();
+    if (customerID != null && customerID !== -1) {
+      params = params.set('customerID', customerID.toString());
+    }
+    if (deviceFamilyId != null && deviceFamilyId !== -1) {
+      params = params.set('deviceFamilyId', deviceFamilyId.toString());
+    }
+    if (deviceName != null && deviceName !== '') {
+      params = params.set('deviceName', deviceName);
+    }
+    if (active !== null && active !== undefined) {
+      params = params.set('active', active.toString());
+    }
+    return this.httpClient.get<any[]>(`${API}v1/ise/devicemaster/device/search`, { params });
   }
 }                                                     
