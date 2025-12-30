@@ -31,6 +31,8 @@ import { EditTravellerComponent } from './components/edit-traveller/edit-travell
 import { MergeRequestComponent } from './components/merge-request/merge-request.component';
 import { AddSplitComponent } from './components/add-split/add-split.component';
 import { TravellerLandingComponent } from './components/traveller-landing/traveller-landing.component';
+import { DeviceFamilyComponent } from './components/device-family/device-family.component';
+import { DeviceComponent } from './components/device/device.component';
 
 const routes: Routes = [
   // Login route (no prefix)
@@ -58,6 +60,16 @@ const routes: Routes = [
       { path: 'add-device', component: AddDeviceComponent, canActivate: [authGuard] },
       { path: 'home', component: HomeComponent, canActivate: [authGuard] },
       { path: '', redirectTo: 'receiver-form-internal', pathMatch: 'full' },
+    ]
+  },
+  
+  // Device Master routes
+  {
+    path: 'devicemaster',
+    children: [
+      { path: 'device-family', component: DeviceFamilyComponent, canActivate: [authGuard] },
+      { path: 'device', component: DeviceComponent, canActivate: [authGuard] },
+      { path: '', redirectTo: 'device-family', pathMatch: 'full' },
     ]
   },
   

@@ -1,0 +1,49 @@
+a.minimal-text {
+  pointer-events: none;
+}
+
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-dropdown {
+  min-width: 200px;
+  width: 220px;
+}
+
+.search-dropdown kendo-combobox {
+  width: 100%;
+}
+
+// Fix z-index for combobox dropdowns inside dialog
+// Target animation container that wraps combobox popups
+::ng-deep .k-dialog-wrapper ~ .k-animation-container,
+::ng-deep .k-dialog-wrapper .k-animation-container {
+  z-index: 10006 !important;
+}
+
+// Ensure dialog content allows overflow
+::ng-deep .k-dialog-content {
+  overflow: visible !important;
+}
+
+// Target the popup specifically
+::ng-deep .k-animation-container {
+  z-index: 10006 !important;
+}
+
+::ng-deep .k-animation-container .k-popup {
+  z-index: 10006 !important;
+}
+
+::ng-deep .k-animation-container .k-list-container {
+  z-index: 10006 !important;
+}
+
+// Ensure list items are visible
+::ng-deep .k-animation-container .k-list .k-item {
+  z-index: 10006 !important;
+}
+

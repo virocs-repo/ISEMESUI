@@ -1,0 +1,543 @@
+<div class="k-d-flex k-align-items-center k-gap-4 k-py-2 k-px-4 page-header">
+  <kendo-label text="Customer" class="k-font-size-sm">
+    <kendo-combobox
+      [data]="customers"
+      [valuePrimitive]="true"
+      [textField]="'CustomerName'"
+      [valueField]="'CustomerID'"
+      [(ngModel)]="selectedCustomerID"
+      (ngModelChange)="onCustomerChange($event)"
+      [filterable]="true"
+      [kendoDropDownFilter]="filterSettings"
+      [allowCustom]="false"
+      [popupSettings]="{ width: 'auto', height: 300, appendTo: 'root' }"
+      placeholder="Select or type to search customer..."
+      class="search-dropdown">
+      <ng-template kendoComboBoxNoDataTemplate>
+        <div class="k-p-2">No customer found</div>
+      </ng-template>
+    </kendo-combobox>
+  </kendo-label>
+  <kendo-label text="Device Family" class="k-font-size-sm">
+    <kendo-combobox
+      [data]="deviceFamilies"
+      [valuePrimitive]="true"
+      [textField]="'deviceFamilyName'"
+      [valueField]="'deviceFamilyId'"
+      [(ngModel)]="selectedDeviceFamilyId"
+      (ngModelChange)="onDeviceFamilyChange($event)"
+      [filterable]="true"
+      [kendoDropDownFilter]="filterSettings"
+      [allowCustom]="false"
+      [popupSettings]="{ width: 'auto', height: 300, appendTo: 'root' }"
+      [disabled]="!selectedCustomerID || selectedCustomerID === -1 || selectedCustomerID === null"
+      placeholder="Select or type to search device family..."
+      class="search-dropdown">
+      <ng-template kendoComboBoxNoDataTemplate>
+        <div class="k-p-2">No device family found</div>
+      </ng-template>
+    </kendo-combobox>
+  </kendo-label>
+  <kendo-label text="Device" class="k-font-size-sm">
+    <kendo-combobox
+      [data]="devices"
+      [valuePrimitive]="true"
+      [textField]="'deviceName'"
+      [valueField]="'deviceId'"
+      [(ngModel)]="selectedDeviceId"
+      (ngModelChange)="onDeviceChange($event)"
+      [filterable]="true"
+      [kendoDropDownFilter]="filterSettings"
+      [allowCustom]="false"
+      [popupSettings]="{ width: 'auto', height: 300, appendTo: 'root' }"
+      [disabled]="!selectedDeviceFamilyId || selectedDeviceFamilyId === -1 || selectedDeviceFamilyId === null"
+      placeholder="Select or type to search device..."
+      class="search-dropdown">
+      <ng-template kendoComboBoxNoDataTemplate>
+        <div class="k-p-2">No device found</div>
+      </ng-template>
+    </kendo-combobox>
+  </kendo-label>
+  <kendo-label text="Device Alias" class="k-font-size-sm">
+    <kendo-combobox
+      [data]="deviceAliases"
+      [valuePrimitive]="true"
+      [textField]="'deviceAliasName'"
+      [valueField]="'deviceAliasId'"
+      [(ngModel)]="selectedDeviceAliasId"
+      [filterable]="true"
+      [kendoDropDownFilter]="filterSettings"
+      [allowCustom]="false"
+      [popupSettings]="{ width: 'auto', height: 300, appendTo: 'root' }"
+      [disabled]="!selectedCustomerID || selectedCustomerID === -1 || selectedCustomerID === null"
+      placeholder="Select or type to search device alias..."
+      class="search-dropdown">
+      <ng-template kendoComboBoxNoDataTemplate>
+        <div class="k-p-2">No device alias found</div>
+      </ng-template>
+    </kendo-combobox>
+  </kendo-label>
+  <kendo-label text="Device Name" class="k-font-size-sm">
+    <input kendoTextBox [(ngModel)]="selectedDeviceName" type="text"
+      placeholder="Enter Device Name" class="search-input" />
+  </kendo-label>
+  <kendo-label text="Active" class="k-font-size-sm k-d-flex k-align-items-center">
+    <kendo-checkbox [(ngModel)]="selectedActive" class="k-ml-2"></kendo-checkbox>
+  </kendo-label>
+  <div class="k-ml-auto k-d-flex k-gap-2">
+    <button kendoButton rounded="full" themeColor="success" (click)="onSearch()">Search</button>
+    <button kendoButton rounded="full" themeColor="info" (click)="openAddDialog()">Add</button>
+    <button kendoButton rounded="full" (click)="onClear()">Clear</button>
+  </div>
+</div>
+<div class="k-m-4">
+  <kendo-grid
+    [kendoGridBinding]="gridDataResult.data"
+    [selectable]="selectableSettings"
+    [columnMenu]="columnMenuSettings"
+    [filterable]="true"
+    [sortable]="true"
+    [resizable]="true"
+    [pageSize]="pageSize"
+    [skip]="skip"
+    [pageable]="{
+      buttonCount: 5,
+      info: true,
+      type: 'numeric',
+      pageSizes: [25, 50, 100],
+      previousNext: true
+    }"
+    (pageChange)="pageChange($event)"
+    (cellClick)="onCellClick($event)"
+    class="inventory-grid"
+    [rowClass]="rowCallback">
+    <kendo-grid-column title="Actions" [width]="120" [locked]="false">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <div class="k-d-flex k-gap-2">
+          <button kendoButton size="small" themeColor="primary" [svgIcon]="ICON.pencilIcon" 
+            (click)="onEdit(dataItem)" title="Edit"></button>
+          <button kendoButton size="small" themeColor="info" [svgIcon]="ICON.eyeIcon" 
+            (click)="onView(dataItem)" title="View"></button>
+        </div>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title" [width]="c.width">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <ng-container *ngIf="c.field === 'active'; else regularCell">
+          <span [class.k-text-success]="dataItem.active" [class.k-text-error]="!dataItem.active">
+            {{dataItem.active ? 'True' : 'False'}}
+          </span>
+        </ng-container>
+        <ng-template #regularCell>
+          <span class="truncate-text" [title]="dataItem?.[c.field] || ''">
+            {{ dataItem?.[c.field] || '' }}
+          </span>
+        </ng-template>
+      </ng-template>
+    </kendo-grid-column>
+  </kendo-grid>
+</div>
+
+<!-- Add/Edit Dialog -->
+<kendo-dialog
+  *ngIf="isDialogOpen"
+  (close)="closeDialog()"
+  [minWidth]="1400"
+  [width]="'95%'"
+  [height]="'95%'"
+  class="dialog-round">
+  <div class="k-d-flex k-align-items-center k-mb-2">
+    <h2 class="k-m-0 k-font-size-lg">{{ isViewMode ? 'View Device' : (isEditMode ? 'Edit Device' : 'Add Device') }}</h2>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+      (click)="closeDialog()"></button>
+  </div>
+  <div class="k-d-flex k-flex-column k-gap-2 k-p-2 dialog-scrollable-content" style="max-height: calc(95vh - 120px); overflow-y: auto;">
+    
+    <!-- Device Info Section -->
+    <div class="k-border k-border-solid k-border-gray-300 k-p-3 k-rounded">
+      <h3 class="k-mt-0 k-mb-2 k-text-primary k-font-size-md">Device Info</h3>
+      <div class="k-d-grid k-grid-cols-3 k-gap-2">
+        <kendo-label text="Customer *" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="customersList"
+            [valuePrimitive]="true"
+            [textField]="'CustomerName'"
+            [valueField]="'CustomerID'"
+            [(ngModel)]="deviceData.customerID"
+            (ngModelChange)="onDialogCustomerChange($event)"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isEditMode || isViewMode"
+            placeholder="Select customer..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="Device Family *" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="deviceFamilies"
+            [valuePrimitive]="true"
+            [textField]="'deviceFamilyName'"
+            [valueField]="'deviceFamilyId'"
+            [(ngModel)]="deviceData.deviceFamilyId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="!deviceData.customerID || deviceData.customerID === -1 || isViewMode"
+            placeholder="Select device family..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="Device Name *" class="k-font-size-sm">
+          <input kendoTextBox [(ngModel)]="deviceData.deviceName" type="text"
+            placeholder="Enter Device Name" class="w-100" [disabled]="isViewMode" />
+        </kendo-label>
+        
+        <kendo-label text="Test Device *" class="k-font-size-sm">
+          <input kendoTextBox [(ngModel)]="deviceData.testDevice" type="text"
+            placeholder="Enter Test Device" class="w-100" [disabled]="isViewMode" />
+        </kendo-label>
+        
+        <kendo-label text="Reliability Device *" class="k-font-size-sm">
+          <input kendoTextBox [(ngModel)]="deviceData.reliabilityDevice" type="text"
+            placeholder="Enter Reliability Device" class="w-100" [disabled]="isViewMode" />
+        </kendo-label>
+        
+        <kendo-label text="Alias Names" class="k-font-size-sm" style="grid-column: span 3;">
+          <div class="k-d-flex k-gap-2">
+            <input kendoTextBox [(ngModel)]="deviceData.newAliasName" type="text"
+              placeholder="Enter Alias Name" class="k-flex-1" [disabled]="isViewMode" />
+            <button kendoButton themeColor="primary" size="small" (click)="addAliasName()" [disabled]="isViewMode || !deviceData.newAliasName">Add</button>
+          </div>
+          <div class="k-d-flex k-flex-wrap k-gap-1 k-mt-1" *ngIf="deviceData.aliasNames && deviceData.aliasNames.length > 0">
+            <span *ngFor="let alias of deviceData.aliasNames" class="k-badge k-badge-primary k-d-flex k-align-items-center k-gap-1" style="font-size: 0.75rem;">
+              {{alias}}
+              <button kendoButton *ngIf="!isViewMode" size="small" [svgIcon]="ICON.xIcon" 
+                (click)="removeAliasName(alias)" class="k-p-0" style="min-width: auto; padding: 0 2px;"></button>
+            </span>
+          </div>
+        </kendo-label>
+        
+        <kendo-label text="SKU" class="k-font-size-sm">
+          <input kendoTextBox [(ngModel)]="deviceData.sku" type="text"
+            placeholder="Enter SKU" class="w-100" [disabled]="isViewMode" />
+        </kendo-label>
+        
+        <kendo-label text="Part Type" class="k-font-size-sm">
+          <kendo-dropdownlist
+            [data]="partTypes"
+            [valuePrimitive]="true"
+            [(ngModel)]="deviceData.partType"
+            [disabled]="isViewMode"
+            class="w-100">
+          </kendo-dropdownlist>
+        </kendo-label>
+        
+        <kendo-label text="Lot Type *" class="k-font-size-sm">
+          <kendo-dropdownlist
+            [data]="lotTypes"
+            [valuePrimitive]="true"
+            [(ngModel)]="deviceData.lotType"
+            [disabled]="isViewMode"
+            class="w-100">
+          </kendo-dropdownlist>
+        </kendo-label>
+        
+        <kendo-label text="Label Mapping" class="k-font-size-sm k-d-flex k-align-items-center">
+          <kendo-checkbox [(ngModel)]="deviceData.labelMapping" [disabled]="isViewMode" class="k-ml-1"></kendo-checkbox>
+        </kendo-label>
+        
+        <kendo-label text="Active" class="k-font-size-sm k-d-flex k-align-items-center">
+          <kendo-checkbox [(ngModel)]="deviceData.isActive" [disabled]="isViewMode" class="k-ml-1"></kendo-checkbox>
+        </kendo-label>
+        
+        <kendo-label text="Tray/Tube Mapping" class="k-font-size-sm">
+          <kendo-dropdownlist
+            [data]="[{value: 'Lot', text: 'Lot'}, {value: 'Device', text: 'Device'}]"
+            [valuePrimitive]="true"
+            [valueField]="'value'"
+            [textField]="'text'"
+            [(ngModel)]="deviceData.trayTubeMapping"
+            [disabled]="isViewMode"
+            class="w-100">
+          </kendo-dropdownlist>
+        </kendo-label>
+        
+        <kendo-label text="Country of Origin (COO)" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="countriesOfOrigin"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.countryOfOriginId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select COO..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="Unit Cost" class="k-font-size-sm">
+          <input kendoTextBox [(ngModel)]="deviceData.unitCost" type="number" step="0.01"
+            placeholder="0" class="w-100" [disabled]="isViewMode" />
+        </kendo-label>
+      </div>
+    </div>
+    
+    <!-- EAR Info Section -->
+    <div class="k-border k-border-solid k-border-gray-300 k-p-2 k-rounded">
+      <h3 class="k-mt-0 k-mb-1 k-text-primary k-font-size-sm k-font-weight-bold">EAR Info</h3>
+      <div class="k-d-grid k-grid-cols-3 k-gap-2">
+        <kendo-label text="Material Description" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="materialDescriptions"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.materialDescriptionId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select Material Description..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="US HTS Code" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="usHtsCodes"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.usHtsCodeId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select US HTS Code..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="ECCN" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="eccns"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.eccnId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select ECCN..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="License Exceptions" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="licenseExceptions"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.licenseExceptionId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select License Exception..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="Restricted Countries to Ship" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="restrictedCountries"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.restrictedCountriesToShipId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select Restricted Country..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="Schedule B" class="k-font-size-sm k-d-flex k-align-items-center">
+          <kendo-checkbox [(ngModel)]="deviceData.scheduleB" [disabled]="isViewMode" class="k-ml-1"></kendo-checkbox>
+        </kendo-label>
+      </div>
+    </div>
+    
+    <!-- Pack&Label Info Section -->
+    <div class="k-border k-border-solid k-border-gray-300 k-p-2 k-rounded">
+      <h3 class="k-mt-0 k-mb-1 k-text-primary k-font-size-sm k-font-weight-bold">Pack&Label Info</h3>
+      <div class="k-d-grid k-grid-cols-3 k-gap-2">
+        <kendo-label text="MSL" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="msls"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.mslId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select MSL..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="Peak Package Body Temperature" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="peakPackageBodyTemperatures"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.peakPackageBodyTemperatureId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select Temperature..."
+            class="w-100">
+            <ng-template kendoComboBoxNoDataTemplate>
+              <div class="k-p-2">No data available ({{ peakPackageBodyTemperatures.length || 0 }} items)</div>
+            </ng-template>
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="Shelf Life (Month)" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="shelfLifeMonths"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.shelfLifeMonthId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select Shelf Life..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="Floor Life" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="floorLives"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.floorLifeId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select Floor Life..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="PB Free" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="pbFrees"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.pbFreeId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select PB Free..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="PB Free Sticker" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="pbFreeStickers"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.pbFreeStickerId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select PB Free Sticker..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="ROHS" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="rohses"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.rohsId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select ROHS..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="Tray/Tube Strapping" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="trayTubeStrappings"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.trayTubeStrappingId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select Strapping..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+        
+        <kendo-label text="TrayStacking" class="k-font-size-sm">
+          <kendo-combobox
+            [data]="trayStackings"
+            [valuePrimitive]="true"
+            [textField]="'name'"
+            [valueField]="'id'"
+            [(ngModel)]="deviceData.trayStackingId"
+            [filterable]="true"
+            [allowCustom]="false"
+            [popupSettings]="{ width: 'auto', height: 300 }"
+            [disabled]="isViewMode"
+            placeholder="Select Tray Stacking..."
+            class="w-100">
+          </kendo-combobox>
+        </kendo-label>
+      </div>
+    </div>
+    
+    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-2" *ngIf="!isViewMode">
+      <button kendoButton (click)="closeDialog()">Cancel</button>
+      <button kendoButton themeColor="primary" (click)="saveDevice()">Save</button>
+    </div>
+    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-2" *ngIf="isViewMode">
+      <button kendoButton (click)="closeDialog()">Close</button>
+    </div>
+  </div>
+</kendo-dialog>

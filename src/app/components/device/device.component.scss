@@ -1,0 +1,112 @@
+a.minimal-text {
+  pointer-events: none;
+}
+
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Fix z-index for combobox dropdowns - ensure they appear on top
+::ng-deep .k-animation-container {
+  z-index: 10006 !important;
+}
+
+::ng-deep .k-animation-container .k-popup {
+  z-index: 10006 !important;
+}
+
+::ng-deep .k-animation-container .k-list-container {
+  z-index: 10006 !important;
+}
+
+// Ensure list items are visible
+::ng-deep .k-animation-container .k-list .k-item {
+  z-index: 10006 !important;
+}
+
+// Ensure dropdown text is visible and properly styled
+::ng-deep .k-popup .k-list .k-item {
+  position: relative;
+  z-index: inherit;
+}
+
+::ng-deep .k-popup .k-list .k-item .k-list-item-text {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Fix z-index for combobox dropdowns inside dialog - highest priority
+::ng-deep .k-dialog-wrapper ~ .k-animation-container,
+::ng-deep .k-dialog-wrapper .k-animation-container {
+  z-index: 10008 !important;
+}
+
+::ng-deep .k-dialog-wrapper ~ .k-animation-container .k-popup,
+::ng-deep .k-dialog-wrapper .k-animation-container .k-popup {
+  z-index: 10008 !important;
+}
+
+::ng-deep .k-dialog-wrapper ~ .k-animation-container .k-list-container,
+::ng-deep .k-dialog-wrapper .k-animation-container .k-list-container {
+  z-index: 10008 !important;
+}
+
+// Fix z-index for dropdownlist popups inside dialog
+::ng-deep .k-dialog-wrapper .k-dropdownlist .k-animation-container {
+  z-index: 10008 !important;
+}
+
+::ng-deep .k-dialog-wrapper .k-dropdownlist .k-animation-container .k-popup {
+  z-index: 10008 !important;
+}
+
+::ng-deep .k-dialog-wrapper .k-dropdownlist .k-animation-container .k-list-container {
+  z-index: 10008 !important;
+}
+
+// Ensure dialog content allows overflow for popups
+::ng-deep .k-dialog-content {
+  overflow: visible !important;
+}
+
+// Ensure dropdown list items are visible in dialog
+::ng-deep .k-dialog-wrapper .k-combobox .k-animation-container .k-popup,
+::ng-deep .k-dialog-wrapper .k-dropdownlist .k-animation-container .k-popup {
+  display: block !important;
+  visibility: visible !important;
+}
+
+::ng-deep .k-dialog-wrapper .k-combobox .k-animation-container .k-list-container,
+::ng-deep .k-dialog-wrapper .k-dropdownlist .k-animation-container .k-list-container {
+  display: block !important;
+  visibility: visible !important;
+  max-height: 300px !important;
+  overflow-y: auto !important;
+}
+
+::ng-deep .k-dialog-wrapper .k-combobox .k-animation-container .k-list,
+::ng-deep .k-dialog-wrapper .k-dropdownlist .k-animation-container .k-list {
+  display: block !important;
+  visibility: visible !important;
+}
+
+::ng-deep .k-dialog-wrapper .k-combobox .k-animation-container .k-list .k-item,
+::ng-deep .k-dialog-wrapper .k-dropdownlist .k-animation-container .k-list .k-item {
+  display: block !important;
+  visibility: visible !important;
+  padding: 8px 12px !important;
+}
+
+// Ensure search dropdowns on main page appear above grid
+::ng-deep .page-header .k-animation-container {
+  z-index: 10005 !important;
+}
+
+::ng-deep .page-header .k-animation-container .k-popup {
+  z-index: 10005 !important;
+}
+

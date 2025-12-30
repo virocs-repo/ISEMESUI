@@ -25,6 +25,14 @@
         class="main-menu-btn">
         Ticketing System
       </button>
+      <button 
+        kendoButton 
+        fillMode="flat" 
+        [class.active]="selectedTabIndex === 2"
+        (click)="onMainMenuSelect(2)"
+        class="main-menu-btn">
+        Device Master
+      </button>
     </div>
   </kendo-appbar-section>
 
