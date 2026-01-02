@@ -21,6 +21,7 @@ export class DeviceFamilyComponent implements OnInit {
   public selectedCustomerID: number | null = null;
   public selectedDeviceFamilyId: number | null = null;
   public selectedActive: boolean = true; // Default to checked (true)
+  public searchText: string = ''; // Search across all columns
 
   public deviceFamilies: any[] = []; // For dropdown filter
   public customersList: any[] = []; // For dialog dropdown
@@ -38,8 +39,7 @@ export class DeviceFamilyComponent implements OnInit {
   public columnData: any[] = [
     { field: 'customerName', title: 'Customer', width: 200 },
     { field: 'deviceFamilyName', title: 'Device Family', width: 200 },
-    { field: 'createdOn', title: 'CreatedOn', width: 150 },
-    { field: 'active', title: 'Active', width: 100 }
+    { field: 'createdOn', title: 'CreatedOn', width: 150 }
   ];
 
   selectedRowIndex: number = -1;
@@ -90,14 +90,7 @@ export class DeviceFamilyComponent implements OnInit {
     // Load customers list for dialog dropdown
     this.loadCustomers();
     
-    // Customers are now loaded via getter, so they're always fresh from masterData
-    console.log('Customers available:', this.customers.length, this.customers);
-    console.log('masterData:', this.appService.masterData);
-    
-    // Initialize device families dropdown - will be loaded when customer is selected
-    this.deviceFamilies = [];
-    
-    // Load all device families initially (without filters) - similar to original TFS code
+    // Load all device families initially (filtered by active status)
     this.loadGridData();
   }
 
@@ -204,17 +197,12 @@ export class DeviceFamilyComponent implements OnInit {
   }
 
   loadGridData(): void {
-    // When search is triggered, use selected filters; otherwise load all data
-    const customerID = this.selectedCustomerID && this.selectedCustomerID !== -1 ? this.selectedCustomerID : null;
-    // Get device family name from selected device family ID (skip placeholder)
-    const selectedFamily = this.deviceFamilies.find(f => f.deviceFamilyId === this.selectedDeviceFamilyId && f.deviceFamilyId !== null);
-    const deviceFamilyName = selectedFamily ? selectedFamily.deviceFamilyName : null;
-
     // If checkbox is checked (selectedActive = true), show only active records
     // If checkbox is unchecked (selectedActive = false), show only inactive records
     const active = this.selectedActive === true ? true : false;
 
-    this.apiService.searchDeviceFamily(customerID, deviceFamilyName, active).subscribe({
+    // Load all data, filtering only by active status (search is done client-side)
+    this.apiService.searchDeviceFamily(null, null, active).subscribe({
       next: (data: any[]) => {
         this.processGridData(data);
       },
@@ -282,8 +270,22 @@ export class DeviceFamilyComponent implements OnInit {
     // Active filtering is handled in loadGridData() at the API level:
     // - When selectedActive is true: fetches only active records (active=true)
     // - When selectedActive is false: fetches only inactive records (active=false)
-    // No additional client-side filtering needed
-    return data;
+    // Additional client-side filtering for search text across all columns
+    if (!this.searchText || this.searchText.trim() === '') {
+      return data;
+    }
+    
+    const searchLower = this.searchText.toLowerCase().trim();
+    return data.filter(item => {
+      // Search across all visible columns
+      const customerName = (item.customerName || '').toString().toLowerCase();
+      const deviceFamilyName = (item.deviceFamilyName || '').toString().toLowerCase();
+      const createdOn = (item.createdOn || '').toString().toLowerCase();
+      
+      return customerName.includes(searchLower) ||
+             deviceFamilyName.includes(searchLower) ||
+             createdOn.includes(searchLower);
+    });
   }
 
   pageChange(event: PageChangeEvent): void {
@@ -292,19 +294,17 @@ export class DeviceFamilyComponent implements OnInit {
     // Grid handles pagination automatically with kendoGridBinding
   }
 
-  onSearch(): void {
+  onClear(): void {
+    // Reset all filters
+    this.selectedActive = true;
+    this.searchText = '';
     this.skip = 0;
     this.loadGridData();
   }
 
-  onClear(): void {
-    // Reset all filters
-    this.selectedCustomerID = null;
-    this.selectedDeviceFamilyId = null;
-    this.selectedActive = true;
-    this.deviceFamilies = [];
+  onSearchTextChange(): void {
     this.skip = 0;
-    this.loadGridData();
+    this.pageData(); // Re-filter the existing data
   }
 
   onCellClick(event: CellClickEvent): void {
@@ -426,6 +426,12 @@ export class DeviceFamilyComponent implements OnInit {
         this.showNotification(errorMessage, 'error');
       }
     });
+  }
+
+  getCustomerName(customerID: number | null): string {
+    if (!customerID) return '';
+    const customer = this.customersList.find(c => c.CustomerID === customerID);
+    return customer ? customer.CustomerName : '';
   }
 
   showNotification(message: string, type: 'success' | 'error' | 'warning' | 'info'): void {

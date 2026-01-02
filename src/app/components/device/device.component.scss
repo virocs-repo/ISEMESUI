@@ -110,3 +110,32 @@ a.minimal-text {
   z-index: 10005 !important;
 }
 
+// Ensure combobox input text is properly aligned vertically
+::ng-deep .k-dialog-wrapper .k-combobox .k-input-inner {
+  line-height: 1.5;
+  padding: 0.5rem 0.75rem;
+  vertical-align: middle;
+}
+
+::ng-deep .k-dialog-wrapper .k-combobox .k-input {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+::ng-deep .k-dialog-wrapper .k-combobox {
+  display: block;
+  width: 100%;
+}
+
+// Ensure label content is properly aligned
+::ng-deep .k-dialog-wrapper .k-label {
+  display: flex;
+  flex-direction: column;
+}
+
+::ng-deep .k-dialog-wrapper .k-label .k-label-text {
+  margin-bottom: 0.25rem;
+  line-height: 1.5;
+}
+

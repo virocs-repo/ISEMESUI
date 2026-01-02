@@ -1,91 +1,12 @@
 <div class="k-d-flex k-align-items-center k-gap-4 k-py-2 k-px-4 page-header">
-  <kendo-label text="Customer" class="k-font-size-sm">
-    <kendo-combobox
-      [data]="customers"
-      [valuePrimitive]="true"
-      [textField]="'CustomerName'"
-      [valueField]="'CustomerID'"
-      [(ngModel)]="selectedCustomerID"
-      (ngModelChange)="onCustomerChange($event)"
-      [filterable]="true"
-      [kendoDropDownFilter]="filterSettings"
-      [allowCustom]="false"
-      [popupSettings]="{ width: 'auto', height: 300, appendTo: 'root' }"
-      placeholder="Select or type to search customer..."
-      class="search-dropdown">
-      <ng-template kendoComboBoxNoDataTemplate>
-        <div class="k-p-2">No customer found</div>
-      </ng-template>
-    </kendo-combobox>
-  </kendo-label>
-  <kendo-label text="Device Family" class="k-font-size-sm">
-    <kendo-combobox
-      [data]="deviceFamilies"
-      [valuePrimitive]="true"
-      [textField]="'deviceFamilyName'"
-      [valueField]="'deviceFamilyId'"
-      [(ngModel)]="selectedDeviceFamilyId"
-      (ngModelChange)="onDeviceFamilyChange($event)"
-      [filterable]="true"
-      [kendoDropDownFilter]="filterSettings"
-      [allowCustom]="false"
-      [popupSettings]="{ width: 'auto', height: 300, appendTo: 'root' }"
-      [disabled]="!selectedCustomerID || selectedCustomerID === -1 || selectedCustomerID === null"
-      placeholder="Select or type to search device family..."
-      class="search-dropdown">
-      <ng-template kendoComboBoxNoDataTemplate>
-        <div class="k-p-2">No device family found</div>
-      </ng-template>
-    </kendo-combobox>
-  </kendo-label>
-  <kendo-label text="Device" class="k-font-size-sm">
-    <kendo-combobox
-      [data]="devices"
-      [valuePrimitive]="true"
-      [textField]="'deviceName'"
-      [valueField]="'deviceId'"
-      [(ngModel)]="selectedDeviceId"
-      (ngModelChange)="onDeviceChange($event)"
-      [filterable]="true"
-      [kendoDropDownFilter]="filterSettings"
-      [allowCustom]="false"
-      [popupSettings]="{ width: 'auto', height: 300, appendTo: 'root' }"
-      [disabled]="!selectedDeviceFamilyId || selectedDeviceFamilyId === -1 || selectedDeviceFamilyId === null"
-      placeholder="Select or type to search device..."
-      class="search-dropdown">
-      <ng-template kendoComboBoxNoDataTemplate>
-        <div class="k-p-2">No device found</div>
-      </ng-template>
-    </kendo-combobox>
-  </kendo-label>
-  <kendo-label text="Device Alias" class="k-font-size-sm">
-    <kendo-combobox
-      [data]="deviceAliases"
-      [valuePrimitive]="true"
-      [textField]="'deviceAliasName'"
-      [valueField]="'deviceAliasId'"
-      [(ngModel)]="selectedDeviceAliasId"
-      [filterable]="true"
-      [kendoDropDownFilter]="filterSettings"
-      [allowCustom]="false"
-      [popupSettings]="{ width: 'auto', height: 300, appendTo: 'root' }"
-      [disabled]="!selectedCustomerID || selectedCustomerID === -1 || selectedCustomerID === null"
-      placeholder="Select or type to search device alias..."
-      class="search-dropdown">
-      <ng-template kendoComboBoxNoDataTemplate>
-        <div class="k-p-2">No device alias found</div>
-      </ng-template>
-    </kendo-combobox>
-  </kendo-label>
-  <kendo-label text="Device Name" class="k-font-size-sm">
-    <input kendoTextBox [(ngModel)]="selectedDeviceName" type="text"
-      placeholder="Enter Device Name" class="search-input" />
+  <kendo-label text="Search All Columns" class="k-font-size-sm k-d-flex k-align-items-center">
+    <input kendoTextBox [(ngModel)]="searchText" (ngModelChange)="onSearchTextChange()" type="text"
+      placeholder="Type to search across all columns..." style="width: 300px;" />
   </kendo-label>
   <kendo-label text="Active" class="k-font-size-sm k-d-flex k-align-items-center">
-    <kendo-checkbox [(ngModel)]="selectedActive" class="k-ml-2"></kendo-checkbox>
+    <kendo-checkbox [(ngModel)]="selectedActive" (ngModelChange)="loadGridData()" class="k-ml-2"></kendo-checkbox>
   </kendo-label>
   <div class="k-ml-auto k-d-flex k-gap-2">
-    <button kendoButton rounded="full" themeColor="success" (click)="onSearch()">Search</button>
     <button kendoButton rounded="full" themeColor="info" (click)="openAddDialog()">Add</button>
     <button kendoButton rounded="full" (click)="onClear()">Clear</button>
   </div>
@@ -123,16 +44,9 @@
     </kendo-grid-column>
     <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title" [width]="c.width">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <ng-container *ngIf="c.field === 'active'; else regularCell">
-          <span [class.k-text-success]="dataItem.active" [class.k-text-error]="!dataItem.active">
-            {{dataItem.active ? 'True' : 'False'}}
-          </span>
-        </ng-container>
-        <ng-template #regularCell>
-          <span class="truncate-text" [title]="dataItem?.[c.field] || ''">
-            {{ dataItem?.[c.field] || '' }}
-          </span>
-        </ng-template>
+        <span class="truncate-text" [title]="dataItem?.[c.field] || ''">
+          {{ dataItem?.[c.field] || '' }}
+        </span>
       </ng-template>
     </kendo-grid-column>
   </kendo-grid>
@@ -158,7 +72,10 @@
       <h3 class="k-mt-0 k-mb-2 k-text-primary k-font-size-md">Device Info</h3>
       <div class="k-d-grid k-grid-cols-3 k-gap-2">
         <kendo-label text="Customer *" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getCustomerName(deviceData.customerID)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="customersList"
             [valuePrimitive]="true"
             [textField]="'CustomerName'"
@@ -169,14 +86,17 @@
             [kendoDropDownFilter]="filterSettings"
             [allowCustom]="false"
             [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isEditMode || isViewMode"
+            [disabled]="isEditMode"
             placeholder="Select customer..."
             class="w-100">
           </kendo-combobox>
         </kendo-label>
         
         <kendo-label text="Device Family *" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDeviceFamilyName(deviceData.deviceFamilyId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="deviceFamilies"
             [valuePrimitive]="true"
             [textField]="'deviceFamilyName'"
@@ -185,7 +105,7 @@
             [filterable]="true"
             [allowCustom]="false"
             [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="!deviceData.customerID || deviceData.customerID === -1 || isViewMode"
+            [disabled]="!deviceData.customerID || deviceData.customerID === -1"
             placeholder="Select device family..."
             class="w-100">
           </kendo-combobox>
@@ -193,23 +113,23 @@
         
         <kendo-label text="Device Name *" class="k-font-size-sm">
           <input kendoTextBox [(ngModel)]="deviceData.deviceName" type="text"
-            placeholder="Enter Device Name" class="w-100" [disabled]="isViewMode" />
+            placeholder="Enter Device Name" class="w-100" [readonly]="isViewMode" />
         </kendo-label>
         
         <kendo-label text="Test Device *" class="k-font-size-sm">
           <input kendoTextBox [(ngModel)]="deviceData.testDevice" type="text"
-            placeholder="Enter Test Device" class="w-100" [disabled]="isViewMode" />
+            placeholder="Enter Test Device" class="w-100" [readonly]="isViewMode" />
         </kendo-label>
         
         <kendo-label text="Reliability Device *" class="k-font-size-sm">
           <input kendoTextBox [(ngModel)]="deviceData.reliabilityDevice" type="text"
-            placeholder="Enter Reliability Device" class="w-100" [disabled]="isViewMode" />
+            placeholder="Enter Reliability Device" class="w-100" [readonly]="isViewMode" />
         </kendo-label>
         
         <kendo-label text="Alias Names" class="k-font-size-sm" style="grid-column: span 3;">
           <div class="k-d-flex k-gap-2">
             <input kendoTextBox [(ngModel)]="deviceData.newAliasName" type="text"
-              placeholder="Enter Alias Name" class="k-flex-1" [disabled]="isViewMode" />
+              placeholder="Enter Alias Name" class="k-flex-1" [readonly]="isViewMode" />
             <button kendoButton themeColor="primary" size="small" (click)="addAliasName()" [disabled]="isViewMode || !deviceData.newAliasName">Add</button>
           </div>
           <div class="k-d-flex k-flex-wrap k-gap-1 k-mt-1" *ngIf="deviceData.aliasNames && deviceData.aliasNames.length > 0">
@@ -223,25 +143,29 @@
         
         <kendo-label text="SKU" class="k-font-size-sm">
           <input kendoTextBox [(ngModel)]="deviceData.sku" type="text"
-            placeholder="Enter SKU" class="w-100" [disabled]="isViewMode" />
+            placeholder="Enter SKU" class="w-100" [readonly]="isViewMode" />
         </kendo-label>
         
         <kendo-label text="Part Type" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="deviceData.partType" type="text"
+            class="w-100" readonly />
           <kendo-dropdownlist
+            *ngIf="!isViewMode"
             [data]="partTypes"
             [valuePrimitive]="true"
             [(ngModel)]="deviceData.partType"
-            [disabled]="isViewMode"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
         
         <kendo-label text="Lot Type *" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="deviceData.lotType" type="text"
+            class="w-100" readonly />
           <kendo-dropdownlist
+            *ngIf="!isViewMode"
             [data]="lotTypes"
             [valuePrimitive]="true"
             [(ngModel)]="deviceData.lotType"
-            [disabled]="isViewMode"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -255,19 +179,24 @@
         </kendo-label>
         
         <kendo-label text="Tray/Tube Mapping" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="deviceData.trayTubeMapping" type="text"
+            class="w-100" readonly />
           <kendo-dropdownlist
+            *ngIf="!isViewMode"
             [data]="[{value: 'Lot', text: 'Lot'}, {value: 'Device', text: 'Device'}]"
             [valuePrimitive]="true"
             [valueField]="'value'"
             [textField]="'text'"
             [(ngModel)]="deviceData.trayTubeMapping"
-            [disabled]="isViewMode"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
         
         <kendo-label text="Country of Origin (COO)" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(countriesOfOrigin, deviceData.countryOfOriginId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="countriesOfOrigin"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -275,8 +204,7 @@
             [(ngModel)]="deviceData.countryOfOriginId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select COO..."
             class="w-100">
           </kendo-combobox>
@@ -284,7 +212,7 @@
         
         <kendo-label text="Unit Cost" class="k-font-size-sm">
           <input kendoTextBox [(ngModel)]="deviceData.unitCost" type="number" step="0.01"
-            placeholder="0" class="w-100" [disabled]="isViewMode" />
+            placeholder="0" class="w-100" [readonly]="isViewMode" />
         </kendo-label>
       </div>
     </div>
@@ -294,7 +222,10 @@
       <h3 class="k-mt-0 k-mb-1 k-text-primary k-font-size-sm k-font-weight-bold">EAR Info</h3>
       <div class="k-d-grid k-grid-cols-3 k-gap-2">
         <kendo-label text="Material Description" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(materialDescriptions, deviceData.materialDescriptionId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="materialDescriptions"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -302,15 +233,17 @@
             [(ngModel)]="deviceData.materialDescriptionId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select Material Description..."
             class="w-100">
           </kendo-combobox>
         </kendo-label>
         
         <kendo-label text="US HTS Code" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(usHtsCodes, deviceData.usHtsCodeId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="usHtsCodes"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -318,15 +251,17 @@
             [(ngModel)]="deviceData.usHtsCodeId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select US HTS Code..."
             class="w-100">
           </kendo-combobox>
         </kendo-label>
         
         <kendo-label text="ECCN" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(eccns, deviceData.eccnId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="eccns"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -334,15 +269,17 @@
             [(ngModel)]="deviceData.eccnId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select ECCN..."
             class="w-100">
           </kendo-combobox>
         </kendo-label>
         
         <kendo-label text="License Exceptions" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(licenseExceptions, deviceData.licenseExceptionId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="licenseExceptions"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -350,15 +287,17 @@
             [(ngModel)]="deviceData.licenseExceptionId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select License Exception..."
             class="w-100">
           </kendo-combobox>
         </kendo-label>
         
         <kendo-label text="Restricted Countries to Ship" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(restrictedCountries, deviceData.restrictedCountriesToShipId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="restrictedCountries"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -366,8 +305,7 @@
             [(ngModel)]="deviceData.restrictedCountriesToShipId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select Restricted Country..."
             class="w-100">
           </kendo-combobox>
@@ -384,7 +322,10 @@
       <h3 class="k-mt-0 k-mb-1 k-text-primary k-font-size-sm k-font-weight-bold">Pack&Label Info</h3>
       <div class="k-d-grid k-grid-cols-3 k-gap-2">
         <kendo-label text="MSL" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(msls, deviceData.mslId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="msls"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -392,15 +333,17 @@
             [(ngModel)]="deviceData.mslId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select MSL..."
             class="w-100">
           </kendo-combobox>
         </kendo-label>
         
         <kendo-label text="Peak Package Body Temperature" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(peakPackageBodyTemperatures, deviceData.peakPackageBodyTemperatureId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="peakPackageBodyTemperatures"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -408,8 +351,7 @@
             [(ngModel)]="deviceData.peakPackageBodyTemperatureId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select Temperature..."
             class="w-100">
             <ng-template kendoComboBoxNoDataTemplate>
@@ -419,7 +361,10 @@
         </kendo-label>
         
         <kendo-label text="Shelf Life (Month)" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(shelfLifeMonths, deviceData.shelfLifeMonthId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="shelfLifeMonths"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -427,15 +372,17 @@
             [(ngModel)]="deviceData.shelfLifeMonthId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select Shelf Life..."
             class="w-100">
           </kendo-combobox>
         </kendo-label>
         
         <kendo-label text="Floor Life" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(floorLives, deviceData.floorLifeId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="floorLives"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -443,15 +390,17 @@
             [(ngModel)]="deviceData.floorLifeId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select Floor Life..."
             class="w-100">
           </kendo-combobox>
         </kendo-label>
         
         <kendo-label text="PB Free" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(pbFrees, deviceData.pbFreeId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="pbFrees"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -459,15 +408,17 @@
             [(ngModel)]="deviceData.pbFreeId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select PB Free..."
             class="w-100">
           </kendo-combobox>
         </kendo-label>
         
         <kendo-label text="PB Free Sticker" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(pbFreeStickers, deviceData.pbFreeStickerId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="pbFreeStickers"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -475,15 +426,17 @@
             [(ngModel)]="deviceData.pbFreeStickerId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select PB Free Sticker..."
             class="w-100">
           </kendo-combobox>
         </kendo-label>
         
         <kendo-label text="ROHS" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(rohses, deviceData.rohsId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="rohses"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -491,15 +444,17 @@
             [(ngModel)]="deviceData.rohsId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select ROHS..."
             class="w-100">
           </kendo-combobox>
         </kendo-label>
         
         <kendo-label text="Tray/Tube Strapping" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(trayTubeStrappings, deviceData.trayTubeStrappingId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="trayTubeStrappings"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -507,15 +462,17 @@
             [(ngModel)]="deviceData.trayTubeStrappingId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select Strapping..."
             class="w-100">
           </kendo-combobox>
         </kendo-label>
         
         <kendo-label text="TrayStacking" class="k-font-size-sm">
+          <input *ngIf="isViewMode" kendoTextBox [value]="getDropdownDisplayText(trayStackings, deviceData.trayStackingId)" type="text"
+            class="w-100" readonly />
           <kendo-combobox
+            *ngIf="!isViewMode"
             [data]="trayStackings"
             [valuePrimitive]="true"
             [textField]="'name'"
@@ -523,8 +480,7 @@
             [(ngModel)]="deviceData.trayStackingId"
             [filterable]="true"
             [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
-            [disabled]="isViewMode"
+            [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
             placeholder="Select Tray Stacking..."
             class="w-100">
           </kendo-combobox>

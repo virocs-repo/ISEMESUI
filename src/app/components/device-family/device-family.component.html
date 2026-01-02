@@ -1,47 +1,12 @@
 <div class="k-d-flex k-align-items-center k-gap-4 k-py-2 k-px-4 page-header">
-  <kendo-label text="Customer" class="k-font-size-sm">
-    <kendo-combobox
-      [data]="customers"
-      [valuePrimitive]="true"
-      [textField]="'CustomerName'"
-      [valueField]="'CustomerID'"
-      [(ngModel)]="selectedCustomerID"
-      (ngModelChange)="onCustomerChange($event)"
-      [filterable]="true"
-      [kendoDropDownFilter]="filterSettings"
-      [allowCustom]="false"
-      [popupSettings]="{ width: 'auto', height: 300 }"
-      placeholder="Select or type to search customer..."
-      class="search-dropdown">
-      <ng-template kendoComboBoxNoDataTemplate>
-        <div class="k-p-2">No customer found</div>
-      </ng-template>
-    </kendo-combobox>
-  </kendo-label>
-  <kendo-label text="Device Family" class="k-font-size-sm">
-    <kendo-combobox
-      [data]="deviceFamilies"
-      [valuePrimitive]="true"
-      [textField]="'deviceFamilyName'"
-      [valueField]="'deviceFamilyId'"
-      [(ngModel)]="selectedDeviceFamilyId"
-      [filterable]="true"
-      [kendoDropDownFilter]="filterSettings"
-      [allowCustom]="false"
-      [popupSettings]="{ width: 'auto', height: 300 }"
-      [disabled]="!selectedCustomerID || selectedCustomerID === -1 || selectedCustomerID === null"
-      placeholder="Select or type to search device family..."
-      class="search-dropdown">
-      <ng-template kendoComboBoxNoDataTemplate>
-        <div class="k-p-2">No device family found</div>
-      </ng-template>
-    </kendo-combobox>
+  <kendo-label text="Search All Columns" class="k-font-size-sm k-d-flex k-align-items-center">
+    <input kendoTextBox [(ngModel)]="searchText" (ngModelChange)="onSearchTextChange()" type="text"
+      placeholder="Type to search across all columns..." style="width: 300px;" />
   </kendo-label>
   <kendo-label text="Active" class="k-font-size-sm k-d-flex k-align-items-center">
-    <kendo-checkbox [(ngModel)]="selectedActive" class="k-ml-2"></kendo-checkbox>
+    <kendo-checkbox [(ngModel)]="selectedActive" (ngModelChange)="loadGridData()" class="k-ml-2"></kendo-checkbox>
   </kendo-label>
   <div class="k-ml-auto k-d-flex k-gap-2">
-    <button kendoButton rounded="full" themeColor="success" (click)="onSearch()">Search</button>
     <button kendoButton rounded="full" themeColor="info" (click)="openAddDialog()">Add</button>
     <button kendoButton rounded="full" (click)="onClear()">Clear</button>
   </div>
@@ -79,16 +44,9 @@
     </kendo-grid-column>
     <kendo-grid-column *ngFor="let c of columnData" [field]="c.field" [title]="c.title" [width]="c.width">
       <ng-template kendoGridCellTemplate let-dataItem>
-        <ng-container *ngIf="c.field === 'active'; else regularCell">
-          <span [class.k-text-success]="dataItem.active" [class.k-text-error]="!dataItem.active">
-            {{dataItem.active ? 'True' : 'False'}}
-          </span>
-        </ng-container>
-        <ng-template #regularCell>
-          <span class="truncate-text" [title]="dataItem?.[c.field] || ''">
-            {{ dataItem?.[c.field] || '' }}
-          </span>
-        </ng-template>
+        <span class="truncate-text" [title]="dataItem?.[c.field] || ''">
+          {{ dataItem?.[c.field] || '' }}
+        </span>
       </ng-template>
     </kendo-grid-column>
   </kendo-grid>
@@ -108,7 +66,10 @@
   </div>
   <div class="k-d-flex k-flex-column k-gap-3 k-p-4">
     <kendo-label text="Customer *" class="k-font-size-sm">
+      <input *ngIf="isViewMode" kendoTextBox [value]="getCustomerName(deviceFamilyData.customerID)" type="text"
+        class="w-100" readonly />
       <kendo-combobox
+        *ngIf="!isViewMode"
         [data]="customersList"
         [valuePrimitive]="true"
         [textField]="'CustomerName'"
@@ -118,7 +79,7 @@
         [kendoDropDownFilter]="filterSettings"
         [allowCustom]="false"
         [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
-        [disabled]="isEditMode || isViewMode"
+        [disabled]="isEditMode"
         placeholder="Select or type to search customer..."
         class="w-100">
         <ng-template kendoComboBoxNoDataTemplate>
@@ -128,7 +89,7 @@
     </kendo-label>
     <kendo-label text="Device Family Name *" class="k-font-size-sm">
       <input kendoTextBox [(ngModel)]="deviceFamilyData.deviceFamilyName" type="text"
-        placeholder="Enter Device Family Name" class="w-100" [disabled]="isViewMode" />
+        placeholder="Enter Device Family Name" class="w-100" [readonly]="isViewMode" />
     </kendo-label>
     <kendo-label text="Active" class="k-font-size-sm">
       <kendo-switch [(ngModel)]="deviceFamilyData.isActive" [disabled]="!isEditMode || isViewMode"></kendo-switch>
