@@ -572,6 +572,10 @@ export class DeviceComponent implements OnInit {
       // Load dropdown data before opening dialog
       this.loadAllDropdownData();
       
+      // Ensure customersList is populated from getter before opening dialog
+      // Kendo combobox in dialog needs a stable property reference
+      this.customersList = [...this.customers]; // Create a new array reference
+      
       const deviceId = dataItem.deviceId || dataItem.DeviceId;
       const customerId = dataItem.customerId || dataItem.CustomerId;
       const deviceFamilyId = dataItem.deviceFamilyId || dataItem.DeviceFamilyId;
@@ -668,6 +672,145 @@ export class DeviceComponent implements OnInit {
             
             // Set LastModifiedOn for optimistic locking (matching TFS line 76)
             this.lastModifiedOn = deviceInfo.lastModifiedOn || deviceInfo.LastModifiedOn || '';
+            
+            // Update deviceData with values from GetDeviceInfo response (more accurate than search result)
+            if (deviceInfo) {
+              // Update device fields from stored procedure response
+              if (deviceInfo.device !== undefined) this.deviceData.deviceName = deviceInfo.device || deviceInfo.Device || this.deviceData.deviceName;
+              if (deviceInfo.testDevice !== undefined) this.deviceData.testDevice = deviceInfo.testDevice || deviceInfo.TestDevice || this.deviceData.testDevice;
+              if (deviceInfo.reliabilityDevice !== undefined) this.deviceData.reliabilityDevice = deviceInfo.reliabilityDevice || deviceInfo.ReliabilityDevice || this.deviceData.reliabilityDevice;
+              if (deviceInfo.sku !== undefined) this.deviceData.sku = deviceInfo.sku || deviceInfo.SKU || this.deviceData.sku;
+              // Store PartTypeId temporarily - will be converted to text after partTypes are loaded
+              if (deviceInfo.partTypeId !== undefined || deviceInfo.PartTypeId !== undefined) {
+                const partTypeId = deviceInfo.partTypeId || deviceInfo.PartTypeId;
+                if (partTypeId !== null && partTypeId !== undefined) {
+                  // Try to find the text value if partTypes are already loaded
+                  const partTypeItem = this.partTypes.find((pt: any) => pt.id === partTypeId);
+                  if (partTypeItem) {
+                    this.deviceData.partType = partTypeItem.value || partTypeItem.text;
+                  } else {
+                    // Store ID temporarily for conversion after partTypes are loaded
+                    (this.deviceData as any).partTypeId = partTypeId;
+                  }
+                }
+              }
+              // Store DeviceTypeId temporarily - will be converted to text after lotTypes are loaded
+              if (deviceInfo.deviceTypeId !== undefined || deviceInfo.DeviceTypeId !== undefined) {
+                const deviceTypeId = deviceInfo.deviceTypeId || deviceInfo.DeviceTypeId;
+                if (deviceTypeId !== null && deviceTypeId !== undefined) {
+                  // Try to find the text value if lotTypes are already loaded
+                  const lotTypeItem = this.lotTypes.find((lt: any) => lt.id === deviceTypeId);
+                  if (lotTypeItem) {
+                    this.deviceData.lotType = lotTypeItem.value || lotTypeItem.text;
+                  } else {
+                    // Store ID temporarily for conversion after lotTypes are loaded
+                    (this.deviceData as any).deviceTypeId = deviceTypeId;
+                  }
+                }
+              }
+              if (deviceInfo.isLabelMapped !== undefined) this.deviceData.labelMapping = deviceInfo.isLabelMapped || deviceInfo.IsLabelMapped || this.deviceData.labelMapping;
+              if (deviceInfo.isDeviceBasedTray !== undefined) {
+                const isDeviceBased = deviceInfo.isDeviceBasedTray || deviceInfo.IsDeviceBasedTray;
+                this.deviceData.trayTubeMapping = isDeviceBased ? 'Device' : 'Lot';
+              }
+              if (deviceInfo.cooId !== undefined) this.deviceData.countryOfOriginId = deviceInfo.cooId || deviceInfo.COOId || this.deviceData.countryOfOriginId;
+              if (deviceInfo.unitCost !== undefined) this.deviceData.unitCost = deviceInfo.unitCost || deviceInfo.UnitCost || this.deviceData.unitCost;
+              if (deviceInfo.materialDescriptionId !== undefined) this.deviceData.materialDescriptionId = deviceInfo.materialDescriptionId || deviceInfo.MaterialDescriptionId || this.deviceData.materialDescriptionId;
+              // US HTS Code - handle both camelCase and PascalCase
+              const usHtsCodeId = deviceInfo.usHtsCodeId !== undefined ? deviceInfo.usHtsCodeId : 
+                                 (deviceInfo.USHTSCodeId !== undefined ? deviceInfo.USHTSCodeId : null);
+              if (usHtsCodeId !== null && usHtsCodeId !== undefined) {
+                this.deviceData.usHtsCodeId = usHtsCodeId;
+              }
+              if (deviceInfo.eccnId !== undefined) this.deviceData.eccnId = deviceInfo.eccnId || deviceInfo.ECCNId || this.deviceData.eccnId;
+              if (deviceInfo.licenseExceptionId !== undefined) this.deviceData.licenseExceptionId = deviceInfo.licenseExceptionId || deviceInfo.LicenseExceptionId || this.deviceData.licenseExceptionId;
+              // Restricted Countries to Ship - handle both camelCase and PascalCase
+              const restrictedCountriesIds = deviceInfo.restrictedCountriesIds !== undefined ? deviceInfo.restrictedCountriesIds : 
+                                            (deviceInfo.RestrictedCountriesIds !== undefined ? deviceInfo.RestrictedCountriesIds : null);
+              if (restrictedCountriesIds !== null && restrictedCountriesIds !== undefined) {
+                this.deviceData.restrictedCountriesToShipIds = this.parseRestrictedCountriesIds(restrictedCountriesIds);
+              }
+              // ScheduleB (STA) - handle both camelCase and PascalCase, and null values
+              if (deviceInfo.scheduleB !== undefined) {
+                this.deviceData.scheduleB = Boolean(deviceInfo.scheduleB);
+              } else if (deviceInfo.ScheduleB !== undefined) {
+                this.deviceData.scheduleB = Boolean(deviceInfo.ScheduleB);
+              }
+              if (deviceInfo.msl !== undefined) this.deviceData.mslId = deviceInfo.msl || deviceInfo.MSL || this.deviceData.mslId;
+              if (deviceInfo.peakPacckageBody !== undefined) this.deviceData.peakPackageBodyTemperatureId = deviceInfo.peakPacckageBody || deviceInfo.PeakPacckageBody || this.deviceData.peakPackageBodyTemperatureId;
+              if (deviceInfo.shelfLife !== undefined) this.deviceData.shelfLifeMonthId = deviceInfo.shelfLife || deviceInfo.ShelfLife || this.deviceData.shelfLifeMonthId;
+              if (deviceInfo.floorLife !== undefined) this.deviceData.floorLifeId = deviceInfo.floorLife || deviceInfo.FloorLife || this.deviceData.floorLifeId;
+              if (deviceInfo.pbFree !== undefined) this.deviceData.pbFreeId = deviceInfo.pbFree || deviceInfo.PBFree || this.deviceData.pbFreeId;
+              if (deviceInfo.pbFreeSticker !== undefined) this.deviceData.pbFreeStickerId = deviceInfo.pbFreeSticker || deviceInfo.PBFreeSticker || this.deviceData.pbFreeStickerId;
+              if (deviceInfo.rohs !== undefined) this.deviceData.rohsId = deviceInfo.rohs || deviceInfo.ROHS || this.deviceData.rohsId;
+              if (deviceInfo.trayStrapping !== undefined) this.deviceData.trayTubeStrappingId = deviceInfo.trayStrapping || deviceInfo.TrayStrapping || this.deviceData.trayTubeStrappingId;
+              if (deviceInfo.trayStacking !== undefined) this.deviceData.trayStackingId = deviceInfo.trayStacking || deviceInfo.TrayStacking || this.deviceData.trayStackingId;
+              
+              // Store label names temporarily - will be converted to IDs after customer labels are loaded
+              // Update label values from label details (Table[5])
+              if (deviceInfo.label1 !== undefined || deviceInfo.Label1 !== undefined) {
+                const label1Value = deviceInfo.label1 || deviceInfo.Label1;
+                if (label1Value) {
+                  // Try to convert to ID if customer labels are already loaded, otherwise store name for later conversion
+                  const labelId = this.getLabelIdFromName(label1Value);
+                  this.deviceData.label1 = labelId !== null ? labelId : null;
+                  // Store name for later conversion if ID not found
+                  if (labelId === null && this.customerLabels.length === 0) {
+                    (this.deviceData as any).label1Name = label1Value;
+                  }
+                } else {
+                  this.deviceData.label1 = null;
+                }
+              }
+              if (deviceInfo.label2 !== undefined || deviceInfo.Label2 !== undefined) {
+                const label2Value = deviceInfo.label2 || deviceInfo.Label2;
+                if (label2Value) {
+                  const labelId = this.getLabelIdFromName(label2Value);
+                  this.deviceData.label2 = labelId !== null ? labelId : null;
+                  if (labelId === null && this.customerLabels.length === 0) {
+                    (this.deviceData as any).label2Name = label2Value;
+                  }
+                } else {
+                  this.deviceData.label2 = null;
+                }
+              }
+              if (deviceInfo.label3 !== undefined || deviceInfo.Label3 !== undefined) {
+                const label3Value = deviceInfo.label3 || deviceInfo.Label3;
+                if (label3Value) {
+                  const labelId = this.getLabelIdFromName(label3Value);
+                  this.deviceData.label3 = labelId !== null ? labelId : null;
+                  if (labelId === null && this.customerLabels.length === 0) {
+                    (this.deviceData as any).label3Name = label3Value;
+                  }
+                } else {
+                  this.deviceData.label3 = null;
+                }
+              }
+              if (deviceInfo.label4 !== undefined || deviceInfo.Label4 !== undefined) {
+                const label4Value = deviceInfo.label4 || deviceInfo.Label4;
+                if (label4Value) {
+                  const labelId = this.getLabelIdFromName(label4Value);
+                  this.deviceData.label4 = labelId !== null ? labelId : null;
+                  if (labelId === null && this.customerLabels.length === 0) {
+                    (this.deviceData as any).label4Name = label4Value;
+                  }
+                } else {
+                  this.deviceData.label4 = null;
+                }
+              }
+              if (deviceInfo.label5 !== undefined || deviceInfo.Label5 !== undefined) {
+                const label5Value = deviceInfo.label5 || deviceInfo.Label5;
+                if (label5Value) {
+                  const labelId = this.getLabelIdFromName(label5Value);
+                  this.deviceData.label5 = labelId !== null ? labelId : null;
+                  if (labelId === null && this.customerLabels.length === 0) {
+                    (this.deviceData as any).label5Name = label5Value;
+                  }
+                } else {
+                  this.deviceData.label5 = null;
+                }
+              }
+            }
             
             console.log('canEdit set to:', this.canEdit, 'canEditlotType:', this.canEditlotType, 'isEditMode:', this.isEditMode);
             console.log('canEditLabel flags:', {
@@ -862,6 +1005,10 @@ export class DeviceComponent implements OnInit {
       // Load dropdown data before opening dialog
       this.loadAllDropdownData();
       
+      // Ensure customersList is populated from getter before opening dialog
+      // Needed for getCustomerName() method used in view mode
+      this.customersList = [...this.customers]; // Create a new array reference
+      
       const deviceId = dataItem.deviceId || dataItem.DeviceId;
       const customerId = dataItem.customerId || dataItem.CustomerId;
       const deviceFamilyId = dataItem.deviceFamilyId || dataItem.DeviceFamilyId;
@@ -934,6 +1081,143 @@ export class DeviceComponent implements OnInit {
               // Default to true if not found (device can be edited)
               this.canEdit = true;
             }
+            
+            // Update deviceData with values from GetDeviceInfo response (more accurate than search result)
+            if (deviceInfo) {
+              // Update device fields from stored procedure response
+              if (deviceInfo.device !== undefined) this.deviceData.deviceName = deviceInfo.device || deviceInfo.Device || this.deviceData.deviceName;
+              if (deviceInfo.testDevice !== undefined) this.deviceData.testDevice = deviceInfo.testDevice || deviceInfo.TestDevice || this.deviceData.testDevice;
+              if (deviceInfo.reliabilityDevice !== undefined) this.deviceData.reliabilityDevice = deviceInfo.reliabilityDevice || deviceInfo.ReliabilityDevice || this.deviceData.reliabilityDevice;
+              if (deviceInfo.sku !== undefined) this.deviceData.sku = deviceInfo.sku || deviceInfo.SKU || this.deviceData.sku;
+              // Store PartTypeId temporarily - will be converted to text after partTypes are loaded
+              if (deviceInfo.partTypeId !== undefined || deviceInfo.PartTypeId !== undefined) {
+                const partTypeId = deviceInfo.partTypeId || deviceInfo.PartTypeId;
+                if (partTypeId !== null && partTypeId !== undefined) {
+                  // Try to find the text value if partTypes are already loaded
+                  const partTypeItem = this.partTypes.find((pt: any) => pt.id === partTypeId);
+                  if (partTypeItem) {
+                    this.deviceData.partType = partTypeItem.value || partTypeItem.text;
+                  } else {
+                    // Store ID temporarily for conversion after partTypes are loaded
+                    (this.deviceData as any).partTypeId = partTypeId;
+                  }
+                }
+              }
+              // Store DeviceTypeId temporarily - will be converted to text after lotTypes are loaded
+              if (deviceInfo.deviceTypeId !== undefined || deviceInfo.DeviceTypeId !== undefined) {
+                const deviceTypeId = deviceInfo.deviceTypeId || deviceInfo.DeviceTypeId;
+                if (deviceTypeId !== null && deviceTypeId !== undefined) {
+                  // Try to find the text value if lotTypes are already loaded
+                  const lotTypeItem = this.lotTypes.find((lt: any) => lt.id === deviceTypeId);
+                  if (lotTypeItem) {
+                    this.deviceData.lotType = lotTypeItem.value || lotTypeItem.text;
+                  } else {
+                    // Store ID temporarily for conversion after lotTypes are loaded
+                    (this.deviceData as any).deviceTypeId = deviceTypeId;
+                  }
+                }
+              }
+              if (deviceInfo.isLabelMapped !== undefined) this.deviceData.labelMapping = deviceInfo.isLabelMapped || deviceInfo.IsLabelMapped || this.deviceData.labelMapping;
+              if (deviceInfo.isDeviceBasedTray !== undefined) {
+                const isDeviceBased = deviceInfo.isDeviceBasedTray || deviceInfo.IsDeviceBasedTray;
+                this.deviceData.trayTubeMapping = isDeviceBased ? 'Device' : 'Lot';
+              }
+              if (deviceInfo.cooId !== undefined) this.deviceData.countryOfOriginId = deviceInfo.cooId || deviceInfo.COOId || this.deviceData.countryOfOriginId;
+              if (deviceInfo.unitCost !== undefined) this.deviceData.unitCost = deviceInfo.unitCost || deviceInfo.UnitCost || this.deviceData.unitCost;
+              if (deviceInfo.materialDescriptionId !== undefined) this.deviceData.materialDescriptionId = deviceInfo.materialDescriptionId || deviceInfo.MaterialDescriptionId || this.deviceData.materialDescriptionId;
+              // US HTS Code - handle both camelCase and PascalCase
+              const usHtsCodeId = deviceInfo.usHtsCodeId !== undefined ? deviceInfo.usHtsCodeId : 
+                                 (deviceInfo.USHTSCodeId !== undefined ? deviceInfo.USHTSCodeId : null);
+              if (usHtsCodeId !== null && usHtsCodeId !== undefined) {
+                this.deviceData.usHtsCodeId = usHtsCodeId;
+              }
+              if (deviceInfo.eccnId !== undefined) this.deviceData.eccnId = deviceInfo.eccnId || deviceInfo.ECCNId || this.deviceData.eccnId;
+              if (deviceInfo.licenseExceptionId !== undefined) this.deviceData.licenseExceptionId = deviceInfo.licenseExceptionId || deviceInfo.LicenseExceptionId || this.deviceData.licenseExceptionId;
+              // Restricted Countries to Ship - handle both camelCase and PascalCase
+              const restrictedCountriesIds = deviceInfo.restrictedCountriesIds !== undefined ? deviceInfo.restrictedCountriesIds : 
+                                            (deviceInfo.RestrictedCountriesIds !== undefined ? deviceInfo.RestrictedCountriesIds : null);
+              if (restrictedCountriesIds !== null && restrictedCountriesIds !== undefined) {
+                this.deviceData.restrictedCountriesToShipIds = this.parseRestrictedCountriesIds(restrictedCountriesIds);
+              }
+              // ScheduleB (STA) - handle both camelCase and PascalCase, and null values
+              if (deviceInfo.scheduleB !== undefined) {
+                this.deviceData.scheduleB = Boolean(deviceInfo.scheduleB);
+              } else if (deviceInfo.ScheduleB !== undefined) {
+                this.deviceData.scheduleB = Boolean(deviceInfo.ScheduleB);
+              }
+              if (deviceInfo.msl !== undefined) this.deviceData.mslId = deviceInfo.msl || deviceInfo.MSL || this.deviceData.mslId;
+              if (deviceInfo.peakPacckageBody !== undefined) this.deviceData.peakPackageBodyTemperatureId = deviceInfo.peakPacckageBody || deviceInfo.PeakPacckageBody || this.deviceData.peakPackageBodyTemperatureId;
+              if (deviceInfo.shelfLife !== undefined) this.deviceData.shelfLifeMonthId = deviceInfo.shelfLife || deviceInfo.ShelfLife || this.deviceData.shelfLifeMonthId;
+              if (deviceInfo.floorLife !== undefined) this.deviceData.floorLifeId = deviceInfo.floorLife || deviceInfo.FloorLife || this.deviceData.floorLifeId;
+              if (deviceInfo.pbFree !== undefined) this.deviceData.pbFreeId = deviceInfo.pbFree || deviceInfo.PBFree || this.deviceData.pbFreeId;
+              if (deviceInfo.pbFreeSticker !== undefined) this.deviceData.pbFreeStickerId = deviceInfo.pbFreeSticker || deviceInfo.PBFreeSticker || this.deviceData.pbFreeStickerId;
+              if (deviceInfo.rohs !== undefined) this.deviceData.rohsId = deviceInfo.rohs || deviceInfo.ROHS || this.deviceData.rohsId;
+              if (deviceInfo.trayStrapping !== undefined) this.deviceData.trayTubeStrappingId = deviceInfo.trayStrapping || deviceInfo.TrayStrapping || this.deviceData.trayTubeStrappingId;
+              if (deviceInfo.trayStacking !== undefined) this.deviceData.trayStackingId = deviceInfo.trayStacking || deviceInfo.TrayStacking || this.deviceData.trayStackingId;
+              
+              // Update label values from label details (Table[5])
+              if (deviceInfo.label1 !== undefined || deviceInfo.Label1 !== undefined) {
+                const label1Value = deviceInfo.label1 || deviceInfo.Label1;
+                if (label1Value) {
+                  const labelId = this.getLabelIdFromName(label1Value);
+                  this.deviceData.label1 = labelId !== null ? labelId : null;
+                  if (labelId === null && this.customerLabels.length === 0) {
+                    (this.deviceData as any).label1Name = label1Value;
+                  }
+                } else {
+                  this.deviceData.label1 = null;
+                }
+              }
+              if (deviceInfo.label2 !== undefined || deviceInfo.Label2 !== undefined) {
+                const label2Value = deviceInfo.label2 || deviceInfo.Label2;
+                if (label2Value) {
+                  const labelId = this.getLabelIdFromName(label2Value);
+                  this.deviceData.label2 = labelId !== null ? labelId : null;
+                  if (labelId === null && this.customerLabels.length === 0) {
+                    (this.deviceData as any).label2Name = label2Value;
+                  }
+                } else {
+                  this.deviceData.label2 = null;
+                }
+              }
+              if (deviceInfo.label3 !== undefined || deviceInfo.Label3 !== undefined) {
+                const label3Value = deviceInfo.label3 || deviceInfo.Label3;
+                if (label3Value) {
+                  const labelId = this.getLabelIdFromName(label3Value);
+                  this.deviceData.label3 = labelId !== null ? labelId : null;
+                  if (labelId === null && this.customerLabels.length === 0) {
+                    (this.deviceData as any).label3Name = label3Value;
+                  }
+                } else {
+                  this.deviceData.label3 = null;
+                }
+              }
+              if (deviceInfo.label4 !== undefined || deviceInfo.Label4 !== undefined) {
+                const label4Value = deviceInfo.label4 || deviceInfo.Label4;
+                if (label4Value) {
+                  const labelId = this.getLabelIdFromName(label4Value);
+                  this.deviceData.label4 = labelId !== null ? labelId : null;
+                  if (labelId === null && this.customerLabels.length === 0) {
+                    (this.deviceData as any).label4Name = label4Value;
+                  }
+                } else {
+                  this.deviceData.label4 = null;
+                }
+              }
+              if (deviceInfo.label5 !== undefined || deviceInfo.Label5 !== undefined) {
+                const label5Value = deviceInfo.label5 || deviceInfo.Label5;
+                if (label5Value) {
+                  const labelId = this.getLabelIdFromName(label5Value);
+                  this.deviceData.label5 = labelId !== null ? labelId : null;
+                  if (labelId === null && this.customerLabels.length === 0) {
+                    (this.deviceData as any).label5Name = label5Value;
+                  }
+                } else {
+                  this.deviceData.label5 = null;
+                }
+              }
+            }
+            
             console.log('canEdit set to:', this.canEdit);
             // Store device info data for "Devices in Use" dialog
             // API returns: DQP, MF, TRV, Boards, DeviceLabelInfo (matching TFS property names)
@@ -1214,20 +1498,44 @@ export class DeviceComponent implements OnInit {
         if (data && Array.isArray(data) && data.length > 0) {
           let mappedData: any[];
           
-          // For PartType and DeviceType (Lot Type), use {value, text} format to match current HTML binding (valuePrimitive="true")
+          // For PartType and DeviceType (Lot Type), use {value, text, id} format to allow ID-to-text conversion
           if (listName === 'PartType') {
             mappedData = data.map((item: any) => ({
               value: item.itemText || item.ItemText,
-              text: item.itemText || item.ItemText
+              text: item.itemText || item.ItemText,
+              id: item.masterListItemId || item.MasterListItemId // Store ID for lookup
             }));
             // Add "N/A" as the first item (matching original TFS behavior)
-            mappedData.unshift({ value: 'N/A', text: 'N/A' });
+            mappedData.unshift({ value: 'N/A', text: 'N/A', id: null });
+            
+            // If we have a stored partTypeId, convert it to text value now
+            if ((this.deviceData as any).partTypeId) {
+              const partTypeId = (this.deviceData as any).partTypeId;
+              const partTypeItem = mappedData.find((pt: any) => pt.id === partTypeId);
+              if (partTypeItem) {
+                this.deviceData.partType = partTypeItem.value || partTypeItem.text;
+                console.log(`✓ Converted PartTypeId ${partTypeId} to partType: ${this.deviceData.partType}`);
+                delete (this.deviceData as any).partTypeId;
+              }
+            }
           } else if (listName === 'DeviceType') {
-            // For Lot Type (DeviceType), use {value, text} format to match API model which expects LotType as string
+            // For Lot Type (DeviceType), use {value, text, id} format to allow ID-to-text conversion
             mappedData = data.map((item: any) => ({
               value: item.itemText || item.ItemText,
-              text: item.itemText || item.ItemText
+              text: item.itemText || item.ItemText,
+              id: item.masterListItemId || item.MasterListItemId // Store ID for lookup
             }));
+            
+            // If we have a stored deviceTypeId, convert it to text value now
+            if ((this.deviceData as any).deviceTypeId) {
+              const deviceTypeId = (this.deviceData as any).deviceTypeId;
+              const lotTypeItem = mappedData.find((lt: any) => lt.id === deviceTypeId);
+              if (lotTypeItem) {
+                this.deviceData.lotType = lotTypeItem.value || lotTypeItem.text;
+                console.log(`✓ Converted DeviceTypeId ${deviceTypeId} to lotType: ${this.deviceData.lotType}`);
+                delete (this.deviceData as any).deviceTypeId;
+              }
+            }
           } else {
             // For other dropdowns, use {id, name} format
             mappedData = data.map((item: any) => ({
@@ -1530,6 +1838,36 @@ export class DeviceComponent implements OnInit {
       Label5: this.deviceData.label5 ? this.getLabelDisplayText(this.deviceData.label5) : ''
     };
 
+    // Check if at least one label is selected (check IDs directly for reliability)
+    // Labels are stored as numbers (IDs), so check for valid positive numbers
+    // Note: We check IDs first as they're the source of truth, display text is just for user feedback
+    const label1Valid = this.deviceData.label1 != null && this.deviceData.label1 !== undefined && !isNaN(Number(this.deviceData.label1)) && Number(this.deviceData.label1) > 0;
+    const label2Valid = this.deviceData.label2 != null && this.deviceData.label2 !== undefined && !isNaN(Number(this.deviceData.label2)) && Number(this.deviceData.label2) > 0;
+    const label3Valid = this.deviceData.label3 != null && this.deviceData.label3 !== undefined && !isNaN(Number(this.deviceData.label3)) && Number(this.deviceData.label3) > 0;
+    const label4Valid = this.deviceData.label4 != null && this.deviceData.label4 !== undefined && !isNaN(Number(this.deviceData.label4)) && Number(this.deviceData.label4) > 0;
+    const label5Valid = this.deviceData.label5 != null && this.deviceData.label5 !== undefined && !isNaN(Number(this.deviceData.label5)) && Number(this.deviceData.label5) > 0;
+    
+    const hasAtLeastOneLabelById = label1Valid || label2Valid || label3Valid || label4Valid || label5Valid;
+    
+    // Also check display text as fallback (in case customerLabels aren't loaded but labels are selected)
+    // This handles edge cases where IDs might not be set but display text is available
+    const hasAtLeastOneLabelByText = labels['Label1'] !== '' || labels['Label2'] !== '' || 
+                                     labels['Label3'] !== '' || labels['Label4'] !== '' || labels['Label5'] !== '';
+    
+    // Debug logging to help diagnose issues
+    if (!hasAtLeastOneLabelById && !hasAtLeastOneLabelByText) {
+      console.log('Label validation failed. Label IDs:', {
+        label1: this.deviceData.label1,
+        label2: this.deviceData.label2,
+        label3: this.deviceData.label3,
+        label4: this.deviceData.label4,
+        label5: this.deviceData.label5
+      });
+      console.log('Label display texts:', labels);
+      labelAlert = 'Please Add atleast one Label.';
+      return { labelAlert, duplicateLabels };
+    }
+
     // Check for duplicates (matching TFS line 1053-1107)
     for (let i = 1; i <= 5; i++) {
       const currentLabel = labels[`Label${i}`];
@@ -1546,13 +1884,6 @@ export class DeviceComponent implements OnInit {
           }
         }
       }
-    }
-
-    // Check if at least one label is selected (matching TFS line 1109-1117)
-    const hasAnyLabel = labels['Label1'] !== '' || labels['Label2'] !== '' || 
-                       labels['Label3'] !== '' || labels['Label4'] !== '' || labels['Label5'] !== '';
-    if (!hasAnyLabel) {
-      labelAlert = 'Please Add atleast one Label.';
     }
 
     return { labelAlert, duplicateLabels };
@@ -1632,46 +1963,115 @@ export class DeviceComponent implements OnInit {
     // Note: In TFS, dicOfLabelDetails contains label details per label name
     // For now, we'll send empty list as the label details are saved separately via saveLabelDetails
     
-    const request = {
-      deviceId: this.deviceData.deviceId,
-      deviceName: this.deviceData.deviceName,
-      deviceFamilyId: this.deviceData.deviceFamilyId,
-      customerID: this.deviceData.customerID,
+    // Build request payload - ensure required fields are not null/undefined
+    // Note: Backend expects non-nullable int for DeviceFamilyId and CustomerID
+    // Validation should have already ensured these are valid numbers (> 0)
+    // Explicitly convert to numbers to ensure proper type
+    const deviceFamilyId = Number(this.deviceData.deviceFamilyId);
+    const customerID = Number(this.deviceData.customerID);
+    const deviceId = Number(this.deviceData.deviceId ?? -1);
+    
+    const request: any = {
+      deviceId: deviceId,
+      deviceName: this.deviceData.deviceName || '',
+      deviceFamilyId: deviceFamilyId, // Required non-nullable int - validation ensures this exists
+      customerID: customerID, // Required non-nullable int - validation ensures this exists
       // In Add mode, always set isActive to true (matching TFS behavior)
-      isActive: this.isEditMode ? this.deviceData.isActive : true,
-      testDevice: this.deviceData.testDevice,
-      reliabilityDevice: this.deviceData.reliabilityDevice,
+      isActive: this.isEditMode ? (this.deviceData.isActive ?? true) : true,
+      testDevice: this.deviceData.testDevice || '',
+      reliabilityDevice: this.deviceData.reliabilityDevice || '',
       aliasNames: this.deviceData.aliasNames || [],
-      sku: this.deviceData.sku,
-      partType: this.deviceData.partType,
-      lotType: this.deviceData.lotType,
-      labelMapping: this.deviceData.labelMapping,
-      trayTubeMapping: this.deviceData.trayTubeMapping,
-      countryOfOriginId: this.deviceData.countryOfOriginId,
-      unitCost: this.deviceData.unitCost,
-      materialDescriptionId: this.deviceData.materialDescriptionId,
-      usHtsCodeId: this.deviceData.usHtsCodeId,
-      eccnId: this.deviceData.eccnId,
-      licenseExceptionId: this.deviceData.licenseExceptionId,
-      restrictedCountriesToShipId: this.formatRestrictedCountriesIds(this.deviceData.restrictedCountriesToShipIds),
-      scheduleB: this.deviceData.scheduleB,
-      mslId: this.deviceData.mslId,
-      peakPackageBodyTemperatureId: this.deviceData.peakPackageBodyTemperatureId,
-      shelfLifeMonthId: this.deviceData.shelfLifeMonthId,
-      floorLifeId: this.deviceData.floorLifeId,
-      pbFreeId: this.deviceData.pbFreeId,
-      pbFreeStickerId: this.deviceData.pbFreeStickerId,
-      rohsId: this.deviceData.rohsId,
-      trayTubeStrappingId: this.deviceData.trayTubeStrappingId,
-      trayStackingId: this.deviceData.trayStackingId,
+      sku: this.deviceData.sku || '',
+      // Convert PartType text value to ID for backend
+      partType: this.convertPartTypeToId(this.deviceData.partType),
+      partTypeId: this.convertPartTypeToId(this.deviceData.partType),
+      // Convert LotType text value to ID for backend
+      lotType: this.convertLotTypeToId(this.deviceData.lotType),
+      deviceTypeId: this.convertLotTypeToId(this.deviceData.lotType),
+      labelMapping: this.deviceData.labelMapping ?? false,
+      trayTubeMapping: this.deviceData.trayTubeMapping || 'Device',
+      unitCost: Number(this.deviceData.unitCost ?? 0),
+      scheduleB: this.deviceData.scheduleB ?? false,
       // Optimistic locking fields (matching TFS lines 438-439)
-      lockId: this.isEditMode ? (this.lockId !== -1 ? this.lockId : null) : null,
+      // Ensure lockId is always a valid number (not null/undefined) to avoid DBNull casting issues
+      lockId: this.isEditMode ? (this.lockId != null && this.lockId !== -1 ? Number(this.lockId) : -1) : -1,
       lastModifiedOn: this.isEditMode ? (this.lastModifiedOn || null) : null,
       // Label fields (matching TFS lines 421-423)
-      labels: labelFormatString,
+      labels: labelFormatString || null,
       lstLabelDetails: labelDetailsList,
       createdBy: 0 // Will be set by backend from token
     };
+    
+    // Only include nullable int? fields if they have values (to avoid DBNull casting issues)
+    // These fields are optional and should only be included if they have actual values
+    // Explicitly convert to numbers to ensure proper type
+    if (this.deviceData.countryOfOriginId != null && this.deviceData.countryOfOriginId !== -1) {
+      request.countryOfOriginId = Number(this.deviceData.countryOfOriginId);
+    }
+    if (this.deviceData.materialDescriptionId != null && this.deviceData.materialDescriptionId !== -1) {
+      request.materialDescriptionId = Number(this.deviceData.materialDescriptionId);
+    }
+    if (this.deviceData.usHtsCodeId != null && this.deviceData.usHtsCodeId !== -1) {
+      request.usHtsCodeId = Number(this.deviceData.usHtsCodeId);
+      request.USHTSCodeId = Number(this.deviceData.usHtsCodeId); // Also send PascalCase for backend compatibility
+    }
+    if (this.deviceData.eccnId != null && this.deviceData.eccnId !== -1) {
+      request.eccnId = Number(this.deviceData.eccnId);
+    }
+    if (this.deviceData.licenseExceptionId != null && this.deviceData.licenseExceptionId !== -1) {
+      request.licenseExceptionId = Number(this.deviceData.licenseExceptionId);
+    }
+    // RestrictedCountriesToShipId expects string (comma-separated IDs)
+    const restrictedCountriesId = this.formatRestrictedCountriesIds(this.deviceData.restrictedCountriesToShipIds);
+    if (restrictedCountriesId != null && restrictedCountriesId !== '') {
+      request.restrictedCountriesToShipId = restrictedCountriesId;
+    }
+    if (this.deviceData.mslId != null && this.deviceData.mslId !== -1) {
+      request.mslId = Number(this.deviceData.mslId);
+    }
+    if (this.deviceData.peakPackageBodyTemperatureId != null && this.deviceData.peakPackageBodyTemperatureId !== -1) {
+      request.peakPackageBodyTemperatureId = Number(this.deviceData.peakPackageBodyTemperatureId);
+    }
+    if (this.deviceData.shelfLifeMonthId != null && this.deviceData.shelfLifeMonthId !== -1) {
+      request.shelfLifeMonthId = Number(this.deviceData.shelfLifeMonthId);
+    }
+    if (this.deviceData.floorLifeId != null && this.deviceData.floorLifeId !== -1) {
+      request.floorLifeId = Number(this.deviceData.floorLifeId);
+    }
+    if (this.deviceData.pbFreeId != null && this.deviceData.pbFreeId !== -1) {
+      request.pbFreeId = Number(this.deviceData.pbFreeId);
+    }
+    if (this.deviceData.pbFreeStickerId != null && this.deviceData.pbFreeStickerId !== -1) {
+      request.pbFreeStickerId = Number(this.deviceData.pbFreeStickerId);
+    }
+    if (this.deviceData.rohsId != null && this.deviceData.rohsId !== -1) {
+      request.rohsId = Number(this.deviceData.rohsId);
+    }
+    if (this.deviceData.trayTubeStrappingId != null && this.deviceData.trayTubeStrappingId !== -1) {
+      request.trayTubeStrappingId = Number(this.deviceData.trayTubeStrappingId);
+    }
+    if (this.deviceData.trayStackingId != null && this.deviceData.trayStackingId !== -1) {
+      request.trayStackingId = Number(this.deviceData.trayStackingId);
+    }
+    
+    // Ensure customerID and deviceFamilyId are valid numbers (not -1 or null for required fields)
+    if (!request.customerID || request.customerID === -1) {
+      console.error('Invalid customerID in request:', request.customerID);
+      this.showNotification('Please select a valid customer', 'error');
+      return;
+    }
+    
+    if (!request.deviceFamilyId || request.deviceFamilyId === -1) {
+      console.error('Invalid deviceFamilyId in request:', request.deviceFamilyId);
+      this.showNotification('Please select a valid device family', 'error');
+      return;
+    }
+
+    // Log request payload for debugging
+    console.log('Saving device with request:', JSON.stringify(request, null, 2));
+    console.log('Device data:', this.deviceData);
+    console.log('Is Edit Mode:', this.isEditMode);
+    console.log('API endpoint will be: api/v1/ise/devicemaster/device');
 
     this.apiService.addUpdateDevice(request).subscribe({
       next: (result) => {
@@ -1687,8 +2087,48 @@ export class DeviceComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.showNotification('Error saving device', 'error');
         console.error('Error saving device:', error);
+        
+        // Extract error message from HttpErrorResponse
+        let errorMessage = 'Error saving device';
+        if (error?.error) {
+          // Try to get error message from response body
+          if (typeof error.error === 'string') {
+            errorMessage = error.error;
+          } else if (error.error?.message) {
+            errorMessage = error.error.message;
+          } else if (error.error?.error) {
+            errorMessage = error.error.error;
+          } else if (error.error?.title) {
+            errorMessage = error.error.title;
+          }
+        } else if (error?.message) {
+          errorMessage = error.message;
+        }
+        
+        // Include status code if available
+        if (error?.status) {
+          errorMessage += ` (Status: ${error.status})`;
+        }
+        
+        this.showNotification(errorMessage, 'error');
+        
+        // Log full error details for debugging
+        console.error('Full error details:', {
+          status: error?.status,
+          statusText: error?.statusText,
+          error: error?.error,
+          message: error?.message,
+          url: error?.url,
+          headers: error?.headers,
+          name: error?.name
+        });
+        
+        // Log the actual request that was sent
+        if (error?.url) {
+          console.error('Failed URL:', error.url);
+        }
+        console.error('Request payload that was sent:', JSON.stringify(request, null, 2));
       }
     });
   }
@@ -1738,6 +2178,42 @@ export class DeviceComponent implements OnInit {
   formatRestrictedCountriesIds(ids: number[]): string | null {
     if (!ids || ids.length === 0) return null;
     return ids.join(',');
+  }
+
+  convertPartTypeToId(partTypeValue: string | null | undefined): number | null {
+    if (!partTypeValue || !this.partTypes || this.partTypes.length === 0) return null;
+    // If it's already a number, return it
+    if (typeof partTypeValue === 'number') return partTypeValue;
+    // Find the partType item by text value
+    const partTypeItem = this.partTypes.find((pt: any) => 
+      (pt.value && pt.value.toLowerCase() === partTypeValue.toLowerCase()) ||
+      (pt.text && pt.text.toLowerCase() === partTypeValue.toLowerCase())
+    );
+    // Return the ID if found, otherwise try to parse as number
+    if (partTypeItem && partTypeItem.id !== null && partTypeItem.id !== undefined) {
+      return Number(partTypeItem.id);
+    }
+    // Try to parse as number if it's a numeric string
+    const parsed = parseInt(partTypeValue);
+    return !isNaN(parsed) ? parsed : null;
+  }
+
+  convertLotTypeToId(lotTypeValue: string | null | undefined): number | null {
+    if (!lotTypeValue || !this.lotTypes || this.lotTypes.length === 0) return null;
+    // If it's already a number, return it
+    if (typeof lotTypeValue === 'number') return lotTypeValue;
+    // Find the lotType item by text value
+    const lotTypeItem = this.lotTypes.find((lt: any) => 
+      (lt.value && lt.value.toLowerCase() === lotTypeValue.toLowerCase()) ||
+      (lt.text && lt.text.toLowerCase() === lotTypeValue.toLowerCase())
+    );
+    // Return the ID if found, otherwise try to parse as number
+    if (lotTypeItem && lotTypeItem.id !== null && lotTypeItem.id !== undefined) {
+      return Number(lotTypeItem.id);
+    }
+    // Try to parse as number if it's a numeric string
+    const parsed = parseInt(lotTypeValue);
+    return !isNaN(parsed) ? parsed : null;
   }
 
   isAllRestrictedCountriesSelected(): boolean {
@@ -1806,6 +2282,44 @@ export class DeviceComponent implements OnInit {
               ];
               this.customerLabels = newLabels;
               console.log(`✓ Loaded customerLabels: ${this.customerLabels.length} items`, this.customerLabels.slice(0, 3));
+              
+              // Convert label names to IDs if they were stored temporarily
+              if ((this.deviceData as any).label1Name) {
+                const labelId = this.getLabelIdFromName((this.deviceData as any).label1Name);
+                if (labelId !== null) {
+                  this.deviceData.label1 = labelId;
+                }
+                delete (this.deviceData as any).label1Name;
+              }
+              if ((this.deviceData as any).label2Name) {
+                const labelId = this.getLabelIdFromName((this.deviceData as any).label2Name);
+                if (labelId !== null) {
+                  this.deviceData.label2 = labelId;
+                }
+                delete (this.deviceData as any).label2Name;
+              }
+              if ((this.deviceData as any).label3Name) {
+                const labelId = this.getLabelIdFromName((this.deviceData as any).label3Name);
+                if (labelId !== null) {
+                  this.deviceData.label3 = labelId;
+                }
+                delete (this.deviceData as any).label3Name;
+              }
+              if ((this.deviceData as any).label4Name) {
+                const labelId = this.getLabelIdFromName((this.deviceData as any).label4Name);
+                if (labelId !== null) {
+                  this.deviceData.label4 = labelId;
+                }
+                delete (this.deviceData as any).label4Name;
+              }
+              if ((this.deviceData as any).label5Name) {
+                const labelId = this.getLabelIdFromName((this.deviceData as any).label5Name);
+                if (labelId !== null) {
+                  this.deviceData.label5 = labelId;
+                }
+                delete (this.deviceData as any).label5Name;
+              }
+              
               this.cdr.detectChanges();
               resolve();
             } else {
@@ -1904,6 +2418,15 @@ export class DeviceComponent implements OnInit {
     if (!labelId || !this.customerLabels || this.customerLabels.length === 0) return '';
     const label = this.customerLabels.find(l => l.id === labelId);
     return label ? label.name : '';
+  }
+
+  getLabelIdFromName(labelName: string | null | undefined): number | null {
+    if (!labelName || !this.customerLabels || this.customerLabels.length === 0) return null;
+    const label = this.customerLabels.find(l => 
+      (l.name && l.name.toLowerCase() === labelName.toLowerCase()) ||
+      (l.name && l.name === labelName)
+    );
+    return label && label.id !== null ? Number(label.id) : null;
   }
 
   onLabel1Change(value: any): void {
