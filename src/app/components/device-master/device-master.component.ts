@@ -9,13 +9,12 @@ import { filter } from 'rxjs/operators';
   standalone: false
 })
 export class DeviceMasterComponent implements OnInit {
-  public selectedTabIndex: number = 0; // 0 = Device Family, 1 = Device
+  public selectedTabIndex: number = 0;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute
   ) {
-    // Listen to route changes to update selected tab
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
@@ -29,22 +28,16 @@ export class DeviceMasterComponent implements OnInit {
 
   private updateSelectedTab(): void {
     const url = this.router.url;
-    if (url.includes('/devicemaster/device')) {
-      this.selectedTabIndex = 1;
-    } else {
-      this.selectedTabIndex = 0; // Default to Device Family
-    }
+    this.selectedTabIndex = url.includes('/devicemaster/device') ? 1 : 0;
   }
 
   onTabSelect(event: any): void {
-    // Handle both event object and direct index
     const index = (event && typeof event === 'object' && 'index' in event) ? event.index : event;
     this.selectedTabIndex = typeof index === 'number' ? index : 0;
     
-    if (this.selectedTabIndex === 0) {
-      this.router.navigate(['/devicemaster/device-family']);
-    } else if (this.selectedTabIndex === 1) {
-      this.router.navigate(['/devicemaster/device']);
+    const routes = ['/devicemaster/device-family', '/devicemaster/device'];
+    if (this.selectedTabIndex >= 0 && this.selectedTabIndex < routes.length) {
+      this.router.navigate([routes[this.selectedTabIndex]]);
     }
   }
 }

@@ -79,7 +79,7 @@
         [kendoDropDownFilter]="filterSettings"
         [allowCustom]="false"
         [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
-        [disabled]="isEditMode"
+        [disabled]="false"
         placeholder="Select or type to search customer..."
         class="w-100">
         <ng-template kendoComboBoxNoDataTemplate>
@@ -92,7 +92,7 @@
         placeholder="Enter Device Family Name" class="w-100" [readonly]="isViewMode" />
     </kendo-label>
     <kendo-label text="Active" class="k-font-size-sm">
-      <kendo-switch [(ngModel)]="deviceFamilyData.isActive" [disabled]="!isEditMode || isViewMode"></kendo-switch>
+      <kendo-switch [(ngModel)]="deviceFamilyData.isActive" [disabled]="isViewMode || !isEditMode"></kendo-switch>
     </kendo-label>
     <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3" *ngIf="!isViewMode">
       <button kendoButton (click)="closeDialog()">Cancel</button>

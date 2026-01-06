@@ -773,7 +773,33 @@ export class ApiService {
   }
     return this.httpClient.get(url);
   }
-getShippingAddressData(
+  getRestrictedCountries() {
+    return this.httpClient.get(`${API}v1/ise/devicemaster/restrictedcountries`);
+  }
+
+  getCustomerLabelList(customerName: string): Observable<any[]> {
+    const params = customerName ? `?customerName=${encodeURIComponent(customerName)}` : '';
+    return this.httpClient.get<any[]>(`${API}v1/ise/devicemaster/customerlabels${params}`);
+  }
+
+  getLabelDetails(customerId: number, deviceId: number, labelName: string, lotNum?: string): Observable<any[]> {
+    let params = `?customerId=${customerId}&deviceId=${deviceId}&labelName=${encodeURIComponent(labelName)}`;
+    if (lotNum) {
+      params += `&lotNum=${encodeURIComponent(lotNum)}`;
+    }
+    return this.httpClient.get<any[]>(`${API}v1/ise/devicemaster/labeldetails${params}`);
+  }
+
+  saveLabelDetails(customerId: number, deviceId: number, labelName: string, input: string): Observable<number> {
+    return this.httpClient.post<number>(`${API}v1/ise/devicemaster/labeldetails`, {
+      customerId: customerId,
+      deviceId: deviceId,
+      labelName: labelName,
+      input: input
+    });
+  }
+
+  getShippingAddressData(
   customerId: number| null,
   isBilling: boolean,
   vendorId: number | null,
@@ -1067,6 +1093,11 @@ getShippingAddressData(
   getDeviceAlias(customerId: number, deviceFamilyId: number, deviceId: number): Observable<any[]> {
     let url = `${API}v1/ise/inventory/splitmerge/getDeviceAlias?customerId=${customerId}&deviceFamilyId=${deviceFamilyId}&deviceId=${deviceId}`;
     return this.httpClient.get<any[]>(url);
+  }
+
+  getDeviceInfo(deviceId: number): Observable<any> {
+    let url = `${API}v1/ise/devicemaster/device/getDeviceInfo?deviceId=${deviceId}`;
+    return this.httpClient.get<any>(url);
   }
 
   getLotOwners(): Observable<any[]> {
