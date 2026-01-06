@@ -29,6 +29,7 @@ export class DeviceFamilyComponent implements OnInit {
   public isDialogOpen = false;
   public isEditMode = false;
   public isViewMode = false;
+  public originalIsActive: boolean = true; // Track original active state for validation (matching TFS pActive)
   public deviceFamilyData: any = {
     deviceFamilyId: -1,
     deviceFamilyName: '',
@@ -322,6 +323,8 @@ export class DeviceFamilyComponent implements OnInit {
         customerID: dataItem.customerID,
         isActive: dataItem.active
       };
+      // Track original active state for validation (matching TFS pActive)
+      this.originalIsActive = this.deviceFamilyData.isActive;
       this.isEditMode = true;
       this.isViewMode = false;
       this.isDialogOpen = true;
@@ -337,6 +340,8 @@ export class DeviceFamilyComponent implements OnInit {
         customerID: dataItem.customerID,
         isActive: dataItem.active
       };
+      // Track original active state for validation (matching TFS pActive)
+      this.originalIsActive = this.deviceFamilyData.isActive;
       this.isEditMode = false;
       this.isViewMode = true;
       this.isDialogOpen = true;
@@ -348,11 +353,12 @@ export class DeviceFamilyComponent implements OnInit {
     // Kendo combobox in dialog needs a stable property reference
     this.customersList = [...this.customers]; // Create a new array reference
     
+    this.originalIsActive = true; // Reset original active state for Add mode
     this.deviceFamilyData = {
       deviceFamilyId: -1,
       deviceFamilyName: '',
       customerID: null,
-      isActive: true
+      isActive: true // In Add mode, always true (matching TFS behavior - checkbox is disabled but checked)
     };
     this.isEditMode = false;
     this.isViewMode = false;
@@ -373,6 +379,7 @@ export class DeviceFamilyComponent implements OnInit {
   closeDialog(): void {
     this.isDialogOpen = false;
     this.isViewMode = false;
+    this.originalIsActive = true; // Reset original active state
     this.deviceFamilyData = {
       deviceFamilyId: -1,
       deviceFamilyName: '',
@@ -381,17 +388,50 @@ export class DeviceFamilyComponent implements OnInit {
     };
   }
 
+  validateDeviceFamily(): boolean {
+    // Matching TFS Validation() method (line 167)
+    let isValid = true;
+    const errorMessages: string[] = [];
+
+    // Customer validation (matching TFS line 174-184)
+    if (!this.deviceFamilyData.customerID || this.deviceFamilyData.customerID === -1 || this.deviceFamilyData.customerID === null) {
+      errorMessages.push('Please Select Customer.');
+    }
+
+    // Device Family Name validation (matching TFS line 185-195)
+    if (!this.deviceFamilyData.deviceFamilyName || this.deviceFamilyData.deviceFamilyName.trim() === '') {
+      errorMessages.push('Please Enter Device Family.');
+    }
+
+    // Inactive record validation (matching TFS line 196)
+    // TFS checks: pMode.ToLower().Contains("edit") && !chkactive.IsChecked && !pActive
+    // This means: in Edit mode, if checkbox is unchecked AND original was inactive
+    if (this.isEditMode && !this.deviceFamilyData.isActive && !this.originalIsActive) {
+      errorMessages.push("Inactive record can't be modified.");
+    }
+
+    // Show all error messages
+    if (errorMessages.length > 0) {
+      const errorMessage = errorMessages.join('\n');
+      this.showNotification(errorMessage, 'error');
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
   saveDeviceFamily(): void {
-    if (!this.deviceFamilyData.deviceFamilyName || !this.deviceFamilyData.customerID) {
-      this.showNotification('Please fill in all required fields', 'warning');
-      return;
+    // Comprehensive validation matching TFS Validation() method
+    if (!this.validateDeviceFamily()) {
+      return; // Validation failed, error messages already shown
     }
 
     const request = {
       deviceFamilyId: this.deviceFamilyData.deviceFamilyId,
       deviceFamilyName: this.deviceFamilyData.deviceFamilyName,
       customerID: this.deviceFamilyData.customerID,
-      isActive: this.deviceFamilyData.isActive,
+      // In Add mode, always set isActive to true (matching TFS line 134: else objtemp.isActive = true)
+      isActive: this.isEditMode ? this.deviceFamilyData.isActive : true,
       createdBy: 0 // Backend will override this from token, but sending 0 for now
     };
 

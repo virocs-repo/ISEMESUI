@@ -32,17 +32,15 @@ export class DeviceComponent implements OnInit {
   public customersList: any[] = []; // For dialog dropdown
   
   // Dropdown data for form fields
-  public partTypes: any[] = [{ value: 'N/A', text: 'N/A' }];
-  public lotTypes: any[] = [
-    { value: 'Standard', text: 'Standard' },
-    { value: 'Non-Standard', text: 'Non-Standard' }
-  ];
+  public partTypes: any[] = [];
+  public lotTypes: any[] = [];
   public countriesOfOrigin: any[] = [];
   public materialDescriptions: any[] = [];
   public usHtsCodes: any[] = [];
   public eccns: any[] = [];
   public licenseExceptions: any[] = [];
   public restrictedCountries: any[] = [];
+  public customerLabels: any[] = []; // For Label1-Label5 dropdowns
   public msls: any[] = [];
   public peakPackageBodyTemperatures: any[] = [];
   public shelfLifeMonths: any[] = [];
@@ -55,6 +53,45 @@ export class DeviceComponent implements OnInit {
   public isDialogOpen = false;
   public isEditMode = false;
   public isViewMode = false;
+  public isLabelDetailsDialogOpen = false;
+  public labelDetailsData: any[] = [];
+  public currentLabelName: string = '';
+  public labelTypeOptions: any[] = ['--Select--', 'Text', 'Database', 'Constant', 'Customer Service']; // Common label types with --Select-- first (matching TFS)
+  public labelValueOptions: any[] = ['--Select--']; // Will be loaded based on selected type - start with --Select-- (matching TFS)
+  public labelDetailsGridHeight: number = 0; // Auto-calculated height for compact grid
+  public canEdit: boolean = true; // Track if device can be edited (from GetDeviceInfo)
+  public canEditlotType: boolean = true; // Track if lot type can be edited (from GetDeviceInfo)
+  public canEditLabel1: boolean = true; // Track if label1 can be edited (from GetDeviceInfo)
+  public canEditLabel2: boolean = true; // Track if label2 can be edited (from GetDeviceInfo)
+  public canEditLabel3: boolean = true; // Track if label3 can be edited (from GetDeviceInfo)
+  public canEditLabel4: boolean = true; // Track if label4 can be edited (from GetDeviceInfo)
+  public canEditLabel5: boolean = true; // Track if label5 can be edited (from GetDeviceInfo)
+  public lastModifiedOn: string = ''; // Track last modified timestamp for optimistic locking
+  public lockId: number = -1; // Track lock ID for optimistic locking
+  public isDeviceInfoDialogOpen = false; // Track DeviceInfo dialog state
+  public originalIsActive: boolean = true; // Track original active state for validation (matching TFS pActive)
+  
+  // Security feature flags (matching TFS EnableDisableBasedOnSecurity)
+  public deviceEditEnabled: boolean = true; // EditDeviceDetails feature
+  public labelEditEnabled: boolean = true; // EditLabels feature
+  
+  // Label dictionary for format string generation (matching TFS dicLabels)
+  public labelDictionary: Map<string, string> = new Map<string, string>();
+  public deviceInfoData: any = {
+    canEdit: true,
+    canEditlotType: true,
+    canEditLabel1: true,
+    canEditLabel2: true,
+    canEditLabel3: true,
+    canEditLabel4: true,
+    canEditLabel5: true,
+    lastModifiedOn: '',
+    dqp: [] as any[],
+    mf: [] as any[],
+    trv: [] as any[],
+    boards: [] as any[],
+    deviceLabelInfo: [] as any[]
+  };
   public deviceData: any = {
     deviceId: -1,
     deviceName: '',
@@ -70,6 +107,11 @@ export class DeviceComponent implements OnInit {
     partType: 'N/A',
     lotType: 'Standard',
     labelMapping: false,
+    label1: null,
+    label2: null,
+    label3: null,
+    label4: null,
+    label5: null,
     trayTubeMapping: 'Device',
     countryOfOriginId: null,
     unitCost: 0,
@@ -78,7 +120,7 @@ export class DeviceComponent implements OnInit {
     usHtsCodeId: null,
     eccnId: null,
     licenseExceptionId: null,
-    restrictedCountriesToShipId: null,
+    restrictedCountriesToShipIds: [] as number[],
     scheduleB: false,
     // Pack&Label Info
     mslId: null,
@@ -150,6 +192,23 @@ export class DeviceComponent implements OnInit {
   ngOnInit(): void {
     this.loadCustomers();
     this.loadGridData();
+    this.checkSecurityFeatures();
+  }
+
+  checkSecurityFeatures(): void {
+    // Matching TFS EnableDisableBasedOnSecurity() method (lines 667-696)
+    // Check EditDeviceDetails feature
+    const editDeviceFeature = this.appService.feature.find(f => f.featureName === 'EditDeviceDetails');
+    this.deviceEditEnabled = editDeviceFeature?.active ?? true; // Default to true if not found
+    
+    // Check EditLabels feature
+    const editLabelsFeature = this.appService.feature.find(f => f.featureName === 'EditLabels');
+    this.labelEditEnabled = editLabelsFeature?.active ?? true; // Default to true if not found
+    
+    console.log('Security features:', {
+      deviceEditEnabled: this.deviceEditEnabled,
+      labelEditEnabled: this.labelEditEnabled
+    });
   }
 
   loadCustomers(): void {
@@ -512,21 +571,289 @@ export class DeviceComponent implements OnInit {
       this.selectedRowIndex = -1;
       // Load dropdown data before opening dialog
       this.loadAllDropdownData();
+      
+      const deviceId = dataItem.deviceId || dataItem.DeviceId;
+      const customerId = dataItem.customerId || dataItem.CustomerId;
+      const deviceFamilyId = dataItem.deviceFamilyId || dataItem.DeviceFamilyId;
+      
+      // Initialize deviceData with all available fields from search result (matching TFS FillControls)
       this.deviceData = {
-        deviceId: dataItem.deviceId,
-        deviceName: dataItem.device,
-        deviceFamilyId: dataItem.deviceFamilyId,
-        customerID: dataItem.customerId,
-        isActive: dataItem.active
+        deviceId: deviceId,
+        deviceName: dataItem.device || dataItem.Device,
+        deviceFamilyId: deviceFamilyId,
+        customerID: customerId,
+        isActive: dataItem.active || dataItem.Active !== undefined ? (dataItem.active || dataItem.Active) : true,
+        testDevice: dataItem.testDevice || dataItem.TestDevice || '',
+        reliabilityDevice: dataItem.reliabilityDevice || dataItem.ReliabilityDevice || '',
+        aliasNames: [], // Will be loaded separately
+        newAliasName: '',
+        sku: dataItem.sku || dataItem.SKU || '',
+        partType: dataItem.partType || dataItem.PartType || dataItem.partTypeId || dataItem.PartTypeId || null,
+        lotType: dataItem.lotType || dataItem.LotType || dataItem.deviceTypeId || dataItem.DeviceTypeId || null,
+        labelMapping: dataItem.labelMapping !== undefined ? dataItem.labelMapping : (dataItem.isLabelMapped !== undefined ? dataItem.isLabelMapped : false),
+        trayTubeMapping: dataItem.trayTubeMapping || dataItem.TrayTubeMapping || (dataItem.isDeviceBasedTray !== undefined ? (dataItem.isDeviceBasedTray ? 'Device' : 'Lot') : 'Device'),
+        countryOfOriginId: dataItem.countryOfOriginId || dataItem.CountryOfOriginId || dataItem.cooId || dataItem.COOId || null,
+        unitCost: dataItem.unitCost !== undefined ? dataItem.unitCost : (dataItem.UnitCost !== undefined ? dataItem.UnitCost : 0),
+        materialDescriptionId: dataItem.materialDescriptionId || dataItem.MaterialDescriptionId || null,
+        usHtsCodeId: dataItem.usHtsCodeId || dataItem.USHTSCodeId || dataItem.usHtsCode || dataItem.USHTSCode || null,
+        eccnId: dataItem.eccnId || dataItem.ECCNId || dataItem.eccn || dataItem.ECCN || null,
+        licenseExceptionId: dataItem.licenseExceptionId || dataItem.LicenseExceptionId || dataItem.licenseExceptions || dataItem.LicenseExceptions || null,
+        restrictedCountriesToShipIds: this.parseRestrictedCountriesIds(dataItem.restrictedCountriesToShipId || dataItem.restrictedCountriesToShipIds || dataItem.restrictedCountriesIds || dataItem.RestrictedCountriesIds),
+        scheduleB: dataItem.scheduleB !== undefined ? dataItem.scheduleB : (dataItem.ScheduleB !== undefined ? dataItem.ScheduleB : false),
+        mslId: dataItem.mslId || dataItem.MSL || dataItem.msl || null,
+        peakPackageBodyTemperatureId: dataItem.peakPackageBodyTemperatureId || dataItem.PeakPackageBodyTemperatureId || dataItem.peakPacckageBody || dataItem.PeakPacckageBody || null,
+        shelfLifeMonthId: dataItem.shelfLifeMonthId || dataItem.ShelfLifeMonthId || dataItem.shelfLife || dataItem.ShelfLife || null,
+        floorLifeId: dataItem.floorLifeId || dataItem.FloorLifeId || dataItem.floorLife || dataItem.FloorLife || null,
+        pbFreeId: dataItem.pbFreeId || dataItem.PBFreeId || dataItem.pbFree || dataItem.PBFree || null,
+        pbFreeStickerId: dataItem.pbFreeStickerId || dataItem.PBFreeStickerId || dataItem.pbFreeSticker || dataItem.PBFreeSticker || null,
+        rohsId: dataItem.rohsId || dataItem.ROHSId || dataItem.rohs || dataItem.ROHS || null,
+        trayTubeStrappingId: dataItem.trayTubeStrappingId || dataItem.TrayTubeStrappingId || dataItem.trayStrapping || dataItem.TrayStrapping || null,
+        trayStackingId: dataItem.trayStackingId || dataItem.TrayStackingId || dataItem.trayStacking || dataItem.TrayStacking || null,
+        label1: dataItem.label1 ? Number(dataItem.label1) : null,
+        label2: dataItem.label2 ? Number(dataItem.label2) : null,
+        label3: dataItem.label3 ? Number(dataItem.label3) : null,
+        label4: dataItem.label4 ? Number(dataItem.label4) : null,
+        label5: dataItem.label5 ? Number(dataItem.label5) : null
       };
+      
+      // Track original active state for validation (matching TFS pActive)
+      this.originalIsActive = this.deviceData.isActive;
+      
       this.isEditMode = true;
       this.isViewMode = false;
-      this.isDialogOpen = true;
+      
       if (this.deviceData.customerID) {
         this.selectedCustomerID = this.deviceData.customerID;
         this.loadDeviceFamiliesForDialog();
       }
+      
+      // Load device info (matching TFS GetDevicefamilyDeviceInfo) - includes CanEdit flag and usage data
+      if (deviceId && deviceId > 0) {
+        this.apiService.getDeviceInfo(deviceId).subscribe({
+          next: (deviceInfo: any) => {
+            console.log('Device Info loaded for edit:', deviceInfo);
+            // Set CanEdit flag (matching TFS line 51: objtemp.CanEdit = UtilityClass.ToBoolean(ds.Tables[0].Rows[0]["CanEdit"]))
+            // Handle different possible response formats: canEdit, CanEdit, or from nested object
+            if (deviceInfo.canEdit !== undefined) {
+              this.canEdit = Boolean(deviceInfo.canEdit);
+            } else if (deviceInfo.CanEdit !== undefined) {
+              this.canEdit = Boolean(deviceInfo.CanEdit);
+            } else if (deviceInfo.deviceInfo && deviceInfo.deviceInfo.canEdit !== undefined) {
+              this.canEdit = Boolean(deviceInfo.deviceInfo.canEdit);
+            } else {
+              // Default to true if not found (device can be edited)
+              this.canEdit = true;
+            }
+            
+            // Set CanEditlotType flag (matching TFS line 78)
+            if (deviceInfo.canEditlotType !== undefined) {
+              this.canEditlotType = Boolean(deviceInfo.canEditlotType);
+            } else if (deviceInfo.CanEditlotType !== undefined) {
+              this.canEditlotType = Boolean(deviceInfo.CanEditlotType);
+            } else {
+              this.canEditlotType = true; // Default to true
+            }
+            
+            // Set CanEditLabel1-5 flags (matching TFS lines 73-77)
+            this.canEditLabel1 = deviceInfo.canEditLabel1 !== undefined ? Boolean(deviceInfo.canEditLabel1) : 
+                                (deviceInfo.CanEditLabel1 !== undefined ? Boolean(deviceInfo.CanEditLabel1) : true);
+            this.canEditLabel2 = deviceInfo.canEditLabel2 !== undefined ? Boolean(deviceInfo.canEditLabel2) : 
+                                (deviceInfo.CanEditLabel2 !== undefined ? Boolean(deviceInfo.CanEditLabel2) : true);
+            this.canEditLabel3 = deviceInfo.canEditLabel3 !== undefined ? Boolean(deviceInfo.canEditLabel3) : 
+                                (deviceInfo.CanEditLabel3 !== undefined ? Boolean(deviceInfo.CanEditLabel3) : true);
+            this.canEditLabel4 = deviceInfo.canEditLabel4 !== undefined ? Boolean(deviceInfo.canEditLabel4) : 
+                                (deviceInfo.CanEditLabel4 !== undefined ? Boolean(deviceInfo.CanEditLabel4) : true);
+            this.canEditLabel5 = deviceInfo.canEditLabel5 !== undefined ? Boolean(deviceInfo.canEditLabel5) : 
+                                (deviceInfo.CanEditLabel5 !== undefined ? Boolean(deviceInfo.CanEditLabel5) : true);
+            
+            // Set LastModifiedOn for optimistic locking (matching TFS line 76)
+            this.lastModifiedOn = deviceInfo.lastModifiedOn || deviceInfo.LastModifiedOn || '';
+            
+            console.log('canEdit set to:', this.canEdit, 'canEditlotType:', this.canEditlotType, 'isEditMode:', this.isEditMode);
+            console.log('canEditLabel flags:', {
+              label1: this.canEditLabel1,
+              label2: this.canEditLabel2,
+              label3: this.canEditLabel3,
+              label4: this.canEditLabel4,
+              label5: this.canEditLabel5
+            });
+            
+            // Store device info data for "Devices in Use" dialog
+            // API returns: DQP, MF, TRV, Boards, DeviceLabelInfo (matching TFS property names)
+            this.deviceInfoData = {
+              canEdit: this.canEdit,
+              canEditlotType: this.canEditlotType,
+              canEditLabel1: this.canEditLabel1,
+              canEditLabel2: this.canEditLabel2,
+              canEditLabel3: this.canEditLabel3,
+              canEditLabel4: this.canEditLabel4,
+              canEditLabel5: this.canEditLabel5,
+              lastModifiedOn: this.lastModifiedOn,
+              dqp: deviceInfo.DQP || deviceInfo.dqp || deviceInfo.lstDQP || [],
+              mf: deviceInfo.MF || deviceInfo.mf || deviceInfo.lstMF || [],
+              trv: deviceInfo.TRV || deviceInfo.trv || deviceInfo.lstTRV || [],
+              boards: deviceInfo.Boards || deviceInfo.boards || deviceInfo.lstBoards || [],
+              deviceLabelInfo: deviceInfo.DeviceLabelInfo || deviceInfo.deviceLabelInfo || deviceInfo.lstDeviceLabelInfo || []
+            };
+            console.log('Device Info Data:', this.deviceInfoData);
+            // Load alias names (matching TFS - loads from Table[7] via GetDevicefamilyDeviceInfo)
+            // In TFS, alias names come from objPRD_Devicefamily_DeviceBO.lstDeviceAliasNames
+            if (customerId && deviceFamilyId) {
+              this.loadDeviceAliasesForEdit(deviceId, customerId, deviceFamilyId);
+            } else {
+              this.deviceData.aliasNames = [];
+              this.openEditDialogAfterDataLoad();
+            }
+          },
+          error: (error) => {
+            console.error('Error loading device info:', error);
+            // Default to editable if API fails
+            this.canEdit = true;
+            this.canEditlotType = true;
+            this.canEditLabel1 = true;
+            this.canEditLabel2 = true;
+            this.canEditLabel3 = true;
+            this.canEditLabel4 = true;
+            this.canEditLabel5 = true;
+            this.lastModifiedOn = '';
+            this.deviceInfoData = {
+              canEdit: true,
+              canEditlotType: true,
+              canEditLabel1: true,
+              canEditLabel2: true,
+              canEditLabel3: true,
+              canEditLabel4: true,
+              canEditLabel5: true,
+              lastModifiedOn: '',
+              dqp: [],
+              mf: [],
+              trv: [],
+              boards: [],
+              deviceLabelInfo: []
+            };
+            // Still try to load aliases
+            if (customerId && deviceFamilyId) {
+              this.loadDeviceAliasesForEdit(deviceId, customerId, deviceFamilyId);
+            } else {
+              this.deviceData.aliasNames = [];
+              this.openEditDialogAfterDataLoad();
+            }
+          }
+        });
+      } else {
+        // New device - no device info to load
+        this.canEdit = true;
+        this.canEditlotType = true;
+        this.canEditLabel1 = true;
+        this.canEditLabel2 = true;
+        this.canEditLabel3 = true;
+        this.canEditLabel4 = true;
+        this.canEditLabel5 = true;
+        this.lastModifiedOn = '';
+        this.lockId = -1;
+        this.deviceInfoData = {
+          canEdit: true,
+          canEditlotType: true,
+          canEditLabel1: true,
+          canEditLabel2: true,
+          canEditLabel3: true,
+          canEditLabel4: true,
+          canEditLabel5: true,
+          lastModifiedOn: '',
+          dqp: [],
+          mf: [],
+          trv: [],
+          boards: [],
+          deviceLabelInfo: []
+        };
+        this.deviceData.aliasNames = [];
+        this.openEditDialogAfterDataLoad();
+      }
     }
+  }
+
+  private loadDeviceAliasesForEdit(deviceId: number, customerId: number, deviceFamilyId: number): void {
+    this.apiService.getDeviceAlias(customerId, deviceFamilyId, deviceId).subscribe({
+      next: (aliases: any[]) => {
+        console.log('Device Aliases loaded for edit:', aliases);
+        if (aliases && Array.isArray(aliases)) {
+          // Map alias names to string array (matching TFS - AliasName property)
+          // HTML template expects array of strings, not objects
+          this.deviceData.aliasNames = aliases
+            .map((alias: any) => alias.deviceAliasName || alias.DeviceAliasName || alias.aliasName || alias.AliasName || '')
+            .filter((aliasName: string) => aliasName && aliasName.trim() !== '');
+          console.log('Mapped alias names:', this.deviceData.aliasNames);
+        } else {
+          this.deviceData.aliasNames = [];
+        }
+        this.openEditDialogAfterDataLoad();
+      },
+      error: (error) => {
+        console.error('Error loading device aliases:', error);
+        this.deviceData.aliasNames = [];
+        this.openEditDialogAfterDataLoad();
+      }
+    });
+  }
+
+  private openEditDialogAfterDataLoad(): void {
+    // Auto-check label mapping if labels are selected but labelMapping is false (matching TFS line 539-542)
+    if (!this.deviceData.labelMapping && 
+        (this.deviceData.label1 || this.deviceData.label2 || this.deviceData.label3 || 
+         this.deviceData.label4 || this.deviceData.label5)) {
+      this.deviceData.labelMapping = true;
+      console.log('Auto-checked label mapping because labels are selected');
+    }
+    
+    // Fill label dictionary for format string generation (matching TFS FillLabelDictionary)
+    this.fillLabelDictionary();
+    
+    // Apply security feature restrictions (matching TFS EnableDisableBasedOnSecurity)
+    this.applySecurityRestrictions();
+    
+    // Load customer labels BEFORE opening dialog and setting values to ensure values bind correctly
+    if (this.deviceData.labelMapping && this.deviceData.customerID) {
+      this.loadCustomerLabels().then(() => {
+        // Labels are now loaded, values are already set in deviceData
+        // Open dialog after values are set
+        this.isDialogOpen = true;
+        // Force change detection after dialog opens to ensure dropdowns update
+        setTimeout(() => {
+          this.cdr.detectChanges();
+        }, 0);
+      });
+    } else {
+      // No labels needed, open dialog immediately
+      this.isDialogOpen = true;
+    }
+  }
+
+  private openViewDialogAfterDataLoad(): void {
+    // Fill label dictionary for format string generation
+    this.fillLabelDictionary();
+    
+    // Load customer labels BEFORE opening dialog and setting values to ensure values bind correctly
+    if (this.deviceData.labelMapping && this.deviceData.customerID) {
+      this.loadCustomerLabels().then(() => {
+        // Labels are now loaded, values are already set in deviceData
+        // Open dialog after values are set
+        this.isDialogOpen = true;
+        // Force change detection after dialog opens to ensure dropdowns update
+        setTimeout(() => {
+          this.cdr.detectChanges();
+        }, 0);
+      });
+    } else {
+      // No labels needed, open dialog immediately
+      this.isDialogOpen = true;
+    }
+  }
+
+  applySecurityRestrictions(): void {
+    // Matching TFS EnableDisableBasedOnSecurity() method (lines 667-696)
+    // This method is called after loading device info to apply security restrictions
+    // Note: In Angular, we handle this via [disabled] bindings in the template
+    // The flags are already set in checkSecurityFeatures() and deviceInfoData
   }
 
   onView(dataItem: any): void {
@@ -534,48 +861,190 @@ export class DeviceComponent implements OnInit {
       this.selectedRowIndex = -1;
       // Load dropdown data before opening dialog
       this.loadAllDropdownData();
+      
+      const deviceId = dataItem.deviceId || dataItem.DeviceId;
+      const customerId = dataItem.customerId || dataItem.CustomerId;
+      const deviceFamilyId = dataItem.deviceFamilyId || dataItem.DeviceFamilyId;
+      
+      // Initialize deviceData with all available fields from search result (matching TFS FillControls)
       this.deviceData = {
-        deviceId: dataItem.deviceId || dataItem.DeviceId,
+        deviceId: deviceId,
         deviceName: dataItem.device || dataItem.Device,
-        deviceFamilyId: dataItem.deviceFamilyId || dataItem.DeviceFamilyId,
-        customerID: dataItem.customerId || dataItem.CustomerId,
-        isActive: dataItem.active || dataItem.Active,
+        deviceFamilyId: deviceFamilyId,
+        customerID: customerId,
+        isActive: dataItem.active || dataItem.Active !== undefined ? (dataItem.active || dataItem.Active) : true,
         testDevice: dataItem.testDevice || dataItem.TestDevice || '',
         reliabilityDevice: dataItem.reliabilityDevice || dataItem.ReliabilityDevice || '',
-        aliasNames: dataItem.aliasNames || [],
+        aliasNames: [], // Will be loaded separately
         newAliasName: '',
         sku: dataItem.sku || dataItem.SKU || '',
-        partType: dataItem.partType || dataItem.PartType || 'N/A',
-        lotType: dataItem.lotType || dataItem.LotType || 'Standard',
-        labelMapping: dataItem.labelMapping || false,
-        trayTubeMapping: dataItem.trayTubeMapping || dataItem.TrayTubeMapping || 'Device',
-        countryOfOriginId: dataItem.countryOfOriginId || dataItem.CountryOfOriginId || null,
-        unitCost: dataItem.unitCost || dataItem.UnitCost || 0,
-        materialDescriptionId: dataItem.materialDescriptionId || null,
-        usHtsCodeId: dataItem.usHtsCodeId || null,
-        eccnId: dataItem.eccnId || null,
-        licenseExceptionId: dataItem.licenseExceptionId || null,
-        restrictedCountriesToShipId: dataItem.restrictedCountriesToShipId || null,
-        scheduleB: dataItem.scheduleB || false,
-        mslId: dataItem.mslId || null,
-        peakPackageBodyTemperatureId: dataItem.peakPackageBodyTemperatureId || null,
-        shelfLifeMonthId: dataItem.shelfLifeMonthId || null,
-        floorLifeId: dataItem.floorLifeId || null,
-        pbFreeId: dataItem.pbFreeId || null,
-        pbFreeStickerId: dataItem.pbFreeStickerId || null,
-        rohsId: dataItem.rohsId || null,
-        trayTubeStrappingId: dataItem.trayTubeStrappingId || null,
-        trayStackingId: dataItem.trayStackingId || null
+        partType: dataItem.partType || dataItem.PartType || dataItem.partTypeId || dataItem.PartTypeId || null,
+        lotType: dataItem.lotType || dataItem.LotType || dataItem.deviceTypeId || dataItem.DeviceTypeId || null,
+        labelMapping: dataItem.labelMapping !== undefined ? dataItem.labelMapping : (dataItem.isLabelMapped !== undefined ? dataItem.isLabelMapped : false),
+        trayTubeMapping: dataItem.trayTubeMapping || dataItem.TrayTubeMapping || (dataItem.isDeviceBasedTray !== undefined ? (dataItem.isDeviceBasedTray ? 'Device' : 'Lot') : 'Device'),
+        countryOfOriginId: dataItem.countryOfOriginId || dataItem.CountryOfOriginId || dataItem.cooId || dataItem.COOId || null,
+        unitCost: dataItem.unitCost !== undefined ? dataItem.unitCost : (dataItem.UnitCost !== undefined ? dataItem.UnitCost : 0),
+        materialDescriptionId: dataItem.materialDescriptionId || dataItem.MaterialDescriptionId || null,
+        usHtsCodeId: dataItem.usHtsCodeId || dataItem.USHTSCodeId || dataItem.usHtsCode || dataItem.USHTSCode || null,
+        eccnId: dataItem.eccnId || dataItem.ECCNId || dataItem.eccn || dataItem.ECCN || null,
+        licenseExceptionId: dataItem.licenseExceptionId || dataItem.LicenseExceptionId || dataItem.licenseExceptions || dataItem.LicenseExceptions || null,
+        restrictedCountriesToShipIds: this.parseRestrictedCountriesIds(dataItem.restrictedCountriesToShipId || dataItem.restrictedCountriesToShipIds || dataItem.restrictedCountriesIds || dataItem.RestrictedCountriesIds),
+        scheduleB: dataItem.scheduleB !== undefined ? dataItem.scheduleB : (dataItem.ScheduleB !== undefined ? dataItem.ScheduleB : false),
+        mslId: dataItem.mslId || dataItem.MSL || dataItem.msl || null,
+        peakPackageBodyTemperatureId: dataItem.peakPackageBodyTemperatureId || dataItem.PeakPackageBodyTemperatureId || dataItem.peakPacckageBody || dataItem.PeakPacckageBody || null,
+        shelfLifeMonthId: dataItem.shelfLifeMonthId || dataItem.ShelfLifeMonthId || dataItem.shelfLife || dataItem.ShelfLife || null,
+        floorLifeId: dataItem.floorLifeId || dataItem.FloorLifeId || dataItem.floorLife || dataItem.FloorLife || null,
+        pbFreeId: dataItem.pbFreeId || dataItem.PBFreeId || dataItem.pbFree || dataItem.PBFree || null,
+        pbFreeStickerId: dataItem.pbFreeStickerId || dataItem.PBFreeStickerId || dataItem.pbFreeSticker || dataItem.PBFreeSticker || null,
+        rohsId: dataItem.rohsId || dataItem.ROHSId || dataItem.rohs || dataItem.ROHS || null,
+        trayTubeStrappingId: dataItem.trayTubeStrappingId || dataItem.TrayTubeStrappingId || dataItem.trayStrapping || dataItem.TrayStrapping || null,
+        trayStackingId: dataItem.trayStackingId || dataItem.TrayStackingId || dataItem.trayStacking || dataItem.TrayStacking || null,
+        label1: dataItem.label1 ? Number(dataItem.label1) : null,
+        label2: dataItem.label2 ? Number(dataItem.label2) : null,
+        label3: dataItem.label3 ? Number(dataItem.label3) : null,
+        label4: dataItem.label4 ? Number(dataItem.label4) : null,
+        label5: dataItem.label5 ? Number(dataItem.label5) : null
       };
+      
+      // Track original active state for validation (matching TFS pActive)
+      this.originalIsActive = this.deviceData.isActive;
+      
       this.isEditMode = false;
       this.isViewMode = true;
-      this.isDialogOpen = true;
+      
       if (this.deviceData.customerID) {
         this.selectedCustomerID = this.deviceData.customerID;
         this.loadDeviceFamiliesForDialog();
       }
+      
+      // Load device info (matching TFS GetDevicefamilyDeviceInfo) - includes CanEdit flag and usage data
+      if (deviceId && deviceId > 0) {
+        this.apiService.getDeviceInfo(deviceId).subscribe({
+          next: (deviceInfo: any) => {
+            console.log('Device Info loaded for view:', deviceInfo);
+            // Set CanEdit flag (matching TFS line 51: objtemp.CanEdit = UtilityClass.ToBoolean(ds.Tables[0].Rows[0]["CanEdit"]))
+            // Handle different possible response formats: canEdit, CanEdit, or from nested object
+            if (deviceInfo.canEdit !== undefined) {
+              this.canEdit = Boolean(deviceInfo.canEdit);
+            } else if (deviceInfo.CanEdit !== undefined) {
+              this.canEdit = Boolean(deviceInfo.CanEdit);
+            } else if (deviceInfo.deviceInfo && deviceInfo.deviceInfo.canEdit !== undefined) {
+              this.canEdit = Boolean(deviceInfo.deviceInfo.canEdit);
+            } else {
+              // Default to true if not found (device can be edited)
+              this.canEdit = true;
+            }
+            console.log('canEdit set to:', this.canEdit);
+            // Store device info data for "Devices in Use" dialog
+            // API returns: DQP, MF, TRV, Boards, DeviceLabelInfo (matching TFS property names)
+            this.deviceInfoData = {
+              canEdit: this.canEdit,
+              dqp: deviceInfo.DQP || deviceInfo.dqp || deviceInfo.lstDQP || [],
+              mf: deviceInfo.MF || deviceInfo.mf || deviceInfo.lstMF || [],
+              trv: deviceInfo.TRV || deviceInfo.trv || deviceInfo.lstTRV || [],
+              boards: deviceInfo.Boards || deviceInfo.boards || deviceInfo.lstBoards || [],
+              deviceLabelInfo: deviceInfo.DeviceLabelInfo || deviceInfo.deviceLabelInfo || deviceInfo.lstDeviceLabelInfo || []
+            };
+            console.log('Device Info Data:', this.deviceInfoData);
+            // Load alias names (matching TFS - loads from Table[7] via GetDevicefamilyDeviceInfo)
+            // In TFS, alias names come from objPRD_Devicefamily_DeviceBO.lstDeviceAliasNames
+            if (customerId && deviceFamilyId) {
+              this.loadDeviceAliasesForView(deviceId, customerId, deviceFamilyId);
+            } else {
+              this.deviceData.aliasNames = [];
+              this.openViewDialogAfterDataLoad();
+            }
+          },
+          error: (error) => {
+            console.error('Error loading device info:', error);
+            // Default to editable if API fails
+            this.canEdit = true;
+            this.canEditlotType = true;
+            this.canEditLabel1 = true;
+            this.canEditLabel2 = true;
+            this.canEditLabel3 = true;
+            this.canEditLabel4 = true;
+            this.canEditLabel5 = true;
+            this.lastModifiedOn = '';
+            this.deviceInfoData = {
+              canEdit: true,
+              canEditlotType: true,
+              canEditLabel1: true,
+              canEditLabel2: true,
+              canEditLabel3: true,
+              canEditLabel4: true,
+              canEditLabel5: true,
+              lastModifiedOn: '',
+              dqp: [],
+              mf: [],
+              trv: [],
+              boards: [],
+              deviceLabelInfo: []
+            };
+            // Still try to load aliases
+            if (customerId && deviceFamilyId) {
+              this.loadDeviceAliasesForView(deviceId, customerId, deviceFamilyId);
+            } else {
+              this.deviceData.aliasNames = [];
+              this.openViewDialogAfterDataLoad();
+            }
+          }
+        });
+      } else {
+        // No device info to load
+        this.canEdit = true;
+        this.canEditlotType = true;
+        this.canEditLabel1 = true;
+        this.canEditLabel2 = true;
+        this.canEditLabel3 = true;
+        this.canEditLabel4 = true;
+        this.canEditLabel5 = true;
+        this.lastModifiedOn = '';
+        this.deviceInfoData = {
+          canEdit: true,
+          canEditlotType: true,
+          canEditLabel1: true,
+          canEditLabel2: true,
+          canEditLabel3: true,
+          canEditLabel4: true,
+          canEditLabel5: true,
+          lastModifiedOn: '',
+          dqp: [],
+          mf: [],
+          trv: [],
+          boards: [],
+          deviceLabelInfo: []
+        };
+        this.deviceData.aliasNames = [];
+        this.openViewDialogAfterDataLoad();
+      }
     }
   }
+
+  private loadDeviceAliasesForView(deviceId: number, customerId: number, deviceFamilyId: number): void {
+    this.apiService.getDeviceAlias(customerId, deviceFamilyId, deviceId).subscribe({
+      next: (aliases: any[]) => {
+        console.log('Device Aliases loaded for view:', aliases);
+        if (aliases && Array.isArray(aliases)) {
+          // Map alias names to string array (matching TFS - AliasName property)
+          // HTML template expects array of strings, not objects
+          this.deviceData.aliasNames = aliases
+            .map((alias: any) => alias.deviceAliasName || alias.DeviceAliasName || alias.aliasName || alias.AliasName || '')
+            .filter((aliasName: string) => aliasName && aliasName.trim() !== '');
+          console.log('Mapped alias names:', this.deviceData.aliasNames);
+        } else {
+          this.deviceData.aliasNames = [];
+        }
+        this.openViewDialogAfterDataLoad();
+      },
+      error: (error) => {
+        console.error('Error loading device aliases:', error);
+        this.deviceData.aliasNames = [];
+        this.openViewDialogAfterDataLoad();
+      }
+    });
+  }
+
 
   openAddDialog(): void {
     // Ensure customersList is populated from getter before opening dialog
@@ -590,12 +1059,13 @@ export class DeviceComponent implements OnInit {
       this.cdr.detectChanges();
     }, 0);
     
+    this.originalIsActive = true; // Reset original active state for Add mode
     this.deviceData = {
       deviceId: -1,
       deviceName: '',
       deviceFamilyId: null,
       customerID: null,
-      isActive: false,
+      isActive: true, // In Add mode, always true (matching TFS behavior - checkbox is disabled but checked)
       testDevice: '',
       reliabilityDevice: '',
       aliasNames: [],
@@ -604,6 +1074,11 @@ export class DeviceComponent implements OnInit {
       partType: 'N/A',
       lotType: 'Standard',
       labelMapping: false,
+      label1: null,
+      label2: null,
+      label3: null,
+      label4: null,
+      label5: null,
       trayTubeMapping: 'Device',
       countryOfOriginId: null,
       unitCost: 0,
@@ -611,7 +1086,7 @@ export class DeviceComponent implements OnInit {
       usHtsCodeId: null,
       eccnId: null,
       licenseExceptionId: null,
-      restrictedCountriesToShipId: null,
+      restrictedCountriesToShipIds: [] as number[],
       scheduleB: false,
       mslId: null,
       peakPackageBodyTemperatureId: null,
@@ -637,63 +1112,182 @@ export class DeviceComponent implements OnInit {
     // Load Country of Origin from masterData (matches pattern from other components)
     if (this.appService.masterData && this.appService.masterData.coo) {
       this.countriesOfOrigin = this.appService.masterData.coo.map((item: any) => ({
-        id: item.masterListItemId || item.MasterListItemId,
-        name: item.itemText || item.ItemText
+        id: item.serviceCategoryId || item.ServiceCategoryId || item.masterListItemId || item.MasterListItemId,
+        name: item.serviceCategoryName || item.ServiceCategoryName || item.itemText || item.ItemText
       }));
       console.log('Countries of Origin loaded:', this.countriesOfOrigin.length);
     } else {
       console.warn('masterData.coo not available');
     }
     
-    // Load all other dropdowns from master list API
-    // IMPORTANT: List names must match the MasterList table ListName column values in your database
-    // If you get 404 warnings, query your database: SELECT DISTINCT ListName FROM MasterList
-    // Then update the list names below to match your database values
+    // Load EAR Info dropdowns using getListItems API (PRD_Shipping_P_GetMasterListItems) - NO SPACES in list names
+    this.loadListItemsDropdown('MaterialDescription', 'materialDescriptions');
+    this.loadListItemsDropdown('USHTSCode', 'usHtsCodes');
+    this.loadListItemsDropdown('ECCN', 'eccns');
+    this.loadListItemsDropdown('LicenseType', 'licenseExceptions'); // Note: Original uses "LicenseType", not "LicenseException"
     
-    // TODO: Update these list names to match your MasterList table ListName values
-    // Common patterns to try if these don't work:
-    // - With spaces: "Material Description", "US HTS Code"
-    // - Different casing: "materialdescription", "MaterialDescription"
-    this.loadMasterListDropdown('MaterialDescription', 'materialDescriptions');
-    this.loadMasterListDropdown('USHTSCode', 'usHtsCodes');
-    this.loadMasterListDropdown('ECCN', 'eccns');
-    this.loadMasterListDropdown('LicenseException', 'licenseExceptions');
-    this.loadMasterListDropdown('RestrictedCountriesToShip', 'restrictedCountries');
+    // Load Restricted Countries - Original uses GetRestrictedCountries (tfsp_GetRestrictedCountries stored procedure)
+    // Note: This requires a separate API endpoint that doesn't exist yet. Using masterData.country as fallback for now.
+    this.loadRestrictedCountries();
+    
+    // Load Part Type using getMasterListItems API (PRD_P_GetMasterListItems) - same as Pack&Label Info
+    this.loadMasterListDropdown('PartType', 'partTypes');
+    
+    // Load Lot Type using getMasterListItems API (PRD_P_GetMasterListItems) - uses "DeviceType" list name
+    this.loadMasterListDropdown('DeviceType', 'lotTypes');
+    
+    // Load Pack&Label Info dropdowns using getMasterListItems API (PRD_P_GetMasterListItems)
     this.loadMasterListDropdown('MSL', 'msls');
-    this.loadMasterListDropdown('PeakPackageBodyTemperature', 'peakPackageBodyTemperatures');
-    this.loadMasterListDropdown('ShelfLifeMonth', 'shelfLifeMonths');
+    this.loadMasterListDropdown('PeakPackagebodytemperature', 'peakPackageBodyTemperatures'); // All lowercase in original
+    this.loadMasterListDropdown('ShelfLife', 'shelfLifeMonths'); // "ShelfLife", not "Shelf Life Month"
     this.loadMasterListDropdown('FloorLife', 'floorLives');
     this.loadMasterListDropdown('PBFree', 'pbFrees');
     this.loadMasterListDropdown('PBFreeSticker', 'pbFreeStickers');
     this.loadMasterListDropdown('ROHS', 'rohses');
-    this.loadMasterListDropdown('TrayTubeStrapping', 'trayTubeStrappings');
+    this.loadMasterListDropdown('TrayStrapping', 'trayTubeStrappings'); // "TrayStrapping", not "Tray/Tube Strapping"
     this.loadMasterListDropdown('TrayStacking', 'trayStackings');
   }
 
-  loadMasterListDropdown(listName: string, propertyName: string): void {
-    this.apiService.getMasterListItems(listName, null).subscribe({
+  loadServiceCategoryDropdown(listName: string, propertyName: string): void {
+    console.log(`Loading ServiceCategory for list: "${listName}" -> property: ${propertyName}`);
+    this.apiService.ServiceCategory(listName).subscribe({
       next: (data: any) => {
-        // API returns array directly with masterListItemId and itemText properties
+        console.log(`ServiceCategory API response for "${listName}":`, data);
+        // API returns ServiceCategory objects with ServiceCategoryId and ServiceCategoryName
+        // But also handle cases where it might return masterListItemId/itemText format
         if (data && Array.isArray(data) && data.length > 0) {
           const mappedData = data.map((item: any) => ({
-            id: item.masterListItemId || item.MasterListItemId || item.masterListItemID,
-            name: item.itemText || item.ItemText || item.itemtext
+            id: item.serviceCategoryId || item.ServiceCategoryId || item.masterListItemId || item.MasterListItemId,
+            name: item.serviceCategoryName || item.ServiceCategoryName || item.itemText || item.ItemText
           }));
           (this as any)[propertyName] = mappedData;
-          console.log(`✓ Loaded ${propertyName}: ${mappedData.length} items`);
+          console.log(`✓ Loaded ${propertyName} (${listName}): ${mappedData.length} items`, mappedData.slice(0, 3));
           // Trigger change detection after loading to update UI
           this.cdr.detectChanges();
         } else {
-          console.warn(`⚠ No data returned for list: ${listName}`);
+          console.warn(`⚠ No data returned for list: ${listName}`, data);
+          (this as any)[propertyName] = [];
         }
       },
       error: (error: any) => {
-        // 404 means list doesn't exist in database - silently handle it
-        // Dropdown will remain empty until the list is created in the database
-        if (error.status !== 404) {
-          console.error(`✗ Error loading '${listName}':`, error.status, error.message);
-        }
+        console.error(`✗ Error loading '${listName}':`, error.status, error.statusText, error.message, error);
         // Keep empty array on error - dropdown will remain empty
+        (this as any)[propertyName] = [];
+      }
+    });
+  }
+
+  loadListItemsDropdown(listName: string, propertyName: string): void {
+    console.log(`Loading ListItems (PRD_Shipping_P_GetMasterListItems) for list: "${listName}" -> property: ${propertyName}`);
+    this.apiService.getListItems(listName, null).subscribe({
+      next: (data: any) => {
+        console.log(`ListItems API response for "${listName}":`, data);
+        // API returns MasterListItem objects with masterListItemId and itemText
+        if (data && Array.isArray(data) && data.length > 0) {
+          const mappedData = data.map((item: any) => ({
+            id: item.masterListItemId || item.MasterListItemId,
+            name: item.itemText || item.ItemText
+          }));
+          (this as any)[propertyName] = mappedData;
+          console.log(`✓ Loaded ${propertyName} (${listName}): ${mappedData.length} items`, mappedData.slice(0, 3));
+          // Trigger change detection after loading to update UI
+          this.cdr.detectChanges();
+        } else {
+          console.warn(`⚠ No data returned for list: ${listName}`, data);
+          (this as any)[propertyName] = [];
+        }
+      },
+      error: (error: any) => {
+        console.error(`✗ Error loading '${listName}':`, error.status, error.statusText, error.message, error);
+        // Keep empty array on error - dropdown will remain empty
+        (this as any)[propertyName] = [];
+      }
+    });
+  }
+
+  loadMasterListDropdown(listName: string, propertyName: string): void {
+    console.log(`Loading MasterList (PRD_P_GetMasterListItems) for list: "${listName}" -> property: ${propertyName}`);
+    this.apiService.getMasterListItems(listName, null).subscribe({
+      next: (data: any) => {
+        console.log(`MasterList API response for "${listName}":`, data);
+        // API returns MasterList objects with masterListItemId and itemText
+        if (data && Array.isArray(data) && data.length > 0) {
+          let mappedData: any[];
+          
+          // For PartType and DeviceType (Lot Type), use {value, text} format to match current HTML binding (valuePrimitive="true")
+          if (listName === 'PartType') {
+            mappedData = data.map((item: any) => ({
+              value: item.itemText || item.ItemText,
+              text: item.itemText || item.ItemText
+            }));
+            // Add "N/A" as the first item (matching original TFS behavior)
+            mappedData.unshift({ value: 'N/A', text: 'N/A' });
+          } else if (listName === 'DeviceType') {
+            // For Lot Type (DeviceType), use {value, text} format to match API model which expects LotType as string
+            mappedData = data.map((item: any) => ({
+              value: item.itemText || item.ItemText,
+              text: item.itemText || item.ItemText
+            }));
+          } else {
+            // For other dropdowns, use {id, name} format
+            mappedData = data.map((item: any) => ({
+              id: item.masterListItemId || item.MasterListItemId,
+              name: item.itemText || item.ItemText
+            }));
+          }
+          
+          (this as any)[propertyName] = mappedData;
+          console.log(`✓ Loaded ${propertyName} (${listName}): ${mappedData.length} items`, mappedData.slice(0, 3));
+          // Trigger change detection after loading to update UI
+          this.cdr.detectChanges();
+        } else {
+          console.warn(`⚠ No data returned for list: ${listName}`, data);
+          // For PartType, at least include "N/A" option
+          if (listName === 'PartType') {
+            (this as any)[propertyName] = [{ value: 'N/A', text: 'N/A' }];
+          } else if (listName === 'DeviceType') {
+            // For Lot Type, include "Standard" as fallback (matching API default)
+            (this as any)[propertyName] = [{ value: 'Standard', text: 'Standard' }];
+          } else {
+            (this as any)[propertyName] = [];
+          }
+        }
+      },
+      error: (error: any) => {
+        console.error(`✗ Error loading '${listName}':`, error.status, error.statusText, error.message, error);
+        // For PartType, at least include "N/A" option on error
+        if (listName === 'PartType') {
+          (this as any)[propertyName] = [{ value: 'N/A', text: 'N/A' }];
+        } else if (listName === 'DeviceType') {
+          // For Lot Type, include "Standard" as fallback on error (matching API default)
+          (this as any)[propertyName] = [{ value: 'Standard', text: 'Standard' }];
+        } else {
+          (this as any)[propertyName] = [];
+        }
+      }
+    });
+  }
+
+  loadRestrictedCountries(): void {
+    console.log('Loading Restricted Countries (tfsp_GetRestrictedCountries)');
+    this.apiService.getRestrictedCountries().subscribe({
+      next: (data: any) => {
+        console.log('Restricted Countries API response:', data);
+        if (data && Array.isArray(data) && data.length > 0) {
+          this.restrictedCountries = data.map((item: any) => ({
+            id: item.countryID || item.CountryID,
+            name: item.countryName || item.CountryName
+          }));
+          console.log(`✓ Loaded restrictedCountries: ${this.restrictedCountries.length} items`, this.restrictedCountries.slice(0, 3));
+          this.cdr.detectChanges();
+        } else {
+          console.warn('⚠ No data returned for restricted countries', data);
+          this.restrictedCountries = [];
+        }
+      },
+      error: (error: any) => {
+        console.error('✗ Error loading restricted countries:', error.status, error.statusText, error.message, error);
+        this.restrictedCountries = [];
       }
     });
   }
@@ -722,6 +1316,7 @@ export class DeviceComponent implements OnInit {
   closeDialog(): void {
     this.isDialogOpen = false;
     this.isViewMode = false;
+    this.originalIsActive = true; // Reset original active state
     this.deviceData = {
       deviceId: -1,
       deviceName: '',
@@ -736,6 +1331,11 @@ export class DeviceComponent implements OnInit {
       partType: 'N/A',
       lotType: 'Standard',
       labelMapping: false,
+      label1: null,
+      label2: null,
+      label3: null,
+      label4: null,
+      label5: null,
       trayTubeMapping: 'Device',
       countryOfOriginId: null,
       unitCost: 0,
@@ -743,7 +1343,7 @@ export class DeviceComponent implements OnInit {
       usHtsCodeId: null,
       eccnId: null,
       licenseExceptionId: null,
-      restrictedCountriesToShipId: null,
+      restrictedCountriesToShipIds: [] as number[],
       scheduleB: false,
       mslId: null,
       peakPackageBodyTemperatureId: null,
@@ -763,6 +1363,16 @@ export class DeviceComponent implements OnInit {
     const selectedCustomerId = customerId !== undefined ? customerId : this.deviceData.customerID;
     if (selectedCustomerId) {
       this.loadDeviceFamiliesForDialog();
+      // Reload customer labels when customer changes if labelMapping is checked
+      if (this.deviceData.labelMapping) {
+        setTimeout(() => {
+          this.loadCustomerLabels().then(() => {
+            this.cdr.detectChanges();
+          });
+        }, 100);
+      }
+    } else {
+      this.customerLabels = [];
     }
   }
 
@@ -798,19 +1408,237 @@ export class DeviceComponent implements OnInit {
     });
   }
 
-  saveDevice(): void {
-    if (!this.deviceData.deviceName || !this.deviceData.deviceFamilyId || !this.deviceData.customerID || 
-        !this.deviceData.testDevice || !this.deviceData.reliabilityDevice || !this.deviceData.lotType) {
-      this.showNotification('Please fill in all required fields', 'warning');
-      return;
+  validateDevice(fromSave: boolean): boolean {
+    // Matching TFS Validation() method (line 567)
+    let isValid = true;
+    const errorMessages: string[] = [];
+
+    // Customer validation (matching TFS line 575-585)
+    if (!this.deviceData.customerID || this.deviceData.customerID === -1 || this.deviceData.customerID === null) {
+      errorMessages.push('Please Select Customer.');
     }
 
+    // Device Family validation (matching TFS line 586-596)
+    if (!this.deviceData.deviceFamilyId || this.deviceData.deviceFamilyId === -1 || this.deviceData.deviceFamilyId === null) {
+      errorMessages.push('Please Select Device Family.');
+    }
+
+    // Device Name validation (required field)
+    if (!this.deviceData.deviceName || this.deviceData.deviceName.trim() === '') {
+      errorMessages.push('Please Enter Device Name.');
+    }
+
+    // Test Device validation (matching TFS line 597-607)
+    if (!this.deviceData.testDevice || this.deviceData.testDevice.trim() === '') {
+      errorMessages.push('Please Enter Test Device.');
+    }
+
+    // Reliability Device validation (matching TFS line 608-618) - Note: TFS has typo "Reliabilty"
+    if (!this.deviceData.reliabilityDevice || this.deviceData.reliabilityDevice.trim() === '') {
+      errorMessages.push('Please Enter Reliabilty Device.');
+    }
+
+    // Lot Type validation (required field)
+    if (!this.deviceData.lotType || this.deviceData.lotType.trim() === '') {
+      errorMessages.push('Please Select Lot Type.');
+    }
+
+    // UnitCost validation (matching TFS line 619-643, 1268-1308)
+    const unitCostStr = this.deviceData.unitCost !== null && this.deviceData.unitCost !== undefined 
+      ? String(this.deviceData.unitCost) 
+      : '';
+    
+    if (!unitCostStr || unitCostStr.trim() === '') {
+      errorMessages.push('Please Enter Device UnitCost.');
+    } else {
+      // Validate decimal format (matching TFS line 624-643)
+      // Check if it's a valid number using regex (similar to ValidateScanParam)
+      const isValidNumber = /^-?\d*\.?\d+$/.test(unitCostStr.trim());
+      const unitCostValue = parseFloat(unitCostStr);
+      
+      if (!isValidNumber || isNaN(unitCostValue) || unitCostValue < 0) {
+        errorMessages.push('Please enter valid decimal values in Device UnitCost.');
+        this.deviceData.unitCost = 0;
+      } else {
+        // Check for empty decimal parts (e.g., "123." or ".456") - matching TFS line 630-641
+        const parts = unitCostStr.split('.');
+        if (parts.length > 2) {
+          errorMessages.push('Please enter valid decimal values in Device UnitCost.');
+        } else if (parts.length === 2) {
+          // Check if either part is empty or invalid after trim
+          const part0 = parts[0].trim();
+          const part1 = parts[1].trim();
+          if ((part0 === '' && part1 === '') || 
+              (part0 === '' && part1 !== '' && !/^\d+$/.test(part1)) ||
+              (part0 !== '' && !/^-?\d+$/.test(part0) && part1 !== '')) {
+            errorMessages.push('Please enter valid decimal values in Device UnitCost.');
+          }
+          
+          // Check maximum 16 decimal places (matching TFS line 1295)
+          if (part1.length > 16) {
+            errorMessages.push('Maximum 16 decimal values Allowed.');
+            this.deviceData.unitCost = 0;
+          }
+        }
+        
+        // Check maximum value: 9999999999.9999999 (matching TFS line 1300-1303)
+        if (unitCostValue >= 10000000000) {
+          errorMessages.push('Unit Value cannot be greater than 9999999999.9999999.');
+          this.deviceData.unitCost = 0;
+        }
+      }
+    }
+
+    // Inactive record validation (matching TFS line 644-645)
+    // TFS checks: pMode.ToLower().Contains("edit") && !chkactive.IsChecked && !pActive
+    // This means: in Edit mode, if checkbox is unchecked AND original was inactive
+    if (this.isEditMode && !this.deviceData.isActive && !this.originalIsActive) {
+      errorMessages.push("Inactive record can't be modified.");
+    }
+
+    // Label mapping validation (matching TFS line 647-653)
+    if (this.deviceData.labelMapping && fromSave) {
+      const labelValidation = this.validateLabels();
+      if (labelValidation.labelAlert) {
+        errorMessages.push(labelValidation.labelAlert);
+      }
+      if (labelValidation.duplicateLabels) {
+        errorMessages.push(`Please check the selected Labels ${labelValidation.duplicateLabels} are same.`);
+      }
+    }
+
+    // Show all error messages
+    if (errorMessages.length > 0) {
+      const errorMessage = errorMessages.join('\n');
+      this.showNotification(errorMessage, 'error');
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  validateLabels(): { labelAlert: string; duplicateLabels: string } {
+    // Matching TFS LabelValidations() method (line 1040)
+    let duplicateLabels = '';
+    let labelAlert = '';
+
+    const labels: { [key: string]: string } = {
+      Label1: this.deviceData.label1 ? this.getLabelDisplayText(this.deviceData.label1) : '',
+      Label2: this.deviceData.label2 ? this.getLabelDisplayText(this.deviceData.label2) : '',
+      Label3: this.deviceData.label3 ? this.getLabelDisplayText(this.deviceData.label3) : '',
+      Label4: this.deviceData.label4 ? this.getLabelDisplayText(this.deviceData.label4) : '',
+      Label5: this.deviceData.label5 ? this.getLabelDisplayText(this.deviceData.label5) : ''
+    };
+
+    // Check for duplicates (matching TFS line 1053-1107)
+    for (let i = 1; i <= 5; i++) {
+      const currentLabel = labels[`Label${i}`];
+      if (currentLabel && currentLabel !== '') {
+        for (let j = i + 1; j <= 5; j++) {
+          const compareLabel = labels[`Label${j}`];
+          if (compareLabel && compareLabel !== '' && currentLabel === compareLabel) {
+            const duplicatePair = `Label${i}&Label${j}`;
+            if (duplicateLabels === '') {
+              duplicateLabels = duplicatePair;
+            } else {
+              duplicateLabels += `,${duplicatePair}`;
+            }
+          }
+        }
+      }
+    }
+
+    // Check if at least one label is selected (matching TFS line 1109-1117)
+    const hasAnyLabel = labels['Label1'] !== '' || labels['Label2'] !== '' || 
+                       labels['Label3'] !== '' || labels['Label4'] !== '' || labels['Label5'] !== '';
+    if (!hasAnyLabel) {
+      labelAlert = 'Please Add atleast one Label.';
+    }
+
+    return { labelAlert, duplicateLabels };
+  }
+
+  validateAliasNames(): boolean {
+    // Matching TFS ValidateAliasNames() method (line 1203)
+    if (!this.deviceData.aliasNames || this.deviceData.aliasNames.length === 0) {
+      return true; // No aliases to validate
+    }
+
+    const errorMessages: string[] = [];
+
+    // Check maximum 10 alias names (matching TFS line 89-93)
+    if (this.deviceData.aliasNames.length > 10) {
+      errorMessages.push('Maximum 10 Alias Names Allowed!');
+      this.showNotification(errorMessages.join('\n'), 'error');
+      return false;
+    }
+
+    // Check for duplicate alias names (matching TFS line 1209)
+    const aliasCounts = new Map<string, number>();
+    this.deviceData.aliasNames.forEach((alias: string) => {
+      const trimmedAlias = alias.trim();
+      aliasCounts.set(trimmedAlias, (aliasCounts.get(trimmedAlias) || 0) + 1);
+    });
+
+    const duplicates = Array.from(aliasCounts.entries()).filter(([_, count]: [string, number]) => count > 1);
+    if (duplicates.length > 0) {
+      errorMessages.push('Duplicate Alias Names are not allowed');
+    }
+
+    // Validate each alias name (matching TFS line 1211-1221)
+    this.deviceData.aliasNames.forEach((alias: string, index: number) => {
+      if (!alias || alias.trim() === '') {
+        if (!errorMessages.some(msg => msg.includes('enter Device Alias Name'))) {
+          errorMessages.push('Please enter Device Alias Name');
+        }
+      } else {
+        const trimmedAlias = alias.trim();
+        if (trimmedAlias.includes(',') || trimmedAlias.includes('*')) {
+          if (!errorMessages.some(msg => msg.includes('Special characters'))) {
+            errorMessages.push('Special characters(, and *) are not allowed in Alias Name');
+          }
+        }
+      }
+    });
+
+    if (errorMessages.length > 0) {
+      const errorMessage = errorMessages.join('\n');
+      this.showNotification(errorMessage, 'error');
+      return false;
+    }
+
+    return true;
+  }
+
+  saveDevice(): void {
+    // Comprehensive validation matching TFS Validation() method
+    if (!this.validateDevice(true)) {
+      return; // Validation failed, error messages already shown
+    }
+
+    // Validate alias names (matching TFS ValidateAliasNames)
+    if (!this.validateAliasNames()) {
+      return; // Validation failed, error messages already shown
+    }
+
+    // Generate label format string if label mapping is enabled (matching TFS line 421)
+    let labelFormatString = '';
+    if (this.deviceData.labelMapping) {
+      labelFormatString = this.generateLabelFormatString();
+    }
+    
+    // Build label details list (matching TFS line 423)
+    const labelDetailsList: any[] = [];
+    // Note: In TFS, dicOfLabelDetails contains label details per label name
+    // For now, we'll send empty list as the label details are saved separately via saveLabelDetails
+    
     const request = {
       deviceId: this.deviceData.deviceId,
       deviceName: this.deviceData.deviceName,
       deviceFamilyId: this.deviceData.deviceFamilyId,
       customerID: this.deviceData.customerID,
-      isActive: this.deviceData.isActive,
+      // In Add mode, always set isActive to true (matching TFS behavior)
+      isActive: this.isEditMode ? this.deviceData.isActive : true,
       testDevice: this.deviceData.testDevice,
       reliabilityDevice: this.deviceData.reliabilityDevice,
       aliasNames: this.deviceData.aliasNames || [],
@@ -825,7 +1653,7 @@ export class DeviceComponent implements OnInit {
       usHtsCodeId: this.deviceData.usHtsCodeId,
       eccnId: this.deviceData.eccnId,
       licenseExceptionId: this.deviceData.licenseExceptionId,
-      restrictedCountriesToShipId: this.deviceData.restrictedCountriesToShipId,
+      restrictedCountriesToShipId: this.formatRestrictedCountriesIds(this.deviceData.restrictedCountriesToShipIds),
       scheduleB: this.deviceData.scheduleB,
       mslId: this.deviceData.mslId,
       peakPackageBodyTemperatureId: this.deviceData.peakPackageBodyTemperatureId,
@@ -836,6 +1664,12 @@ export class DeviceComponent implements OnInit {
       rohsId: this.deviceData.rohsId,
       trayTubeStrappingId: this.deviceData.trayTubeStrappingId,
       trayStackingId: this.deviceData.trayStackingId,
+      // Optimistic locking fields (matching TFS lines 438-439)
+      lockId: this.isEditMode ? (this.lockId !== -1 ? this.lockId : null) : null,
+      lastModifiedOn: this.isEditMode ? (this.lastModifiedOn || null) : null,
+      // Label fields (matching TFS lines 421-423)
+      labels: labelFormatString,
+      lstLabelDetails: labelDetailsList,
       createdBy: 0 // Will be set by backend from token
     };
 
@@ -877,6 +1711,717 @@ export class DeviceComponent implements OnInit {
     return item ? item[textField] : '';
   }
 
+  getRestrictedCountriesDisplayText(): string {
+    if (!this.deviceData.restrictedCountriesToShipIds || this.deviceData.restrictedCountriesToShipIds.length === 0) {
+      return '';
+    }
+    const selectedCountries = this.restrictedCountries.filter(country => 
+      this.deviceData.restrictedCountriesToShipIds.includes(country.id)
+    );
+    return selectedCountries.map(country => country.name).join(', ');
+  }
+
+  parseRestrictedCountriesIds(value: any): number[] {
+    if (!value) return [];
+    if (Array.isArray(value)) return value;
+    // If it's a comma-separated string (from API), parse it
+    if (typeof value === 'string') {
+      return value.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+    }
+    // If it's a single number (legacy), convert to array
+    if (typeof value === 'number') {
+      return [value];
+    }
+    return [];
+  }
+
+  formatRestrictedCountriesIds(ids: number[]): string | null {
+    if (!ids || ids.length === 0) return null;
+    return ids.join(',');
+  }
+
+  isAllRestrictedCountriesSelected(): boolean {
+    if (!this.restrictedCountries || this.restrictedCountries.length === 0) return false;
+    if (!this.deviceData.restrictedCountriesToShipIds || this.deviceData.restrictedCountriesToShipIds.length === 0) return false;
+    return this.deviceData.restrictedCountriesToShipIds.length === this.restrictedCountries.length;
+  }
+
+  toggleSelectAllRestrictedCountries(event?: any): void {
+    if (!this.restrictedCountries || this.restrictedCountries.length === 0) return;
+    
+    const isChecked = event ? event.target.checked : !this.isAllRestrictedCountriesSelected();
+    
+    if (isChecked) {
+      // Select all countries
+      this.deviceData.restrictedCountriesToShipIds = this.restrictedCountries.map(country => country.id);
+    } else {
+      // Deselect all countries
+      this.deviceData.restrictedCountriesToShipIds = [];
+    }
+    
+    // Trigger change detection
+    this.cdr.detectChanges();
+  }
+
+  onLabelMappingChange(): void {
+    if (!this.deviceData.labelMapping) {
+      // Clear label values when unchecked
+      this.deviceData.label1 = null;
+      this.deviceData.label2 = null;
+      this.deviceData.label3 = null;
+      this.deviceData.label4 = null;
+      this.deviceData.label5 = null;
+    } else {
+      // Load customer labels when checked
+      this.loadCustomerLabels().then(() => {
+        this.cdr.detectChanges();
+      });
+    }
+  }
+
+  loadCustomerLabels(): Promise<void> {
+    return new Promise((resolve) => {
+    if (this.deviceData.customerID) {
+      // Get customer name from customersList (used in dialog)
+      const customer = this.customersList.find((c: any) => 
+        c.id === this.deviceData.customerID || 
+        c.CustomerID === this.deviceData.customerID ||
+        c.customerID === this.deviceData.customerID
+      );
+      if (customer) {
+        const customerName = customer.CustomerName || customer.customerName || customer.name || customer.Name || '';
+        console.log('Loading customer labels for customerID:', this.deviceData.customerID, 'customerName:', customerName);
+        console.log('Customer object:', customer);
+        this.apiService.getCustomerLabelList(customerName).subscribe({
+          next: (data: any) => {
+            console.log('Customer Labels API response:', data);
+            if (data && Array.isArray(data) && data.length > 0) {
+              // Add --Select-- as first option - create new array to ensure reference change triggers update
+              const newLabels = [
+                { id: null, name: '--Select--' },
+                ...data.map((item: any) => ({
+                  id: Number(item.lID || item.LID),
+                  name: item.lName || item.LName
+                }))
+              ];
+              this.customerLabels = newLabels;
+              console.log(`✓ Loaded customerLabels: ${this.customerLabels.length} items`, this.customerLabels.slice(0, 3));
+              this.cdr.detectChanges();
+              resolve();
+            } else {
+              console.warn('⚠ No data returned for customer labels', data);
+              this.customerLabels = [{ id: null, name: '--Select--' }];
+              this.cdr.detectChanges();
+              resolve();
+            }
+          },
+            error: (error: any) => {
+              console.error('✗ Error loading customer labels:', error.status, error.statusText, error.message, error);
+              this.customerLabels = [{ id: null, name: '--Select--' }];
+              this.cdr.detectChanges();
+              resolve();
+            }
+        });
+      } else {
+        console.warn('⚠ Customer not found for customerID:', this.deviceData.customerID, 'customersList length:', this.customersList?.length);
+        // Try loading all labels if customer not found
+        this.apiService.getCustomerLabelList('').subscribe({
+          next: (data: any) => {
+            console.log('Customer Labels API response (fallback - all):', data);
+            if (data && Array.isArray(data) && data.length > 0) {
+              // Add --Select-- as first option - create new array to ensure reference change triggers update
+              const newLabels = [
+                { id: null, name: '--Select--' },
+                ...data.map((item: any) => ({
+                  id: Number(item.lID || item.LID),
+                  name: item.lName || item.LName
+                }))
+              ];
+              this.customerLabels = newLabels;
+              console.log(`✓ Loaded customerLabels (fallback): ${this.customerLabels.length} items`);
+              setTimeout(() => {
+                this.cdr.detectChanges();
+              }, 0);
+              resolve();
+            } else {
+              this.customerLabels = [{ id: null, name: '--Select--' }];
+              this.cdr.detectChanges();
+              resolve();
+            }
+          },
+          error: (error: any) => {
+            console.error('✗ Error loading customer labels (fallback):', error);
+            this.customerLabels = [{ id: null, name: '--Select--' }];
+            setTimeout(() => {
+              this.cdr.detectChanges();
+            }, 0);
+            resolve();
+          }
+        });
+      }
+    } else {
+      // Load all labels if no customer selected (empty string)
+      console.log('Loading all customer labels (no customer selected)');
+      this.apiService.getCustomerLabelList('').subscribe({
+        next: (data: any) => {
+          console.log('Customer Labels API response (all):', data);
+            if (data && Array.isArray(data) && data.length > 0) {
+              // Add --Select-- as first option - create new array to ensure reference change triggers update
+              const newLabels = [
+                { id: null, name: '--Select--' },
+                ...data.map((item: any) => ({
+                  id: Number(item.lID || item.LID),
+                  name: item.lName || item.LName
+                }))
+              ];
+              this.customerLabels = newLabels;
+              console.log(`✓ Loaded customerLabels: ${this.customerLabels.length} items`);
+              setTimeout(() => {
+                this.cdr.detectChanges();
+              }, 0);
+              resolve();
+            } else {
+              console.warn('⚠ No data returned for customer labels (all)');
+              this.customerLabels = [{ id: null, name: '--Select--' }];
+              this.cdr.detectChanges();
+              resolve();
+            }
+          },
+          error: (error: any) => {
+            console.error('✗ Error loading customer labels:', error);
+            this.customerLabels = [{ id: null, name: '--Select--' }];
+            setTimeout(() => {
+              this.cdr.detectChanges();
+            }, 0);
+            resolve();
+          }
+        });
+      }
+    });
+  }
+
+  getLabelDisplayText(labelId: number | null): string {
+    if (!labelId || !this.customerLabels || this.customerLabels.length === 0) return '';
+    const label = this.customerLabels.find(l => l.id === labelId);
+    return label ? label.name : '';
+  }
+
+  onLabel1Change(value: any): void {
+    // Ensure value is stored as number to match ID type
+    this.deviceData.label1 = value !== null && value !== undefined ? Number(value) : null;
+  }
+
+  onLabel2Change(value: any): void {
+    // Ensure value is stored as number to match ID type
+    this.deviceData.label2 = value !== null && value !== undefined ? Number(value) : null;
+  }
+
+  onLabel3Change(value: any): void {
+    // Ensure value is stored as number to match ID type
+    this.deviceData.label3 = value !== null && value !== undefined ? Number(value) : null;
+  }
+
+  onLabel4Change(value: any): void {
+    // Ensure value is stored as number to match ID type
+    this.deviceData.label4 = value !== null && value !== undefined ? Number(value) : null;
+  }
+
+  onLabel5Change(value: any): void {
+    // Ensure value is stored as number to match ID type
+    this.deviceData.label5 = value !== null && value !== undefined ? Number(value) : null;
+  }
+
+  openLabelDetails(labelNumber: number): void {
+    // Validate required fields first (same as TFS Validation(false) method)
+    const missingFields: string[] = [];
+    
+    if (!this.deviceData.customerID) {
+      missingFields.push('Customer');
+    }
+    if (!this.deviceData.deviceFamilyId) {
+      missingFields.push('Device Family');
+    }
+    if (!this.deviceData.testDevice || this.deviceData.testDevice.trim() === '') {
+      missingFields.push('Test Device');
+    }
+    if (!this.deviceData.reliabilityDevice || this.deviceData.reliabilityDevice.trim() === '') {
+      missingFields.push('Reliability Device');
+    }
+    
+    if (missingFields.length > 0) {
+      const errorMessage = missingFields.length === 1 
+        ? `Please ${missingFields[0] === 'Customer' || missingFields[0] === 'Device Family' ? 'Select' : 'Enter'} ${missingFields[0]}.`
+        : `Please complete the following required fields: ${missingFields.join(', ')}.`;
+      this.showNotification(errorMessage, 'error');
+      return;
+    }
+
+    // Get the selected label NAME (text) from dropdown, not ID - matching TFS FindLabelId() method
+    // Use the same check as isLabelSelected to ensure consistency
+    // Force change detection first to ensure values are up to date
+    this.cdr.detectChanges();
+    
+    // Re-check after change detection
+    if (!this.isLabelSelected(labelNumber)) {
+      console.error(`Label${labelNumber} not selected after change detection:`, {
+        labelId: this.getLabelIdByNumber(labelNumber),
+        deviceData: this.deviceData[`label${labelNumber}`]
+      });
+      this.showNotification(`Please select Label${labelNumber}.`, 'error');
+      return;
+    }
+    
+    const labelId = this.getLabelIdByNumber(labelNumber);
+    
+    // Check if customerLabels is loaded
+    if (!this.customerLabels || this.customerLabels.length === 0) {
+      // Reload customer labels and then retry
+      this.loadCustomerLabels().then(() => {
+        setTimeout(() => {
+          this.openLabelDetails(labelNumber);
+        }, 100);
+      });
+      return;
+    }
+    
+    // Find the label by ID to get the name (matching TFS FindLabelId which gets text from dropdown)
+    const selectedLabel = this.customerLabels.find(l => {
+      const labelIdNum = l.id !== null && l.id !== undefined ? Number(l.id) : null;
+      const searchIdNum = Number(labelId);
+      return labelIdNum === searchIdNum;
+    });
+    
+    // If not found, try string comparison as fallback
+    if (!selectedLabel) {
+      const fallbackLabel = this.customerLabels.find(l => String(l.id) === String(labelId));
+      if (fallbackLabel) {
+        const labelName = fallbackLabel.name;
+        if (labelName && labelName.trim() !== '' && labelName !== '--Select--') {
+          console.log(`Opening label details dialog for Label${labelNumber}: ${labelName}`);
+          this.currentLabelName = labelName;
+          this.loadLabelDetails(labelName);
+          return;
+        }
+      }
+      
+      this.showNotification(`Label${labelNumber} not found. Please select a valid label.`, 'error');
+      return;
+    }
+    
+    // Get label name (text) - matching TFS which uses dropdown text, not ID
+    const labelName = selectedLabel.name;
+    
+    if (!labelName || labelName.trim() === '' || labelName === '--Select--') {
+      this.showNotification(`Please select Label${labelNumber}.`, 'error');
+      return;
+    }
+    
+    console.log(`Opening label details dialog for Label${labelNumber}: ${labelName}`);
+    
+    // Open the label details dialog - pass label name (text) like TFS does
+    this.currentLabelName = labelName;
+    this.loadLabelDetails(labelName);
+  }
+
+  loadLabelDetails(labelName: string): void {
+    if (!this.deviceData.customerID) {
+      this.showNotification('Error: Customer is required to load label details', 'error');
+      return;
+    }
+    if (!labelName || labelName.trim() === '') {
+      this.showNotification('Error: Label name is required to load label details', 'error');
+      return;
+    }
+
+    const customerId = this.deviceData.customerID;
+    // In Add mode, deviceId is -1, but API repository converts deviceId <= 0 to DBNull.Value
+    // For new devices, explicitly convert -1 to 0 to avoid potential server issues
+    // The repository code checks: deviceId > 0 ? deviceId : DBNull.Value
+    let deviceId: number;
+    if (this.deviceData.deviceId && this.deviceData.deviceId > 0) {
+      deviceId = this.deviceData.deviceId;
+    } else {
+      deviceId = 0; // API repository will convert 0 to DBNull.Value for new devices
+    }
+    console.log('Loading label details for:', {
+      labelName: labelName,
+      customerId: customerId,
+      deviceId: deviceId,
+      originalDeviceId: this.deviceData.deviceId,
+      testDevice: this.deviceData.testDevice
+    });
+    
+    this.apiService.getLabelDetails(customerId, deviceId, labelName, '').subscribe({
+      next: (data: any) => {
+        console.log('Label Details API response:', data);
+        
+        // Handle new response structure: { labelDetails: [], ldValues: [] }
+        // or legacy array structure for backward compatibility
+        let labelDetailsArray: any[] = [];
+        let ldValuesArray: any[] = [];
+        
+        if (data) {
+          if (data.labelDetails && Array.isArray(data.labelDetails)) {
+            // New response structure
+            labelDetailsArray = data.labelDetails;
+            ldValuesArray = data.ldValues || data.LDValues || [];
+          } else if (Array.isArray(data)) {
+            // Legacy array structure (backward compatibility)
+            labelDetailsArray = data;
+          }
+        }
+        
+        if (labelDetailsArray && labelDetailsArray.length > 0) {
+          // Convert LDValues to simple string array for dropdown (matching TFS)
+          // API already includes "--Select--" as first item (LDValueId = 0), so extract all values
+          const allValues = ldValuesArray.map((lv: any) => lv.ldValue || lv.LDValue || '').filter((v: string) => v !== '');
+          
+          // Remove any duplicate "--Select--" entries and ensure it's first (only once)
+          const valuesWithoutSelect = allValues.filter((v: string) => v !== '--Select--');
+          const ldValuesForDropdown = ['--Select--', ...valuesWithoutSelect];
+          
+          this.labelDetailsData = labelDetailsArray.map((item: any) => {
+            // Initialize Type dropdown with "--Select--" if empty (matching TFS behavior)
+            let ldType = item.ldType || item.LDType || '';
+            if (!ldType || ldType.trim() === '') {
+              ldType = '--Select--';
+            }
+            
+            // Initialize ImageVisible with "--Select--" if empty (for rohs/e1 fields)
+            let imageVisible = item.imageVisible || item.ImageVisible || '';
+            if (!imageVisible || imageVisible.trim() === '') {
+              imageVisible = '--Select--';
+            }
+            
+            // Value should be initially empty (not "--Select--") - matching TFS requirement
+            let ldValue = item.ldValue || item.LDValue || '';
+            let ldText = item.ldText || item.LDText || '';
+            
+            // Determine visibility based on LDType (matching TFS BO logic)
+            let cmbvisibility = 'Collapsed';
+            let txtvisibility = 'Collapsed';
+            let isEdit = item.isEdit !== undefined ? item.isEdit : (item.IsEdit !== undefined ? item.IsEdit : false);
+            
+            if (ldType && ldType !== '--Select--') {
+              if (ldType === 'Constant') {
+                // Constant -> show textbox
+                txtvisibility = 'Visible';
+                cmbvisibility = 'Collapsed';
+                isEdit = false;
+              } else if (ldType === 'Database') {
+                // Database -> show combobox
+                txtvisibility = 'Collapsed';
+                cmbvisibility = 'Visible';
+                isEdit = true;
+              } else {
+                // Other types -> show nothing
+                txtvisibility = 'Collapsed';
+                cmbvisibility = 'Collapsed';
+                isEdit = true;
+              }
+            }
+            
+            return {
+              labelId: item.labelId || item.LabelId || 0,
+              lfName: item.lfName || item.LFName || '',
+              ldType: ldType,
+              ldText: ldText, // Initially empty
+              ldValue: ldValue, // Initially empty (will be populated when Database is selected)
+              imageVisible: imageVisible,
+              isEnable: item.isEnable !== undefined ? item.isEnable : (item.IsEnable !== undefined ? item.IsEnable : true),
+              isEdit: isEdit,
+              cmbvisibility: cmbvisibility,
+              txtvisibility: txtvisibility,
+              ldTypecmbvisibility: item.ldTypecmbvisibility || item.LdTypecmbvisibility || 'Visible',
+              imgcmbvisibility: item.imgcmbvisibility || item.Imgcmbvisibility || 'Collapsed',
+              ldTypeId: item.ldTypeId || item.LDTypeId || 0,
+              // Store LDValues list for Database type (loaded from API response Table[2])
+              // All items share the same LDValues list (matching TFS: lst[0].lstPrd_LDValues)
+              // API already includes "--Select--" as first item, so use as-is
+              ldValuesList: ldValuesForDropdown
+            };
+          });
+          
+          // Store LDValues globally for use when Type changes to Database
+          this.labelValueOptions = ldValuesForDropdown;
+          
+          console.log(`✓ Loaded labelDetailsData: ${this.labelDetailsData.length} items`);
+          // Calculate grid height: header (22px) + rows (22px each) + border (2px)
+          this.labelDetailsGridHeight = 22 + (this.labelDetailsData.length * 22) + 2;
+          this.isLabelDetailsDialogOpen = true;
+          this.cdr.detectChanges();
+        } else {
+          console.warn('⚠ No data returned for label details');
+          this.labelDetailsData = [];
+          this.labelDetailsGridHeight = 24; // Just header + border
+          this.labelValueOptions = ['--Select--']; // Reset to default
+          this.isLabelDetailsDialogOpen = true;
+          this.cdr.detectChanges();
+        }
+      },
+      error: (error: any) => {
+        console.error('✗ Error loading label details:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          error: error,
+          url: error.url,
+          customerId: customerId,
+          deviceId: deviceId,
+          labelName: labelName
+        });
+        
+        // Show more specific error message
+        let errorMessage = 'Error loading label details';
+        if (error.status === 404) {
+          errorMessage = 'Label details not found. Please verify the label name and try again.';
+        } else if (error.status === 400) {
+          errorMessage = 'Invalid request. Please check that all required fields are filled.';
+        } else if (error.status === 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else if (error.message) {
+          errorMessage = `Error loading label details: ${error.message}`;
+        }
+        
+        this.showNotification(errorMessage, 'error');
+        this.labelDetailsData = [];
+        this.labelDetailsGridHeight = 24;
+      }
+    });
+  }
+
+  closeLabelDetailsDialog(): void {
+    this.isLabelDetailsDialogOpen = false;
+    this.labelDetailsData = [];
+    this.currentLabelName = '';
+    this.labelDetailsGridHeight = 0;
+  }
+
+  saveLabelDetails(): void {
+    // Validate first (matching TFS Validation() method)
+    if (!this.validateLabelDetails()) {
+      return; // Validation failed, error message already shown
+    }
+
+    // For Device screen, format and save (matching TFS btnSave_Click)
+    // Note: TFS code shows the save is commented out, but we'll implement it
+    if (!this.deviceData.customerID || !this.currentLabelName) {
+      this.showNotification('Error: Missing required data to save label details', 'error');
+      return;
+    }
+    
+    // For new devices, deviceId may be 0 or -1, which is valid
+    const deviceId = this.deviceData.deviceId && this.deviceData.deviceId > 0 ? this.deviceData.deviceId : 0;
+
+    // Format the input string similar to TFS FillInputs method
+    // Format: "LFName|LDType|Value@LFName|LDType|Value@"
+    const inputString = this.fillInputs(true);
+    
+    if (!inputString) {
+      this.showNotification('Error: No label data to save', 'error');
+      return;
+    }
+
+    console.log('Saving label details with input:', inputString);
+    this.apiService.saveLabelDetails(this.deviceData.customerID, deviceId, this.currentLabelName, inputString).subscribe({
+      next: (result: number) => {
+        if (result >= 0) {
+          this.showNotification('Label details saved successfully', 'success');
+          this.closeLabelDetailsDialog();
+        } else {
+          this.showNotification('Error saving label details to database', 'error');
+        }
+      },
+      error: (error: any) => {
+        console.error('✗ Error saving label details:', error);
+        this.showNotification('Error saving label details: ' + (error.message || 'Unknown error'), 'error');
+      }
+    });
+  }
+
+  validateLabelDetails(): boolean {
+    // Matching TFS Validation() method
+    let isValid = true;
+    let errorMessage = '';
+
+    for (const lab of this.labelDetailsData) {
+      if (lab.lfName?.toLowerCase() === 'rohs' || lab.lfName?.toLowerCase() === 'e1') {
+        // For rohs/e1, check ImageVisible
+        if (!lab.imageVisible || lab.imageVisible.trim() === '' || lab.imageVisible.includes('--Select--')) {
+          errorMessage = `Please select the Field Type for: ${lab.lfName}`;
+          isValid = false;
+          break;
+        }
+      } else {
+        // For other fields, check LDType
+        if (!lab.ldType || lab.ldType.trim() === '' || lab.ldType.includes('--Select--')) {
+          errorMessage = `Please select the Field Type for: ${lab.lfName}`;
+          isValid = false;
+          break;
+        } else if (lab.ldType && !lab.ldType.includes('--Select--') && lab.ldType.toLowerCase() === 'database') {
+          // If type is Database, check LDValue
+          if (!lab.ldValue || lab.ldValue.trim() === '' || lab.ldValue.includes('--Select--')) {
+            errorMessage = `Please select a Database Value for: ${lab.lfName}`;
+            isValid = false;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!isValid && errorMessage) {
+      this.showNotification(errorMessage, 'error');
+    }
+
+    return isValid;
+  }
+
+  fillInputs(isLabelDataMapped: boolean): string {
+    // Matching TFS FillInputs method
+    let inputString = '';
+
+    if (!isLabelDataMapped) {
+      return inputString;
+    }
+
+    for (const item of this.labelDetailsData) {
+      let strLDType = '';
+      
+      // For rohs/e1, use ImageVisible; otherwise use LDType (or ImageVisible if LDType contains "Select")
+      if (item.lfName?.toLowerCase() === 'rohs' || item.lfName?.toLowerCase() === 'e1') {
+        strLDType = item.imageVisible || '';
+      } else {
+        strLDType = (item.ldType?.includes('Select') || !item.ldType) ? (item.imageVisible || '') : (item.ldType || '');
+      }
+
+      let value = '';
+      // For Device screen (PlotNumber is empty), use Database value if type is Database, otherwise use Text
+      // Note: PlotNumber is not used in Device screen, so we use the Device logic
+      if (item.ldType === 'Database') {
+        value = item.ldValue || '';
+      } else {
+        value = item.ldText || '';
+      }
+      
+      // Remove "Select" from value if present (matching TFS)
+      if (value.includes('Select')) {
+        value = '';
+      }
+
+      // Build input string: "LFName|LDType|Value@"
+      if (inputString === '') {
+        if (value !== '') {
+          inputString = `${item.lfName}|${strLDType}|${value}@`;
+        } else {
+          inputString = `${item.lfName}|${strLDType}|@`;
+        }
+      } else {
+        if (value !== '') {
+          inputString = `${inputString}${item.lfName}|${strLDType}|${value}@`;
+        } else {
+          inputString = `${inputString}${item.lfName}|${strLDType}|@`;
+        }
+      }
+    }
+
+    return inputString;
+  }
+
+  fillLabelDictionary(): void {
+    // Matching TFS FillLabelDictionary() method (lines 1027-1038)
+    this.labelDictionary.clear();
+    
+    // Get label names from dropdowns (using label IDs to get names)
+    const label1Name = this.deviceData.label1 ? this.getLabelDisplayText(this.deviceData.label1) : '';
+    const label2Name = this.deviceData.label2 ? this.getLabelDisplayText(this.deviceData.label2) : '';
+    const label3Name = this.deviceData.label3 ? this.getLabelDisplayText(this.deviceData.label3) : '';
+    const label4Name = this.deviceData.label4 ? this.getLabelDisplayText(this.deviceData.label4) : '';
+    const label5Name = this.deviceData.label5 ? this.getLabelDisplayText(this.deviceData.label5) : '';
+    
+    this.labelDictionary.set('Label1', label1Name);
+    this.labelDictionary.set('Label2', label2Name);
+    this.labelDictionary.set('Label3', label3Name);
+    this.labelDictionary.set('Label4', label4Name);
+    this.labelDictionary.set('Label5', label5Name);
+  }
+
+  generateLabelFormatString(): string {
+    // Matching TFS LabelFormateString() method (lines 983-1001)
+    let labelFormatString = '';
+    
+    // Fill label dictionary first
+    this.fillLabelDictionary();
+    
+    // Get current label names from dropdowns
+    const currentLabels: { [key: string]: string } = {
+      Label1: this.deviceData.label1 ? this.getLabelDisplayText(this.deviceData.label1) : '',
+      Label2: this.deviceData.label2 ? this.getLabelDisplayText(this.deviceData.label2) : '',
+      Label3: this.deviceData.label3 ? this.getLabelDisplayText(this.deviceData.label3) : '',
+      Label4: this.deviceData.label4 ? this.getLabelDisplayText(this.deviceData.label4) : '',
+      Label5: this.deviceData.label5 ? this.getLabelDisplayText(this.deviceData.label5) : ''
+    };
+    
+    let i = 1;
+    for (const [key, originalLabelName] of this.labelDictionary.entries()) {
+      const currentLabelName = currentLabels[key] || '';
+      
+      // Matching TFS logic: compare original with current and format accordingly
+      if (i === 1 && originalLabelName !== currentLabels['Label1']) {
+        labelFormatString = this.formatLabelString(currentLabels['Label1'], originalLabelName, labelFormatString);
+      } else if (i === 2 && originalLabelName !== currentLabels['Label2']) {
+        labelFormatString = this.formatLabelString(currentLabels['Label2'], originalLabelName, labelFormatString);
+      } else if (i === 3 && originalLabelName !== currentLabels['Label3']) {
+        labelFormatString = this.formatLabelString(currentLabels['Label3'], originalLabelName, labelFormatString);
+      } else if (i === 4 && originalLabelName !== currentLabels['Label4']) {
+        labelFormatString = this.formatLabelString(currentLabels['Label4'], originalLabelName, labelFormatString);
+      } else if (i === 5 && originalLabelName !== currentLabels['Label5']) {
+        labelFormatString = this.formatLabelString(currentLabels['Label5'], originalLabelName, labelFormatString);
+      }
+      i++;
+    }
+    
+    return labelFormatString;
+  }
+
+  private formatLabelString(str: string, originalLabelName: string, currentFormatString: string): string {
+    // Matching TFS FormateString() method (lines 1003-1025)
+    try {
+      if (originalLabelName !== '' && str !== '') {
+        if (!currentFormatString.includes(originalLabelName + '|')) {
+          currentFormatString = currentFormatString + originalLabelName + '|0@' + str + '|1@';
+        } else {
+          currentFormatString = currentFormatString + str + '|1@';
+        }
+      } else if (originalLabelName !== '' && str === '') {
+        if (!currentFormatString.includes(originalLabelName + '|')) {
+          currentFormatString = currentFormatString + originalLabelName + '|0@';
+        }
+      } else if (originalLabelName === '' && str !== '') {
+        currentFormatString = currentFormatString + str + '|1@';
+      }
+    } catch (error) {
+      console.error('Error formatting label string:', error);
+    }
+    return currentFormatString;
+  }
+
+  getLabelIdByNumber(labelNumber: number): number | null {
+    switch (labelNumber) {
+      case 1: return this.deviceData.label1;
+      case 2: return this.deviceData.label2;
+      case 3: return this.deviceData.label3;
+      case 4: return this.deviceData.label4;
+      case 5: return this.deviceData.label5;
+      default: return null;
+    }
+  }
+
+  isLabelSelected(labelNumber: number): boolean {
+    const labelId = this.getLabelIdByNumber(labelNumber);
+    // Label is selected if it's not null, not undefined, and not 0 (--Select-- has id: null)
+    return labelId !== null && labelId !== undefined && labelId !== 0;
+  }
+
   showNotification(message: string, type: 'success' | 'error' | 'warning' | 'info'): void {
     this.notificationService.show({
       content: message,
@@ -884,6 +2429,156 @@ export class DeviceComponent implements OnInit {
       position: { horizontal: 'right', vertical: 'top' },
       animation: { type: 'fade', duration: 400 }
     });
+  }
+
+  onLabelTypeChange(dataItem: any, newType: string): void {
+    // Update visibility based on selected Type (matching TFS BO logic)
+    if (newType === 'Constant') {
+      // Constant -> show textbox
+      dataItem.txtvisibility = 'Visible';
+      dataItem.cmbvisibility = 'Collapsed';
+      dataItem.isEdit = false;
+      // Clear value when switching to Constant
+      dataItem.ldValue = '';
+    } else if (newType === 'Database') {
+      // Database -> show combobox
+      dataItem.txtvisibility = 'Collapsed';
+      dataItem.cmbvisibility = 'Visible';
+      dataItem.isEdit = true;
+      // Clear text when switching to Database
+      dataItem.ldText = '';
+      // Ensure LDValues list is available (use global labelValueOptions loaded from API)
+      if (!dataItem.ldValuesList || dataItem.ldValuesList.length <= 1) {
+        dataItem.ldValuesList = this.labelValueOptions.length > 1 
+          ? [...this.labelValueOptions] 
+          : ['--Select--'];
+      }
+    } else {
+      // Other types -> show nothing
+      dataItem.txtvisibility = 'Collapsed';
+      dataItem.cmbvisibility = 'Collapsed';
+      dataItem.isEdit = true;
+      // Clear both values
+      dataItem.ldText = '';
+      dataItem.ldValue = '';
+    }
+    
+    // Force change detection to update UI
+    this.cdr.detectChanges();
+  }
+
+  onTestDeviceChange(newValue: string): void {
+    // Matching TFS txttestDevice_TextChanged behavior
+    // In Add mode, copy Test Device text to Reliability Device
+    // TFS logic: if (txttestDevice.Text.Trim() != string.Empty && pMode.ToLower().Contains("add"))
+    //            { txtRelDevice.Text = txttestDevice.Text; }
+    //            else if (pMode.ToLower().Contains("add")) { txtRelDevice.Text = string.Empty; }
+    
+    // Check if we're in Add mode (not Edit and not View)
+    const isAddMode = !this.isEditMode && !this.isViewMode;
+    
+    if (isAddMode) {
+      const testDeviceValue = newValue || this.deviceData.testDevice || '';
+      if (testDeviceValue.trim() !== '') {
+        // Copy Test Device to Reliability Device
+        this.deviceData.reliabilityDevice = testDeviceValue;
+      } else {
+        // If Test Device is cleared, clear Reliability Device too
+        this.deviceData.reliabilityDevice = '';
+      }
+    }
+  }
+
+  onUnitCostChange(newValue: string | number): void {
+    // Matching TFS txtUnitCost_TextChanged behavior (lines 1268-1308)
+    // Real-time validation for UnitCost
+    const unitCostStr = newValue !== null && newValue !== undefined ? String(newValue) : '';
+    
+    if (unitCostStr === '' || unitCostStr.trim() === '') {
+      return; // Allow empty, will be validated on save
+    }
+    
+    // Check for multiple decimal points
+    if (unitCostStr.includes('.')) {
+      const parts = unitCostStr.split('.');
+      if (parts.length > 2) {
+        this.showNotification('Please enter valid UnitCost.', 'error');
+        this.deviceData.unitCost = 0;
+        return;
+      }
+      
+      // Check decimal part length (max 16 decimals)
+      if (parts.length === 2 && parts[1].length > 16) {
+        this.showNotification('Maximum 16 decimal values Allowed.', 'error');
+        this.deviceData.unitCost = 0;
+        return;
+      }
+    }
+    
+    // Validate format
+    const isValidNumber = /^-?\d*\.?\d+$/.test(unitCostStr.trim());
+    if (!isValidNumber) {
+      this.showNotification('Please enter valid UnitCost.', 'error');
+      this.deviceData.unitCost = 0;
+      return;
+    }
+    
+    const unitCostValue = parseFloat(unitCostStr);
+    
+    // Check maximum value: 9999999999.9999999
+    if (unitCostValue >= 10000000000) {
+      this.showNotification('Unit Value cannot be greater than 9999999999.9999999.', 'error');
+      this.deviceData.unitCost = 0;
+      return;
+    }
+    
+    // Check negative values
+    if (unitCostValue < 0) {
+      this.showNotification('Please enter valid UnitCost.', 'error');
+      this.deviceData.unitCost = 0;
+      return;
+    }
+  }
+
+  openDeviceInfoDialog(): void {
+    // Matching TFS hypLink_Click - opens DeviceInfo dialog
+    this.isDeviceInfoDialogOpen = true;
+  }
+
+  closeDeviceInfoDialog(): void {
+    this.isDeviceInfoDialogOpen = false;
+  }
+
+  getGridColumns(data: any[]): any[] {
+    // Dynamically generate columns based on data structure (matching TFS DeviceInfo grid binding)
+    if (!data || data.length === 0) {
+      return [];
+    }
+    
+    const firstItem = data[0];
+    const columns: any[] = [];
+    
+    // Get all keys from the first item
+    Object.keys(firstItem).forEach(key => {
+      // Skip internal Angular properties
+      if (!key.startsWith('_') && !key.startsWith('$')) {
+        columns.push({
+          field: key,
+          title: this.formatColumnTitle(key),
+          width: 150
+        });
+      }
+    });
+    
+    return columns;
+  }
+
+  private formatColumnTitle(key: string): string {
+    // Convert camelCase/PascalCase to Title Case
+    return key
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase())
+      .trim();
   }
 }
 
