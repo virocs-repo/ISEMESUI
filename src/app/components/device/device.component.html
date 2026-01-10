@@ -578,10 +578,10 @@
   title="Label Details"
   class="dialog-round label-details-dialog">
   <div class="k-p-2" style="background-color: #bccbd4;">
-    <!-- Label Name Display (matching TFS) -->
+    <!-- Label Name Display (shows which label combo box triggered the dialog) -->
     <div style="margin-bottom: 10px; display: flex; align-items: center; height: 30px;">
-      <div style="font-size: 11px; font-family: Verdana; color: black; font-weight: normal; margin-right: 5px; text-align: right; min-width: 60px;">
-        Label :
+      <div style="font-size: 11px; font-family: Verdana; color: black; font-weight: normal; margin-right: 5px; text-align: right; min-width: 70px;">
+        Label{{ currentLabelNumber > 0 ? currentLabelNumber : '' }} :
       </div>
       <div style="border: 1px solid #ccc; padding: 2px 4px; background: white; flex: 1; font-size: 11px; font-family: Verdana; color: black; vertical-align: center; min-height: 20px; display: flex; align-items: center;">
         {{ currentLabelName }}
@@ -614,7 +614,7 @@
             </kendo-dropdownlist>
             <kendo-dropdownlist
               *ngIf="dataItem.imgcmbvisibility === 'Visible'"
-              [data]="['--Select--', 'Image1', 'Image2', 'Image3']"
+              [data]="dataItem.packAndLabelImagesList || ['--Select--', 'Image1', 'Image2', 'Image3']"
               [(ngModel)]="dataItem.imageVisible"
               [disabled]="!dataItem.isEnable || dataItem.isEdit"
               style="width: 100%; font-size: 11px; height: 20px; border: none;">
@@ -660,12 +660,7 @@
   [height]="'95%'"
   title="Device Info"
   class="dialog-round">
-  <div class="k-d-flex k-align-items-center k-mb-2">
-    <h2 class="k-m-0 k-font-size-lg">Device Info</h2>
-    <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
-      (click)="closeDeviceInfoDialog()"></button>
-  </div>
-  <div class="k-d-flex k-flex-column k-gap-3 k-p-2 dialog-scrollable-content" style="max-height: calc(95vh - 120px); overflow-y: auto;">
+  <div class="k-p-2" style="background-color: #bccbd4; max-height: calc(95vh - 120px); overflow-y: auto;">
     
     <!-- DQP Section -->
     <div *ngIf="deviceInfoData.dqp && deviceInfoData.dqp.length > 0" class="k-border k-border-solid k-border-gray-300 k-p-3 k-rounded">
@@ -742,8 +737,8 @@
       </kendo-grid>
     </div>
     
-    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-2">
-      <button kendoButton (click)="closeDeviceInfoDialog()">Close</button>
+    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3">
+      <button kendoButton (click)="closeDeviceInfoDialog()" style="min-width: 85px; height: 25px; font-size: 11px;">Close</button>
     </div>
   </div>
 </kendo-dialog>

@@ -56,6 +56,7 @@ export class DeviceComponent implements OnInit {
   public isLabelDetailsDialogOpen = false;
   public labelDetailsData: any[] = [];
   public currentLabelName: string = '';
+  public currentLabelNumber: number = 0; // Track which label number (1-5) triggered the dialog
   public labelTypeOptions: any[] = ['--Select--', 'Text', 'Database', 'Constant', 'Customer Service']; // Common label types with --Select-- first (matching TFS)
   public labelValueOptions: any[] = ['--Select--']; // Will be loaded based on selected type - start with --Select-- (matching TFS)
   public labelDetailsGridHeight: number = 0; // Auto-calculated height for compact grid
@@ -753,7 +754,7 @@ export class DeviceComponent implements OnInit {
                 if (label1Value) {
                   // Try to convert to ID if customer labels are already loaded, otherwise store name for later conversion
                   const labelId = this.getLabelIdFromName(label1Value);
-                  this.deviceData.label1 = labelId !== null ? labelId : null;
+                  this.deviceData.label1 = labelId !== null ? Number(labelId) : null;
                   // Store name for later conversion if ID not found
                   if (labelId === null && this.customerLabels.length === 0) {
                     (this.deviceData as any).label1Name = label1Value;
@@ -766,7 +767,7 @@ export class DeviceComponent implements OnInit {
                 const label2Value = deviceInfo.label2 || deviceInfo.Label2;
                 if (label2Value) {
                   const labelId = this.getLabelIdFromName(label2Value);
-                  this.deviceData.label2 = labelId !== null ? labelId : null;
+                  this.deviceData.label2 = labelId !== null ? Number(labelId) : null;
                   if (labelId === null && this.customerLabels.length === 0) {
                     (this.deviceData as any).label2Name = label2Value;
                   }
@@ -778,7 +779,7 @@ export class DeviceComponent implements OnInit {
                 const label3Value = deviceInfo.label3 || deviceInfo.Label3;
                 if (label3Value) {
                   const labelId = this.getLabelIdFromName(label3Value);
-                  this.deviceData.label3 = labelId !== null ? labelId : null;
+                  this.deviceData.label3 = labelId !== null ? Number(labelId) : null;
                   if (labelId === null && this.customerLabels.length === 0) {
                     (this.deviceData as any).label3Name = label3Value;
                   }
@@ -790,7 +791,7 @@ export class DeviceComponent implements OnInit {
                 const label4Value = deviceInfo.label4 || deviceInfo.Label4;
                 if (label4Value) {
                   const labelId = this.getLabelIdFromName(label4Value);
-                  this.deviceData.label4 = labelId !== null ? labelId : null;
+                  this.deviceData.label4 = labelId !== null ? Number(labelId) : null;
                   if (labelId === null && this.customerLabels.length === 0) {
                     (this.deviceData as any).label4Name = label4Value;
                   }
@@ -802,7 +803,7 @@ export class DeviceComponent implements OnInit {
                 const label5Value = deviceInfo.label5 || deviceInfo.Label5;
                 if (label5Value) {
                   const labelId = this.getLabelIdFromName(label5Value);
-                  this.deviceData.label5 = labelId !== null ? labelId : null;
+                  this.deviceData.label5 = labelId !== null ? Number(labelId) : null;
                   if (labelId === null && this.customerLabels.length === 0) {
                     (this.deviceData as any).label5Name = label5Value;
                   }
@@ -1830,43 +1831,89 @@ export class DeviceComponent implements OnInit {
     let duplicateLabels = '';
     let labelAlert = '';
 
-    const labels: { [key: string]: string } = {
-      Label1: this.deviceData.label1 ? this.getLabelDisplayText(this.deviceData.label1) : '',
-      Label2: this.deviceData.label2 ? this.getLabelDisplayText(this.deviceData.label2) : '',
-      Label3: this.deviceData.label3 ? this.getLabelDisplayText(this.deviceData.label3) : '',
-      Label4: this.deviceData.label4 ? this.getLabelDisplayText(this.deviceData.label4) : '',
-      Label5: this.deviceData.label5 ? this.getLabelDisplayText(this.deviceData.label5) : ''
+    // Helper function to check if a label value is valid (primary check - based on ID)
+    // This is the source of truth as labels are stored as IDs
+    const isValidLabelId = (labelValue: any): boolean => {
+      // Handle null, undefined, empty string
+      if (labelValue === null || labelValue === undefined || labelValue === '') {
+        return false;
+      }
+      
+      // Convert to number and validate
+      const numValue = Number(labelValue);
+      
+      // A valid label ID is a positive number (greater than 0)
+      // 0 represents "--Select--" option, so it's not valid
+      // NaN means invalid number, so also not valid
+      return !isNaN(numValue) && numValue > 0;
     };
 
-    // Check if at least one label is selected (check IDs directly for reliability)
-    // Labels are stored as numbers (IDs), so check for valid positive numbers
-    // Note: We check IDs first as they're the source of truth, display text is just for user feedback
-    const label1Valid = this.deviceData.label1 != null && this.deviceData.label1 !== undefined && !isNaN(Number(this.deviceData.label1)) && Number(this.deviceData.label1) > 0;
-    const label2Valid = this.deviceData.label2 != null && this.deviceData.label2 !== undefined && !isNaN(Number(this.deviceData.label2)) && Number(this.deviceData.label2) > 0;
-    const label3Valid = this.deviceData.label3 != null && this.deviceData.label3 !== undefined && !isNaN(Number(this.deviceData.label3)) && Number(this.deviceData.label3) > 0;
-    const label4Valid = this.deviceData.label4 != null && this.deviceData.label4 !== undefined && !isNaN(Number(this.deviceData.label4)) && Number(this.deviceData.label4) > 0;
-    const label5Valid = this.deviceData.label5 != null && this.deviceData.label5 !== undefined && !isNaN(Number(this.deviceData.label5)) && Number(this.deviceData.label5) > 0;
+    // Check each label ID directly (this is the primary and most reliable check)
+    const label1Valid = isValidLabelId(this.deviceData.label1);
+    const label2Valid = isValidLabelId(this.deviceData.label2);
+    const label3Valid = isValidLabelId(this.deviceData.label3);
+    const label4Valid = isValidLabelId(this.deviceData.label4);
+    const label5Valid = isValidLabelId(this.deviceData.label5);
     
-    const hasAtLeastOneLabelById = label1Valid || label2Valid || label3Valid || label4Valid || label5Valid;
+    const hasAtLeastOneLabel = label1Valid || label2Valid || label3Valid || label4Valid || label5Valid;
     
-    // Also check display text as fallback (in case customerLabels aren't loaded but labels are selected)
-    // This handles edge cases where IDs might not be set but display text is available
-    const hasAtLeastOneLabelByText = labels['Label1'] !== '' || labels['Label2'] !== '' || 
-                                     labels['Label3'] !== '' || labels['Label4'] !== '' || labels['Label5'] !== '';
-    
-    // Debug logging to help diagnose issues
-    if (!hasAtLeastOneLabelById && !hasAtLeastOneLabelByText) {
-      console.log('Label validation failed. Label IDs:', {
+    // If at least one label ID is valid, validation passes (ID check is the source of truth)
+    if (!hasAtLeastOneLabel) {
+      // Get display text for logging purposes only (not for validation decision)
+      const labels: { [key: string]: string } = {
+        Label1: this.deviceData.label1 ? this.getLabelDisplayText(this.deviceData.label1) : '',
+        Label2: this.deviceData.label2 ? this.getLabelDisplayText(this.deviceData.label2) : '',
+        Label3: this.deviceData.label3 ? this.getLabelDisplayText(this.deviceData.label3) : '',
+        Label4: this.deviceData.label4 ? this.getLabelDisplayText(this.deviceData.label4) : '',
+        Label5: this.deviceData.label5 ? this.getLabelDisplayText(this.deviceData.label5) : ''
+      };
+      
+      // Debug logging to help diagnose issues
+      console.error('Label validation failed. Label IDs:', {
         label1: this.deviceData.label1,
         label2: this.deviceData.label2,
         label3: this.deviceData.label3,
         label4: this.deviceData.label4,
-        label5: this.deviceData.label5
+        label5: this.deviceData.label5,
+        label1Type: typeof this.deviceData.label1,
+        label2Type: typeof this.deviceData.label2,
+        label3Type: typeof this.deviceData.label3,
+        label4Type: typeof this.deviceData.label4,
+        label5Type: typeof this.deviceData.label5
       });
-      console.log('Label display texts:', labels);
+      console.error('Label validation details:', {
+        label1Valid,
+        label2Valid,
+        label3Valid,
+        label4Valid,
+        label5Valid,
+        label1Num: Number(this.deviceData.label1),
+        label2Num: Number(this.deviceData.label2),
+        label3Num: Number(this.deviceData.label3),
+        label4Num: Number(this.deviceData.label4),
+        label5Num: Number(this.deviceData.label5)
+      });
+      console.error('Label display texts:', labels);
+      console.error('customerLabels loaded:', this.customerLabels && this.customerLabels.length > 0);
+      console.error('customerLabels count:', this.customerLabels?.length || 0);
+      console.error('deviceData:', {
+        labelMapping: this.deviceData.labelMapping,
+        customerID: this.deviceData.customerID,
+        deviceId: this.deviceData.deviceId
+      });
+      
       labelAlert = 'Please Add atleast one Label.';
       return { labelAlert, duplicateLabels };
     }
+
+    // Get display text for duplicate checking (only if at least one label is valid)
+    const labels: { [key: string]: string } = {
+      Label1: this.deviceData.label1 && isValidLabelId(this.deviceData.label1) ? this.getLabelDisplayText(this.deviceData.label1) : '',
+      Label2: this.deviceData.label2 && isValidLabelId(this.deviceData.label2) ? this.getLabelDisplayText(this.deviceData.label2) : '',
+      Label3: this.deviceData.label3 && isValidLabelId(this.deviceData.label3) ? this.getLabelDisplayText(this.deviceData.label3) : '',
+      Label4: this.deviceData.label4 && isValidLabelId(this.deviceData.label4) ? this.getLabelDisplayText(this.deviceData.label4) : '',
+      Label5: this.deviceData.label5 && isValidLabelId(this.deviceData.label5) ? this.getLabelDisplayText(this.deviceData.label5) : ''
+    };
 
     // Check for duplicates (matching TFS line 1053-1107)
     for (let i = 1; i <= 5; i++) {
@@ -1942,6 +1989,73 @@ export class DeviceComponent implements OnInit {
   }
 
   saveDevice(): void {
+    // Ensure all label values are properly converted to numbers before validation
+    // This handles cases where labels might be stored as strings or need type conversion
+    // Also ensures that 0 values (which represent "--Select--") are converted to null
+    if (this.deviceData.labelMapping) {
+      // Helper function to safely convert label value to number or null
+      const convertLabelValue = (labelValue: any): number | null => {
+        if (labelValue === null || labelValue === undefined || labelValue === '') {
+          return null;
+        }
+        const numValue = Number(labelValue);
+        // 0 represents "--Select--" option, so treat it as null (invalid)
+        // NaN means invalid number, also treat as null
+        if (isNaN(numValue) || numValue === 0) {
+          return null;
+        }
+        return numValue;
+      };
+      
+      this.deviceData.label1 = convertLabelValue(this.deviceData.label1);
+      this.deviceData.label2 = convertLabelValue(this.deviceData.label2);
+      this.deviceData.label3 = convertLabelValue(this.deviceData.label3);
+      this.deviceData.label4 = convertLabelValue(this.deviceData.label4);
+      this.deviceData.label5 = convertLabelValue(this.deviceData.label5);
+      
+      // Convert any temporary label names to IDs if customer labels are loaded
+      if (this.customerLabels && this.customerLabels.length > 0) {
+        if ((this.deviceData as any).label1Name && !this.deviceData.label1) {
+          const labelId = this.getLabelIdFromName((this.deviceData as any).label1Name);
+          if (labelId !== null) {
+            this.deviceData.label1 = Number(labelId);
+            delete (this.deviceData as any).label1Name;
+          }
+        }
+        if ((this.deviceData as any).label2Name && !this.deviceData.label2) {
+          const labelId = this.getLabelIdFromName((this.deviceData as any).label2Name);
+          if (labelId !== null) {
+            this.deviceData.label2 = Number(labelId);
+            delete (this.deviceData as any).label2Name;
+          }
+        }
+        if ((this.deviceData as any).label3Name && !this.deviceData.label3) {
+          const labelId = this.getLabelIdFromName((this.deviceData as any).label3Name);
+          if (labelId !== null) {
+            this.deviceData.label3 = Number(labelId);
+            delete (this.deviceData as any).label3Name;
+          }
+        }
+        if ((this.deviceData as any).label4Name && !this.deviceData.label4) {
+          const labelId = this.getLabelIdFromName((this.deviceData as any).label4Name);
+          if (labelId !== null) {
+            this.deviceData.label4 = Number(labelId);
+            delete (this.deviceData as any).label4Name;
+          }
+        }
+        if ((this.deviceData as any).label5Name && !this.deviceData.label5) {
+          const labelId = this.getLabelIdFromName((this.deviceData as any).label5Name);
+          if (labelId !== null) {
+            this.deviceData.label5 = Number(labelId);
+            delete (this.deviceData as any).label5Name;
+          }
+        }
+      }
+      
+      // Force change detection to ensure all values are updated
+      this.cdr.detectChanges();
+    }
+    
     // Comprehensive validation matching TFS Validation() method
     if (!this.validateDevice(true)) {
       return; // Validation failed, error messages already shown
@@ -2255,6 +2369,7 @@ export class DeviceComponent implements OnInit {
     }
   }
 
+
   loadCustomerLabels(): Promise<void> {
     return new Promise((resolve) => {
     if (this.deviceData.customerID) {
@@ -2287,35 +2402,35 @@ export class DeviceComponent implements OnInit {
               if ((this.deviceData as any).label1Name) {
                 const labelId = this.getLabelIdFromName((this.deviceData as any).label1Name);
                 if (labelId !== null) {
-                  this.deviceData.label1 = labelId;
+                  this.deviceData.label1 = Number(labelId);
                 }
                 delete (this.deviceData as any).label1Name;
               }
               if ((this.deviceData as any).label2Name) {
                 const labelId = this.getLabelIdFromName((this.deviceData as any).label2Name);
                 if (labelId !== null) {
-                  this.deviceData.label2 = labelId;
+                  this.deviceData.label2 = Number(labelId);
                 }
                 delete (this.deviceData as any).label2Name;
               }
               if ((this.deviceData as any).label3Name) {
                 const labelId = this.getLabelIdFromName((this.deviceData as any).label3Name);
                 if (labelId !== null) {
-                  this.deviceData.label3 = labelId;
+                  this.deviceData.label3 = Number(labelId);
                 }
                 delete (this.deviceData as any).label3Name;
               }
               if ((this.deviceData as any).label4Name) {
                 const labelId = this.getLabelIdFromName((this.deviceData as any).label4Name);
                 if (labelId !== null) {
-                  this.deviceData.label4 = labelId;
+                  this.deviceData.label4 = Number(labelId);
                 }
                 delete (this.deviceData as any).label4Name;
               }
               if ((this.deviceData as any).label5Name) {
                 const labelId = this.getLabelIdFromName((this.deviceData as any).label5Name);
                 if (labelId !== null) {
-                  this.deviceData.label5 = labelId;
+                  this.deviceData.label5 = Number(labelId);
                 }
                 delete (this.deviceData as any).label5Name;
               }
@@ -2414,9 +2529,32 @@ export class DeviceComponent implements OnInit {
     });
   }
 
-  getLabelDisplayText(labelId: number | null): string {
-    if (!labelId || !this.customerLabels || this.customerLabels.length === 0) return '';
-    const label = this.customerLabels.find(l => l.id === labelId);
+  getLabelDisplayText(labelId: number | null | undefined): string {
+    // Handle null, undefined, or invalid values
+    if (labelId === null || labelId === undefined) {
+      return '';
+    }
+    
+    // Handle empty string if somehow passed as a different type
+    if (typeof labelId === 'string' && labelId === '') {
+      return '';
+    }
+    
+    // Convert to number for comparison to handle type mismatches (string vs number)
+    const labelIdNum = Number(labelId);
+    if (isNaN(labelIdNum) || labelIdNum === 0) {
+      return '';
+    }
+    
+    if (!this.customerLabels || this.customerLabels.length === 0) {
+      return '';
+    }
+    
+    // Find label by comparing both as numbers to handle type mismatches
+    const label = this.customerLabels.find(l => {
+      const lIdNum = l.id !== null && l.id !== undefined ? Number(l.id) : null;
+      return lIdNum !== null && lIdNum === labelIdNum;
+    });
     return label ? label.name : '';
   }
 
@@ -2522,6 +2660,7 @@ export class DeviceComponent implements OnInit {
         if (labelName && labelName.trim() !== '' && labelName !== '--Select--') {
           console.log(`Opening label details dialog for Label${labelNumber}: ${labelName}`);
           this.currentLabelName = labelName;
+          this.currentLabelNumber = labelNumber; // Store which label number triggered the dialog
           this.loadLabelDetails(labelName);
           return;
         }
@@ -2543,6 +2682,7 @@ export class DeviceComponent implements OnInit {
     
     // Open the label details dialog - pass label name (text) like TFS does
     this.currentLabelName = labelName;
+    this.currentLabelNumber = labelNumber; // Store which label number triggered the dialog
     this.loadLabelDetails(labelName);
   }
 
@@ -2578,16 +2718,25 @@ export class DeviceComponent implements OnInit {
       next: (data: any) => {
         console.log('Label Details API response:', data);
         
-        // Handle new response structure: { labelDetails: [], ldValues: [] }
+        // Handle new response structure: { labelDetails: [], ldTypes: [], ldValues: [], packAndLabelImages: [] }
+        // Matching TFS structure where stored procedure returns 4 tables:
+        // Table[0]: Label mapping details
+        // Table[1]: LD Types (for Type dropdown)
+        // Table[2]: LD Values (for Value dropdown when Type is "Database")
+        // Table[3]: Pack and Label Images (for ImageVisible dropdown for rohs/e1 fields)
         // or legacy array structure for backward compatibility
         let labelDetailsArray: any[] = [];
+        let ldTypesArray: any[] = [];
         let ldValuesArray: any[] = [];
+        let packAndLabelImagesArray: any[] = [];
         
         if (data) {
           if (data.labelDetails && Array.isArray(data.labelDetails)) {
-            // New response structure
+            // New response structure (matching TFS LabelDetailsResponse)
             labelDetailsArray = data.labelDetails;
+            ldTypesArray = data.ldTypes || data.LDTypes || [];
             ldValuesArray = data.ldValues || data.LDValues || [];
+            packAndLabelImagesArray = data.packAndLabelImages || data.PackAndLabelImages || [];
           } else if (Array.isArray(data)) {
             // Legacy array structure (backward compatibility)
             labelDetailsArray = data;
@@ -2595,14 +2744,29 @@ export class DeviceComponent implements OnInit {
         }
         
         if (labelDetailsArray && labelDetailsArray.length > 0) {
-          // Convert LDValues to simple string array for dropdown (matching TFS)
+          // Convert LD Types to simple string array for dropdown (matching TFS LDTypes method)
+          // API already includes "--Select--" as first item (LDTypeId = 0), so extract all values
+          const ldTypesForDropdown = ldTypesArray.map((lt: any) => lt.ldType || lt.LDType || '').filter((v: string) => v !== '');
+          
+          // Convert LD Values to simple string array for dropdown (matching TFS LDValues method)
           // API already includes "--Select--" as first item (LDValueId = 0), so extract all values
-          const allValues = ldValuesArray.map((lv: any) => lv.ldValue || lv.LDValue || '').filter((v: string) => v !== '');
+          const ldValuesForDropdown = ldValuesArray.map((lv: any) => lv.ldValue || lv.LDValue || '').filter((v: string) => v !== '');
           
-          // Remove any duplicate "--Select--" entries and ensure it's first (only once)
-          const valuesWithoutSelect = allValues.filter((v: string) => v !== '--Select--');
-          const ldValuesForDropdown = ['--Select--', ...valuesWithoutSelect];
+          // Convert Pack and Label Images to simple string array for dropdown (matching TFS LImageDetails method)
+          // API already includes "--Select--" as first item (ImageId = 0), so extract all values
+          const packAndLabelImagesForDropdown = packAndLabelImagesArray.map((img: any) => img.imageVisible || img.ImageVisible || '').filter((v: string) => v !== '');
           
+          // Store globally for use in dropdowns (matching TFS: objtemp.lstPrd_LDTypes, etc.)
+          // Use ldTypes from API if available, otherwise fall back to hardcoded options
+          if (ldTypesForDropdown.length > 0) {
+            this.labelTypeOptions = ['--Select--', ...ldTypesForDropdown.filter((v: string) => v !== '--Select--')];
+          }
+          
+          if (ldValuesForDropdown.length > 0) {
+            this.labelValueOptions = ['--Select--', ...ldValuesForDropdown.filter((v: string) => v !== '--Select--')];
+          }
+          
+          // Map label details and attach dropdown lists to each item (matching TFS lines 129-135)
           this.labelDetailsData = labelDetailsArray.map((item: any) => {
             // Initialize Type dropdown with "--Select--" if empty (matching TFS behavior)
             let ldType = item.ldType || item.LDType || '';
@@ -2624,6 +2788,10 @@ export class DeviceComponent implements OnInit {
             let cmbvisibility = 'Collapsed';
             let txtvisibility = 'Collapsed';
             let isEdit = item.isEdit !== undefined ? item.isEdit : (item.IsEdit !== undefined ? item.IsEdit : false);
+            
+            // Check if field is rohs or e1 (matching TFS line 117-118)
+            const fieldName = (item.lfName || item.LFName || '').toLowerCase();
+            const isRohsOrE1 = fieldName === 'rohs' || fieldName === 'e1';
             
             if (ldType && ldType !== '--Select--') {
               if (ldType === 'Constant') {
@@ -2656,19 +2824,21 @@ export class DeviceComponent implements OnInit {
               cmbvisibility: cmbvisibility,
               txtvisibility: txtvisibility,
               ldTypecmbvisibility: item.ldTypecmbvisibility || item.LdTypecmbvisibility || 'Visible',
-              imgcmbvisibility: item.imgcmbvisibility || item.Imgcmbvisibility || 'Collapsed',
+              imgcmbvisibility: item.imgcmbvisibility || item.Imgcmbvisibility || (isRohsOrE1 ? 'Visible' : 'Collapsed'),
               ldTypeId: item.ldTypeId || item.LDTypeId || 0,
-              // Store LDValues list for Database type (loaded from API response Table[2])
-              // All items share the same LDValues list (matching TFS: lst[0].lstPrd_LDValues)
-              // API already includes "--Select--" as first item, so use as-is
-              ldValuesList: ldValuesForDropdown
+              // Store dropdown lists for each item (matching TFS: obj.lstPrd_LDTypes, obj.lstPrd_LDValues, obj.lstPrd_PackandLabelImges)
+              // All items share the same lists (matching TFS lines 132-134)
+              ldTypesList: this.labelTypeOptions, // For Type dropdown
+              ldValuesList: this.labelValueOptions, // For Value dropdown when Type is "Database"
+              packAndLabelImagesList: packAndLabelImagesForDropdown.length > 0 
+                ? ['--Select--', ...packAndLabelImagesForDropdown.filter((v: string) => v !== '--Select--')]
+                : ['--Select--', 'Image1', 'Image2', 'Image3'] // Fallback if API doesn't return images
             };
           });
           
-          // Store LDValues globally for use when Type changes to Database
-          this.labelValueOptions = ldValuesForDropdown;
-          
           console.log(`✓ Loaded labelDetailsData: ${this.labelDetailsData.length} items`);
+          console.log(`✓ LD Types: ${ldTypesArray.length} items, LD Values: ${ldValuesArray.length} items, Images: ${packAndLabelImagesArray.length} items`);
+          
           // Calculate grid height: header (22px) + rows (22px each) + border (2px)
           this.labelDetailsGridHeight = 22 + (this.labelDetailsData.length * 22) + 2;
           this.isLabelDetailsDialogOpen = true;
@@ -2717,6 +2887,7 @@ export class DeviceComponent implements OnInit {
     this.isLabelDetailsDialogOpen = false;
     this.labelDetailsData = [];
     this.currentLabelName = '';
+    this.currentLabelNumber = 0; // Reset label number
     this.labelDetailsGridHeight = 0;
   }
 
