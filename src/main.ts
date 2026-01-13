@@ -1,4 +1,5 @@
 /// <reference types="@angular/localize" />
+import '@angular/localize/init';
 
 // Set Kendo license BEFORE any other imports
 import { setScriptKey } from '@progress/kendo-licensing';

@@ -9,7 +9,7 @@ import { ApiService } from 'src/app/services/api.service';
 import {Customer, ICON, MESSAGES, Vendor, TicketType, TicketLot, AddEditTicket, INIT_TICKET, TicketLotDetail, TicketComments, ScanLot, TicketDetail, CommentsAttachment, TicketAttachment } from 'src/app/services/app.interface';
 import { AppService } from 'src/app/services/app.service';
 import { environment } from 'src/environments/environment';
-import * as moment from 'moment';
+import moment from 'moment';
 import { CellClickEvent } from '@progress/kendo-angular-grid';
 
 enum ActionType {

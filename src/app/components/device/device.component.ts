@@ -192,7 +192,11 @@ export class DeviceComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCustomers();
-    this.loadGridData();
+    // Defer initial data load to avoid ExpressionChangedAfterItHasBeenCheckedError
+    // This ensures the component is fully initialized before loading data
+    setTimeout(() => {
+      this.loadGridData();
+    }, 0);
     this.checkSecurityFeatures();
   }
 
@@ -305,6 +309,8 @@ export class DeviceComponent implements OnInit {
       data: filteredData,
       total: filteredData.length
     };
+    // Trigger change detection to avoid ExpressionChangedAfterItHasBeenCheckedError
+    this.cdr.detectChanges();
   }
 
   filterData(data: any[]): any[] {

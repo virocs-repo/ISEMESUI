@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { AppFeature, AppFeatureField, AppMenu, HardwareType, MasterData, ShipmentCategory, ShipmentType, UserData } from './app.interface';
 import { NotificationService } from '@progress/kendo-angular-notification';
-import * as moment from 'moment';
+import moment from 'moment';
 import { DeviceDetectorService } from 'ngx-device-detector';
 
 
