@@ -1,7 +1,6 @@
 import { DatePipe, JsonPipe } from '@angular/common';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { CellClickEvent, GridDataResult, PageChangeEvent, SelectionEvent } from '@progress/kendo-angular-grid';
-import { Condition } from '@progress/kendo-angular-grid/utils';
 import { googlePlusBoxIcon } from '@progress/kendo-svg-icons';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
@@ -562,7 +561,7 @@ onDeviceFamilyChange(selectedDeviceFamily: any) {
           //this.showContextMenu(e);
         } else {
           if (e.type == 'click') {
-            if (['Mac', 'iOS'].includes(this.appService.deviceDetectorService.os)) {
+            if (['Mac', 'iOS'].includes(this.appService.deviceDetectorService.deviceInfo().os)) {
               //this.showContextMenu(e);
             }
           }

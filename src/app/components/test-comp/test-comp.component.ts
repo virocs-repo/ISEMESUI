@@ -52,7 +52,7 @@ export class TestCompComponent {
           //this.showContextMenu(e);
         } else {
           if (e.type == 'click') {
-            if (['Mac', 'iOS'].includes(this.appService.deviceDetectorService.os)) {
+            if (['Mac', 'iOS'].includes(this.appService.deviceDetectorService.deviceInfo().os)) {
               //this.showContextMenu(e);
             }
           }

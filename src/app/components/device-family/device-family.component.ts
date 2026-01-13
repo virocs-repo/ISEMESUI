@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef, afterNextRender } from '@angular/core';
 import { GridDataResult, PageChangeEvent, CellClickEvent } from '@progress/kendo-angular-grid';
 import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { ApiService } from 'src/app/services/api.service';
@@ -91,8 +91,11 @@ export class DeviceFamilyComponent implements OnInit {
     // Load customers list for dialog dropdown
     this.loadCustomers();
     
-    // Load all device families initially (filtered by active status)
-    this.loadGridData();
+    // Defer initial data load to avoid ExpressionChangedAfterItHasBeenCheckedError
+    // This ensures the component is fully initialized before loading data
+    setTimeout(() => {
+      this.loadGridData();
+    }, 0);
   }
 
   loadCustomers(): void {
@@ -265,6 +268,8 @@ export class DeviceFamilyComponent implements OnInit {
       data: filteredData,
       total: filteredData.length
     };
+    // Trigger change detection to avoid ExpressionChangedAfterItHasBeenCheckedError
+    this.cdr.detectChanges();
   }
 
   filterData(data: any[]): any[] {
