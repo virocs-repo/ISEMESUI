@@ -8,12 +8,11 @@ import { Assemblylist, Coo, Customer, ICON, LotTypeList, MESSAGES, PSCode, Testc
 import { AppService } from 'src/app/services/app.service';
 import { trashIcon } from '@progress/kendo-svg-icons';
 
-
 @Component({
-    selector: 'app-edit-traveller',
-    templateUrl: './edit-traveller.component.html',
-    styleUrls: ['./edit-traveller.component.scss'],
-    standalone: false
+  selector: 'app-edit-traveller',
+  standalone: false,
+  templateUrl: './edit-traveller.component.html',
+  styleUrls: ['./edit-traveller.component.scss']
 })
 
 export class EditTravellerComponent {
@@ -38,7 +37,7 @@ export class EditTravellerComponent {
     public lotNumber: string = '';
     public Customerlist:[] | undefined;
     Selectedcustomer:null | undefined;
-   customers: Customer[] = this.appService.masterData.entityMap.Customer;
+   customers: Customer[] = [...this.appService.masterData.entityMap.Customer];
   customerSelected: Customer | undefined;
     lotTypelist: LotTypeList[] = this.appService.masterData.lotTypelist;
     SelectedlotType: LotTypeList | undefined;
@@ -156,8 +155,9 @@ selectedMergeLotIds: number[] = [];
 
   }
   init() {
+    alert(this.customers);  
     const traveller = this.appService.sharedData.traveller;
-      if(this.appService.sharedData.traveller.isEditMode || this.appService.sharedData.traveller.isViewMode){
+    if(this.appService.sharedData.traveller.isEditMode || this.appService.sharedData.traveller.isViewMode){
         this.getTravellerDetails(this.appService.sharedData.traveller.dataItem.lotId);
       }
     }
@@ -172,7 +172,7 @@ selectedMergeLotIds: number[] = [];
           };
           this.bindMailRoomDetail();
         },
-        error: (err: any) => {
+        error: (err) => {
           console.error('Failed to load traveler details:', err);
       this.gridDataResult = { data: [], total: 0 };
         }
@@ -256,7 +256,7 @@ fetchMergeLotsAndMatched(lotId: number, trvStepId: number): void {
             if(this.matchedlots.length>0){
               this.showVoidButton = false;
             }
-            matchedResponse?.forEach((record: any) => {
+            matchedResponse?.forEach(record => {
               if (record?.mergedLotIds) {
                 const ids: number[] = record.mergedLotIds
                   .split(',')
@@ -269,7 +269,7 @@ fetchMergeLotsAndMatched(lotId: number, trvStepId: number): void {
             this.selectedMergeLots = this.mergeLots.filter(ml =>matchedLotIds.includes(ml.lotId));
             this.selectedMergeLotIds = this.selectedMergeLots.map(item => item.lotId);
           },
-          error: (err: any) => {
+          error: (err) => {
             console.error('Error fetching matched lots', err);
           }
         });
@@ -278,7 +278,7 @@ fetchMergeLotsAndMatched(lotId: number, trvStepId: number): void {
         this.mergeMessage = 'There is no matching record available.';
       }
     },
-    error: (err: any) => {
+    error: (err) => {
       this.isLoadingMergeLots = false;
       this.mergeMessage = 'Error fetching merge lots.';
       console.error(err);
@@ -311,14 +311,14 @@ onVoidMerge(): void {
   };
 
   this.apiService.addOrUpdateMerge(payload).subscribe({
-    next: (returnCode: any) => {
+    next: (returnCode) => {
       if (returnCode > 0) {
          this.showVoidSuccessDialog = true;
       } else {
         this.appService.errorMessage('Void failed.');
       }
     },
-    error: (err: any) => {
+    error: (err) => {
       console.error('Void merge error:', err);
     }
   });
@@ -351,14 +351,14 @@ const mergeId = this.matchedlots?.[0]?.mergeId ?? null;
   };
 
   this.apiService.addOrUpdateMerge(payload).subscribe({
-    next: (returnCode: any) => {
+    next: (returnCode) => {
       if (returnCode > 0) {
         this.showMergeSuccessDialog = true;
       } else {
         this.appService.errorMessage(MESSAGES.DataSaveError);
       }
     },
-    error: (err: any) => {
+    error: (err) => {
       console.error('Merge error:', err);
     }
   });
@@ -404,10 +404,10 @@ handleSplit(dataItem: any): void {
       this.splitBins = data;
       this.originalSplitBins = data;
       this.pivotData();
-      this.apiService.getSplits(this.trvStepId).subscribe((splits: any) => {
+      this.apiService.getSplits(this.trvStepId).subscribe(splits=>{
         if(splits.length){
           this.isSplitPopupVisible = true;
-          splits.forEach((split: any) => {            
+          splits.forEach(split=>{            
               const result: any = {};
               result["Id"] = split.splitId;
               result["Description"] = 'Split';
@@ -440,16 +440,16 @@ handleSplit(dataItem: any): void {
       });
     }
     
-    this.apiService.getFutureSplitBins(dataItem.trvStepId).subscribe((futureData: any) => {
+    this.apiService.getFutureSplitBins(dataItem.trvStepId).subscribe(futureData=>{
       if(futureData.length > 0 && (dataItem.showFS || dataItem.editFS)){
         this.futureSplitBins = futureData;
         this.originalFutureSplitBins = futureData;
         this.pivotFutureSplitData();
-        this.apiService.getFutureSplits(dataItem.trvStepId).subscribe((futureSplits: any) => {
+        this.apiService.getFutureSplits(dataItem.trvStepId).subscribe(futureSplits=>{
           
             if(futureSplits.length){
               this.isSplitPopupVisible = true;
-              futureSplits.forEach((split: any) => {
+              futureSplits.forEach(split=>{
                   const result: any = {};
                   result["Id"] = split.totalSplits[0].splitId;
                   result["FSId"] = split.fsId;
@@ -496,7 +496,7 @@ handleSplit(dataItem: any): void {
       next: (data: any[]) => { 
         this.devicefamilyList = Array.isArray(data) ? data : []; 
       },
-      error: (err: any) => {
+      error: (err) => {
         console.error('Error fetching device families:', err);
         this.devicefamilyList = [];
       }
@@ -546,7 +546,7 @@ onDeviceFamilyChange(selectedDeviceFamily: any) {
       next: (data: any[]) => { 
         this.lotOwnersList = Array.isArray(data) ? data : []; 
       },
-      error: (err: any) => {
+      error: (err) => {
         console.error('Error fetching list:', err);
         this.lotOwnersList = [];
       }
@@ -561,7 +561,7 @@ onDeviceFamilyChange(selectedDeviceFamily: any) {
           //this.showContextMenu(e);
         } else {
           if (e.type == 'click') {
-            if (['Mac', 'iOS'].includes(this.appService.deviceDetectorService.deviceInfo().os)) {
+            if (['Mac', 'iOS'].includes(this.appService.deviceDetectorService.getDeviceInfo().os)) {
               //this.showContextMenu(e);
             }
           }

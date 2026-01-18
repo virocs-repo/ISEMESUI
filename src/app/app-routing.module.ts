@@ -33,10 +33,14 @@ import { AddSplitComponent } from './components/add-split/add-split.component';
 import { TravellerLandingComponent } from './components/traveller-landing/traveller-landing.component';
 import { DeviceFamilyComponent } from './components/device-family/device-family.component';
 import { DeviceComponent } from './components/device/device.component';
+import { PublicFormComponent } from './components/public/publicform.component';
+import { CheckinCheckoutComponent } from './components/public/checkin-checkout.component';
 
 const routes: Routes = [
   // Login route (no prefix)
   { path: 'login', component: LoginComponent },
+  { path: 'publicform', component: PublicFormComponent },
+  { path: 'checkin-checkout/:type', component: CheckinCheckoutComponent },
   
   // Inventory routes
   {

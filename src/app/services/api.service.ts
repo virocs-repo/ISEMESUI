@@ -1072,9 +1072,9 @@ export class ApiService {
     return this.httpClient.post(`${API}v1/ise/inventory/splitmerge/mergeRequest`, payload);
   }
 
-  getMatchedLots(trvStepId: number): Observable<any> {
+ getMatchedLots(trvStepId: number): Observable<any[]> {
     let url = `${API}v1/ise/inventory/splitmerge/getMatchedLots?trvStepId=${trvStepId}`;
-    return this.httpClient.get(url);
+    return this.httpClient.get<any[]>(url);
   }
 
   getMergeLots(lotId: number): Observable<any[]> {
@@ -1135,7 +1135,7 @@ export class ApiService {
   }
 
   getInventoryLot(lotId: number, type: string): Observable<any> {
-    let url = `${API}v1/ise/inventory/splitmerge/getInventoryLot?lotId=${lotId}&type=${type}`;
+    let url = `${API}v1/ise/inventory/splitmerge/getInventory?lotId=${lotId}&source=${type}`;
     return this.httpClient.get(url);
   }
 
@@ -1177,5 +1177,51 @@ export class ApiService {
       params = params.set('active', active.toString());
     }
     return this.httpClient.get<any[]>(`${API}v1/ise/devicemaster/device/search`, { params });
+  }
+  validateBarcode(barcode:string){
+   let url = `${API}v1/ise/inventory/inventoryCheckinCheckout/validateBadge?badge=${barcode}`;
+    return this.httpClient.post(url,  {ResponseType: 'text' } );
+  }
+  getCheckInCheckOutItems(lotNumber:string, employeeId:number, customerLoginId:number, requestType:string, count?:number | null){
+   let params = new HttpParams();
+
+    // Append required parameters
+    params = params.append('employeeId', employeeId.toString());
+    params = params.append('customerLoginId', customerLoginId.toString());
+    params = params.append('requestType', requestType);
+    params = params.append('lotNumber', lotNumber);
+
+   
+    // Only append the 'count' parameter IF it is not null.
+    if (count !== null && count !== undefined) {
+      params = params.append('count', count.toString());
+    }
+   let url = `${API}v1/ise/inventory/inventoryCheckinCheckout/getCheckInCheckOutLotDetails`;
+    return this.httpClient.get<any[]>(url, {params: params});
+  }
+
+  saveCheckInCheckOutRequest(inputData:string, requestType:string){
+    var body = {
+      InputJson: inputData,
+      RequestType: requestType
+    };
+   let url = `${API}v1/ise/inventory/inventoryCheckinCheckout/saveCheckInCheckOutRequest?inputData=${inputData}&requestType=${requestType}`;
+    return this.httpClient.post(url,  body, { responseType: 'text' } );
+  }
+  getPendingCheckInCheckOutRequests(requestType:string, requestId:number){
+    let url = `${API}v1/ise/inventory/splitmerge/getLotsPendingApproval?requestType=${requestType}&requestId=${requestId}`;
+      return this.httpClient.get<any[]>(url);
+  }
+  getCheckInLocationDetails(requestType:string, requestId:number){
+    let url = `${API}v1/ise/inventory/splitmerge/getCheckInLocations?requestType=${requestType}&requestId=${requestId}`;
+      return this.httpClient.get<any[]>(url);
+  }
+  approveCheckInCheckOutRequests(requestType:string, inputJson:string){
+    let url = `${API}v1/ise/inventory/splitmerge/approveCheckInCheckOut`;
+    const body = {
+      RequestType: requestType,
+      InputJSON: inputJson
+    };
+      return this.httpClient.post<boolean>(url,  body);  
   }
 }                                                     

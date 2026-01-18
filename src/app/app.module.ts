@@ -88,6 +88,8 @@ import { ScanBadgeComponent } from './components/scan-badge/scan-badge.component
 import { DeviceMasterComponent } from './components/device-master/device-master.component';
 import { DeviceFamilyComponent } from './components/device-family/device-family.component';
 import { DeviceComponent } from './components/device/device.component';
+import { POPUP_CONTAINER } from '@progress/kendo-angular-popup';
+import { KendoPopupGlobalFixDirective } from './kendo-popup-global-directive';
 
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1;
@@ -230,6 +232,7 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     IndicatorsModule,
     TooltipsModule,
     TabStripModule,
+    KendoPopupGlobalFixDirective    
   ],
   providers: [
     {
