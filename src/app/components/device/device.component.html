@@ -111,11 +111,6 @@
           </kendo-combobox>
         </kendo-label>
         
-        <kendo-label text="Device Name *" class="k-font-size-sm">
-          <input kendoTextBox [(ngModel)]="deviceData.deviceName" type="text"
-            placeholder="Enter Device Name" class="w-100" [readonly]="isViewMode || !deviceEditEnabled" />
-        </kendo-label>
-        
         <kendo-label text="Test Device *" class="k-font-size-sm">
           <input kendoTextBox [(ngModel)]="deviceData.testDevice" type="text"
             (ngModelChange)="onTestDeviceChange($event)"
@@ -127,7 +122,7 @@
             placeholder="Enter Reliability Device" class="w-100" [readonly]="isViewMode || !canEdit || !deviceEditEnabled" />
         </kendo-label>
         
-        <kendo-label text="Alias Names" class="k-font-size-sm" style="grid-column: span 3;">
+        <kendo-label text="Alias Names" class="k-font-size-sm" style="grid-column: span 2;">
           <div class="k-d-flex k-gap-2">
             <input kendoTextBox [(ngModel)]="deviceData.newAliasName" type="text"
               placeholder="Enter Alias Name" class="k-flex-1" [readonly]="isViewMode || !deviceEditEnabled" />
@@ -227,100 +222,41 @@
     <div class="k-border k-border-solid k-border-gray-300 k-p-2 k-rounded" *ngIf="deviceData.labelMapping">
       <h3 class="k-mt-0 k-mb-1 k-text-primary k-font-size-sm k-font-weight-bold">Label Info</h3>
       <div class="k-d-grid k-grid-cols-3 k-gap-2">
-        <kendo-label text="Label1" class="k-font-size-sm">
-          <input *ngIf="isViewMode" kendoTextBox [value]="getLabelDisplayText(deviceData.label1)" type="text"
-            class="w-100" readonly />
-          <div *ngIf="!isViewMode" class="k-d-flex k-align-items-center k-gap-2">
-            <kendo-dropdownlist
-              [data]="customerLabels"
-              [valuePrimitive]="true"
-              [textField]="'name'"
-              [valueField]="'id'"
-              [value]="deviceData.label1"
-              (valueChange)="onLabel1Change($event)"
-              [disabled]="!canEditLabel1 || !labelEditEnabled"
-              placeholder="--Select--"
-              class="k-flex-1">
-            </kendo-dropdownlist>
-            <button kendoButton size="small" (click)="openLabelDetails(1)" [disabled]="!isLabelSelected(1) || !labelEditEnabled">--</button>
-          </div>
-        </kendo-label>
+        <!-- Dynamic Labels -->
+        <ng-container *ngFor="let labelNum of activeLabels; trackBy: trackByLabelNumber; let i = index">
+          <kendo-label [text]="'Label' + labelNum" class="k-font-size-sm">
+            <input *ngIf="isViewMode" kendoTextBox [value]="getLabelDisplayText(getLabelValue(labelNum))" type="text"
+              class="w-100" readonly />
+            <div *ngIf="!isViewMode" class="k-d-flex k-align-items-center k-gap-2">
+              <!-- Use refresh counter in ID to force re-render when value changes -->
+              <kendo-dropdownlist
+                [id]="'label-dropdown-' + labelNum + '-' + i + '-' + labelRefreshCounter"
+                [data]="customerLabels"
+                [valuePrimitive]="true"
+                [textField]="'name'"
+                [valueField]="'id'"
+                [value]="getLabelValue(labelNum)"
+                (valueChange)="onLabelValueChange(labelNum, $event)"
+                (selectionChange)="onLabelSelectionChange(labelNum, $event)"
+                [disabled]="!getCanEditLabel(labelNum) || !labelEditEnabled"
+                placeholder="--Select--"
+                class="k-flex-1">
+              </kendo-dropdownlist>
+              <button kendoButton size="small" (click)="openLabelDetails(labelNum)" [disabled]="!isLabelSelected(labelNum) || !labelEditEnabled">--</button>
+              <button kendoButton size="small" themeColor="error" [svgIcon]="ICON.xIcon" 
+                (click)="removeLabel(labelNum)" title="Remove Label" 
+                [disabled]="!labelEditEnabled"></button>
+            </div>
+          </kendo-label>
+        </ng-container>
         
-        <kendo-label text="Label2" class="k-font-size-sm">
-          <input *ngIf="isViewMode" kendoTextBox [value]="getLabelDisplayText(deviceData.label2)" type="text"
-            class="w-100" readonly />
-          <div *ngIf="!isViewMode" class="k-d-flex k-align-items-center k-gap-2">
-            <kendo-dropdownlist
-              [data]="customerLabels"
-              [valuePrimitive]="true"
-              [textField]="'name'"
-              [valueField]="'id'"
-              [value]="deviceData.label2"
-              (valueChange)="onLabel2Change($event)"
-              [disabled]="!canEditLabel2 || !labelEditEnabled"
-              placeholder="--Select--"
-              class="k-flex-1">
-            </kendo-dropdownlist>
-            <button kendoButton size="small" (click)="openLabelDetails(2)" [disabled]="!isLabelSelected(2) || !labelEditEnabled">--</button>
-          </div>
-        </kendo-label>
-        
-        <kendo-label text="Label3" class="k-font-size-sm">
-          <input *ngIf="isViewMode" kendoTextBox [value]="getLabelDisplayText(deviceData.label3)" type="text"
-            class="w-100" readonly />
-          <div *ngIf="!isViewMode" class="k-d-flex k-align-items-center k-gap-2">
-            <kendo-dropdownlist
-              [data]="customerLabels"
-              [valuePrimitive]="true"
-              [textField]="'name'"
-              [valueField]="'id'"
-              [value]="deviceData.label3"
-              (valueChange)="onLabel3Change($event)"
-              [disabled]="!canEditLabel3 || !labelEditEnabled"
-              placeholder="--Select--"
-              class="k-flex-1">
-            </kendo-dropdownlist>
-            <button kendoButton size="small" (click)="openLabelDetails(3)" [disabled]="!isLabelSelected(3) || !labelEditEnabled">--</button>
-          </div>
-        </kendo-label>
-        
-        <kendo-label text="Label4" class="k-font-size-sm">
-          <input *ngIf="isViewMode" kendoTextBox [value]="getLabelDisplayText(deviceData.label4)" type="text"
-            class="w-100" readonly />
-          <div *ngIf="!isViewMode" class="k-d-flex k-align-items-center k-gap-2">
-            <kendo-dropdownlist
-              [data]="customerLabels"
-              [valuePrimitive]="true"
-              [textField]="'name'"
-              [valueField]="'id'"
-              [value]="deviceData.label4"
-              (valueChange)="onLabel4Change($event)"
-              [disabled]="!canEditLabel4 || !labelEditEnabled"
-              placeholder="--Select--"
-              class="k-flex-1">
-            </kendo-dropdownlist>
-            <button kendoButton size="small" (click)="openLabelDetails(4)" [disabled]="!isLabelSelected(4) || !labelEditEnabled">--</button>
-          </div>
-        </kendo-label>
-        
-        <kendo-label text="Label5" class="k-font-size-sm">
-          <input *ngIf="isViewMode" kendoTextBox [value]="getLabelDisplayText(deviceData.label5)" type="text"
-            class="w-100" readonly />
-          <div *ngIf="!isViewMode" class="k-d-flex k-align-items-center k-gap-2">
-            <kendo-dropdownlist
-              [data]="customerLabels"
-              [valuePrimitive]="true"
-              [textField]="'name'"
-              [valueField]="'id'"
-              [value]="deviceData.label5"
-              (valueChange)="onLabel5Change($event)"
-              [disabled]="!canEditLabel5 || !labelEditEnabled"
-              placeholder="--Select--"
-              class="k-flex-1">
-            </kendo-dropdownlist>
-            <button kendoButton size="small" (click)="openLabelDetails(5)" [disabled]="!isLabelSelected(5) || !labelEditEnabled">--</button>
-          </div>
-        </kendo-label>
+        <!-- Add Label Button -->
+        <div *ngIf="!isViewMode && activeLabels.length < 5" class="k-d-flex k-align-items-end">
+          <button kendoButton themeColor="primary" size="small" (click)="addLabel()" 
+            [disabled]="!labelEditEnabled || activeLabels.length >= 5">
+            + Add Label
+          </button>
+        </div>
       </div>
     </div>
     
@@ -658,7 +594,6 @@
   [width]="'95%'"
   [minWidth]="1200"
   [height]="'95%'"
-  title="Device Info"
   class="dialog-round">
   <div class="k-p-2" style="background-color: #bccbd4; max-height: calc(95vh - 120px); overflow-y: auto;">
     

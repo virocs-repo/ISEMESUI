@@ -67,6 +67,8 @@ export class DeviceComponent implements OnInit {
   public canEditLabel3: boolean = true; // Track if label3 can be edited (from GetDeviceInfo)
   public canEditLabel4: boolean = true; // Track if label4 can be edited (from GetDeviceInfo)
   public canEditLabel5: boolean = true; // Track if label5 can be edited (from GetDeviceInfo)
+  public activeLabels: number[] = []; // Track which label numbers (1-5) are currently visible/active
+  public labelRefreshCounter: number = 0; // Counter to force dropdown re-render when values change
   public lastModifiedOn: string = ''; // Track last modified timestamp for optimistic locking
   public lockId: number = -1; // Track lock ID for optimistic locking
   public isDeviceInfoDialogOpen = false; // Track DeviceInfo dialog state
@@ -118,7 +120,7 @@ export class DeviceComponent implements OnInit {
     unitCost: 0,
     // EAR Info
     materialDescriptionId: null,
-    usHtsCodeId: null,
+    usHtsCodeId: -1, // Default to -1 (--Select--) to match TFS behavior
     eccnId: null,
     licenseExceptionId: null,
     restrictedCountriesToShipIds: [] as number[],
@@ -606,7 +608,8 @@ export class DeviceComponent implements OnInit {
         countryOfOriginId: dataItem.countryOfOriginId || dataItem.CountryOfOriginId || dataItem.cooId || dataItem.COOId || null,
         unitCost: dataItem.unitCost !== undefined ? dataItem.unitCost : (dataItem.UnitCost !== undefined ? dataItem.UnitCost : 0),
         materialDescriptionId: dataItem.materialDescriptionId || dataItem.MaterialDescriptionId || null,
-        usHtsCodeId: dataItem.usHtsCodeId || dataItem.USHTSCodeId || dataItem.usHtsCode || dataItem.USHTSCode || null,
+        usHtsCodeId: (dataItem.usHtsCodeId !== undefined && dataItem.usHtsCodeId !== null && dataItem.usHtsCodeId > 0) ? Number(dataItem.usHtsCodeId) : 
+                      ((dataItem.USHTSCodeId !== undefined && dataItem.USHTSCodeId !== null && dataItem.USHTSCodeId > 0) ? Number(dataItem.USHTSCodeId) : -1),
         eccnId: dataItem.eccnId || dataItem.ECCNId || dataItem.eccn || dataItem.ECCN || null,
         licenseExceptionId: dataItem.licenseExceptionId || dataItem.LicenseExceptionId || dataItem.licenseExceptions || dataItem.LicenseExceptions || null,
         restrictedCountriesToShipIds: this.parseRestrictedCountriesIds(dataItem.restrictedCountriesToShipId || dataItem.restrictedCountriesToShipIds || dataItem.restrictedCountriesIds || dataItem.RestrictedCountriesIds),
@@ -724,11 +727,51 @@ export class DeviceComponent implements OnInit {
               if (deviceInfo.unitCost !== undefined) this.deviceData.unitCost = deviceInfo.unitCost || deviceInfo.UnitCost || this.deviceData.unitCost;
               if (deviceInfo.materialDescriptionId !== undefined) this.deviceData.materialDescriptionId = deviceInfo.materialDescriptionId || deviceInfo.MaterialDescriptionId || this.deviceData.materialDescriptionId;
               // US HTS Code - handle both camelCase and PascalCase
-              const usHtsCodeId = deviceInfo.usHtsCodeId !== undefined ? deviceInfo.usHtsCodeId : 
-                                 (deviceInfo.USHTSCodeId !== undefined ? deviceInfo.USHTSCodeId : null);
-              if (usHtsCodeId !== null && usHtsCodeId !== undefined) {
-                this.deviceData.usHtsCodeId = usHtsCodeId;
+              // Match TFS behavior: if USHTSCodeId > 0, set SelectedValue to that ID, otherwise set to -1 (--Select--)
+              // TFS: ddlUSHTSCode.SelectedValue = UtilityClass.ToInteger(...USHTSCodeId) > 0 ? ...USHTSCodeId : -1;
+              // Backend returns null when value is 0 (converted by SafeGetNullableIntOrZeroAsNull), so check for null explicitly
+              // With camelCase JSON policy, backend serializes USHTSCodeId as usHtsCodeId in JSON response
+              // Always process USHTSCodeId - check all possible field name variations
+              // JSON serialization converts USHTSCodeId to camelCase (usHtsCodeId), but check both
+              // Also search for any field containing "hts" or "code" in case naming is different
+              
+              // Try to find the field by searching all keys (case-insensitive search)
+              let usHtsCodeId = null;
+              const allKeys = Object.keys(deviceInfo);
+              const htsCodeKey = allKeys.find(k => 
+                k.toLowerCase() === 'ushtscodeid' || 
+                k.toLowerCase() === 'ushtscode' ||
+                (k.toLowerCase().includes('hts') && k.toLowerCase().includes('code') && k.toLowerCase().includes('id'))
+              );
+              
+              if (htsCodeKey) {
+                usHtsCodeId = deviceInfo[htsCodeKey];
+              } else {
+                // Try standard field names
+                usHtsCodeId = (deviceInfo.USHTSCodeId !== undefined && deviceInfo.USHTSCodeId !== null) ? deviceInfo.USHTSCodeId : 
+                             ((deviceInfo.usHtsCodeId !== undefined && deviceInfo.usHtsCodeId !== null) ? deviceInfo.usHtsCodeId : 
+                             ((deviceInfo['USHTSCodeId'] !== undefined && deviceInfo['USHTSCodeId'] !== null) ? deviceInfo['USHTSCodeId'] : 
+                             ((deviceInfo['usHtsCodeId'] !== undefined && deviceInfo['usHtsCodeId'] !== null) ? deviceInfo['usHtsCodeId'] : null)));
               }
+              
+              // Set to -1 (--Select--) if value is 0, null, or undefined; otherwise set to the ID
+              // Ensure value is a number to match dropdown valueField type (dropdown uses [valueField]="'id'" with number values)
+              const usHtsCodeIdValue = (usHtsCodeId != null && usHtsCodeId !== undefined && usHtsCodeId > 0) ? Number(usHtsCodeId) : -1;
+              
+              this.deviceData.usHtsCodeId = usHtsCodeIdValue;
+              
+              // Always call ensureUsHtsCodeValueSet to handle both cases:
+              // 1. Dropdown already loaded - set value immediately
+              // 2. Dropdown not loaded yet - will be set when dropdown loads
+              if (usHtsCodeIdValue !== -1) {
+                // Use a longer delay to ensure the value is set, then check dropdown
+                setTimeout(() => {
+                  this.ensureUsHtsCodeValueSet();
+                }, 200);
+              }
+              
+              // Trigger change detection to ensure dropdown updates with the selected value
+              setTimeout(() => this.cdr.detectChanges(), 0);
               if (deviceInfo.eccnId !== undefined) this.deviceData.eccnId = deviceInfo.eccnId || deviceInfo.ECCNId || this.deviceData.eccnId;
               if (deviceInfo.licenseExceptionId !== undefined) this.deviceData.licenseExceptionId = deviceInfo.licenseExceptionId || deviceInfo.LicenseExceptionId || this.deviceData.licenseExceptionId;
               // Restricted Countries to Ship - handle both camelCase and PascalCase
@@ -817,6 +860,9 @@ export class DeviceComponent implements OnInit {
                   this.deviceData.label5 = null;
                 }
               }
+              
+              // Update active labels after loading label values
+              this.initializeActiveLabels();
             }
             
             console.log('canEdit set to:', this.canEdit, 'canEditlotType:', this.canEditlotType, 'isEditMode:', this.isEditMode);
@@ -955,6 +1001,9 @@ export class DeviceComponent implements OnInit {
       console.log('Auto-checked label mapping because labels are selected');
     }
     
+    // Initialize active labels based on existing label values
+    this.initializeActiveLabels();
+    
     // Fill label dictionary for format string generation (matching TFS FillLabelDictionary)
     this.fillLabelDictionary();
     
@@ -970,15 +1019,39 @@ export class DeviceComponent implements OnInit {
         // Force change detection after dialog opens to ensure dropdowns update
         setTimeout(() => {
           this.cdr.detectChanges();
-        }, 0);
+          this.ensureUsHtsCodeValueSet();
+        }, 200);
       });
     } else {
       // No labels needed, open dialog immediately
       this.isDialogOpen = true;
+      setTimeout(() => {
+        this.ensureUsHtsCodeValueSet();
+      }, 200);
+    }
+  }
+  
+  private ensureUsHtsCodeValueSet(): void {
+    if (this.deviceData.usHtsCodeId && this.deviceData.usHtsCodeId !== -1 && this.usHtsCodes.length > 0) {
+      const targetId = Number(this.deviceData.usHtsCodeId);
+      const foundItem = this.usHtsCodes.find((item: any) => item.id === targetId);
+      if (foundItem) {
+        // Force update by resetting and setting again
+        const currentValue = this.deviceData.usHtsCodeId;
+        this.deviceData.usHtsCodeId = -1;
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.deviceData.usHtsCodeId = currentValue;
+          this.cdr.detectChanges();
+        }, 50);
+      }
     }
   }
 
   private openViewDialogAfterDataLoad(): void {
+    // Initialize active labels based on existing label values
+    this.initializeActiveLabels();
+    
     // Fill label dictionary for format string generation
     this.fillLabelDictionary();
     
@@ -991,11 +1064,15 @@ export class DeviceComponent implements OnInit {
         // Force change detection after dialog opens to ensure dropdowns update
         setTimeout(() => {
           this.cdr.detectChanges();
-        }, 0);
+          this.ensureUsHtsCodeValueSet();
+        }, 200);
       });
     } else {
       // No labels needed, open dialog immediately
       this.isDialogOpen = true;
+      setTimeout(() => {
+        this.ensureUsHtsCodeValueSet();
+      }, 200);
     }
   }
 
@@ -1039,7 +1116,8 @@ export class DeviceComponent implements OnInit {
         countryOfOriginId: dataItem.countryOfOriginId || dataItem.CountryOfOriginId || dataItem.cooId || dataItem.COOId || null,
         unitCost: dataItem.unitCost !== undefined ? dataItem.unitCost : (dataItem.UnitCost !== undefined ? dataItem.UnitCost : 0),
         materialDescriptionId: dataItem.materialDescriptionId || dataItem.MaterialDescriptionId || null,
-        usHtsCodeId: dataItem.usHtsCodeId || dataItem.USHTSCodeId || dataItem.usHtsCode || dataItem.USHTSCode || null,
+        usHtsCodeId: (dataItem.usHtsCodeId !== undefined && dataItem.usHtsCodeId !== null && dataItem.usHtsCodeId > 0) ? Number(dataItem.usHtsCodeId) : 
+                      ((dataItem.USHTSCodeId !== undefined && dataItem.USHTSCodeId !== null && dataItem.USHTSCodeId > 0) ? Number(dataItem.USHTSCodeId) : -1),
         eccnId: dataItem.eccnId || dataItem.ECCNId || dataItem.eccn || dataItem.ECCN || null,
         licenseExceptionId: dataItem.licenseExceptionId || dataItem.LicenseExceptionId || dataItem.licenseExceptions || dataItem.LicenseExceptions || null,
         restrictedCountriesToShipIds: this.parseRestrictedCountriesIds(dataItem.restrictedCountriesToShipId || dataItem.restrictedCountriesToShipIds || dataItem.restrictedCountriesIds || dataItem.RestrictedCountriesIds),
@@ -1076,6 +1154,7 @@ export class DeviceComponent implements OnInit {
         this.apiService.getDeviceInfo(deviceId).subscribe({
           next: (deviceInfo: any) => {
             console.log('Device Info loaded for view:', deviceInfo);
+            // Debug: Check all possible field name variations for US HTS Code
             // Set CanEdit flag (matching TFS line 51: objtemp.CanEdit = UtilityClass.ToBoolean(ds.Tables[0].Rows[0]["CanEdit"]))
             // Handle different possible response formats: canEdit, CanEdit, or from nested object
             if (deviceInfo.canEdit !== undefined) {
@@ -1133,11 +1212,51 @@ export class DeviceComponent implements OnInit {
               if (deviceInfo.unitCost !== undefined) this.deviceData.unitCost = deviceInfo.unitCost || deviceInfo.UnitCost || this.deviceData.unitCost;
               if (deviceInfo.materialDescriptionId !== undefined) this.deviceData.materialDescriptionId = deviceInfo.materialDescriptionId || deviceInfo.MaterialDescriptionId || this.deviceData.materialDescriptionId;
               // US HTS Code - handle both camelCase and PascalCase
-              const usHtsCodeId = deviceInfo.usHtsCodeId !== undefined ? deviceInfo.usHtsCodeId : 
-                                 (deviceInfo.USHTSCodeId !== undefined ? deviceInfo.USHTSCodeId : null);
-              if (usHtsCodeId !== null && usHtsCodeId !== undefined) {
-                this.deviceData.usHtsCodeId = usHtsCodeId;
+              // Match TFS behavior: if USHTSCodeId > 0, set SelectedValue to that ID, otherwise set to -1 (--Select--)
+              // TFS: ddlUSHTSCode.SelectedValue = UtilityClass.ToInteger(...USHTSCodeId) > 0 ? ...USHTSCodeId : -1;
+              // Backend returns null when value is 0 (converted by SafeGetNullableIntOrZeroAsNull), so check for null explicitly
+              // With camelCase JSON policy, backend serializes USHTSCodeId as usHtsCodeId in JSON response
+              // Always process USHTSCodeId - check all possible field name variations
+              // JSON serialization converts USHTSCodeId to camelCase (usHtsCodeId), but check both
+              // Also search for any field containing "hts" or "code" in case naming is different
+              
+              // Try to find the field by searching all keys (case-insensitive search)
+              let usHtsCodeId = null;
+              const allKeys = Object.keys(deviceInfo);
+              const htsCodeKey = allKeys.find(k => 
+                k.toLowerCase() === 'ushtscodeid' || 
+                k.toLowerCase() === 'ushtscode' ||
+                (k.toLowerCase().includes('hts') && k.toLowerCase().includes('code') && k.toLowerCase().includes('id'))
+              );
+              
+              if (htsCodeKey) {
+                usHtsCodeId = deviceInfo[htsCodeKey];
+              } else {
+                // Try standard field names
+                usHtsCodeId = (deviceInfo.USHTSCodeId !== undefined && deviceInfo.USHTSCodeId !== null) ? deviceInfo.USHTSCodeId : 
+                             ((deviceInfo.usHtsCodeId !== undefined && deviceInfo.usHtsCodeId !== null) ? deviceInfo.usHtsCodeId : 
+                             ((deviceInfo['USHTSCodeId'] !== undefined && deviceInfo['USHTSCodeId'] !== null) ? deviceInfo['USHTSCodeId'] : 
+                             ((deviceInfo['usHtsCodeId'] !== undefined && deviceInfo['usHtsCodeId'] !== null) ? deviceInfo['usHtsCodeId'] : null)));
               }
+              
+              // Set to -1 (--Select--) if value is 0, null, or undefined; otherwise set to the ID
+              // Ensure value is a number to match dropdown valueField type (dropdown uses [valueField]="'id'" with number values)
+              const usHtsCodeIdValue = (usHtsCodeId != null && usHtsCodeId !== undefined && usHtsCodeId > 0) ? Number(usHtsCodeId) : -1;
+              
+              this.deviceData.usHtsCodeId = usHtsCodeIdValue;
+              
+              // Always call ensureUsHtsCodeValueSet to handle both cases:
+              // 1. Dropdown already loaded - set value immediately
+              // 2. Dropdown not loaded yet - will be set when dropdown loads
+              if (usHtsCodeIdValue !== -1) {
+                // Use a longer delay to ensure the value is set, then check dropdown
+                setTimeout(() => {
+                  this.ensureUsHtsCodeValueSet();
+                }, 200);
+              }
+              
+              // Trigger change detection to ensure dropdown updates with the selected value
+              setTimeout(() => this.cdr.detectChanges(), 0);
               if (deviceInfo.eccnId !== undefined) this.deviceData.eccnId = deviceInfo.eccnId || deviceInfo.ECCNId || this.deviceData.eccnId;
               if (deviceInfo.licenseExceptionId !== undefined) this.deviceData.licenseExceptionId = deviceInfo.licenseExceptionId || deviceInfo.LicenseExceptionId || this.deviceData.licenseExceptionId;
               // Restricted Countries to Ship - handle both camelCase and PascalCase
@@ -1223,6 +1342,9 @@ export class DeviceComponent implements OnInit {
                   this.deviceData.label5 = null;
                 }
               }
+              
+              // Update active labels after loading label values
+              this.initializeActiveLabels();
             }
             
             console.log('canEdit set to:', this.canEdit);
@@ -1351,6 +1473,8 @@ export class DeviceComponent implements OnInit {
     }, 0);
     
     this.originalIsActive = true; // Reset original active state for Add mode
+    // Reset active labels for add mode
+    this.activeLabels = [];
     this.deviceData = {
       deviceId: -1,
       deviceName: '',
@@ -1374,7 +1498,7 @@ export class DeviceComponent implements OnInit {
       countryOfOriginId: null,
       unitCost: 0,
       materialDescriptionId: null,
-      usHtsCodeId: null,
+      usHtsCodeId: -1, // Default to -1 (--Select--) to match TFS behavior
       eccnId: null,
       licenseExceptionId: null,
       restrictedCountriesToShipIds: [] as number[],
@@ -1393,6 +1517,13 @@ export class DeviceComponent implements OnInit {
     this.isViewMode = false;
     this.isDialogOpen = true;
     this.deviceFamilies = [];
+    
+    // Initialize active labels - if labelMapping is enabled, add first label
+    if (this.deviceData.labelMapping) {
+      this.activeLabels = [1];
+    } else {
+      this.activeLabels = [];
+    }
     
     console.log('Dialog opened. customersList populated:', this.customersList?.length || 0);
   }
@@ -1476,11 +1607,36 @@ export class DeviceComponent implements OnInit {
         // API returns MasterListItem objects with masterListItemId and itemText
         if (data && Array.isArray(data) && data.length > 0) {
           const mappedData = data.map((item: any) => ({
-            id: item.masterListItemId || item.MasterListItemId,
+            id: Number(item.masterListItemId || item.MasterListItemId), // Ensure ID is a number
             name: item.itemText || item.ItemText
           }));
-          (this as any)[propertyName] = mappedData;
-          console.log(`✓ Loaded ${propertyName} (${listName}): ${mappedData.length} items`, mappedData.slice(0, 3));
+          
+          // Sort by ItemText ASC to match TFS behavior (TFS uses: dtVendors.DefaultView.Sort = "ItemText ASC")
+          // This is especially important for USHTSCode, ECCN, MaterialDescription, and LicenseType
+          mappedData.sort((a, b) => {
+            const nameA = (a.name || '').toUpperCase();
+            const nameB = (b.name || '').toUpperCase();
+            if (nameA < nameB) return -1;
+            if (nameA > nameB) return 1;
+            return 0;
+          });
+          
+          // Add "--Select--" option at the beginning with id = -1 to match TFS behavior
+          // TFS CommonCtrlFilling adds: sDR[SelectedValuePath] = -1; sDR[DisplayMemberPath] = "--Select--"; dt.Rows.InsertAt(sDR, 0);
+          mappedData.unshift({ id: -1, name: '--Select--' });
+          
+          // Create a new array reference to ensure Angular/Kendo detects the change
+          (this as any)[propertyName] = [...mappedData];
+          console.log(`✓ Loaded ${propertyName} (${listName}): ${mappedData.length} items (sorted by ItemText ASC)`, mappedData.slice(0, 3));
+          
+          // Special handling for US HTS Code: if value was set before dropdown loaded, ensure it's properly set now
+          if (propertyName === 'usHtsCodes') {
+            // Use ensureUsHtsCodeValueSet which handles the timing and value setting
+            setTimeout(() => {
+              this.ensureUsHtsCodeValueSet();
+            }, 100);
+          }
+          
           // Trigger change detection after loading to update UI
           this.cdr.detectChanges();
         } else {
@@ -1655,7 +1811,7 @@ export class DeviceComponent implements OnInit {
       countryOfOriginId: null,
       unitCost: 0,
       materialDescriptionId: null,
-      usHtsCodeId: null,
+      usHtsCodeId: -1, // Default to -1 (--Select--) to match TFS behavior
       eccnId: null,
       licenseExceptionId: null,
       restrictedCountriesToShipIds: [] as number[],
@@ -2119,6 +2275,18 @@ export class DeviceComponent implements OnInit {
       // Label fields (matching TFS lines 421-423)
       labels: labelFormatString || null,
       lstLabelDetails: labelDetailsList,
+      // Convert label IDs to label names for database storage
+      // Database stores label names (strings), not IDs
+      // Convert label IDs to label names for database storage
+      // Database stores label names (strings), not IDs
+      // Always send all label fields - use empty string for unselected labels to clear existing values
+      // The stored procedure needs explicit values (even empty strings) to update/clear fields
+      // Sending null might cause the stored procedure to ignore the field and keep old values
+      Label1: this.deviceData.label1 ? this.getLabelDisplayText(this.deviceData.label1) : '',
+      Label2: this.deviceData.label2 ? this.getLabelDisplayText(this.deviceData.label2) : '',
+      Label3: this.deviceData.label3 ? this.getLabelDisplayText(this.deviceData.label3) : '',
+      Label4: this.deviceData.label4 ? this.getLabelDisplayText(this.deviceData.label4) : '',
+      Label5: this.deviceData.label5 ? this.getLabelDisplayText(this.deviceData.label5) : '',
       createdBy: 0 // Will be set by backend from token
     };
     
@@ -2131,9 +2299,21 @@ export class DeviceComponent implements OnInit {
     if (this.deviceData.materialDescriptionId != null && this.deviceData.materialDescriptionId !== -1) {
       request.materialDescriptionId = Number(this.deviceData.materialDescriptionId);
     }
-    if (this.deviceData.usHtsCodeId != null && this.deviceData.usHtsCodeId !== -1) {
+    // US HTS Code: Always send value to match TFS behavior
+    // TFS: objtemp.USHTSCodeId = UtilityClass.ToInteger(ddlUSHTSCode.SelectedValue);
+    //      - If SelectedValue is -1 (--Select--), UtilityClass.ToInteger returns 0
+    //      - If SelectedValue is a valid ID, returns that ID
+    // TFS always includes USHTSCodeId in XML (even if 0), so we need to always send a value
+    if (this.deviceData.usHtsCodeId != null && this.deviceData.usHtsCodeId !== undefined && 
+        this.deviceData.usHtsCodeId !== -1 && this.deviceData.usHtsCodeId > 0) {
+      // Valid selection - send the ID
       request.usHtsCodeId = Number(this.deviceData.usHtsCodeId);
       request.USHTSCodeId = Number(this.deviceData.usHtsCodeId); // Also send PascalCase for backend compatibility
+    } else {
+      // No selection (null, undefined, -1, or 0) - send 0 to match TFS behavior
+      // TFS: UtilityClass.ToInteger(-1) returns 0, so we send 0 when SelectedValue is -1
+      request.usHtsCodeId = 0;
+      request.USHTSCodeId = 0;
     }
     if (this.deviceData.eccnId != null && this.deviceData.eccnId !== -1) {
       request.eccnId = Number(this.deviceData.eccnId);
@@ -2191,6 +2371,12 @@ export class DeviceComponent implements OnInit {
     console.log('Saving device with request:', JSON.stringify(request, null, 2));
     console.log('Device data:', this.deviceData);
     console.log('Is Edit Mode:', this.isEditMode);
+    console.log('Label values being saved:');
+    console.log('  - Label1:', request.Label1, '(from ID:', this.deviceData.label1, ')');
+    console.log('  - Label2:', request.Label2, '(from ID:', this.deviceData.label2, ')');
+    console.log('  - Label3:', request.Label3, '(from ID:', this.deviceData.label3, ')');
+    console.log('  - Label4:', request.Label4, '(from ID:', this.deviceData.label4, ')');
+    console.log('  - Label5:', request.Label5, '(from ID:', this.deviceData.label5, ')');
     console.log('API endpoint will be: api/v1/ise/devicemaster/device');
 
     this.apiService.addUpdateDevice(request).subscribe({
@@ -2367,9 +2553,23 @@ export class DeviceComponent implements OnInit {
       this.deviceData.label3 = null;
       this.deviceData.label4 = null;
       this.deviceData.label5 = null;
+      // Clear active labels
+      this.activeLabels = [];
     } else {
+      // When labelMapping is enabled, add Label 1 by default if no labels exist
+      if (this.activeLabels.length === 0) {
+        this.activeLabels = [1];
+        // Initialize label1 to null
+        this.deviceData.label1 = null;
+      }
+      
       // Load customer labels when checked
       this.loadCustomerLabels().then(() => {
+        // Ensure Label 1 is still there after labels load
+        if (this.activeLabels.length === 0) {
+          this.activeLabels = [1];
+          this.deviceData.label1 = null;
+        }
         this.cdr.detectChanges();
       });
     }
@@ -2393,16 +2593,68 @@ export class DeviceComponent implements OnInit {
           next: (data: any) => {
             console.log('Customer Labels API response:', data);
             if (data && Array.isArray(data) && data.length > 0) {
+              // Log first item structure to see what fields are available
+              console.log('First API item structure:', data[0]);
+              console.log('First API item keys:', Object.keys(data[0] || {}));
+              
               // Add --Select-- as first option - create new array to ensure reference change triggers update
+              // Map CustomerLabel objects: API returns { lid: int, lName: string } (camelCase from JSON serialization)
+              // C# class has { LID: int, LName: string } but JSON serialization converts to camelCase
+              const mappedLabels = data.map((item: any) => {
+                // Extract lid (lowercase) - JSON serialization converts LID to lid
+                // Check lowercase first since that's what the API returns
+                const lid = item.lid !== undefined ? item.lid : 
+                           (item.lID !== undefined ? item.lID : 
+                           (item.LID !== undefined ? item.LID : null));
+                
+                // Extract lName (lowercase) - JSON serialization converts LName to lName
+                // Check lowercase first since that's what the API returns
+                const lName = item.lName !== undefined ? item.lName : 
+                             (item.lname !== undefined ? item.lname :
+                             (item.LName !== undefined ? item.LName : ''));
+                
+                // Convert lid to number, ensuring it's valid
+                let labelId: number | null = null;
+                if (lid !== null && lid !== undefined && lid !== '') {
+                  const numId = Number(lid);
+                  if (!isNaN(numId) && isFinite(numId)) {
+                    labelId = numId;
+                  }
+                }
+                
+                console.log(`   - Mapping CustomerLabel: lid=${lid} (${typeof lid}) -> id=${labelId}, lName="${lName}" -> name="${lName}"`);
+                
+                return {
+                  id: labelId,
+                  name: lName || ''
+                };
+              });
+              
+              console.log(`   - Mapped ${mappedLabels.length} labels before filtering`);
+              
+              // Filter out items with invalid IDs or empty names
+              const validLabels = mappedLabels.filter((item: any) => {
+                const isValid = item.id !== null && item.id !== undefined && !isNaN(item.id) && item.name && item.name.trim() !== '';
+                if (!isValid) {
+                  console.log(`   - Filtered out invalid item:`, item);
+                }
+                return isValid;
+              });
+              
+              console.log(`   - After filtering: ${validLabels.length} valid labels`);
+              
               const newLabels = [
                 { id: null, name: '--Select--' },
-                ...data.map((item: any) => ({
-                  id: Number(item.lID || item.LID),
-                  name: item.lName || item.LName
-                }))
+                ...validLabels
               ];
               this.customerLabels = newLabels;
-              console.log(`✓ Loaded customerLabels: ${this.customerLabels.length} items`, this.customerLabels.slice(0, 3));
+              console.log(`✓ Loaded customerLabels: ${this.customerLabels.length} items`, this.customerLabels);
+              console.log(`✓ customerLabels array:`, JSON.stringify(this.customerLabels, null, 2));
+              
+              // Verify dropdown will have data
+              if (this.customerLabels.length <= 1) {
+                console.warn(`⚠️ WARNING: Only ${this.customerLabels.length} item(s) in customerLabels (should have more than just --Select--)`);
+              }
               
               // Convert label names to IDs if they were stored temporarily
               if ((this.deviceData as any).label1Name) {
@@ -2441,12 +2693,33 @@ export class DeviceComponent implements OnInit {
                 delete (this.deviceData as any).label5Name;
               }
               
-              this.cdr.detectChanges();
+              // After labels are loaded, ensure values are set correctly for all active labels
+              // This ensures dropdowns display the selected values
+              for (let i = 1; i <= 5; i++) {
+                const labelProperty = `label${i}` as keyof typeof this.deviceData;
+                const currentValue = (this.deviceData as any)[labelProperty];
+                if (currentValue !== null && currentValue !== undefined) {
+                  // Normalize the value to ensure it matches the ID type in customerLabels
+                  const normalizedValue = Number(currentValue);
+                  if (!isNaN(normalizedValue)) {
+                    (this.deviceData as any)[labelProperty] = normalizedValue;
+                  }
+                }
+              }
+              
+              // Force change detection after labels are loaded to ensure dropdowns update
+              setTimeout(() => {
+                this.cdr.markForCheck();
+                this.cdr.detectChanges();
+              }, 0);
               resolve();
             } else {
               console.warn('⚠ No data returned for customer labels', data);
               this.customerLabels = [{ id: null, name: '--Select--' }];
-              this.cdr.detectChanges();
+              setTimeout(() => {
+                this.cdr.markForCheck();
+                this.cdr.detectChanges();
+              }, 0);
               resolve();
             }
           },
@@ -2465,12 +2738,34 @@ export class DeviceComponent implements OnInit {
             console.log('Customer Labels API response (fallback - all):', data);
             if (data && Array.isArray(data) && data.length > 0) {
               // Add --Select-- as first option - create new array to ensure reference change triggers update
+              // Map CustomerLabel objects: API returns { lid: int, lName: string } (camelCase from JSON serialization)
               const newLabels = [
                 { id: null, name: '--Select--' },
-                ...data.map((item: any) => ({
-                  id: Number(item.lID || item.LID),
-                  name: item.lName || item.LName
-                }))
+                ...data.map((item: any) => {
+                  // Extract lid (lowercase) - JSON serialization converts LID to lid
+                  const lid = item.lid !== undefined ? item.lid : 
+                             (item.lID !== undefined ? item.lID : 
+                             (item.LID !== undefined ? item.LID : null));
+                  
+                  // Extract lName (lowercase l, capital N) - JSON serialization converts LName to lName
+                  const lName = item.lName !== undefined ? item.lName : 
+                               (item.lname !== undefined ? item.lname :
+                               (item.LName !== undefined ? item.LName : ''));
+                  
+                  // Convert lid to number, ensuring it's valid
+                  let labelId: number | null = null;
+                  if (lid !== null && lid !== undefined && lid !== '') {
+                    const numId = Number(lid);
+                    if (!isNaN(numId) && isFinite(numId)) {
+                      labelId = numId;
+                    }
+                  }
+                  
+                  return {
+                    id: labelId,
+                    name: lName || ''
+                  };
+                }).filter((item: any) => item.id !== null && item.id !== undefined && !isNaN(item.id) && item.name) // Filter out invalid IDs and empty names
               ];
               this.customerLabels = newLabels;
               console.log(`✓ Loaded customerLabels (fallback): ${this.customerLabels.length} items`);
@@ -2502,12 +2797,34 @@ export class DeviceComponent implements OnInit {
           console.log('Customer Labels API response (all):', data);
             if (data && Array.isArray(data) && data.length > 0) {
               // Add --Select-- as first option - create new array to ensure reference change triggers update
+              // Map CustomerLabel objects: API returns { lid: int, lName: string } (camelCase from JSON serialization)
               const newLabels = [
                 { id: null, name: '--Select--' },
-                ...data.map((item: any) => ({
-                  id: Number(item.lID || item.LID),
-                  name: item.lName || item.LName
-                }))
+                ...data.map((item: any) => {
+                  // Extract lid (lowercase) - JSON serialization converts LID to lid
+                  const lid = item.lid !== undefined ? item.lid : 
+                             (item.lID !== undefined ? item.lID : 
+                             (item.LID !== undefined ? item.LID : null));
+                  
+                  // Extract lName (lowercase l, capital N) - JSON serialization converts LName to lName
+                  const lName = item.lName !== undefined ? item.lName : 
+                               (item.lname !== undefined ? item.lname :
+                               (item.LName !== undefined ? item.LName : ''));
+                  
+                  // Convert lid to number, ensuring it's valid
+                  let labelId: number | null = null;
+                  if (lid !== null && lid !== undefined && lid !== '') {
+                    const numId = Number(lid);
+                    if (!isNaN(numId) && isFinite(numId)) {
+                      labelId = numId;
+                    }
+                  }
+                  
+                  return {
+                    id: labelId,
+                    name: lName || ''
+                  };
+                }).filter((item: any) => item.id !== null && item.id !== undefined && !isNaN(item.id) && item.name) // Filter out invalid IDs and empty names
               ];
               this.customerLabels = newLabels;
               console.log(`✓ Loaded customerLabels: ${this.customerLabels.length} items`);
@@ -2596,6 +2913,337 @@ export class DeviceComponent implements OnInit {
   onLabel5Change(value: any): void {
     // Ensure value is stored as number to match ID type
     this.deviceData.label5 = value !== null && value !== undefined ? Number(value) : null;
+  }
+
+  // Generic label change handler for dynamic labels
+  // Uses the exact same pattern as onLabel1Change, onLabel2Change, etc.
+  onLabelChange(labelNumber: number, value: any): void {
+    const labelProperty = `label${labelNumber}` as keyof typeof this.deviceData;
+    // Ensure value is stored as number to match ID type (same pattern as individual label handlers)
+    // Update synchronously - no async operations
+    (this.deviceData as any)[labelProperty] = value !== null && value !== undefined ? Number(value) : null;
+  }
+
+  // Normalize label value when changed via ngModel
+  // ngModelChange fires AFTER ngModel has already updated deviceData, so we need to normalize it
+  // Handle label value change from dropdown - use valueChange event instead of ngModelChange
+  // Handle label selection change - gets the full selected item
+  onLabelSelectionChange(labelNumber: number, event: any): void {
+    console.log(`🎯 LABEL${labelNumber} SELECTION CHANGE:`, event);
+    if (event && event.length > 0) {
+      const selectedItem = event[0];
+      console.log(`   - Selected item:`, selectedItem);
+      console.log(`   - Selected item.id:`, selectedItem?.id, `(type: ${typeof selectedItem?.id})`);
+      console.log(`   - Selected item.name:`, selectedItem?.name);
+      
+      // If we have a valid selected item with an ID, use it
+      if (selectedItem && selectedItem.id !== null && selectedItem.id !== undefined && !isNaN(selectedItem.id)) {
+        const labelProperty = `label${labelNumber}` as keyof typeof this.deviceData;
+        (this.deviceData as any)[labelProperty] = Number(selectedItem.id);
+        console.log(`   - Updated ${String(labelProperty)} to:`, selectedItem.id);
+        this.labelRefreshCounter++;
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
+      }
+    }
+  }
+
+  // Handle label value change from dropdown
+  onLabelValueChange(labelNumber: number, value: any): void {
+    const labelProperty = `label${labelNumber}` as keyof typeof this.deviceData;
+    
+    // Log BEFORE selection
+    const valueBefore = (this.deviceData as any)[labelProperty];
+    console.log(`═══════════════════════════════════════════════════════════`);
+    console.log(`🔵 LABEL${labelNumber} VALUE CHANGE - BEFORE:`);
+    console.log(`   - Property: ${String(labelProperty)}`);
+    console.log(`   - Current stored value:`, valueBefore, `(type: ${typeof valueBefore})`);
+    console.log(`   - New selected value:`, value, `(type: ${typeof value})`);
+    console.log(`   - Is NaN?:`, isNaN(value));
+    console.log(`   - customerLabels length:`, this.customerLabels?.length);
+    console.log(`   - customerLabels sample:`, this.customerLabels?.slice(0, 5));
+    
+    // Check if value is NaN or invalid
+    let normalizedValue: number | null = null;
+    if (value !== null && value !== undefined && value !== '' && !isNaN(value)) {
+      const numValue = Number(value);
+      if (!isNaN(numValue) && isFinite(numValue)) {
+        normalizedValue = numValue;
+      }
+    }
+    
+    console.log(`   - Normalized value:`, normalizedValue, `(type: ${typeof normalizedValue})`);
+    
+    // If we got NaN, try to find the value from the selected item in customerLabels
+    if (isNaN(value) || normalizedValue === null) {
+      console.log(`   ⚠️ Invalid value received, checking customerLabels...`);
+      // The value might be coming as an object or string, let's check customerLabels structure
+      const firstLabel = this.customerLabels?.[0];
+      console.log(`   - First label structure:`, firstLabel);
+      console.log(`   - customerLabels valueField 'id' type:`, typeof this.customerLabels?.[1]?.id);
+    }
+    
+    // Update the value
+    (this.deviceData as any)[labelProperty] = normalizedValue;
+    
+    // Log AFTER setting value
+    const valueAfter = (this.deviceData as any)[labelProperty];
+    console.log(`🟢 LABEL${labelNumber} VALUE CHANGE - AFTER:`);
+    console.log(`   - Stored value after update:`, valueAfter, `(type: ${typeof valueAfter})`);
+    console.log(`   - labelRefreshCounter: ${this.labelRefreshCounter} -> ${this.labelRefreshCounter + 1}`);
+    
+    // Increment refresh counter to force dropdown re-render
+    this.labelRefreshCounter++;
+    
+    // Force immediate change detection
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+    
+    console.log(`   - Change detection called`);
+    
+    // Use setTimeout to ensure change detection happens after value is set
+    setTimeout(() => {
+      const valueAfterTimeout = (this.deviceData as any)[labelProperty];
+      const getLabelValueResult = this.getLabelValue(labelNumber);
+      console.log(`⏱️ LABEL${labelNumber} VALUE CHANGE - AFTER TIMEOUT:`);
+      console.log(`   - Stored value:`, valueAfterTimeout);
+      console.log(`   - getLabelValue(${labelNumber}) returns:`, getLabelValueResult);
+      console.log(`   - Change detection called again`);
+      this.cdr.detectChanges();
+      console.log(`═══════════════════════════════════════════════════════════`);
+    }, 0);
+  }
+  
+  // Legacy method - kept for compatibility but not used
+  normalizeLabelValueOnChange(labelNumber: number, value: any): void {
+    this.onLabelValueChange(labelNumber, value);
+  }
+
+
+  // Synchronous label change handler - updates value immediately without async operations
+  onLabelChangeSync(labelNumber: number, value: any): void {
+    const labelProperty = `label${labelNumber}` as keyof typeof this.deviceData;
+    
+    // Store old value for comparison
+    const oldValue = (this.deviceData as any)[labelProperty];
+    
+    // Handle null case (--Select-- option has id: null)
+    let normalizedValue: number | null = null;
+    if (value !== null && value !== undefined && value !== '') {
+      const numValue = Number(value);
+      if (!isNaN(numValue)) {
+        normalizedValue = numValue;
+      }
+    }
+    
+    // Only update if value actually changed
+    if (oldValue !== normalizedValue) {
+      // Update synchronously - ensure the value is set immediately
+      // This matches the pattern used by onLabel1Change, onLabel2Change, etc.
+      (this.deviceData as any)[labelProperty] = normalizedValue;
+      
+      // Force immediate change detection to ensure dropdown updates
+      // Use markForCheck first, then detectChanges
+      this.cdr.markForCheck();
+      this.cdr.detectChanges();
+    }
+  }
+
+  // Get label value by number - returns the actual value for binding
+  // This method is called by the template to get the current value for the dropdown
+  getLabelValue(labelNumber: number): number | null {
+    const labelProperty = `label${labelNumber}` as keyof typeof this.deviceData;
+    const value = (this.deviceData as any)[labelProperty];
+    
+    // Normalize the value - ensure it's a number or null
+    // This is critical for Kendo DropDownList with valuePrimitive=true
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+    
+    const numValue = Number(value);
+    // Return null if conversion failed, otherwise return the number
+    const result = isNaN(numValue) ? null : numValue;
+    
+    // Debug logging for label1 only to track value changes
+    if (labelNumber === 1) {
+      console.log(`📊 getLabelValue(${labelNumber}) called - raw value:`, value, `-> normalized:`, result);
+    }
+    
+    return result;
+  }
+
+  // Set label value by number - ensures value is normalized when set via ngModelChange
+  // This is called by ngModel when the value changes
+  setLabelValue(labelNumber: number, value: any): void {
+    const labelProperty = `label${labelNumber}` as keyof typeof this.deviceData;
+    // Normalize the value - ensure it's exactly the same type as the dropdown expects
+    // Use the exact same pattern as onLabel1Change, onLabel2Change, etc.
+    (this.deviceData as any)[labelProperty] = value !== null && value !== undefined ? Number(value) : null;
+  }
+
+  // Get canEdit flag by label number
+  getCanEditLabel(labelNumber: number): boolean {
+    const canEditProperty = `canEditLabel${labelNumber}` as keyof this;
+    return (this as any)[canEditProperty] !== false;
+  }
+
+  // Add a new label field (up to 5)
+  addLabel(): void {
+    console.log('addLabel() called');
+    console.log('  - activeLabels.length:', this.activeLabels.length);
+    console.log('  - activeLabels:', JSON.stringify(this.activeLabels));
+    console.log('  - labelMapping:', this.deviceData.labelMapping);
+    console.log('  - labelEditEnabled:', this.labelEditEnabled);
+    console.log('  - isViewMode:', this.isViewMode);
+    
+    if (this.activeLabels.length >= 5) {
+      console.log('Cannot add label - already at max (5)');
+      return;
+    }
+    
+    // Ensure labelMapping is enabled when adding a label
+    if (!this.deviceData.labelMapping) {
+      console.log('Enabling labelMapping');
+      this.deviceData.labelMapping = true;
+      // Load customer labels if customer is selected
+      if (this.deviceData.customerID) {
+        console.log('Loading customer labels first...');
+        this.loadCustomerLabels().then(() => {
+          console.log('Customer labels loaded, now adding label');
+          // After labels are loaded, add the new label
+          this.addLabelInternal();
+        });
+        return; // Exit early, addLabelInternal will be called after labels load
+      } else {
+        console.log('No customer selected, adding label without loading labels');
+      }
+    }
+    
+    // If labelMapping is already enabled or no customer selected, add label immediately
+    this.addLabelInternal();
+  }
+  
+  private addLabelInternal(): void {
+    const nextPosition = this.activeLabels.length + 1;
+    console.log('addLabelInternal() - Adding label at position:', nextPosition);
+    console.log('  - Current activeLabels before:', JSON.stringify(this.activeLabels));
+    
+    // Initialize the new label value to null first
+    const labelProperty = `label${nextPosition}` as keyof typeof this.deviceData;
+    (this.deviceData as any)[labelProperty] = null;
+    console.log(`  - Set deviceData.${String(labelProperty)} to null`);
+    
+    // Create a completely new array reference using spread operator
+    // This is critical for *ngFor to detect the change and re-render
+    this.activeLabels = [...this.activeLabels, nextPosition];
+    console.log('  - New activeLabels after:', JSON.stringify(this.activeLabels));
+    console.log('  - activeLabels.length:', this.activeLabels.length);
+    
+    // Force change detection immediately
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+    console.log('  - detectChanges() called');
+    
+    // Use setTimeout to ensure DOM updates
+    setTimeout(() => {
+      console.log('  - setTimeout callback - activeLabels:', JSON.stringify(this.activeLabels));
+      this.cdr.detectChanges();
+    }, 0);
+    
+    console.log('addLabelInternal() completed');
+  }
+
+  // Remove a label field and renumber subsequent labels sequentially
+  removeLabel(labelNumber: number): void {
+    // Find the position in activeLabels array (0-based)
+    // labelNumber is the sequential position (1, 2, 3, 4, 5) from activeLabels
+    const position = this.activeLabels.indexOf(labelNumber);
+    if (position === -1) return;
+    
+    const totalActiveLabels = this.activeLabels.length;
+    
+    // Shift all subsequent label values down sequentially
+    // activeLabels contains sequential positions [1, 2, 3, 4]
+    // If we delete position 1 (label2), we need:
+    // - label2 gets label3's value
+    // - label3 gets label4's value  
+    // - label4 becomes null
+    for (let i = position; i < totalActiveLabels - 1; i++) {
+      const currentSeqNum = i + 1; // Sequential position (1-based): 1, 2, 3, 4
+      const nextSeqNum = i + 2;    // Next sequential position: 2, 3, 4, 5
+      
+      // Copy value from next sequential label to current sequential label
+      const nextLabelProperty = `label${nextSeqNum}` as keyof typeof this.deviceData;
+      const currentLabelProperty = `label${currentSeqNum}` as keyof typeof this.deviceData;
+      (this.deviceData as any)[currentLabelProperty] = (this.deviceData as any)[nextLabelProperty];
+    }
+    
+    // Clear the last label value
+    const lastSeqNum = totalActiveLabels;
+    const lastLabelProperty = `label${lastSeqNum}` as keyof typeof this.deviceData;
+    (this.deviceData as any)[lastLabelProperty] = null;
+    
+    // Remove from active labels array and renumber sequentially
+    this.activeLabels = [];
+    for (let i = 1; i <= totalActiveLabels - 1; i++) {
+      this.activeLabels.push(i);
+    }
+    
+    // Force change detection to update the UI and clear any stale bindings
+    this.cdr.detectChanges();
+  }
+
+  // TrackBy function for label ngFor to ensure proper change detection
+  // Include the value in the track key to force re-render when value changes
+  trackByLabelNumber = (index: number, labelNum: number): string => {
+    // Access deviceData directly to avoid 'this' binding issues
+    const labelProperty = `label${labelNum}` as keyof typeof this.deviceData;
+    const labelValue = (this.deviceData as any)[labelProperty];
+    const normalizedValue = labelValue !== null && labelValue !== undefined ? Number(labelValue) : null;
+    // Return a unique key that includes the label number and its current value
+    // This forces Angular to re-render the dropdown when the value changes
+    return `label-${labelNum}-val-${normalizedValue || 'null'}`;
+  }
+
+  // Initialize active labels based on existing label values
+  // This method also consolidates labels to be sequential (1, 2, 3, ...)
+  initializeActiveLabels(): void {
+    // First, collect all non-null label values
+    const labelValues: (number | null)[] = [];
+    for (let i = 1; i <= 5; i++) {
+      const labelProperty = `label${i}` as keyof typeof this.deviceData;
+      const labelValue = (this.deviceData as any)[labelProperty];
+      if (labelValue !== null && labelValue !== undefined && labelValue !== 0) {
+        labelValues.push(labelValue);
+      } else {
+        labelValues.push(null);
+      }
+    }
+    
+    // Consolidate: shift all non-null values to the beginning
+    // Clear all labels first
+    for (let i = 1; i <= 5; i++) {
+      const labelProperty = `label${i}` as keyof typeof this.deviceData;
+      (this.deviceData as any)[labelProperty] = null;
+    }
+    
+    // Reassign values sequentially
+    this.activeLabels = [];
+    let sequentialIndex = 1;
+    for (let i = 0; i < labelValues.length; i++) {
+      if (labelValues[i] !== null) {
+        const labelProperty = `label${sequentialIndex}` as keyof typeof this.deviceData;
+        (this.deviceData as any)[labelProperty] = labelValues[i];
+        this.activeLabels.push(sequentialIndex);
+        sequentialIndex++;
+      }
+    }
+    
+    // If no labels exist but labelMapping is enabled, add the first label
+    if (this.activeLabels.length === 0 && this.deviceData.labelMapping) {
+      this.activeLabels.push(1);
+    }
   }
 
   openLabelDetails(labelNumber: number): void {
