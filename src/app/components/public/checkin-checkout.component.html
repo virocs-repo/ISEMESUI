@@ -1,0 +1,202 @@
+<h2 style="margin: 40px;" class="title">{{ checkInCheckOutText }}</h2>
+<div class="user-info">
+  <kendo-avatar
+    [svgIcon]="ICON.userIcon"
+    shape="circle"
+    size="medium">
+  </kendo-avatar>
+
+  <span class="username">{{username}}</span>
+</div>
+
+
+<!-- CHECK-IN -->
+@if(type === 'checkin')
+{
+  <div  class="section-container">
+
+  <div class="input-row">
+  <kendo-multiselect
+  [data]="filteredCheckInComboResults"
+  [value]="selectedKeys"
+  [checkboxes]="true"
+  textField="iseLotNumber"
+  valueField="lotId"
+  [valuePrimitive]="true"
+  [filterable]="true"
+  [autoClose]="false"
+  (filterChange)="onFilter($event)"
+  (close)="clearFilterState()"
+  (valueChange)="onSelectionChange($event)"
+  placeholder="Select lot to Checked-In">
+  
+  
+   <!-- CUSTOM ITEM TEMPLATE -->
+  <ng-template
+    kendoMultiSelectItemTemplate
+    let-item let-selected="selected">
+
+    <label
+      class="custom-item"
+      style="display:flex; align-items:center; width:100%; padding:4px 8px; cursor:pointer;">
+
+      
+
+      <span style="margin-left:8px;">
+        {{ item.iseLotNumber }}
+      </span>
+
+    </label>
+
+  </ng-template>
+
+</kendo-multiselect>
+
+  </div>
+
+  <kendo-grid
+    [data]="filteredCheckInResults"
+    class="full-grid"
+    [height]="450"
+  >
+    <kendo-grid-column field="iseLotNumber" title="ISELotNumber"></kendo-grid-column>
+
+    <kendo-grid-column title="CR Qty" field="quantity">
+     <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+    
+    <kendo-numerictextbox
+      format="n0"
+      [decimals]="0"
+      [spinners]="false"
+      placeholder="Enter a number"
+      (ngModel)="dataItem.quantity"
+    ></kendo-numerictextbox>
+  </ng-template>
+    </kendo-grid-column>
+
+    <kendo-grid-column field="customerLotNumber" title="Customer LotNumber"></kendo-grid-column>
+    <kendo-grid-column field="totalCount" title="Total Qty"></kendo-grid-column>
+    <kendo-grid-column field="device" title="Device"></kendo-grid-column>
+
+    <kendo-grid-command-column title="X">
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <button 
+          kendoButton 
+          [svgIcon]="svgTrash" 
+          (click)="removeHandler(dataItem)"
+          class="remove-btn">
+        </button>
+      </ng-template>
+    </kendo-grid-command-column>
+
+  </kendo-grid>
+
+</div>
+}
+
+<!-- CHECK-OUT -->
+ @if(type === 'checkout'){
+<div class="button-grid">
+ @for (btn of topTenCheckOutResults; track btn.lotId) {
+  
+  <button
+    kendoButton
+    class="action-btn"
+    [themeColor]="isPrimary(btn) ? 'primary' : 'base'"
+    [disabled]="isDisabled(btn)"
+    (click)="addKey(btn.lotId)">
+    {{ btn.iseLotNumber }}
+  </button>
+}
+</div>
+ }
+ @if(type === 'checkout'){
+<div  class="section-container">
+
+  <div class="input-row">
+   <kendo-multiselect
+    [data]="filteredCheckOutComboResults"
+    [value]="selectedKeys"
+    [checkboxes]="true"
+    textField="iseLotNumber"
+    valueField="lotId"
+    [valuePrimitive]="true"
+    [filterable]="true"
+    [autoClose]="false"
+    (filterChange)="onFilter($event)"
+    (close)="clearFilterState()"
+    [tagMapper]="tagMapper"
+    placeholder="Select Checked-In Lots to Check-Out"
+    (valueChange)="onSelectionChange($event)"
+  >
+   <ng-template kendoMultiSelectItemTemplate let-item let-index="index" let-selected="selected">
+   <div
+    class="custom-item"
+    style="display:flex; align-items:center; cursor:pointer; width:100%; padding:4px 8px;"
+  >    
+    
+    {{ item.iseLotNumber }}
+  </div>
+</ng-template>
+</kendo-multiselect>
+  </div>
+<!-- EMPTY TAG TEMPLATE -->
+<ng-template #emptyTemplate></ng-template>
+  <kendo-grid
+    [data]="filteredCheckOutResults"
+    class="full-grid"
+    [height]="350"
+  >
+    <kendo-grid-column field="iseLotNumber" title="ISELotNumber"></kendo-grid-column>
+    <kendo-grid-column field="customerLotNumber" title="Customer LotNumber"></kendo-grid-column>
+    <kendo-grid-column field="totalCount" title="Total Qty"></kendo-grid-column>
+    <kendo-grid-column field="device" title="Device"></kendo-grid-column>
+
+    <kendo-grid-command-column title="X" >
+      <ng-template kendoGridCellTemplate let-dataItem>
+        <button 
+          kendoButton 
+          [svgIcon]="svgTrash" 
+          (click)="removeHandler(dataItem)"
+          class="remove-btn">
+        </button>
+      </ng-template>
+    </kendo-grid-command-column>
+  </kendo-grid>
+
+</div>
+ }
+
+
+<!-- Submit / Cancel -->
+<div class="btn-center">
+  <button kendoButton themeColor="primary" class="btn-lg" (click)="submitSelected()">Submit</button>
+  <button kendoButton class="btn-lg cancel-btn" (click)="cancel()">Cancel</button>
+</div>
+
+
+<!-- DIALOG -->
+ @if(showStatusDialog){
+ <kendo-dialog
+  [title]="dialogTitle"
+  (close)="closeStatusDialog()"
+  [minWidth]="350"
+>
+  <div class="dialog-content">
+    <span
+      (ngClass)="{
+        'success-icon': dialogType === 'success',
+        'error-icon': dialogType === 'error'
+      }"
+      class="dialog-icon"
+    ></span>
+
+    {{ dialogMessage }}
+  </div>
+
+  <div class="k-dialog-buttongroup">
+    <button kendoButton (click)="closeStatusDialog()">OK</button>
+  </div>
+</kendo-dialog>
+ }
+

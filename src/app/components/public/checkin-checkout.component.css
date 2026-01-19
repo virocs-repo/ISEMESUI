@@ -1,0 +1,172 @@
+/* -----------------------------------------------------------
+   TABLET PORTRAIT (480px–1024px)
+-----------------------------------------------------------*/
+@media (min-width: 480px) and (max-width: 1024px) and (orientation: portrait) {
+
+  .section-container {
+    margin: 20px;
+  }
+
+  .input-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 15px;
+  }
+
+  .full-grid {
+    margin: 0 10px;
+  }
+
+  .btn-center {
+    margin: 40px;
+    display: flex;
+    gap: 20px;
+  }
+
+  /* Dialog responsive */
+  .k-dialog {
+    width: 80vw !important;
+    max-width: 500px !important;
+    margin: auto !important;
+  }
+
+  /* Dialog grid margin */
+  kendo-dialog .full-grid {
+    margin: 10px;
+  }
+}
+
+
+/* -----------------------------------------------------------
+   TABLET LANDSCAPE (768px–1366px)
+-----------------------------------------------------------*/
+@media (min-width: 768px) and (max-width: 1366px) and (orientation: landscape) {
+
+  .section-container {
+    margin: 20px;
+  }
+
+  .input-row {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .full-grid {
+    margin: 0 20px;
+  }
+
+  .btn-center {
+    margin: 40px;
+    display: flex;
+    gap: 25px;
+  }
+
+  /* Dialog responsive */
+  .k-dialog {
+    width: 60vw !important;
+    max-width: 650px !important;
+    margin: auto !important;
+  }
+
+  kendo-dialog .full-grid {
+    margin: 15px;
+  }
+}
+/* Common styling */
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 15px;
+  font-size: 18px;
+  width: 100%;
+  height: 55px;
+}
+
+
+/* -----------------------------------------------------------
+   TABLET PORTRAIT (480px–1024px)
+-----------------------------------------------------------*/
+@media (min-width: 480px) and (max-width: 1024px) and (orientation: portrait) {
+  .button-grid {
+    grid-template-columns: repeat(5, 1fr);  /* 5 per row → 2 rows */
+    width: 95%;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+
+/* -----------------------------------------------------------
+   TABLET LANDSCAPE (768px–1366px)
+-----------------------------------------------------------*/
+@media (min-width: 768px) and (max-width: 1366px) and (orientation: landscape) {
+  .button-grid {
+    grid-template-columns: repeat(5, 1fr); /* still 5 per row */
+    width: 95%;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+
+.footer-btn {
+  width: 100%;
+  margin-top: 5px;
+  padding: 8px 0;
+}
+
+.user-info{
+  position: fixed;       /* stay at top-right even on scroll */
+  top: 12px;             /* distance from top */
+  right: 20px;           /* distance from right */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 1000;         /* on top of other content */
+}
+
+/* optional: make sure avatar is circular */
+kendo-avatar {
+  border-radius: 50%;
+}
+
+
+
+
+::ng-deep kendo-multiselect .k-list .k-selected {
+  background-color: transparent !important;
+  color: transparent !important;
+}
+::ng-deep kendo-multiselect .k-list .k-list-item:hover {
+  background-color: transparent !important;
+}
+::ng-deep kendo-multiselect .k-chip {
+  display: none !important;
+}
+::ng-deep kendo-multiselect .k-chip-list {
+  display: none !important;
+}
+::ng-deep kendo-multiselect .k-input {
+  border: none !important;
+  box-shadow: none !important;
+}
+/* Remove highlight for selected items and hover */
+.k-multiselect .k-list .k-item.k-selected,
+.k-multiselect .k-list .k-item.k-hover,
+.k-multiselect .k-list .k-item:focus,
+.k-multiselect .k-list .k-focus {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+/* Optional: remove focus border/outline */
+.k-multiselect .k-list .k-item.k-focus {
+  outline: none !important;
+}
+

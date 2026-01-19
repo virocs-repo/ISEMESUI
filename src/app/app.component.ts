@@ -192,15 +192,7 @@ export class AppComponent implements OnInit, OnDestroy {
       svgIcon: ICON.selectBoxIcon
     });
     
-    // Add Traveller sub-items
-    const ID_TRAVELLER_CHECKIN_CHECKOUT = 1010;
-    items.push({
-      id: ID_TRAVELLER_CHECKIN_CHECKOUT,
-      parentId: ID_TRAVELLER,
-      text: 'Check-In/Check-Out',
-      svgIcon: ICON.cartIcon,
-      routerLink: '/ticketing/traveller'
-    });
+   
     items.push({
       id: ID_TRAVELLER_SPLIT_MERGE,
       parentId: ID_TRAVELLER,

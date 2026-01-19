@@ -108,7 +108,9 @@ export class AppService {
     mailRoom:SharedInfo
     receivingForm:SharedInfo
     traveller:SharedInfo
-    icrDashboard:SharedInfo
+    icrDashboard:SharedInfo,    
+    chekInResult:any[],
+    chekOutResult:any[]
 
   } = {
       receiving: { isEditMode: false, isViewMode: false, dataItem: {}, eventEmitter: new EventEmitter() },
@@ -124,7 +126,9 @@ export class AppService {
       mailRoom: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()},
       receivingForm: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()},
       traveller: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()},
-      icrDashboard: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()}
+      icrDashboard: {isEditMode:false, isViewMode:false, dataItem:{}, eventEmitter: new EventEmitter()},
+      chekInResult:[],
+      chekOutResult:[]
     }
   hardwareTypes: HardwareType[] = []
   userData: UserData = { email: '', name: '', firstName: '' }

@@ -1,0 +1,30 @@
+
+      <div class="center-wrapper">
+        <button kendoButton themeColor="primary" class="action-btn" (click)="go('checkin')">Check-In</button>
+        <button kendoButton themeColor="primary" class="action-btn" (click)="go('checkout')">Check-Out</button>
+      </div>
+   
+@if(showScanner) {
+<kendo-dialog
+  title="Scan Badge"
+  (close)="closeScanner()"
+  class="tablet-dialog"
+>
+  <p>Please scan your badge using your 2D scanner.</p>
+
+  
+  <input
+    kendoTextBox
+    type="password"
+    placeholder="Scan your badge..."
+    [(ngModel)]="barcodeValue"
+    autofocus = true
+    class="dialog-input"
+  />
+
+  <div class="k-dialog-buttongroup dialog-buttons">
+    <button kendoButton (click)="closeScanner()">Cancel</button>
+    <button kendoButton themeColor="primary" (click)="authorizeScan()">Authorize</button>
+  </div>
+</kendo-dialog>
+}
