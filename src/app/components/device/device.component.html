@@ -225,8 +225,11 @@
         <!-- Dynamic Labels -->
         <ng-container *ngFor="let labelNum of activeLabels; trackBy: trackByLabelNumber; let i = index">
           <kendo-label [text]="'Label' + labelNum" class="k-font-size-sm">
-            <input *ngIf="isViewMode" kendoTextBox [value]="getLabelDisplayText(getLabelValue(labelNum))" type="text"
-              class="w-100" readonly />
+            <div *ngIf="isViewMode" class="k-d-flex k-align-items-center k-gap-2">
+              <input kendoTextBox [value]="getLabelDisplayText(getLabelValue(labelNum))" type="text"
+                class="k-flex-1" readonly />
+              <button kendoButton size="small" (click)="openLabelDetails(labelNum)" [disabled]="!isLabelSelected(labelNum)">--</button>
+            </div>
             <div *ngIf="!isViewMode" class="k-d-flex k-align-items-center k-gap-2">
               <!-- Use refresh counter in ID to force re-render when value changes -->
               <kendo-dropdownlist
@@ -542,20 +545,30 @@
         <ng-template kendoGridCellTemplate let-dataItem>
           <div style="padding: 0;">
             <kendo-dropdownlist
-              *ngIf="dataItem.ldTypecmbvisibility === 'Visible'"
+              *ngIf="dataItem.ldTypecmbvisibility === 'Visible' && !isViewMode"
               [data]="labelTypeOptions"
               [(ngModel)]="dataItem.ldType"
               (valueChange)="onLabelTypeChange(dataItem, $event)"
               [disabled]="!dataItem.isEnable"
               style="width: 100%; font-size: 11px; height: 20px; border: none;">
             </kendo-dropdownlist>
+            <div *ngIf="dataItem.ldTypecmbvisibility === 'Visible' && isViewMode" 
+                 style="font-size: 11px; font-family: Verdana; padding: 2px 4px; height: 20px; line-height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" 
+                 [title]="dataItem.ldType">
+              {{ dataItem.ldType }}
+            </div>
             <kendo-dropdownlist
-              *ngIf="dataItem.imgcmbvisibility === 'Visible'"
+              *ngIf="dataItem.imgcmbvisibility === 'Visible' && !isViewMode"
               [data]="dataItem.packAndLabelImagesList || ['--Select--', 'Image1', 'Image2', 'Image3']"
               [(ngModel)]="dataItem.imageVisible"
               [disabled]="!dataItem.isEnable || dataItem.isEdit"
               style="width: 100%; font-size: 11px; height: 20px; border: none;">
             </kendo-dropdownlist>
+            <div *ngIf="dataItem.imgcmbvisibility === 'Visible' && isViewMode" 
+                 style="font-size: 11px; font-family: Verdana; padding: 2px 4px; height: 20px; line-height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" 
+                 [title]="dataItem.imageVisible">
+              {{ dataItem.imageVisible }}
+            </div>
           </div>
         </ng-template>
       </kendo-grid-column>
@@ -566,25 +579,30 @@
               *ngIf="dataItem.txtvisibility === 'Visible'"
               kendoTextBox
               [(ngModel)]="dataItem.ldText"
-              [readonly]="dataItem.isEdit"
-              [disabled]="!dataItem.isEnable"
+              [readonly]="dataItem.isEdit || isViewMode"
+              [disabled]="!dataItem.isEnable || isViewMode"
               style="width: 100%; font-size: 11px; height: 20px; padding: 2px 4px; border: 1px solid #ccc;" />
           <kendo-dropdownlist
-            *ngIf="dataItem.cmbvisibility === 'Visible'"
+            *ngIf="dataItem.cmbvisibility === 'Visible' && !isViewMode"
             [data]="dataItem.ldValuesList && dataItem.ldValuesList.length > 0 ? dataItem.ldValuesList : labelValueOptions"
             [(ngModel)]="dataItem.ldValue"
             [disabled]="!dataItem.isEnable"
             style="width: 100%; font-size: 11px; height: 20px; border: none;">
           </kendo-dropdownlist>
+          <div *ngIf="dataItem.cmbvisibility === 'Visible' && isViewMode" 
+               style="font-size: 11px; font-family: Verdana; padding: 2px 4px; height: 20px; line-height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" 
+               [title]="dataItem.ldValue">
+            {{ dataItem.ldValue }}
+          </div>
           </div>
         </ng-template>
       </kendo-grid-column>
     </kendo-grid>
     </div>
     
-    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-2 label-details-actions">
-      <button kendoButton themeColor="primary" (click)="saveLabelDetails()">OK</button>
-      <button kendoButton (click)="closeLabelDetailsDialog()">Cancel</button>
+    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3">
+      <button kendoButton themeColor="primary" *ngIf="!isViewMode" (click)="saveLabelDetails()" style="min-width: 85px; height: 25px; font-size: 11px;">OK</button>
+      <button kendoButton (click)="closeLabelDetailsDialog()" style="min-width: 85px; height: 25px; font-size: 11px;">{{ isViewMode ? 'Close' : 'Cancel' }}</button>
     </div>
   </div>
 </kendo-dialog>
