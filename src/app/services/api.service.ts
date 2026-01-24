@@ -1224,4 +1224,88 @@ export class ApiService {
     };
       return this.httpClient.post<boolean>(url,  body);  
   }
+
+  // ProbeCard (Hardware) API methods
+  searchProbeCard(params: {
+    customerId?: number | null;
+    iseId?: string | null;
+    customerHWId?: string | null;
+    platformId?: number | null;
+    probeCardTypeId?: number | null;
+    equipmentId?: number | null;
+    hardwareTypeId?: number;
+    isActive?: number | null;
+    boardTypeId?: number | null;
+  }) {
+    let httpParams = new HttpParams();
+    if (params.customerId !== undefined && params.customerId !== null && params.customerId !== -1) {
+      httpParams = httpParams.set('customerId', params.customerId.toString());
+    }
+    if (params.iseId !== undefined && params.iseId !== null && params.iseId !== '') {
+      httpParams = httpParams.set('iseId', params.iseId);
+    }
+    if (params.customerHWId !== undefined && params.customerHWId !== null && params.customerHWId !== '') {
+      httpParams = httpParams.set('customerHWId', params.customerHWId);
+    }
+    if (params.platformId !== undefined && params.platformId !== null && params.platformId !== -1) {
+      httpParams = httpParams.set('platformId', params.platformId.toString());
+    }
+    if (params.probeCardTypeId !== undefined && params.probeCardTypeId !== null && params.probeCardTypeId !== -1) {
+      httpParams = httpParams.set('probeCardTypeId', params.probeCardTypeId.toString());
+    }
+    if (params.equipmentId !== undefined && params.equipmentId !== null && params.equipmentId !== -1) {
+      httpParams = httpParams.set('equipmentId', params.equipmentId.toString());
+    }
+    if (params.hardwareTypeId !== undefined && params.hardwareTypeId !== null) {
+      httpParams = httpParams.set('hardwareTypeId', params.hardwareTypeId.toString());
+    }
+    if (params.isActive !== undefined && params.isActive !== null && params.isActive !== -1) {
+      httpParams = httpParams.set('isActive', params.isActive.toString());
+    }
+    if (params.boardTypeId !== undefined && params.boardTypeId !== null && params.boardTypeId !== -1) {
+      httpParams = httpParams.set('boardTypeId', params.boardTypeId.toString());
+    }
+    return this.httpClient.get<any[]>(`${API}v1/ise/hardware/probecard/search`, { params: httpParams });
+  }
+
+  getProbeCardDetails(masterId: number) {
+    return this.httpClient.get<any>(`${API}v1/ise/hardware/probecard/details?masterId=${masterId}`);
+  }
+
+  // ProbeCard Master Data APIs
+  getProbeCardPlatforms() {
+    return this.httpClient.get<any[]>(`${API}v1/ise/hardware/probecard/masterdata/platforms`);
+  }
+
+  getProbeCardTypes() {
+    return this.httpClient.get<any[]>(`${API}v1/ise/hardware/probecard/masterdata/probecardtypes`);
+  }
+
+  getProbeCardProbers() {
+    return this.httpClient.get<any[]>(`${API}v1/ise/hardware/probecard/masterdata/probers`);
+  }
+
+  getProbeCardBoardTypes() {
+    return this.httpClient.get<any[]>(`${API}v1/ise/hardware/probecard/masterdata/boardtypes`);
+  }
+
+  // Location Picker APIs
+  getProbeCardSlots(hardwareTypeId?: number | null, platformId?: string | null) {
+    let params = new HttpParams();
+    if (hardwareTypeId) {
+      params = params.set('hardwareTypeId', hardwareTypeId.toString());
+    }
+    if (platformId) {
+      params = params.set('platformId', platformId);
+    }
+    return this.httpClient.get<any[]>(`${API}v1/ise/hardware/probecard/masterdata/slots`, { params });
+  }
+
+  getProbeCardSubSlots(slotId: number) {
+    return this.httpClient.get<any[]>(`${API}v1/ise/hardware/probecard/masterdata/slots/${slotId}/subslots`);
+  }
+
+  getProbeCardLocationsInfo(subSlotId: number) {
+    return this.httpClient.get<any[]>(`${API}v1/ise/hardware/probecard/masterdata/subslots/${subSlotId}/locations`);
+  }
 }                                                     

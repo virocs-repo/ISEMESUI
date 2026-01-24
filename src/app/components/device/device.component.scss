@@ -98,8 +98,45 @@ a.minimal-text {
 // Compact label details dialog styling - matching TFS design
 ::ng-deep .label-details-dialog {
   .k-dialog-content {
-    padding: 0 !important;
     overflow: visible !important;
+  }
+
+  .label-details-name-row {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    margin-bottom: 10px;
+
+    .label-details-name-label {
+      font-size: 11px;
+      font-family: Verdana, sans-serif;
+      color: black;
+      font-weight: normal;
+      margin-right: 5px;
+      text-align: right;
+      min-width: 70px;
+    }
+
+    .label-details-name-value {
+      flex: 1;
+      border: 1px solid #ccc;
+      padding: 2px 4px;
+      background: white;
+      font-size: 11px;
+      font-family: Verdana, sans-serif;
+      color: black;
+      min-height: 20px;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .label-details-actions {
+    button {
+      min-width: 85px;
+      height: 25px;
+      font-size: 11px;
+    }
   }
   
   .compact-label-grid {
@@ -171,6 +208,15 @@ a.minimal-text {
     .k-grid-header-wrap {
       overflow: visible !important;
     }
+  }
+}
+
+// Device Info dialog: grid headers match Search All Columns (page-header) background
+::ng-deep .device-info-dialog {
+  kendo-grid .k-grid-header,
+  kendo-grid .k-grid-header .k-grid-header-wrap .k-grid-header-row th,
+  kendo-grid .k-grid-header th {
+    background-color: var(--page-header-bg, #EEF2F5) !important;
   }
 }
 

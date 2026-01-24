@@ -19,7 +19,7 @@ export class HeaderComponent {
   readonly ICON = ICON
   public menuIcon: SVGIcon = menuIcon;
   profilePicture = "";
-  selectedTabIndex = 0; // 0 = Inventory, 1 = Ticketing System, 2 = Device Master
+  selectedTabIndex = 0; // 0 = Inventory, 1 = Ticketing System, 2 = Device Master, 3 = Hardware
 
   isDialogOpen = false;
 
@@ -43,6 +43,9 @@ export class HeaderComponent {
     } else if (path.startsWith('/devicemaster')) {
       this.selectedTabIndex = 2;
       this.titleService.setTitle('ISEMES Device Master');
+    } else if (path.startsWith('/hardware')) {
+      this.selectedTabIndex = 3;
+      this.titleService.setTitle('ISEMES Hardware');
     } else {
       this.selectedTabIndex = 0;
       this.titleService.setTitle('ISEMES Inventory');
@@ -59,6 +62,9 @@ export class HeaderComponent {
       } else if (currentPath.startsWith('/devicemaster')) {
         this.selectedTabIndex = 2;
         this.titleService.setTitle('ISEMES Device Master');
+      } else if (currentPath.startsWith('/hardware')) {
+        this.selectedTabIndex = 3;
+        this.titleService.setTitle('ISEMES Hardware');
       } else if (currentPath.startsWith('/inventory') || currentPath === '/' || currentPath === '') {
         this.selectedTabIndex = 0;
         this.titleService.setTitle('ISEMES Inventory');
@@ -77,6 +83,8 @@ export class HeaderComponent {
       this.titleService.setTitle('ISEMES Ticketing');
     } else if (index === 2) {
       this.titleService.setTitle('ISEMES Device Master');
+    } else if (index === 3) {
+      this.titleService.setTitle('ISEMES Hardware');
     } else {
       this.titleService.setTitle('ISEMES Inventory');
     }
@@ -87,6 +95,8 @@ export class HeaderComponent {
       this.router.navigate(['/ticketing/ticket']);
     } else if (index === 2) {
       this.router.navigate(['/devicemaster/device-family']);
+    } else if (index === 3) {
+      this.router.navigate(['/hardware/probe-card']);
     }
   }
 

@@ -511,25 +511,26 @@
   [width]="558"
   [minWidth]="558"
   [maxWidth]="558"
-  title="Label Details"
   class="dialog-round label-details-dialog">
-  <div class="k-p-2" style="background-color: #bccbd4;">
-    <!-- Label Name Display (shows which label combo box triggered the dialog) -->
-    <div style="margin-bottom: 10px; display: flex; align-items: center; height: 30px;">
-      <div style="font-size: 11px; font-family: Verdana; color: black; font-weight: normal; margin-right: 5px; text-align: right; min-width: 70px;">
-        Label{{ currentLabelNumber > 0 ? currentLabelNumber : '' }} :
+  <div class="k-d-flex k-align-items-center k-mb-2">
+    <h2 class="k-m-0 k-font-size-lg">Label Details</h2>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+      (click)="closeLabelDetailsDialog()"></button>
+  </div>
+  <div class="k-d-flex k-flex-column k-gap-2 k-p-2">
+    <div class="k-border k-border-solid k-border-gray-300 k-p-3 k-rounded">
+      <!-- Label Name Display (shows which label combo box triggered the dialog) -->
+      <div class="label-details-name-row">
+        <span class="label-details-name-label">Label{{ currentLabelNumber > 0 ? currentLabelNumber : '' }} :</span>
+        <div class="label-details-name-value">{{ currentLabelName }}</div>
       </div>
-      <div style="border: 1px solid #ccc; padding: 2px 4px; background: white; flex: 1; font-size: 11px; font-family: Verdana; color: black; vertical-align: center; min-height: 20px; display: flex; align-items: center;">
-        {{ currentLabelName }}
-      </div>
-    </div>
     
-    <kendo-grid
-      [data]="labelDetailsData"
-      [scrollable]="'none'"
-      [style.height.px]="labelDetailsGridHeight"
-      style="width: 100%; background: white;"
-      class="compact-label-grid">
+      <kendo-grid
+        [data]="labelDetailsData"
+        [scrollable]="'none'"
+        [style.height.px]="labelDetailsGridHeight"
+        style="width: 100%;"
+        class="compact-label-grid">
       <kendo-grid-column field="lfName" title="Name" [width]="150" [locked]="false">
         <ng-template kendoGridCellTemplate let-dataItem>
           <div style="font-size: 11px; font-family: Verdana; padding: 2px 4px; height: 20px; line-height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" [title]="dataItem.lfName">
@@ -579,10 +580,11 @@
         </ng-template>
       </kendo-grid-column>
     </kendo-grid>
+    </div>
     
-    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3">
-      <button kendoButton themeColor="primary" (click)="saveLabelDetails()" style="min-width: 85px; height: 25px; font-size: 11px;">OK</button>
-      <button kendoButton (click)="closeLabelDetailsDialog()" style="min-width: 85px; height: 25px; font-size: 11px;">Cancel</button>
+    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-2 label-details-actions">
+      <button kendoButton themeColor="primary" (click)="saveLabelDetails()">OK</button>
+      <button kendoButton (click)="closeLabelDetailsDialog()">Cancel</button>
     </div>
   </div>
 </kendo-dialog>
@@ -594,8 +596,13 @@
   [width]="'95%'"
   [minWidth]="1200"
   [height]="'95%'"
-  class="dialog-round">
-  <div class="k-p-2" style="background-color: #bccbd4; max-height: calc(95vh - 120px); overflow-y: auto;">
+  class="dialog-round device-info-dialog">
+  <div class="k-d-flex k-align-items-center k-mb-2">
+    <h2 class="k-m-0 k-font-size-lg">Devices in Use</h2>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+      (click)="closeDeviceInfoDialog()"></button>
+  </div>
+  <div class="k-d-flex k-flex-column k-gap-2 k-p-2 dialog-scrollable-content" style="max-height: calc(95vh - 120px); overflow-y: auto;">
     
     <!-- DQP Section -->
     <div *ngIf="deviceInfoData.dqp && deviceInfoData.dqp.length > 0" class="k-border k-border-solid k-border-gray-300 k-p-3 k-rounded">
@@ -672,8 +679,8 @@
       </kendo-grid>
     </div>
     
-    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3">
-      <button kendoButton (click)="closeDeviceInfoDialog()" style="min-width: 85px; height: 25px; font-size: 11px;">Close</button>
+    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-2">
+      <button kendoButton (click)="closeDeviceInfoDialog()">Close</button>
     </div>
   </div>
 </kendo-dialog>
