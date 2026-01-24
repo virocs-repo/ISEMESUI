@@ -33,6 +33,14 @@
         class="main-menu-btn">
         Device Master
       </button>
+      <button 
+        kendoButton 
+        fillMode="flat" 
+        [class.active]="selectedTabIndex === 3"
+        (click)="onMainMenuSelect(3)"
+        class="main-menu-btn">
+        Hardware
+      </button>
     </div>
   </kendo-appbar-section>
 

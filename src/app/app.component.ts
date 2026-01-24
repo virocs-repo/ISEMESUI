@@ -53,14 +53,19 @@ export class AppComponent implements OnInit, OnDestroy {
     return item.id !== undefined && this.expandedIndices.indexOf(item.id) >= 0;
   };
 
+  // Cached hardware items
+  public hardwareDrawerItems: Array<DrawerItemExtra> = [];
+
   // Current drawer items based on selected tab - with dynamic submenu
   public get currentDrawerItems(): Array<DrawerItemExtra> {
     if (this.appService.selectedTabIndex === 0) {
       return this.inventoryDrawerItems;
     } else if (this.appService.selectedTabIndex === 1) {
       return this.ticketingDrawerItems;
-    } else {
+    } else if (this.appService.selectedTabIndex === 2) {
       return this.deviceMasterDrawerItems;
+    } else {
+      return this.hardwareDrawerItems;
     }
   }
   
@@ -237,6 +242,35 @@ export class AppComponent implements OnInit, OnDestroy {
     // Update the array reference to trigger change detection
     this.deviceMasterDrawerItems = [...items];
   }
+
+  // Build hardware drawer items – Wafer Sort parent (expand/collapse like Traveller), sub-items
+  private buildHardwareDrawerItems(): void {
+    const items: Array<DrawerItemExtra> = [];
+    
+    const ID_WAFER_SORT = 200;
+    const ID_PROBE_CARD = 201;
+    
+    // Wafer Sort (parent) – no routerLink, opens/closes like Traveller
+    items.push({
+      id: ID_WAFER_SORT,
+      text: 'Wafer Sort',
+      svgIcon: ICON.selectBoxIcon
+    });
+    
+    items.push({
+      id: ID_PROBE_CARD,
+      parentId: ID_WAFER_SORT,
+      text: 'Probe Card',
+      svgIcon: ICON.gearIcon,
+      routerLink: '/hardware/probe-card',
+      selected: true
+    });
+    
+    // Add more sub-items under Wafer Sort here as needed
+    
+    // Update the array reference to trigger change detection
+    this.hardwareDrawerItems = [...items];
+  }
   
   readonly subscription = new Subscription()
 
@@ -261,7 +295,8 @@ export class AppComponent implements OnInit, OnDestroy {
       // Check if it's a parent item (has children by checking if any items have this as parentId)
       const currentItems = this.appService.selectedTabIndex === 0 ? this.inventoryDrawerItems : 
                           this.appService.selectedTabIndex === 1 ? this.ticketingDrawerItems : 
-                          this.deviceMasterDrawerItems;
+                          this.appService.selectedTabIndex === 2 ? this.deviceMasterDrawerItems :
+                          this.hardwareDrawerItems;
       const hasChildren = currentItems.some(i => (i as DrawerItemExtra).parentId === item.id);
       
       if (hasChildren) {
@@ -319,6 +354,11 @@ export class AppComponent implements OnInit, OnDestroy {
         resetSelection(this.deviceMasterDrawerItems);
         // Then select the clicked item
         findAndSelect(this.deviceMasterDrawerItems, ev.item.routerLink);
+      } else if (this.appService.selectedTabIndex === 3) {
+        // Reset all hardware drawer items first
+        resetSelection(this.hardwareDrawerItems);
+        // Then select the clicked item
+        findAndSelect(this.hardwareDrawerItems, ev.item.routerLink);
       }
       
       // Navigate
@@ -377,6 +417,9 @@ export class AppComponent implements OnInit, OnDestroy {
     } else if (this.appService.selectedTabIndex === 2) {
       // Device Master selected
       this.titleService.setTitle('ISEMES Device Master');
+    } else if (this.appService.selectedTabIndex === 3) {
+      // Hardware selected
+      this.titleService.setTitle('ISEMES Hardware');
     } else {
       // Inventory selected
       this.titleService.setTitle('ISEMES Inventory');
@@ -399,6 +442,11 @@ export class AppComponent implements OnInit, OnDestroy {
       // Build device master drawer items on initialization if on device master tab
       this.buildDeviceMasterDrawerItems();
       this.updatePageTitle(); // Update title for device master
+    } else if (currentPath.startsWith('/hardware')) {
+      this.appService.selectedTabIndex = 3;
+      // Build hardware drawer items on initialization if on hardware tab
+      this.buildHardwareDrawerItems();
+      this.updatePageTitle(); // Update title for hardware
     } else {
       this.appService.selectedTabIndex = 0;
       // Build inventory drawer items on initialization if on inventory tab
@@ -423,6 +471,12 @@ export class AppComponent implements OnInit, OnDestroy {
           this.appService.selectedTabIndex = 1;
         } else if (path.startsWith('/devicemaster')) {
           this.appService.selectedTabIndex = 2;
+        } else if (path.startsWith('/hardware')) {
+          this.appService.selectedTabIndex = 3;
+          const ID_WAFER_SORT = 200;
+          if (this.expandedIndices.indexOf(ID_WAFER_SORT) < 0) {
+            this.expandedIndices.push(ID_WAFER_SORT);
+          }
         } else if (path.startsWith('/inventory') || path === '/' || path === '') {
           this.appService.selectedTabIndex = 0;
         }
@@ -432,6 +486,12 @@ export class AppComponent implements OnInit, OnDestroy {
             this.buildTicketingDrawerItems(); // Rebuild when switching to ticketing
           } else if (this.appService.selectedTabIndex === 2) {
             this.buildDeviceMasterDrawerItems(); // Rebuild when switching to device master
+          } else if (this.appService.selectedTabIndex === 3) {
+            this.buildHardwareDrawerItems(); // Rebuild when switching to hardware
+            const ID_WAFER_SORT = 200;
+            if (this.expandedIndices.indexOf(ID_WAFER_SORT) < 0) {
+              this.expandedIndices.push(ID_WAFER_SORT);
+            }
           } else {
             this.buildInventoryDrawerItems(); // Rebuild when switching to inventory
           }

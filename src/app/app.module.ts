@@ -88,6 +88,7 @@ import { ScanBadgeComponent } from './components/scan-badge/scan-badge.component
 import { DeviceMasterComponent } from './components/device-master/device-master.component';
 import { DeviceFamilyComponent } from './components/device-family/device-family.component';
 import { DeviceComponent } from './components/device/device.component';
+import { ProbeCardComponent } from './components/probe-card/probe-card.component';
 import { POPUP_CONTAINER } from '@progress/kendo-angular-popup';
 import { KendoPopupGlobalFixDirective } from './kendo-popup-global-directive';
 
@@ -192,7 +193,8 @@ export function initializeMsal(msalService: MsalService): () => Promise<void> {
     ScanBadgeComponent,
     DeviceMasterComponent,
     DeviceFamilyComponent,
-    DeviceComponent
+    DeviceComponent,
+    ProbeCardComponent
   ],
   imports: [
     BrowserModule,

@@ -33,6 +33,7 @@ import { AddSplitComponent } from './components/add-split/add-split.component';
 import { TravellerLandingComponent } from './components/traveller-landing/traveller-landing.component';
 import { DeviceFamilyComponent } from './components/device-family/device-family.component';
 import { DeviceComponent } from './components/device/device.component';
+import { ProbeCardComponent } from './components/probe-card/probe-card.component';
 import { PublicFormComponent } from './components/public/publicform.component';
 import { CheckinCheckoutComponent } from './components/public/checkin-checkout.component';
 
@@ -74,6 +75,15 @@ const routes: Routes = [
       { path: 'device-family', component: DeviceFamilyComponent, canActivate: [authGuard] },
       { path: 'device', component: DeviceComponent, canActivate: [authGuard] },
       { path: '', redirectTo: 'device-family', pathMatch: 'full' },
+    ]
+  },
+  
+  // Hardware routes
+  {
+    path: 'hardware',
+    children: [
+      { path: 'probe-card', component: ProbeCardComponent, canActivate: [authGuard] },
+      { path: '', redirectTo: 'probe-card', pathMatch: 'full' },
     ]
   },
   

@@ -1,0 +1,267 @@
+a.minimal-text {
+  pointer-events: none;
+}
+
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-text {
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow: visible;
+}
+
+// Fix z-index for combobox dropdowns - ensure they appear on top
+::ng-deep .k-animation-container {
+  z-index: 10006 !important;
+}
+
+::ng-deep .k-animation-container .k-popup {
+  z-index: 10006 !important;
+}
+
+::ng-deep .k-animation-container .k-list-container {
+  z-index: 10006 !important;
+}
+
+// Ensure list items are visible
+::ng-deep .k-animation-container .k-list .k-item {
+  z-index: 10006 !important;
+}
+
+// Ensure dropdown text is visible and properly styled
+::ng-deep .k-popup .k-list .k-item {
+  position: relative;
+  z-index: inherit;
+}
+
+::ng-deep .k-popup .k-list .k-item .k-list-item-text {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Fix z-index for combobox dropdowns inside dialog - highest priority
+::ng-deep .k-dialog-wrapper ~ .k-animation-container,
+::ng-deep .k-dialog-wrapper .k-animation-container {
+  z-index: 10008 !important;
+}
+
+::ng-deep .k-dialog-wrapper ~ .k-animation-container .k-popup,
+::ng-deep .k-dialog-wrapper .k-animation-container .k-popup {
+  z-index: 10008 !important;
+}
+
+::ng-deep .k-dialog-wrapper ~ .k-animation-container .k-list-container,
+::ng-deep .k-dialog-wrapper .k-animation-container .k-list-container {
+  z-index: 10008 !important;
+}
+
+// Ensure dialog content allows overflow for popups
+::ng-deep .k-dialog-content {
+  overflow: visible !important;
+}
+
+// Ensure dropdown list container has reasonable max height
+::ng-deep .k-dialog-wrapper .k-combobox .k-animation-container .k-list-container,
+::ng-deep .k-dialog-wrapper .k-dropdownlist .k-animation-container .k-list-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+// Ensure search dropdowns on main page appear above grid
+::ng-deep .page-header .k-animation-container {
+  z-index: 10005 !important;
+}
+
+::ng-deep .page-header .k-animation-container .k-popup {
+  z-index: 10005 !important;
+}
+
+// Checkbox alignment fixes
+::ng-deep kendo-label.k-d-flex.k-align-items-center {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px;
+  
+  label,
+  .k-label-text {
+    margin: 0;
+    padding: 0;
+    line-height: normal;
+    display: flex;
+    align-items: center;
+    font-size: inherit;
+  }
+  
+  kendo-checkbox {
+    margin: 0 !important;
+    padding: 0;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    
+    .k-checkbox-wrapper {
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .k-checkbox {
+      margin: 0;
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+    }
+    
+    .k-checkbox-label {
+      margin: 0;
+      padding: 0;
+    }
+  }
+}
+
+// TabStrip styling – inactive distinct, active blends with content panel
+::ng-deep app-probe-card kendo-dialog kendo-tabstrip {
+  margin-bottom: 0;
+  
+  .k-tabstrip-items {
+    display: flex;
+    gap: 0;
+    padding: 0 8px 0 12px;
+    background: linear-gradient(180deg, #e2e6ea 0%, #d1d7de 100%);
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .k-item {
+    margin: 0;
+    margin-right: 2px;
+    margin-bottom: -1px;
+    border: 1px solid #adb5bd;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 6px 6px 0 0;
+    background: linear-gradient(180deg, #f1f3f5 0%, #e2e6ea 100%);
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    min-width: 120px;
+    text-align: center;
+    color: #6c757d;
+    font-weight: 500;
+    
+    &:hover:not(.k-active) {
+      background: linear-gradient(180deg, #e9ecef 0%, #dee2e6 100%);
+      border-color: #868e96;
+      color: #495057;
+    }
+    
+    &.k-active {
+      background-color: #ffffff;
+      border-color: #dee2e6;
+      border-bottom: 1px solid #ffffff;
+      color: #0078d4;
+      font-weight: 600;
+      z-index: 1;
+      margin-bottom: -1px;
+      box-shadow: none;
+      
+      .k-link {
+        color: #0078d4;
+      }
+      
+      // No ::after – selected tab flows into content panel
+    }
+    
+    .k-link {
+      color: inherit;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: inherit;
+      padding: 0;
+      display: block;
+      
+      &:hover {
+        color: inherit;
+      }
+    }
+  }
+  
+  .k-content {
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    background-color: #ffffff;
+    min-height: 400px;
+  }
+}
+
+// Location Picker Dialog Styles
+.location-grid {
+  display: grid;
+  gap: 4px;
+}
+
+.location-cell {
+  min-height: 40px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  
+  &:hover:not(.location-booked):not(.location-selected) {
+    background-color: #e8f4f8 !important;
+    border-color: #0078d4 !important;
+  }
+  
+  &.location-free {
+    background-color: #ffffff;
+    border-color: #dee2e6;
+    color: #212529;
+  }
+  
+  &.location-selected {
+    background-color: #adff2f; // GreenYellow
+    border-color: #0078d4;
+    border-width: 2px;
+    color: #000000;
+    font-weight: 600;
+  }
+  
+  &.location-booked {
+    background-color: #dc3545; // Red
+    border-color: #dc3545;
+    color: #ffffff;
+    cursor: not-allowed;
+  }
+  
+  &.location-blocked {
+    background-color: #ffc107; // Yellow
+    border-color: #ffc107;
+    color: #000000;
+    cursor: not-allowed;
+  }
+}
+
+.location-legend {
+  &.location-free {
+    background-color: #ffffff;
+  }
+  
+  &.location-selected {
+    background-color: #adff2f;
+  }
+  
+  &.location-booked {
+    background-color: #dc3545;
+  }
+  
+  &.location-blocked {
+    background-color: #ffc107;
+  }
+}
