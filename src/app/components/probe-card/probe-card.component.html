@@ -8,6 +8,7 @@
         [valueField]="'id'"
         [valuePrimitive]="true"
         [filterable]="true"
+        [kendoDropDownFilter]="filterSettings"
         [(ngModel)]="selectedPlatformId"
         (valueChange)="loadGridData()"
         style="width: 180px;">
@@ -19,6 +20,7 @@
         [valueField]="'id'"
         [valuePrimitive]="true"
         [filterable]="true"
+        [kendoDropDownFilter]="filterSettings"
         [(ngModel)]="selectedProbeCardTypeId"
         (valueChange)="loadGridData()"
         style="width: 180px;">
@@ -30,6 +32,7 @@
         [valueField]="'id'"
         [valuePrimitive]="true"
         [filterable]="true"
+        [kendoDropDownFilter]="filterSettings"
         [(ngModel)]="selectedProberId"
         (valueChange)="loadGridData()"
         style="width: 180px;">
@@ -41,6 +44,7 @@
         [valueField]="'id'"
         [valuePrimitive]="true"
         [filterable]="true"
+        [kendoDropDownFilter]="filterSettings"
         [(ngModel)]="selectedBoardTypeId"
         (valueChange)="loadGridData()"
         style="width: 180px;">
@@ -126,10 +130,12 @@
           <div class="k-border k-border-solid k-border-gray-300 k-p-3 k-rounded">
             <h3 class="k-mt-0 k-mb-2 k-text-primary k-font-size-md">Probe Card Information</h3>
             <div class="k-d-grid k-grid-cols-3 k-gap-2">
-              <!-- Row 1 -->
-              <kendo-label text="ISE Labs" class="k-font-size-sm">
-                <kendo-checkbox [(ngModel)]="probeCardData.isITAR" [disabled]="isViewMode"></kendo-checkbox>
-              </kendo-label>
+              <!-- Row 1: Checkbox before "ISE Labs" label; when checked, selects ISE Labs customer (CustomerID 0) -->
+              <div class="k-d-flex k-align-items-center k-gap-1 k-font-size-sm">
+                <kendo-checkbox [(ngModel)]="probeCardData.isITAR" [disabled]="isViewMode"
+                  (ngModelChange)="onISELabsCheckboxChange($event)"></kendo-checkbox>
+                <span>ISE Labs</span>
+              </div>
               
               <kendo-label text="Customer *" class="k-font-size-sm">
                 <input *ngIf="isViewMode" kendoTextBox [value]="probeCardData.customerName" type="text" class="w-100" readonly />
@@ -140,14 +146,16 @@
                   [valueField]="'CustomerID'"
                   [valuePrimitive]="true"
                   [filterable]="true"
+                  [kendoDropDownFilter]="filterSettings"
                   [(ngModel)]="probeCardData.customerId"
-                  [defaultItem]="{ CustomerID: -1, CustomerName: '--Select--' }"
+                  (valueChange)="onCustomerChange($event)"
+                  [disabled]="customerDropdownDisabled"
                   class="w-100">
                 </kendo-dropdownlist>
               </kendo-label>
               
               <kendo-label text="Customer Id" class="k-font-size-sm">
-                <input kendoTextBox [(ngModel)]="probeCardData.customerHardwareId" [readonly]="isViewMode" type="text" class="w-100" />
+                <input kendoTextBox [(ngModel)]="probeCardData.customerHardwareId" [readonly]="isViewMode || customerDropdownDisabled" type="text" class="w-100" />
               </kendo-label>
               
               <!-- Row 2 -->
@@ -176,6 +184,7 @@
                   [valueField]="'id'"
                   [valuePrimitive]="true"
                   [filterable]="true"
+                  [kendoDropDownFilter]="filterSettings"
                   [(ngModel)]="probeCardData.probeCardDimension"
                   [defaultItem]="{ id: '', name: '--Select--' }"
                   class="w-100">
@@ -191,9 +200,9 @@
                     [valueField]="'id'"
                     [valuePrimitive]="true"
                     [filterable]="true"
+                    [kendoDropDownFilter]="filterSettings"
                     [(ngModel)]="probeCardData.probeCardTypeId"
                     (valueChange)="onProbeCardTypeChange()"
-                    [defaultItem]="{ id: -1, name: '--Select--' }"
                     class="k-flex-1">
                   </kendo-dropdownlist>
                   <input *ngIf="probeCardData.probeCardTypeId === 4" kendoTextBox [(ngModel)]="probeCardData.probeCardTypeOthers" 
@@ -221,6 +230,7 @@
                   [valueField]="'id'"
                   [valuePrimitive]="true"
                   [filterable]="true"
+                  [kendoDropDownFilter]="filterSettings"
                   [(ngModel)]="probeCardData.waferDimension"
                   [defaultItem]="{ id: '', name: '--Select--' }"
                   class="w-100">
@@ -235,9 +245,24 @@
                   [textField]="'name'"
                   [valueField]="'id'"
                   [valuePrimitive]="true"
+                  [filterable]="true"
+                  [kendoDropDownFilter]="filterSettings"
                   [(ngModel)]="probeCardData.platformIds"
-                  [placeholder]="'Select platforms...'"
+                  placeholder="--Select--"
                   class="w-100">
+                  <ng-template kendoMultiSelectHeaderTemplate>
+                    <div class="k-d-flex k-align-items-center k-p-2" style="border-bottom: 1px solid #e0e0e0;">
+                      <input type="checkbox"
+                        [checked]="isAllPlatformSelected()"
+                        (change)="toggleSelectAllPlatform($event)"
+                        #platformSelectAllCheckbox
+                        style="margin-right: 8px; cursor: pointer;">
+                      <label style="font-weight: 500; cursor: pointer; margin: 0; user-select: none;"
+                             (click)="platformSelectAllCheckbox.click()">
+                        Select All
+                      </label>
+                    </div>
+                  </ng-template>
                 </kendo-multiselect>
               </kendo-label>
               
@@ -249,7 +274,6 @@
                   [valuePrimitive]="true"
                   [(ngModel)]="probeCardData.isPowerCard"
                   [disabled]="isViewMode"
-                  [defaultItem]="{ id: false, name: 'No' }"
                   class="w-100">
                 </kendo-dropdownlist>
               </kendo-label>
@@ -292,8 +316,8 @@
                   [valueField]="'id'"
                   [valuePrimitive]="true"
                   [filterable]="true"
+                  [kendoDropDownFilter]="filterSettings"
                   [(ngModel)]="probeCardData.boardTypeId"
-                  [defaultItem]="{ id: -1, name: '--Select--' }"
                   class="w-100">
                 </kendo-dropdownlist>
               </kendo-label>
@@ -306,25 +330,41 @@
                   [textField]="'name'"
                   [valueField]="'id'"
                   [valuePrimitive]="true"
+                  [filterable]="true"
+                  [kendoDropDownFilter]="filterSettings"
                   [(ngModel)]="probeCardData.equipmentIds"
-                  [placeholder]="'Select probers...'"
+                  placeholder="--Select--"
                   class="w-100">
+                  <ng-template kendoMultiSelectHeaderTemplate>
+                    <div class="k-d-flex k-align-items-center k-p-2" style="border-bottom: 1px solid #e0e0e0;">
+                      <input type="checkbox"
+                        [checked]="isAllPeripheralModeSelected()"
+                        (change)="toggleSelectAllPeripheralMode($event)"
+                        #peripheralSelectAllCheckbox
+                        style="margin-right: 8px; cursor: pointer;">
+                      <label style="font-weight: 500; cursor: pointer; margin: 0; user-select: none;"
+                             (click)="peripheralSelectAllCheckbox.click()">
+                        Select All
+                      </label>
+                    </div>
+                  </ng-template>
                 </kendo-multiselect>
               </kendo-label>
               
               <kendo-label text="Vendor" class="k-font-size-sm">
                 <input *ngIf="isViewMode" kendoTextBox [value]="getVendorName(probeCardData.vendorId)" type="text" class="w-100" readonly />
-                <kendo-dropdownlist
-                  *ngIf="!isViewMode"
-                  [data]="dialogVendors"
-                  [textField]="'name'"
-                  [valueField]="'id'"
-                  [valuePrimitive]="true"
-                  [filterable]="true"
-                  [(ngModel)]="probeCardData.vendorId"
-                  [defaultItem]="{ id: -1, name: '--Select--' }"
-                  class="w-100">
-                </kendo-dropdownlist>
+                <div *ngIf="!isViewMode" class="k-d-flex k-gap-1">
+                  <kendo-dropdownlist
+                    [data]="dialogVendors"
+                    [textField]="'name'"
+                    [valueField]="'id'"
+                    [valuePrimitive]="true"
+                    [filterable]="true"
+                    [kendoDropDownFilter]="filterSettings"
+                    [(ngModel)]="probeCardData.vendorId"
+                    class="k-flex-1">
+                  </kendo-dropdownlist>
+                </div>
               </kendo-label>
               
               <!-- Row 7 -->
@@ -342,17 +382,18 @@
               
               <kendo-label text="Secondary Customer" class="k-font-size-sm">
                 <input *ngIf="isViewMode" kendoTextBox [value]="probeCardData.secondaryCustomerName" type="text" class="w-100" readonly />
-                <kendo-dropdownlist
+                <kendo-multiselect
                   *ngIf="!isViewMode"
                   [data]="dialogSecondaryCustomers"
-                  [textField]="'name'"
-                  [valueField]="'id'"
+                  [textField]="'CustomerName'"
+                  [valueField]="'CustomerID'"
                   [valuePrimitive]="true"
                   [filterable]="true"
-                  [(ngModel)]="probeCardData.secondaryCustomerName"
-                  [defaultItem]="{ id: '', name: '--Select--' }"
+                  [kendoDropDownFilter]="filterSettings"
+                  [(ngModel)]="probeCardData.secondaryCustomerIds"
+                  [placeholder]="'Select secondary customers...'"
                   class="w-100">
-                </kendo-dropdownlist>
+                </kendo-multiselect>
               </kendo-label>
               
               <!-- Comments - Last control, spans all columns -->
@@ -442,41 +483,46 @@
   *ngIf="isLocationDialogOpen"
   (close)="closeLocationDialog()"
   [minWidth]="900"
-  [width]="'80%'"
+  [width]="'85%'"
   [height]="'85%'"
-  title="Select Hardware Location">
-  <div class="k-d-flex k-flex-column k-gap-3 k-p-3">
-    <div class="k-d-flex k-align-items-center k-gap-3">
-      <kendo-label text="Shelves:" class="k-font-size-sm">
-        <kendo-dropdownlist
-          [data]="locationShelves"
-          [textField]="'slotName'"
-          [valueField]="'slotId'"
-          [valuePrimitive]="true"
-          [filterable]="true"
-          [(ngModel)]="selectedShelfId"
-          (valueChange)="onShelfSelected()"
-          style="width: 200px;">
-        </kendo-dropdownlist>
-      </kendo-label>
-      
-      <kendo-label text="SubSlots:" class="k-font-size-sm">
-        <kendo-dropdownlist
-          [data]="locationSubSlots"
-          [textField]="'subSlotName'"
-          [valueField]="'subSlotId'"
-          [valuePrimitive]="true"
-          [filterable]="true"
-          [(ngModel)]="selectedSubSlotId"
-          (valueChange)="onSubSlotSelected()"
-          style="width: 200px;">
-        </kendo-dropdownlist>
-      </kendo-label>
-    </div>
-    
-    <!-- Location Grid -->
-    <div *ngIf="locationGrid.length > 0" class="k-border k-border-solid k-border-gray-300 k-p-3 k-rounded" style="max-height: 500px; overflow-y: auto;">
-      <div class="k-d-grid location-grid" [style.grid-template-columns]="'repeat(auto-fill, minmax(60px, 1fr))'" style="gap: 4px;">
+  class="dialog-round">
+  <div class="k-d-flex k-align-items-center k-mb-2">
+    <h2 class="k-m-0 k-font-size-lg">Select Hardware Location</h2>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+      (click)="closeLocationDialog()"></button>
+  </div>
+  <div class="k-d-flex k-flex-column k-gap-3 k-p-2 dialog-scrollable-content" style="max-height: calc(85vh - 140px); overflow-y: auto;">
+    <div class="k-border k-border-solid k-border-gray-300 k-p-3 k-rounded">
+      <h3 class="k-mt-0 k-mb-2 k-text-primary k-font-size-md">Location &amp; Available Locations</h3>
+      <div class="k-d-flex k-align-items-center k-gap-3 k-flex-wrap k-mb-3">
+        <kendo-label text="Shelves" class="k-font-size-sm">
+          <kendo-dropdownlist
+            [data]="locationShelves"
+            [textField]="'slotName'"
+            [valueField]="'slotId'"
+            [valuePrimitive]="true"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [(ngModel)]="selectedShelfId"
+            (valueChange)="onShelfSelected()"
+            style="width: 200px;">
+          </kendo-dropdownlist>
+        </kendo-label>
+        <kendo-label text="SubSlots" class="k-font-size-sm">
+          <kendo-dropdownlist
+            [data]="locationSubSlots"
+            [textField]="'subSlotName'"
+            [valueField]="'subSlotId'"
+            [valuePrimitive]="true"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [(ngModel)]="selectedSubSlotId"
+            (valueChange)="onSubSlotSelected()"
+            style="width: 200px;">
+          </kendo-dropdownlist>
+        </kendo-label>
+      </div>
+      <div *ngIf="locationGrid.length > 0" class="k-d-grid location-grid" [style.grid-template-columns]="'repeat(auto-fill, minmax(60px, 1fr))'" style="gap: 4px; max-height: 400px; overflow-y: auto;">
         <div
           *ngFor="let item of locationGrid"
           [class]="'location-cell ' + getLocationStatusClass(item.status)"
@@ -488,31 +534,31 @@
         </div>
       </div>
     </div>
-    
-    <!-- Legend -->
-    <div class="k-d-flex k-gap-4 k-p-2 k-border k-border-solid k-border-gray-300 k-rounded">
-      <div class="k-d-flex k-align-items-center k-gap-2">
-        <div class="location-legend location-free" style="width: 20px; height: 20px; border: 1px solid #ccc;"></div>
-        <span class="k-font-size-sm">Free</span>
-      </div>
-      <div class="k-d-flex k-align-items-center k-gap-2">
-        <div class="location-legend location-selected" style="width: 20px; height: 20px; border: 1px solid #0078d4;"></div>
-        <span class="k-font-size-sm">Selected</span>
-      </div>
-      <div class="k-d-flex k-align-items-center k-gap-2">
-        <div class="location-legend location-booked" style="width: 20px; height: 20px; border: 1px solid #dc3545;"></div>
-        <span class="k-font-size-sm">Booked</span>
-      </div>
-      <div class="k-d-flex k-align-items-center k-gap-2">
-        <div class="location-legend location-blocked" style="width: 20px; height: 20px; border: 1px solid #ffc107;"></div>
-        <span class="k-font-size-sm">Blocked</span>
+    <div class="k-border k-border-solid k-border-gray-300 k-p-3 k-rounded">
+      <h3 class="k-mt-0 k-mb-2 k-text-primary k-font-size-md">Legend</h3>
+      <div class="k-d-flex k-gap-4 k-flex-wrap">
+        <div class="k-d-flex k-align-items-center k-gap-2">
+          <div class="location-legend location-free" style="width: 20px; height: 20px; border: 1px solid #ccc;"></div>
+          <span class="k-font-size-sm">Free</span>
+        </div>
+        <div class="k-d-flex k-align-items-center k-gap-2">
+          <div class="location-legend location-selected" style="width: 20px; height: 20px; border: 1px solid #0078d4;"></div>
+          <span class="k-font-size-sm">Selected</span>
+        </div>
+        <div class="k-d-flex k-align-items-center k-gap-2">
+          <div class="location-legend location-booked" style="width: 20px; height: 20px; border: 1px solid #dc3545;"></div>
+          <span class="k-font-size-sm">Booked</span>
+        </div>
+        <div class="k-d-flex k-align-items-center k-gap-2">
+          <div class="location-legend location-blocked" style="width: 20px; height: 20px; border: 1px solid #ffc107;"></div>
+          <span class="k-font-size-sm">Blocked</span>
+        </div>
       </div>
     </div>
-    
-    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-2">
-      <button kendoButton (click)="closeLocationDialog()">Cancel</button>
-      <button kendoButton themeColor="primary" (click)="onLocationSelect()" [disabled]="!selectedLocation">Select</button>
-    </div>
+  </div>
+  <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3 k-pt-3 k-border-top">
+    <button kendoButton (click)="closeLocationDialog()">Cancel</button>
+    <button kendoButton themeColor="primary" (click)="onLocationSelect()" [disabled]="!selectedLocation">Select</button>
   </div>
 </kendo-dialog>
 
@@ -521,32 +567,85 @@
   *ngIf="isPogoTowerDialogOpen"
   (close)="closePogoTowerDialog()"
   [minWidth]="1000"
-  [width]="'70%'"
-  title="Select Pogo Tower">
-  <div class="k-p-3">
-    <p class="k-text-center">Pogo Tower selection dialog - To be implemented with probe card search</p>
-    <p class="k-text-muted k-text-center">Search and select a Pogo Tower from available hardware items</p>
-    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3">
-      <button kendoButton (click)="closePogoTowerDialog()">Cancel</button>
-      <button kendoButton themeColor="primary" (click)="onPogoTowerSelected({ masterId: 1, iseId: 'PT-001', isIse: false })">Select</button>
+  [width]="'85%'"
+  [height]="'85%'"
+  class="dialog-round">
+  <div class="k-d-flex k-align-items-center k-mb-2">
+    <h2 class="k-m-0 k-font-size-lg">Select Pogo Tower</h2>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+      (click)="closePogoTowerDialog()"></button>
+  </div>
+  <div class="k-d-flex k-flex-column k-gap-3 k-p-2 dialog-scrollable-content" style="max-height: calc(85vh - 140px); overflow-y: auto;">
+    <div class="k-border k-border-solid k-border-gray-300 k-p-3 k-rounded">
+      <h3 class="k-mt-0 k-mb-2 k-text-primary k-font-size-md">Pogo Tower</h3>
+      <p class="k-text-secondary k-m-0">Search and select a Pogo Tower from available hardware items.</p>
+      <p class="k-text-muted k-m-0 k-mt-1">To be implemented with probe card search.</p>
     </div>
+  </div>
+  <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3 k-pt-3 k-border-top">
+    <button kendoButton (click)="closePogoTowerDialog()">Cancel</button>
+    <button kendoButton themeColor="primary" (click)="onPogoTowerSelected({ masterId: 1, iseId: 'PT-001', isIse: false })">Select</button>
   </div>
 </kendo-dialog>
 
-<!-- Correlation Dialog -->
+<!-- Correlation Dialog (Wafer Correlation List - single panel, matches TFS ChangeKitList) -->
 <kendo-dialog
   *ngIf="isCorrelationDialogOpen"
   (close)="closeCorrelationDialog()"
   [minWidth]="1000"
-  [width]="'70%'"
-  title="Select Correlation">
-  <div class="k-p-3">
-    <p class="k-text-center">Correlation selection dialog - To be implemented with multi-select search</p>
-    <p class="k-text-muted k-text-center">Search and select one or more Correlation items</p>
-    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3">
-      <button kendoButton (click)="closeCorrelationDialog()">Cancel</button>
-      <button kendoButton themeColor="primary" (click)="onCorrelationSelected([{ masterId: 1, iseId: 'CORR-001' }])">Select</button>
+  [width]="'85%'"
+  [height]="'85%'"
+  class="dialog-round">
+  <div class="k-d-flex k-align-items-center k-mb-2">
+    <h2 class="k-m-0 k-font-size-lg">Wafer Correlation List</h2>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+      (click)="closeCorrelationDialog()"></button>
+  </div>
+  <div class="k-d-flex k-flex-column k-gap-2 k-p-2 dialog-scrollable-content" style="max-height: calc(85vh - 140px); overflow-y: auto;">
+    <div class="k-border k-border-solid k-border-gray-300 k-p-3 k-rounded">
+      <div class="k-d-flex k-align-items-center k-gap-4 k-flex-wrap k-mb-3">
+        <kendo-label class="k-font-size-sm k-d-flex k-align-items-center k-gap-2">
+          <kendo-checkbox [(ngModel)]="correlationIsISELabs" (ngModelChange)="onCorrelationISELabsChange($event)"></kendo-checkbox>
+          <span>ISE Labs :</span>
+        </kendo-label>
+        <kendo-label text="Customer :" class="k-font-size-sm">
+          <kendo-dropdownlist
+            [data]="correlationCustomersList"
+            [textField]="'CustomerName'"
+            [valueField]="'CustomerID'"
+            [valuePrimitive]="true"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [(ngModel)]="correlationCustomerId"
+            (valueChange)="onCorrelationCustomerChange($event)"
+            [disabled]="correlationIsISELabs"
+            style="width: 280px;">
+          </kendo-dropdownlist>
+        </kendo-label>
+      </div>
+      <kendo-grid
+        [kendoGridBinding]="correlationGridData"
+        kendoGridSelectBy="masterId"
+        [selectable]="correlationGridSelectable"
+        [selectedKeys]="correlationSelectedKeys"
+        (selectedKeysChange)="onCorrelationSelectedKeysChange($event)"
+        [height]="360"
+        [pageSize]="10"
+        [pageable]="true"
+        [resizable]="true">
+        <kendo-grid-column field="iseId" title="ISE ID" [width]="200"></kendo-grid-column>
+        <kendo-grid-column field="customerName" title="Customer Name" [width]="220"></kendo-grid-column>
+        <kendo-grid-column field="hardwareType" title="Hardware Type" [width]="140"></kendo-grid-column>
+        <kendo-grid-column field="location" title="Hardware Location" [width]="250"></kendo-grid-column>
+      </kendo-grid>
     </div>
+  </div>
+  <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3 k-pt-3 k-border-top">
+    <button kendoButton (click)="closeCorrelationDialog()">Cancel</button>
+    <button kendoButton themeColor="primary" (click)="onCorrelationAddClick()">
+      <span class="k-icon k-i-plus"></span> Add
+    </button>
+    <button kendoButton themeColor="primary" (click)="confirmCorrelationSelection()">Select</button>
   </div>
 </kendo-dialog>
 
@@ -555,15 +654,24 @@
   *ngIf="isExternalEquipmentDialogOpen"
   (close)="closeExternalEquipmentDialog()"
   [minWidth]="1000"
-  [width]="'70%'"
-  title="Select External Equipment">
-  <div class="k-p-3">
-    <p class="k-text-center">External Equipment selection dialog - To be implemented with multi-select search</p>
-    <p class="k-text-muted k-text-center">Search and select one or more External Equipment items</p>
-    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3">
-      <button kendoButton (click)="closeExternalEquipmentDialog()">Cancel</button>
-      <button kendoButton themeColor="primary" (click)="onExternalEquipmentSelected([{ masterId: 1, iseId: 'EXT-001' }])">Select</button>
+  [width]="'85%'"
+  [height]="'85%'"
+  class="dialog-round">
+  <div class="k-d-flex k-align-items-center k-mb-2">
+    <h2 class="k-m-0 k-font-size-lg">Select External Equipment</h2>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+      (click)="closeExternalEquipmentDialog()"></button>
+  </div>
+  <div class="k-d-flex k-flex-column k-gap-3 k-p-2 dialog-scrollable-content" style="max-height: calc(85vh - 140px); overflow-y: auto;">
+    <div class="k-border k-border-solid k-border-gray-300 k-p-3 k-rounded">
+      <h3 class="k-mt-0 k-mb-2 k-text-primary k-font-size-md">External Equipment</h3>
+      <p class="k-text-secondary k-m-0">Search and select one or more External Equipment items.</p>
+      <p class="k-text-muted k-m-0 k-mt-1">To be implemented with multi-select search.</p>
     </div>
+  </div>
+  <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3 k-pt-3 k-border-top">
+    <button kendoButton (click)="closeExternalEquipmentDialog()">Cancel</button>
+    <button kendoButton themeColor="primary" (click)="onExternalEquipmentSelected([{ masterId: 1, iseId: 'EXT-001' }])">Select</button>
   </div>
 </kendo-dialog>
 
@@ -572,14 +680,23 @@
   *ngIf="isInterfaceBoardDialogOpen"
   (close)="closeInterfaceBoardDialog()"
   [minWidth]="1000"
-  [width]="'70%'"
-  title="Select Interface Board">
-  <div class="k-p-3">
-    <p class="k-text-center">Interface Board selection dialog - To be implemented with probe card search</p>
-    <p class="k-text-muted k-text-center">Search and select an Interface Board from available hardware items</p>
-    <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3">
-      <button kendoButton (click)="closeInterfaceBoardDialog()">Cancel</button>
-      <button kendoButton themeColor="primary" (click)="onInterfaceBoardSelected({ masterId: 1, iseId: 'IB-001', isIse: false })">Select</button>
+  [width]="'85%'"
+  [height]="'85%'"
+  class="dialog-round">
+  <div class="k-d-flex k-align-items-center k-mb-2">
+    <h2 class="k-m-0 k-font-size-lg">Select Interface Board</h2>
+    <button kendoButton type="button" rounded="full" class="k-ml-auto" [svgIcon]="ICON.xIcon" size="small"
+      (click)="closeInterfaceBoardDialog()"></button>
+  </div>
+  <div class="k-d-flex k-flex-column k-gap-3 k-p-2 dialog-scrollable-content" style="max-height: calc(85vh - 140px); overflow-y: auto;">
+    <div class="k-border k-border-solid k-border-gray-300 k-p-3 k-rounded">
+      <h3 class="k-mt-0 k-mb-2 k-text-primary k-font-size-md">Interface Board</h3>
+      <p class="k-text-secondary k-m-0">Search and select an Interface Board from available hardware items.</p>
+      <p class="k-text-muted k-m-0 k-mt-1">To be implemented with probe card search.</p>
     </div>
+  </div>
+  <div class="k-d-flex k-justify-content-end k-gap-2 k-mt-3 k-pt-3 k-border-top">
+    <button kendoButton (click)="closeInterfaceBoardDialog()">Cancel</button>
+    <button kendoButton themeColor="primary" (click)="onInterfaceBoardSelected({ masterId: 1, iseId: 'IB-001', isIse: false })">Select</button>
   </div>
 </kendo-dialog>

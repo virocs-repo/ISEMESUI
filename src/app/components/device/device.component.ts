@@ -98,8 +98,8 @@ export class DeviceComponent implements OnInit {
   public deviceData: any = {
     deviceId: -1,
     deviceName: '',
-    deviceFamilyId: null,
-    customerID: null,
+    deviceFamilyId: -1,
+    customerID: -1,
     isActive: false,
     // Device Info
     testDevice: '',
@@ -116,13 +116,13 @@ export class DeviceComponent implements OnInit {
     label4: null,
     label5: null,
     trayTubeMapping: 'Device',
-    countryOfOriginId: null,
+    countryOfOriginId: -1, // -1 = --Select-- (default)
     unitCost: 0,
     // EAR Info
-    materialDescriptionId: null,
+    materialDescriptionId: -1, // -1 = --Select-- (default)
     usHtsCodeId: -1, // Default to -1 (--Select--) to match TFS behavior
-    eccnId: null,
-    licenseExceptionId: null,
+    eccnId: -1, // -1 = --Select-- (default)
+    licenseExceptionId: -1, // -1 = --Select-- (default)
     restrictedCountriesToShipIds: [] as number[],
     scheduleB: false,
     // Pack&Label Info
@@ -222,9 +222,11 @@ export class DeviceComponent implements OnInit {
     if (this.appService.masterData && 
         this.appService.masterData.entityMap && 
         this.appService.masterData.entityMap.Customer) {
-      this.customersList = this.appService.masterData.entityMap.Customer;
+      const list = [...this.appService.masterData.entityMap.Customer];
+      list.unshift({ CustomerID: -1, CustomerName: '--Select--' });
+      this.customersList = list;
     } else {
-      this.customersList = [];
+      this.customersList = [{ CustomerID: -1, CustomerName: '--Select--' }];
     }
   }
 
@@ -581,15 +583,14 @@ export class DeviceComponent implements OnInit {
       // Load dropdown data before opening dialog
       this.loadAllDropdownData();
       
-      // Ensure customersList is populated from getter before opening dialog
-      // Kendo combobox in dialog needs a stable property reference
-      this.customersList = [...this.customers]; // Create a new array reference
+      const list = [...this.customers];
+      list.unshift({ CustomerID: -1, CustomerName: '--Select--' });
+      this.customersList = list;
       
       const deviceId = dataItem.deviceId || dataItem.DeviceId;
-      const customerId = dataItem.customerId || dataItem.CustomerId;
-      const deviceFamilyId = dataItem.deviceFamilyId || dataItem.DeviceFamilyId;
+      const customerId = dataItem.customerId ?? dataItem.CustomerId ?? -1;
+      const deviceFamilyId = dataItem.deviceFamilyId ?? dataItem.DeviceFamilyId ?? -1;
       
-      // Initialize deviceData with all available fields from search result (matching TFS FillControls)
       this.deviceData = {
         deviceId: deviceId,
         deviceName: dataItem.device || dataItem.Device,
@@ -605,13 +606,13 @@ export class DeviceComponent implements OnInit {
         lotType: dataItem.lotType || dataItem.LotType || dataItem.deviceTypeId || dataItem.DeviceTypeId || null,
         labelMapping: dataItem.labelMapping !== undefined ? dataItem.labelMapping : (dataItem.isLabelMapped !== undefined ? dataItem.isLabelMapped : false),
         trayTubeMapping: dataItem.trayTubeMapping || dataItem.TrayTubeMapping || (dataItem.isDeviceBasedTray !== undefined ? (dataItem.isDeviceBasedTray ? 'Device' : 'Lot') : 'Device'),
-        countryOfOriginId: dataItem.countryOfOriginId || dataItem.CountryOfOriginId || dataItem.cooId || dataItem.COOId || null,
+        countryOfOriginId: dataItem.countryOfOriginId ?? dataItem.CountryOfOriginId ?? dataItem.cooId ?? dataItem.COOId ?? -1,
         unitCost: dataItem.unitCost !== undefined ? dataItem.unitCost : (dataItem.UnitCost !== undefined ? dataItem.UnitCost : 0),
-        materialDescriptionId: dataItem.materialDescriptionId || dataItem.MaterialDescriptionId || null,
+        materialDescriptionId: dataItem.materialDescriptionId ?? dataItem.MaterialDescriptionId ?? -1,
         usHtsCodeId: (dataItem.usHtsCodeId !== undefined && dataItem.usHtsCodeId !== null && dataItem.usHtsCodeId > 0) ? Number(dataItem.usHtsCodeId) : 
                       ((dataItem.USHTSCodeId !== undefined && dataItem.USHTSCodeId !== null && dataItem.USHTSCodeId > 0) ? Number(dataItem.USHTSCodeId) : -1),
-        eccnId: dataItem.eccnId || dataItem.ECCNId || dataItem.eccn || dataItem.ECCN || null,
-        licenseExceptionId: dataItem.licenseExceptionId || dataItem.LicenseExceptionId || dataItem.licenseExceptions || dataItem.LicenseExceptions || null,
+        eccnId: dataItem.eccnId ?? dataItem.ECCNId ?? dataItem.eccn ?? dataItem.ECCN ?? -1,
+        licenseExceptionId: dataItem.licenseExceptionId ?? dataItem.LicenseExceptionId ?? dataItem.licenseExceptions ?? dataItem.LicenseExceptions ?? -1,
         restrictedCountriesToShipIds: this.parseRestrictedCountriesIds(dataItem.restrictedCountriesToShipId || dataItem.restrictedCountriesToShipIds || dataItem.restrictedCountriesIds || dataItem.RestrictedCountriesIds),
         scheduleB: dataItem.scheduleB !== undefined ? dataItem.scheduleB : (dataItem.ScheduleB !== undefined ? dataItem.ScheduleB : false),
         mslId: dataItem.mslId || dataItem.MSL || dataItem.msl || null,
@@ -636,7 +637,7 @@ export class DeviceComponent implements OnInit {
       this.isEditMode = true;
       this.isViewMode = false;
       
-      if (this.deviceData.customerID) {
+      if (this.deviceData.customerID != null && this.deviceData.customerID !== -1) {
         this.selectedCustomerID = this.deviceData.customerID;
         this.loadDeviceFamiliesForDialog();
       }
@@ -723,9 +724,9 @@ export class DeviceComponent implements OnInit {
                 const isDeviceBased = deviceInfo.isDeviceBasedTray || deviceInfo.IsDeviceBasedTray;
                 this.deviceData.trayTubeMapping = isDeviceBased ? 'Device' : 'Lot';
               }
-              if (deviceInfo.cooId !== undefined) this.deviceData.countryOfOriginId = deviceInfo.cooId || deviceInfo.COOId || this.deviceData.countryOfOriginId;
+              if (deviceInfo.cooId !== undefined) this.deviceData.countryOfOriginId = (deviceInfo.cooId ?? deviceInfo.COOId ?? this.deviceData.countryOfOriginId) ?? -1;
               if (deviceInfo.unitCost !== undefined) this.deviceData.unitCost = deviceInfo.unitCost || deviceInfo.UnitCost || this.deviceData.unitCost;
-              if (deviceInfo.materialDescriptionId !== undefined) this.deviceData.materialDescriptionId = deviceInfo.materialDescriptionId || deviceInfo.MaterialDescriptionId || this.deviceData.materialDescriptionId;
+              if (deviceInfo.materialDescriptionId !== undefined) this.deviceData.materialDescriptionId = (deviceInfo.materialDescriptionId ?? deviceInfo.MaterialDescriptionId ?? this.deviceData.materialDescriptionId) ?? -1;
               // US HTS Code - handle both camelCase and PascalCase
               // Match TFS behavior: if USHTSCodeId > 0, set SelectedValue to that ID, otherwise set to -1 (--Select--)
               // TFS: ddlUSHTSCode.SelectedValue = UtilityClass.ToInteger(...USHTSCodeId) > 0 ? ...USHTSCodeId : -1;
@@ -1113,13 +1114,13 @@ export class DeviceComponent implements OnInit {
         lotType: dataItem.lotType || dataItem.LotType || dataItem.deviceTypeId || dataItem.DeviceTypeId || null,
         labelMapping: dataItem.labelMapping !== undefined ? dataItem.labelMapping : (dataItem.isLabelMapped !== undefined ? dataItem.isLabelMapped : false),
         trayTubeMapping: dataItem.trayTubeMapping || dataItem.TrayTubeMapping || (dataItem.isDeviceBasedTray !== undefined ? (dataItem.isDeviceBasedTray ? 'Device' : 'Lot') : 'Device'),
-        countryOfOriginId: dataItem.countryOfOriginId || dataItem.CountryOfOriginId || dataItem.cooId || dataItem.COOId || null,
+        countryOfOriginId: dataItem.countryOfOriginId ?? dataItem.CountryOfOriginId ?? dataItem.cooId ?? dataItem.COOId ?? -1,
         unitCost: dataItem.unitCost !== undefined ? dataItem.unitCost : (dataItem.UnitCost !== undefined ? dataItem.UnitCost : 0),
-        materialDescriptionId: dataItem.materialDescriptionId || dataItem.MaterialDescriptionId || null,
+        materialDescriptionId: dataItem.materialDescriptionId ?? dataItem.MaterialDescriptionId ?? -1,
         usHtsCodeId: (dataItem.usHtsCodeId !== undefined && dataItem.usHtsCodeId !== null && dataItem.usHtsCodeId > 0) ? Number(dataItem.usHtsCodeId) : 
                       ((dataItem.USHTSCodeId !== undefined && dataItem.USHTSCodeId !== null && dataItem.USHTSCodeId > 0) ? Number(dataItem.USHTSCodeId) : -1),
-        eccnId: dataItem.eccnId || dataItem.ECCNId || dataItem.eccn || dataItem.ECCN || null,
-        licenseExceptionId: dataItem.licenseExceptionId || dataItem.LicenseExceptionId || dataItem.licenseExceptions || dataItem.LicenseExceptions || null,
+        eccnId: dataItem.eccnId ?? dataItem.ECCNId ?? dataItem.eccn ?? dataItem.ECCN ?? -1,
+        licenseExceptionId: dataItem.licenseExceptionId ?? dataItem.LicenseExceptionId ?? dataItem.licenseExceptions ?? dataItem.LicenseExceptions ?? -1,
         restrictedCountriesToShipIds: this.parseRestrictedCountriesIds(dataItem.restrictedCountriesToShipId || dataItem.restrictedCountriesToShipIds || dataItem.restrictedCountriesIds || dataItem.RestrictedCountriesIds),
         scheduleB: dataItem.scheduleB !== undefined ? dataItem.scheduleB : (dataItem.ScheduleB !== undefined ? dataItem.ScheduleB : false),
         mslId: dataItem.mslId || dataItem.MSL || dataItem.msl || null,
@@ -1144,7 +1145,7 @@ export class DeviceComponent implements OnInit {
       this.isEditMode = false;
       this.isViewMode = true;
       
-      if (this.deviceData.customerID) {
+      if (this.deviceData.customerID != null && this.deviceData.customerID !== -1) {
         this.selectedCustomerID = this.deviceData.customerID;
         this.loadDeviceFamiliesForDialog();
       }
@@ -1208,9 +1209,9 @@ export class DeviceComponent implements OnInit {
                 const isDeviceBased = deviceInfo.isDeviceBasedTray || deviceInfo.IsDeviceBasedTray;
                 this.deviceData.trayTubeMapping = isDeviceBased ? 'Device' : 'Lot';
               }
-              if (deviceInfo.cooId !== undefined) this.deviceData.countryOfOriginId = deviceInfo.cooId || deviceInfo.COOId || this.deviceData.countryOfOriginId;
+              if (deviceInfo.cooId !== undefined) this.deviceData.countryOfOriginId = (deviceInfo.cooId ?? deviceInfo.COOId ?? this.deviceData.countryOfOriginId) ?? -1;
               if (deviceInfo.unitCost !== undefined) this.deviceData.unitCost = deviceInfo.unitCost || deviceInfo.UnitCost || this.deviceData.unitCost;
-              if (deviceInfo.materialDescriptionId !== undefined) this.deviceData.materialDescriptionId = deviceInfo.materialDescriptionId || deviceInfo.MaterialDescriptionId || this.deviceData.materialDescriptionId;
+              if (deviceInfo.materialDescriptionId !== undefined) this.deviceData.materialDescriptionId = (deviceInfo.materialDescriptionId ?? deviceInfo.MaterialDescriptionId ?? this.deviceData.materialDescriptionId) ?? -1;
               // US HTS Code - handle both camelCase and PascalCase
               // Match TFS behavior: if USHTSCodeId > 0, set SelectedValue to that ID, otherwise set to -1 (--Select--)
               // TFS: ddlUSHTSCode.SelectedValue = UtilityClass.ToInteger(...USHTSCodeId) > 0 ? ...USHTSCodeId : -1;
@@ -1460,26 +1461,22 @@ export class DeviceComponent implements OnInit {
 
 
   openAddDialog(): void {
-    // Ensure customersList is populated from getter before opening dialog
-    // Kendo combobox in dialog needs a stable property reference
-    this.customersList = [...this.customers]; // Create a new array reference
-    
-    // Load all dropdown data
     this.loadAllDropdownData();
-    
-    // Force change detection after a tick to ensure combobox updates
     setTimeout(() => {
       this.cdr.detectChanges();
     }, 0);
     
-    this.originalIsActive = true; // Reset original active state for Add mode
-    // Reset active labels for add mode
+    this.originalIsActive = true;
     this.activeLabels = [];
+    const listAdd = [...this.customers];
+    listAdd.unshift({ CustomerID: -1, CustomerName: '--Select--' });
+    this.customersList = listAdd;
+    this.deviceFamilies = [{ deviceFamilyId: -1, deviceFamilyName: '--Select--' }];
     this.deviceData = {
       deviceId: -1,
       deviceName: '',
-      deviceFamilyId: null,
-      customerID: null,
+      deviceFamilyId: -1,
+      customerID: -1,
       isActive: true, // In Add mode, always true (matching TFS behavior - checkbox is disabled but checked)
       testDevice: '',
       reliabilityDevice: '',
@@ -1495,12 +1492,12 @@ export class DeviceComponent implements OnInit {
       label4: null,
       label5: null,
       trayTubeMapping: 'Device',
-      countryOfOriginId: null,
+      countryOfOriginId: -1,
       unitCost: 0,
-      materialDescriptionId: null,
+      materialDescriptionId: -1,
       usHtsCodeId: -1, // Default to -1 (--Select--) to match TFS behavior
-      eccnId: null,
-      licenseExceptionId: null,
+      eccnId: -1,
+      licenseExceptionId: -1,
       restrictedCountriesToShipIds: [] as number[],
       scheduleB: false,
       mslId: null,
@@ -1533,10 +1530,12 @@ export class DeviceComponent implements OnInit {
     
     // Load Country of Origin from masterData (matches pattern from other components)
     if (this.appService.masterData && this.appService.masterData.coo) {
-      this.countriesOfOrigin = this.appService.masterData.coo.map((item: any) => ({
+      const mapped = this.appService.masterData.coo.map((item: any) => ({
         id: item.serviceCategoryId || item.ServiceCategoryId || item.masterListItemId || item.MasterListItemId,
         name: item.serviceCategoryName || item.ServiceCategoryName || item.itemText || item.ItemText
       }));
+      mapped.unshift({ id: -1, name: '--Select--' });
+      this.countriesOfOrigin = mapped;
       console.log('Countries of Origin loaded:', this.countriesOfOrigin.length);
     } else {
       console.warn('masterData.coo not available');
@@ -1787,12 +1786,12 @@ export class DeviceComponent implements OnInit {
   closeDialog(): void {
     this.isDialogOpen = false;
     this.isViewMode = false;
-    this.originalIsActive = true; // Reset original active state
+    this.originalIsActive = true;
     this.deviceData = {
       deviceId: -1,
       deviceName: '',
-      deviceFamilyId: null,
-      customerID: null,
+      deviceFamilyId: -1,
+      customerID: -1,
       isActive: false,
       testDevice: '',
       reliabilityDevice: '',
@@ -1808,12 +1807,12 @@ export class DeviceComponent implements OnInit {
       label4: null,
       label5: null,
       trayTubeMapping: 'Device',
-      countryOfOriginId: null,
+      countryOfOriginId: -1,
       unitCost: 0,
-      materialDescriptionId: null,
+      materialDescriptionId: -1,
       usHtsCodeId: -1, // Default to -1 (--Select--) to match TFS behavior
-      eccnId: null,
-      licenseExceptionId: null,
+      eccnId: -1,
+      licenseExceptionId: -1,
       restrictedCountriesToShipIds: [] as number[],
       scheduleB: false,
       mslId: null,
@@ -1829,12 +1828,13 @@ export class DeviceComponent implements OnInit {
   }
 
   onDialogCustomerChange(customerId?: number | null): void {
-    this.deviceData.deviceFamilyId = null;
-    this.deviceFamilies = [];
+    this.deviceData.deviceFamilyId = -1;
     const selectedCustomerId = customerId !== undefined ? customerId : this.deviceData.customerID;
-    if (selectedCustomerId) {
+    if (selectedCustomerId == null || selectedCustomerId === -1) {
+      this.deviceFamilies = [{ deviceFamilyId: -1, deviceFamilyName: '--Select--' }];
+      this.customerLabels = [];
+    } else {
       this.loadDeviceFamiliesForDialog();
-      // Reload customer labels when customer changes if labelMapping is checked
       if (this.deviceData.labelMapping) {
         setTimeout(() => {
           this.loadCustomerLabels().then(() => {
@@ -1842,31 +1842,26 @@ export class DeviceComponent implements OnInit {
           });
         }, 100);
       }
-    } else {
-      this.customerLabels = [];
     }
   }
 
   loadDeviceFamiliesForDialog(): void {
     const customerID = this.deviceData.customerID;
-    if (!customerID) {
-      this.deviceFamilies = [];
+    const noCustomer = customerID == null || customerID === -1;
+    if (noCustomer) {
+      this.deviceFamilies = [{ deviceFamilyId: -1, deviceFamilyName: '--Select--' }];
       return;
     }
     this.apiService.searchDeviceFamily(customerID, null, null).subscribe({
       next: (data: any[]) => {
-        // Get unique device families for the dropdown
-        const uniqueFamilies = new Map();
+        const uniqueFamilies = new Map<number, { deviceFamilyId: number; deviceFamilyName: string }>();
+        uniqueFamilies.set(-1, { deviceFamilyId: -1, deviceFamilyName: '--Select--' });
         if (data && data.length > 0) {
           data.forEach((item: any) => {
             const deviceFamilyId = item.deviceFamilyId || item.DeviceFamilyId;
             const deviceFamilyName = item.deviceFamilyName || item.DeviceFamilyName;
-            
-            if (deviceFamilyId && deviceFamilyId !== null && deviceFamilyId !== -1 && !uniqueFamilies.has(deviceFamilyId)) {
-              uniqueFamilies.set(deviceFamilyId, {
-                deviceFamilyId: deviceFamilyId,
-                deviceFamilyName: deviceFamilyName
-              });
+            if (deviceFamilyId != null && deviceFamilyId !== -1 && !uniqueFamilies.has(deviceFamilyId)) {
+              uniqueFamilies.set(deviceFamilyId, { deviceFamilyId, deviceFamilyName });
             }
           });
         }
@@ -1874,7 +1869,7 @@ export class DeviceComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading device families:', error);
-        this.deviceFamilies = [];
+        this.deviceFamilies = [{ deviceFamilyId: -1, deviceFamilyName: '--Select--' }];
       }
     });
   }

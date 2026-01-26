@@ -68,7 +68,7 @@
     <kendo-label text="Customer *" class="k-font-size-sm">
       <input *ngIf="isViewMode" kendoTextBox [value]="getCustomerName(deviceFamilyData.customerID)" type="text"
         class="w-100" readonly />
-      <kendo-combobox
+      <kendo-dropdownlist
         *ngIf="!isViewMode"
         [data]="customersList"
         [valuePrimitive]="true"
@@ -77,15 +77,8 @@
         [(ngModel)]="deviceFamilyData.customerID"
         [filterable]="true"
         [kendoDropDownFilter]="filterSettings"
-        [allowCustom]="false"
-        [popupSettings]="{ width: 'auto', height: 300, appendTo: 'component' }"
-        [disabled]="false"
-        placeholder="Select or type to search customer..."
         class="w-100">
-        <ng-template kendoComboBoxNoDataTemplate>
-          <div class="k-p-2">No customer found</div>
-        </ng-template>
-      </kendo-combobox>
+      </kendo-dropdownlist>
     </kendo-label>
     <kendo-label text="Device Family Name *" class="k-font-size-sm">
       <input kendoTextBox [(ngModel)]="deviceFamilyData.deviceFamilyName" type="text"
