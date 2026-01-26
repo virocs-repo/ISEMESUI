@@ -1308,4 +1308,39 @@ export class ApiService {
   getProbeCardLocationsInfo(subSlotId: number) {
     return this.httpClient.get<any[]>(`${API}v1/ise/hardware/probecard/masterdata/subslots/${subSlotId}/locations`);
   }
+
+  /** Correlation search for probe card picker (multi-select). */
+  searchCorrelation(params: {
+    customerId?: number | null;
+    iseId?: string | null;
+    customerHWId?: string | null;
+    hardwareTypeId?: number;
+    isISE?: number;
+    isActive?: number;
+    isPicker?: boolean;
+  }) {
+    let httpParams = new HttpParams();
+    if (params.customerId != null && params.customerId !== -1) {
+      httpParams = httpParams.set('customerId', params.customerId.toString());
+    }
+    if (params.iseId != null && params.iseId !== '') {
+      httpParams = httpParams.set('iseId', params.iseId);
+    }
+    if (params.customerHWId != null && params.customerHWId !== '') {
+      httpParams = httpParams.set('customerHWId', params.customerHWId);
+    }
+    if (params.hardwareTypeId != null && params.hardwareTypeId !== 0) {
+      httpParams = httpParams.set('hardwareTypeId', params.hardwareTypeId.toString());
+    }
+    if (params.isISE != null) {
+      httpParams = httpParams.set('isISE', params.isISE.toString());
+    }
+    if (params.isActive != null) {
+      httpParams = httpParams.set('isActive', params.isActive.toString());
+    }
+    if (params.isPicker != null) {
+      httpParams = httpParams.set('isPicker', params.isPicker.toString());
+    }
+    return this.httpClient.get<any[]>(`${API}v1/ise/hardware/probecard/correlation/search`, { params: httpParams });
+  }
 }                                                     

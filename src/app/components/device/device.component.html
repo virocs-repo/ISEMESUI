@@ -74,28 +74,25 @@
         <kendo-label text="Customer *" class="k-font-size-sm">
           <input *ngIf="isViewMode" kendoTextBox [value]="getCustomerName(deviceData.customerID)" type="text"
             class="w-100" readonly />
-          <kendo-combobox
+          <kendo-dropdownlist
             *ngIf="!isViewMode"
             [data]="customersList"
             [valuePrimitive]="true"
             [textField]="'CustomerName'"
             [valueField]="'CustomerID'"
             [(ngModel)]="deviceData.customerID"
-            (ngModelChange)="onDialogCustomerChange($event)"
+            (valueChange)="onDialogCustomerChange($event)"
             [filterable]="true"
             [kendoDropDownFilter]="filterSettings"
-            [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
             [disabled]="isEditMode"
-            placeholder="Select customer..."
             class="w-100">
-          </kendo-combobox>
+          </kendo-dropdownlist>
         </kendo-label>
         
         <kendo-label text="Device Family *" class="k-font-size-sm">
           <input *ngIf="isViewMode" kendoTextBox [value]="getDeviceFamilyName(deviceData.deviceFamilyId)" type="text"
             class="w-100" readonly />
-          <kendo-combobox
+          <kendo-dropdownlist
             *ngIf="!isViewMode"
             [data]="deviceFamilies"
             [valuePrimitive]="true"
@@ -103,12 +100,10 @@
             [valueField]="'deviceFamilyId'"
             [(ngModel)]="deviceData.deviceFamilyId"
             [filterable]="true"
-            [allowCustom]="false"
-            [popupSettings]="{ width: 'auto', height: 300 }"
+            [kendoDropDownFilter]="filterSettings"
             [disabled]="!deviceData.customerID || deviceData.customerID === -1 || !canEdit"
-            placeholder="Select device family..."
             class="w-100">
-          </kendo-combobox>
+          </kendo-dropdownlist>
         </kendo-label>
         
         <kendo-label text="Test Device *" class="k-font-size-sm">
@@ -152,6 +147,8 @@
             [valueField]="'value'"
             [textField]="'text'"
             [(ngModel)]="deviceData.partType"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -167,6 +164,8 @@
             [textField]="'text'"
             [(ngModel)]="deviceData.lotType"
             [disabled]="!canEditlotType"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -191,6 +190,8 @@
             [valueField]="'value'"
             [textField]="'text'"
             [(ngModel)]="deviceData.trayTubeMapping"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -205,7 +206,8 @@
             [textField]="'name'"
             [valueField]="'id'"
             [(ngModel)]="deviceData.countryOfOriginId"
-            placeholder="Select COO..."
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -242,7 +244,8 @@
                 (valueChange)="onLabelValueChange(labelNum, $event)"
                 (selectionChange)="onLabelSelectionChange(labelNum, $event)"
                 [disabled]="!getCanEditLabel(labelNum) || !labelEditEnabled"
-                placeholder="--Select--"
+                [filterable]="true"
+                [kendoDropDownFilter]="filterSettings"
                 class="k-flex-1">
               </kendo-dropdownlist>
               <button kendoButton size="small" (click)="openLabelDetails(labelNum)" [disabled]="!isLabelSelected(labelNum) || !labelEditEnabled">--</button>
@@ -277,6 +280,8 @@
             [textField]="'name'"
             [valueField]="'id'"
             [(ngModel)]="deviceData.materialDescriptionId"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -291,6 +296,8 @@
             [textField]="'name'"
             [valueField]="'id'"
             [(ngModel)]="deviceData.usHtsCodeId"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -305,6 +312,8 @@
             [textField]="'name'"
             [valueField]="'id'"
             [(ngModel)]="deviceData.eccnId"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -319,6 +328,8 @@
             [textField]="'name'"
             [valueField]="'id'"
             [(ngModel)]="deviceData.licenseExceptionId"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -334,7 +345,8 @@
             [valueField]="'id'"
             [valuePrimitive]="true"
             [filterable]="true"
-            placeholder="Select countries..."
+            [kendoDropDownFilter]="filterSettings"
+            placeholder="--Select--"
             class="w-100">
             <ng-template kendoMultiSelectHeaderTemplate>
               <div class="k-d-flex k-align-items-center k-p-2" style="border-bottom: 1px solid #e0e0e0;">
@@ -373,6 +385,9 @@
             [textField]="'name'"
             [valueField]="'id'"
             [(ngModel)]="deviceData.mslId"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [defaultItem]="{ id: -1, name: '--Select--' }"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -387,6 +402,9 @@
             [textField]="'name'"
             [valueField]="'id'"
             [(ngModel)]="deviceData.peakPackageBodyTemperatureId"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [defaultItem]="{ id: -1, name: '--Select--' }"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -401,6 +419,9 @@
             [textField]="'name'"
             [valueField]="'id'"
             [(ngModel)]="deviceData.shelfLifeMonthId"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [defaultItem]="{ id: -1, name: '--Select--' }"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -415,6 +436,9 @@
             [textField]="'name'"
             [valueField]="'id'"
             [(ngModel)]="deviceData.floorLifeId"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [defaultItem]="{ id: -1, name: '--Select--' }"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -429,6 +453,9 @@
             [textField]="'name'"
             [valueField]="'id'"
             [(ngModel)]="deviceData.pbFreeId"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [defaultItem]="{ id: -1, name: '--Select--' }"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -443,6 +470,9 @@
             [textField]="'name'"
             [valueField]="'id'"
             [(ngModel)]="deviceData.pbFreeStickerId"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [defaultItem]="{ id: -1, name: '--Select--' }"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -457,6 +487,9 @@
             [textField]="'name'"
             [valueField]="'id'"
             [(ngModel)]="deviceData.rohsId"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [defaultItem]="{ id: -1, name: '--Select--' }"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -471,6 +504,9 @@
             [textField]="'name'"
             [valueField]="'id'"
             [(ngModel)]="deviceData.trayTubeStrappingId"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [defaultItem]="{ id: -1, name: '--Select--' }"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -485,6 +521,9 @@
             [textField]="'name'"
             [valueField]="'id'"
             [(ngModel)]="deviceData.trayStackingId"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
+            [defaultItem]="{ id: -1, name: '--Select--' }"
             class="w-100">
           </kendo-dropdownlist>
         </kendo-label>
@@ -550,6 +589,8 @@
               [(ngModel)]="dataItem.ldType"
               (valueChange)="onLabelTypeChange(dataItem, $event)"
               [disabled]="!dataItem.isEnable"
+              [filterable]="true"
+              [kendoDropDownFilter]="filterSettings"
               style="width: 100%; font-size: 11px; height: 20px; border: none;">
             </kendo-dropdownlist>
             <div *ngIf="dataItem.ldTypecmbvisibility === 'Visible' && isViewMode" 
@@ -562,6 +603,8 @@
               [data]="dataItem.packAndLabelImagesList || ['--Select--', 'Image1', 'Image2', 'Image3']"
               [(ngModel)]="dataItem.imageVisible"
               [disabled]="!dataItem.isEnable || dataItem.isEdit"
+              [filterable]="true"
+              [kendoDropDownFilter]="filterSettings"
               style="width: 100%; font-size: 11px; height: 20px; border: none;">
             </kendo-dropdownlist>
             <div *ngIf="dataItem.imgcmbvisibility === 'Visible' && isViewMode" 
@@ -587,6 +630,8 @@
             [data]="dataItem.ldValuesList && dataItem.ldValuesList.length > 0 ? dataItem.ldValuesList : labelValueOptions"
             [(ngModel)]="dataItem.ldValue"
             [disabled]="!dataItem.isEnable"
+            [filterable]="true"
+            [kendoDropDownFilter]="filterSettings"
             style="width: 100%; font-size: 11px; height: 20px; border: none;">
           </kendo-dropdownlist>
           <div *ngIf="dataItem.cmbvisibility === 'Visible' && isViewMode" 

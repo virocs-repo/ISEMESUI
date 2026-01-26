@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { GridDataResult, PageChangeEvent, CellClickEvent } from '@progress/kendo-angular-grid';
+import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
 import { ApiService } from 'src/app/services/api.service';
 import { AppService } from 'src/app/services/app.service';
 import { NotificationService } from '@progress/kendo-angular-notification';
@@ -61,6 +62,11 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
   selectableSettings: any = {
     checkboxOnly: true,
     mode: 'single',
+  };
+
+  readonly filterSettings: DropDownFilterSettings = {
+    operator: 'contains',
+    caseSensitive: false
   };
 
   columnMenuSettings: any = {
@@ -496,6 +502,12 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
   public enableExternalEquipment: boolean = false;
   public enableInterfaceBoard: boolean = false;
 
+  /** When true (ISE Labs checked), customer dropdown and Customer Id are disabled. */
+  public customerDropdownDisabled: boolean = false;
+
+  /** ISE Labs customer ID per TFS (ProbeCardDetails). */
+  public readonly iseLabsCustomerId: number = 0;
+
   // Location picker data
   public locationShelves: any[] = [];
   public locationSubSlots: any[] = [];
@@ -530,6 +542,14 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
     { id: '12"', name: '12"' }
   ];
 
+  // Correlation dialog (Wafer Correlation List - matches TFS ChangeKitList)
+  public correlationGridData: any[] = [];
+  public correlationIsISELabs: boolean = false;
+  public correlationCustomerId: number = -1;
+  public correlationCustomersList: any[] = [];
+  public correlationSelectedKeys: number[] = [];
+  public correlationGridSelectable: any = { checkboxOnly: true, mode: 'multiple' };
+
   // Attachments
   public attachments: any[] = [];
   public history: any[] = [];
@@ -543,7 +563,7 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
       masterId: -1,
       iseId: '',
       genISEId: '',
-      customerId: null,
+      customerId: -1,
       customerHardwareId: '',
       probeCardTypeId: -1,
       probeCardTypeOthers: '',
@@ -562,7 +582,8 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
       externalEquipmentText: '',
       correlationIds: [],
       correlationText: '',
-      vendorId: null,
+      vendorId: -1,
+      secondaryCustomerIds: [] as number[],
       secondaryCustomerName: '',
       isITAR: false,
       isPowerCard: false,
@@ -575,6 +596,7 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
     this.enableCorrelation = false;
     this.enableExternalEquipment = false;
     this.enableInterfaceBoard = false;
+    this.customerDropdownDisabled = false;
     this.attachments = [];
     this.history = [];
     this.deviceInfo = null;
@@ -597,7 +619,7 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
             probeCardId: details.probeCardId || details.ProbeCardId,
             iseId: details.iseId || details.ISEId || '',
             genISEId: details.genISEID || details.GenISEID || '',
-            customerId: details.customerId || details.CustomerId,
+            customerId: details.customerId ?? details.CustomerId ?? -1,
             customerName: details.customerName || details.CustomerName,
             customerHardwareId: details.customerHardwareId || details.CustomerHardwareId || '',
             probeCardTypeId: details.probeCardTypeId || details.ProbeCardTypeId || -1,
@@ -619,8 +641,9 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
             externalEquipmentText: this.getExternalEquipmentNamesFromDetails(details),
             correlationIds: details.correlations?.map((c: any) => c.exEquipmentId || c.ExEquipmentId) || [],
             correlationText: this.getCorrelationNamesFromDetails(details),
-            vendorId: details.vendorId || details.VendorId,
-            secondaryCustomerName: details.secondaryCustomerName || details.SecondaryCustomerName || '',
+            vendorId: details.vendorId ?? details.VendorId ?? -1,
+            secondaryCustomerIds: this.parseSecondaryCustomerIds(details.secondaryCustomerName ?? details.SecondaryCustomerName),
+            secondaryCustomerName: '', // set below from IDs
             isITAR: details.isITAR || details.IsITAR || false,
             isPowerCard: details.isPowerCard || details.IsPowerCard || false,
             dtsId: details.dtsId || details.DTSId || '',
@@ -632,11 +655,13 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
             shelf: details.shelf || details.Shelf || '',
             subSlot: details.subSlot || details.SubSlot || ''
           };
+          this.probeCardData.secondaryCustomerName = this.getSecondaryCustomerNamesFromIds(this.probeCardData.secondaryCustomerIds);
           // Initialize checkbox states based on existing data
           this.enablePogoTower = !!(details.pogoTowerId || details.PogoTowerId);
           this.enableCorrelation = !!(details.correlations && details.correlations.length > 0);
           this.enableExternalEquipment = !!(details.externalEquipment && details.externalEquipment.length > 0);
           this.enableInterfaceBoard = !!(details.interfaceBoardId || details.InterfaceBoardId);
+          this.customerDropdownDisabled = (details.customerId ?? details.CustomerId) === this.iseLabsCustomerId;
           this.attachments = details.attachments || details.Attachments || [];
           this.history = []; // Will be loaded separately if API supports it
           this.deviceInfo = null; // Will be loaded separately if API supports it
@@ -665,7 +690,7 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
             probeCardId: details.probeCardId || details.ProbeCardId,
             iseId: details.iseId || details.ISEId || '',
             genISEId: details.genISEID || details.GenISEID || '',
-            customerId: details.customerId || details.CustomerId,
+            customerId: details.customerId ?? details.CustomerId ?? -1,
             customerName: details.customerName || details.CustomerName,
             customerHardwareId: details.customerHardwareId || details.CustomerHardwareId || '',
             probeCardTypeId: details.probeCardTypeId || details.ProbeCardTypeId || -1,
@@ -687,8 +712,9 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
             externalEquipmentText: this.getExternalEquipmentNamesFromDetails(details),
             correlationIds: details.correlations?.map((c: any) => c.exEquipmentId || c.ExEquipmentId) || [],
             correlationText: this.getCorrelationNamesFromDetails(details),
-            vendorId: details.vendorId || details.VendorId,
-            secondaryCustomerName: details.secondaryCustomerName || details.SecondaryCustomerName || '',
+            vendorId: details.vendorId ?? details.VendorId ?? -1,
+            secondaryCustomerIds: this.parseSecondaryCustomerIds(details.secondaryCustomerName ?? details.SecondaryCustomerName),
+            secondaryCustomerName: '', // set below from IDs
             isITAR: details.isITAR || details.IsITAR || false,
             isPowerCard: details.isPowerCard || details.IsPowerCard || false,
             dtsId: details.dtsId || details.DTSId || '',
@@ -700,11 +726,13 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
             shelf: details.shelf || details.Shelf || '',
             subSlot: details.subSlot || details.SubSlot || ''
           };
+          this.probeCardData.secondaryCustomerName = this.getSecondaryCustomerNamesFromIds(this.probeCardData.secondaryCustomerIds);
           // Initialize checkbox states based on existing data
           this.enablePogoTower = !!(details.pogoTowerId || details.PogoTowerId);
           this.enableCorrelation = !!(details.correlations && details.correlations.length > 0);
           this.enableExternalEquipment = !!(details.externalEquipment && details.externalEquipment.length > 0);
           this.enableInterfaceBoard = !!(details.interfaceBoardId || details.InterfaceBoardId);
+          this.customerDropdownDisabled = (details.customerId ?? details.CustomerId) === this.iseLabsCustomerId;
           this.attachments = details.attachments || details.Attachments || [];
           this.history = []; // Will be loaded separately if API supports it
           this.deviceInfo = null; // Will be loaded separately if API supports it
@@ -731,18 +759,35 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
   }
 
   loadDialogMasterData(): void {
-    // Load customers
+    // Load customers; ensure ISE Labs (CustomerID 0) exists per TFS ProbeCardDetails
     if (this.appService.masterData && this.appService.masterData.entityMap && this.appService.masterData.entityMap.Customer) {
-      this.dialogCustomers = this.appService.masterData.entityMap.Customer.map((c: any) => ({
-        CustomerID: c.CustomerID || c.CustomerId,
+      const customerList = this.appService.masterData.entityMap.Customer.map((c: any) => ({
+        CustomerID: c.CustomerID ?? c.CustomerId,
         CustomerName: c.CustomerName
       }));
+      const hasIseLabs = customerList.some((c: any) => (c.CustomerID ?? c.CustomerId) === this.iseLabsCustomerId);
+      if (!hasIseLabs) {
+        customerList.unshift({ CustomerID: this.iseLabsCustomerId, CustomerName: 'ISE Labs' });
+      }
+      // Prepend --Select-- option like Device component
+      this.dialogCustomers = [
+        { CustomerID: -1, CustomerName: '--Select--' },
+        ...customerList
+      ];
+    } else {
+      // Fallback: at least provide --Select-- and ISE Labs
+      this.dialogCustomers = [
+        { CustomerID: -1, CustomerName: '--Select--' },
+        { CustomerID: this.iseLabsCustomerId, CustomerName: 'ISE Labs' }
+      ];
     }
 
     // Load platforms, probe card types, probers, board types
+    // Exclude --Select-- (id === -1) from multiselect data; similar to Restricted Countries
     this.apiService.getProbeCardPlatforms().subscribe({
       next: (data: any) => {
-        this.dialogPlatforms = Array.isArray(data) ? data : [];
+        const raw = Array.isArray(data) ? data : [];
+        this.dialogPlatforms = raw.filter((p: any) => p.id != null && p.id !== -1);
       }
     });
 
@@ -754,7 +799,8 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
 
     this.apiService.getProbeCardProbers().subscribe({
       next: (data: any) => {
-        this.dialogProbers = Array.isArray(data) ? data : [];
+        const raw = Array.isArray(data) ? data : [];
+        this.dialogProbers = raw.filter((p: any) => p.id != null && p.id !== -1);
       }
     });
 
@@ -764,8 +810,42 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
       }
     });
 
-    // Load vendors and secondary customers from masterData if available
-    // Note: These may need separate API endpoints
+    // Secondary customers: same as dialog customers, exclude --Select-- (TFS multi-select)
+    this.dialogSecondaryCustomers = (this.dialogCustomers || []).filter(
+      (c: any) => (c.CustomerID ?? c.CustomerId) !== -1
+    );
+
+    // Vendors from masterData (TFS: MasterInfoBAL.VendorList)
+    if (this.appService.masterData?.entityMap?.Vendor?.length) {
+      this.dialogVendors = [
+        { id: -1, name: '--Select--' },
+        ...this.appService.masterData.entityMap.Vendor.map((v: any) => ({
+          id: v.VendorID ?? v.VendorId,
+          name: v.VendorName ?? ''
+        }))
+      ];
+    }
+  }
+
+  /** Parse comma-separated secondary customer IDs from API (DB SecondaryCustomerId). */
+  parseSecondaryCustomerIds(value: string | null | undefined): number[] {
+    if (!value || typeof value !== 'string') return [];
+    return value
+      .split(',')
+      .map((s) => parseInt(s.trim(), 10))
+      .filter((n) => !Number.isNaN(n) && n >= 0);
+  }
+
+  /** Build display names for secondary customers from IDs (view mode). */
+  getSecondaryCustomerNamesFromIds(ids: number[]): string {
+    if (!ids?.length || !this.dialogCustomers?.length) return '';
+    return ids
+      .map((id) => {
+        const c = this.dialogCustomers.find((x: any) => (x.CustomerID ?? x.CustomerId) === id);
+        return c ? (c.CustomerName ?? '') : '';
+      })
+      .filter(Boolean)
+      .join(', ');
   }
 
   onTabSelect(event: any): void {
@@ -805,12 +885,48 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
     }).filter((name: string) => name !== '').join(', ');
   }
 
+  /** Platform multiselect: whether all options are selected (matches Peripheral Mode / Restricted Countries). */
+  isAllPlatformSelected(): boolean {
+    const list = (this.dialogPlatforms || []).filter((p: any) => p.id != null && p.id !== -1);
+    if (list.length === 0) return false;
+    const ids = this.probeCardData?.platformIds || [];
+    if (ids.length === 0) return false;
+    return ids.length === list.length;
+  }
+
+  /** Platform multiselect: toggle select all / deselect all (matches Peripheral Mode / Restricted Countries). */
+  toggleSelectAllPlatform(event?: any): void {
+    const list = (this.dialogPlatforms || []).filter((p: any) => p.id != null && p.id !== -1);
+    if (list.length === 0) return;
+    const isChecked = event ? event.target.checked : !this.isAllPlatformSelected();
+    this.probeCardData.platformIds = isChecked ? list.map((p: any) => p.id) : [];
+    this.cdr.detectChanges();
+  }
+
   getProberNames(equipmentIds: number[]): string {
     if (!equipmentIds || equipmentIds.length === 0) return '';
     return equipmentIds.map((id: number) => {
       const prober = this.dialogProbers.find((p: any) => p.id === id);
       return prober ? prober.name : '';
     }).filter((name: string) => name !== '').join(', ');
+  }
+
+  /** Peripheral Mode multiselect: whether all options are selected (matches Restricted Countries pattern). */
+  isAllPeripheralModeSelected(): boolean {
+    const list = (this.dialogProbers || []).filter((p: any) => p.id != null && p.id !== -1);
+    if (list.length === 0) return false;
+    const ids = this.probeCardData?.equipmentIds || [];
+    if (ids.length === 0) return false;
+    return ids.length === list.length;
+  }
+
+  /** Peripheral Mode multiselect: toggle select all / deselect all (matches Restricted Countries pattern). */
+  toggleSelectAllPeripheralMode(event?: any): void {
+    const list = (this.dialogProbers || []).filter((p: any) => p.id != null && p.id !== -1);
+    if (list.length === 0) return;
+    const isChecked = event ? event.target.checked : !this.isAllPeripheralModeSelected();
+    this.probeCardData.equipmentIds = isChecked ? list.map((p: any) => p.id) : [];
+    this.cdr.detectChanges();
   }
 
   getVendorName(vendorId: number | null): string {
@@ -858,6 +974,29 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
     // This is handled in the template with *ngIf
   }
 
+  /** ISE Labs checkbox: when checked, select ISE Labs customer (0), disable customer dropdown, clear Customer Id. */
+  onISELabsCheckboxChange(checked: boolean): void {
+    if (this.isViewMode) return;
+    this.customerDropdownDisabled = !!checked;
+    if (checked) {
+      this.probeCardData.customerId = this.iseLabsCustomerId;
+      this.probeCardData.customerHardwareId = '';
+    } else {
+      this.probeCardData.customerId = -1;
+    }
+  }
+
+  /** Sync ISE Labs checkbox when user selects customer from dropdown. */
+  onCustomerChange(customerId: number | null): void {
+    if (this.isViewMode) return;
+    const isIseLabs = customerId === this.iseLabsCustomerId;
+    this.probeCardData.isITAR = isIseLabs;
+    this.customerDropdownDisabled = isIseLabs;
+    if (isIseLabs) {
+      this.probeCardData.customerHardwareId = '';
+    }
+  }
+
   uploadAttachment(): void {
     // TODO: Implement file upload
     this.showNotification('File upload functionality coming soon', 'info');
@@ -870,33 +1009,40 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
 
   // Hardware Location Dialog
   openLocationDialog(): void {
-    if (!this.probeCardData.customerId || this.probeCardData.customerId === -1) {
+    if (this.probeCardData.customerId == null || this.probeCardData.customerId === -1) {
       this.showNotification('Please select a customer first', 'warning');
       return;
     }
+
     // Load shelves for hardware type 4 (ProbeCard) and selected platform
     const hardwareTypeId = 4; // ProbeCard
-    const platformId = this.probeCardData.platformIds && this.probeCardData.platformIds.length > 0 
-      ? this.probeCardData.platformIds.join(',') 
+    const platformId = this.probeCardData.platformIds && this.probeCardData.platformIds.length > 0
+      ? this.probeCardData.platformIds.join(',')
       : null;
-    
-        this.apiService.getProbeCardSlots(hardwareTypeId, platformId).subscribe({
+
+    this.apiService.getProbeCardSlots(hardwareTypeId, platformId).subscribe({
       next: (slots: any) => {
-        // Normalize field names (handle both camelCase and PascalCase)
         this.locationShelves = (Array.isArray(slots) ? slots : []).map((s: any) => ({
           slotId: s.slotId !== undefined ? s.slotId : s.SlotId,
           slotName: s.slotName !== undefined ? s.slotName : s.SlotName || '',
           isMultipleHWAllowed: s.isMultipleHWAllowed !== undefined ? s.isMultipleHWAllowed : s.IsMultipleHWAllowed || false,
           hwLimit: s.hwLimit !== undefined ? s.hwLimit : s.HWLimit || 0
         }));
-        
+
         if (this.locationShelves.length > 0) {
-          // Add default "--Select--" option
           this.locationShelves = [{ slotId: -1, slotName: '--Select--' }, ...this.locationShelves];
-          // Auto-select first real shelf (skip --Select--)
-          if (this.locationShelves.length > 1) {
+          const existingShelfId = this.probeCardData.shelfId;
+          const hasExisting = existingShelfId != null && existingShelfId !== -1;
+          const shelfMatch = hasExisting ? this.locationShelves.find((s: any) => s.slotId === existingShelfId) : null;
+
+          if (shelfMatch) {
+            this.selectedShelfId = shelfMatch.slotId;
+            this.selectedShelfName = (this.probeCardData.shelf as string) || shelfMatch.slotName || '';
+          } else if (this.locationShelves.length > 1) {
             this.selectedShelfId = this.locationShelves[1].slotId;
             this.selectedShelfName = this.locationShelves[1].slotName || '';
+          }
+          if (this.selectedShelfId != null && this.selectedShelfId !== -1) {
             this.onShelfSelected();
           }
         }
@@ -923,32 +1069,39 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
     if (!this.selectedShelfId || this.selectedShelfId === -1) {
       this.locationSubSlots = [];
       this.locationGrid = [];
+      this.selectedLocation = null;
       return;
     }
-    
-    // Update shelf name
+    this.selectedLocation = null;
+
     const shelf = this.locationShelves.find((s: any) => s.slotId === this.selectedShelfId);
     if (shelf) {
       this.selectedShelfName = shelf.slotName || '';
     }
-    
+
     this.apiService.getProbeCardSubSlots(this.selectedShelfId).subscribe({
       next: (subSlots: any) => {
-        // Normalize field names (handle both camelCase and PascalCase)
         this.locationSubSlots = (Array.isArray(subSlots) ? subSlots : []).map((s: any) => ({
           subSlotId: s.subSlotId !== undefined ? s.subSlotId : s.SubSlotId,
           subSlotName: s.subSlotName !== undefined ? s.subSlotName : s.SubSlotName || '',
           minSlot: s.minSlot !== undefined ? s.minSlot : s.MinSlot || 1,
           maxSlot: s.maxSlot !== undefined ? s.maxSlot : s.MaxSlot || 100
         }));
-        
+
         if (this.locationSubSlots.length > 0) {
-          // Add default "--Select--" option
           this.locationSubSlots = [{ subSlotId: -1, subSlotName: '--Select--' }, ...this.locationSubSlots];
-          // Auto-select first real subslot (skip --Select--)
-          if (this.locationSubSlots.length > 1) {
+          const existingSubSlotId = this.probeCardData.subSlotId;
+          const hasExisting = existingSubSlotId != null && existingSubSlotId !== -1;
+          const subSlotMatch = hasExisting ? this.locationSubSlots.find((s: any) => s.subSlotId === existingSubSlotId) : null;
+
+          if (subSlotMatch) {
+            this.selectedSubSlotId = subSlotMatch.subSlotId;
+            this.selectedSubSlotName = (this.probeCardData.subSlot as string) || subSlotMatch.subSlotName || '';
+          } else if (this.locationSubSlots.length > 1) {
             this.selectedSubSlotId = this.locationSubSlots[1].subSlotId;
             this.selectedSubSlotName = this.locationSubSlots[1].subSlotName || '';
+          }
+          if (this.selectedSubSlotId != null && this.selectedSubSlotId !== -1) {
             this.onSubSlotSelected();
           }
         } else {
@@ -965,27 +1118,30 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
   onSubSlotSelected(): void {
     if (!this.selectedSubSlotId || this.selectedSubSlotId === -1) {
       this.locationGrid = [];
+      this.selectedLocation = null;
       return;
     }
-    
-    // Update subslot name
+    this.selectedLocation = null;
+
     const subSlot = this.locationSubSlots.find((s: any) => s.subSlotId === this.selectedSubSlotId);
-    
     if (subSlot) {
       this.selectedSubSlotName = subSlot.subSlotName || '';
       this.locationMinSlot = subSlot.minSlot || 1;
       this.locationMaxSlot = subSlot.maxSlot || 100;
     }
-    
+
     this.apiService.getProbeCardLocationsInfo(this.selectedSubSlotId).subscribe({
       next: (locations: any) => {
-        // Normalize field names (handle both camelCase and PascalCase)
         this.locationInfo = (Array.isArray(locations) ? locations : []).map((loc: any) => ({
           location: loc.location !== undefined ? loc.location : loc.Location,
           locationStatusId: loc.locationStatusId !== undefined ? loc.locationStatusId : loc.LocationStatusId || 0,
           iseID: loc.iseID !== undefined ? loc.iseID : (loc.ISEID !== undefined ? loc.ISEID : ''),
           subSlotId: loc.subSlotId !== undefined ? loc.subSlotId : loc.SubSlotId
         }));
+        // Restore selected location when opening for edit with existing shelf/subslot
+        if (this.selectedSubSlotId === this.probeCardData.subSlotId && this.probeCardData.hardwareLocation != null && this.probeCardData.hardwareLocation !== '') {
+          this.selectedLocation = this.probeCardData.hardwareLocation;
+        }
         this.buildLocationGrid();
       },
       error: (error) => {
@@ -1093,7 +1249,7 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
   }
 
   openPogoTowerDialog(): void {
-    if (!this.probeCardData.customerId || this.probeCardData.customerId === -1) {
+    if (this.probeCardData.customerId == null || this.probeCardData.customerId === -1) {
       this.showNotification('Please select a customer first', 'warning');
       return;
     }
@@ -1126,7 +1282,7 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
   }
 
   openCorrelationDialog(): void {
-    if (!this.probeCardData.customerId || this.probeCardData.customerId === -1) {
+    if (this.probeCardData.customerId == null || this.probeCardData.customerId === -1) {
       this.showNotification('Please select a customer first', 'warning');
       return;
     }
@@ -1134,19 +1290,102 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
       this.showNotification('Please enable Correlation checkbox first', 'warning');
       return;
     }
+    this.correlationCustomersList = this.dialogCustomers?.length ? [...this.dialogCustomers] : [];
+    const pc = this.probeCardData.customerId ?? -1;
+    this.correlationIsISELabs = (pc === this.iseLabsCustomerId);
+    this.correlationCustomerId = this.correlationIsISELabs ? this.iseLabsCustomerId : pc;
+    const existing = this.probeCardData.correlationIds as number[] | undefined;
+    this.correlationSelectedKeys = Array.isArray(existing) ? [...existing] : [];
+    this.loadCorrelationSearch();
     this.isCorrelationDialogOpen = true;
   }
 
   closeCorrelationDialog(): void {
     this.isCorrelationDialogOpen = false;
+    this.correlationGridData = [];
+    this.correlationSelectedKeys = [];
+  }
+
+  onCorrelationISELabsChange(checked: boolean): void {
+    this.correlationIsISELabs = !!checked;
+    if (this.correlationIsISELabs) {
+      this.correlationCustomerId = this.iseLabsCustomerId;
+    } else {
+      this.correlationCustomerId = this.probeCardData.customerId ?? this.iseLabsCustomerId;
+    }
+    this.loadCorrelationSearch();
+    this.cdr.detectChanges();
+  }
+
+  onCorrelationCustomerChange(customerId: number | null): void {
+    this.correlationCustomerId = customerId ?? this.probeCardData.customerId ?? -1;
+    this.loadCorrelationSearch();
+  }
+
+  onCorrelationAddClick(): void {
+    this.showNotification('Add correlation is not available in this release.', 'info');
+  }
+
+  loadCorrelationSearch(): void {
+    const customerId = this.correlationIsISELabs ? this.iseLabsCustomerId : (this.correlationCustomerId ?? -1);
+    if (customerId == null || customerId === -1) {
+      this.correlationGridData = [];
+      return;
+    }
+    const isISE = (customerId === this.iseLabsCustomerId) ? 0 : 1;
+    this.apiService.searchCorrelation({
+      customerId,
+      hardwareTypeId: 9,
+      isISE,
+      isActive: 1,
+      isPicker: true
+    }).subscribe({
+      next: (data: any) => {
+        const list = Array.isArray(data) ? data : (data?.data ?? data?.items ?? []);
+        this.correlationGridData = list.map((r: any) => ({
+          masterId: r.masterId ?? r.MasterId ?? r.exEquipmentId ?? r.ExEquipmentId,
+          exEquipmentId: r.exEquipmentId ?? r.ExEquipmentId ?? r.masterId ?? r.MasterId,
+          iseId: r.iseId ?? r.ISEId ?? '',
+          customerName: r.customerName ?? r.CustomerName ?? '',
+          hardwareType: r.hardwareType ?? r.HardwareType ?? '',
+          location: r.location ?? r.Location ?? ''
+        }));
+      },
+      error: (err) => {
+        console.error('Correlation search error', err);
+        this.showNotification('Error loading correlations', 'error');
+        this.correlationGridData = [];
+      }
+    });
+  }
+
+  onCorrelationSelectedKeysChange(keys: number[]): void {
+    this.correlationSelectedKeys = keys ?? [];
+  }
+
+  confirmCorrelationSelection(): void {
+    const keys = this.correlationSelectedKeys ?? [];
+    const keySet = new Set(keys);
+    const rows = this.correlationGridData.filter((r: any) =>
+      keySet.has(r.masterId) || keySet.has(r.exEquipmentId)
+    );
+    const items = rows.map((r: any) => ({
+      masterId: r.masterId ?? r.exEquipmentId,
+      id: r.masterId ?? r.exEquipmentId,
+      iseId: r.iseId ?? '',
+      ISEId: r.iseId ?? ''
+    }));
+    this.onCorrelationSelected(items);
   }
 
   onCorrelationSelected(correlations: any[]): void {
     if (correlations && correlations.length > 0) {
-      this.probeCardData.correlationIds = correlations.map((c: any) => c.masterId || c.id);
-      // Update correlation display text
-      const correlationText = correlations.map((c: any) => c.iseId || c.ISEId || '').join(', ');
+      this.probeCardData.correlationIds = correlations.map((c: any) => c.masterId ?? c.id ?? c.exEquipmentId);
+      const correlationText = correlations.map((c: any) => c.iseId ?? c.ISEId ?? '').join(', ');
       this.probeCardData.correlationText = correlationText;
+    } else {
+      this.probeCardData.correlationIds = [];
+      this.probeCardData.correlationText = '';
     }
     this.closeCorrelationDialog();
   }
@@ -1160,7 +1399,7 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
   }
 
   openExternalEquipmentDialog(): void {
-    if (!this.probeCardData.customerId || this.probeCardData.customerId === -1) {
+    if (this.probeCardData.customerId == null || this.probeCardData.customerId === -1) {
       this.showNotification('Please select a customer first', 'warning');
       return;
     }
@@ -1196,7 +1435,7 @@ export class ProbeCardComponent implements OnInit, AfterViewInit {
   }
 
   openInterfaceBoardDialog(): void {
-    if (!this.probeCardData.customerId || this.probeCardData.customerId === -1) {
+    if (this.probeCardData.customerId == null || this.probeCardData.customerId === -1) {
       this.showNotification('Please select a customer first', 'warning');
       return;
     }

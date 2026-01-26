@@ -33,7 +33,7 @@ export class DeviceFamilyComponent implements OnInit {
   public deviceFamilyData: any = {
     deviceFamilyId: -1,
     deviceFamilyName: '',
-    customerID: null,
+    customerID: -1,
     isActive: true
   };
 
@@ -99,12 +99,12 @@ export class DeviceFamilyComponent implements OnInit {
   }
 
   loadCustomers(): void {
-    if (this.appService.masterData && 
-        this.appService.masterData.entityMap && 
-        this.appService.masterData.entityMap.Customer) {
-      this.customersList = this.appService.masterData.entityMap.Customer;
+    if (this.appService.masterData?.entityMap?.Customer) {
+      const list = [...this.appService.masterData.entityMap.Customer];
+      list.unshift({ CustomerID: -1, CustomerName: '--Select--' });
+      this.customersList = list;
     } else {
-      this.customersList = [];
+      this.customersList = [{ CustomerID: -1, CustomerName: '--Select--' }];
     }
   }
 
@@ -325,10 +325,9 @@ export class DeviceFamilyComponent implements OnInit {
       this.deviceFamilyData = {
         deviceFamilyId: dataItem.deviceFamilyId,
         deviceFamilyName: dataItem.deviceFamilyName,
-        customerID: dataItem.customerID,
+        customerID: dataItem.customerID ?? dataItem.CustomerID ?? -1,
         isActive: dataItem.active
       };
-      // Track original active state for validation (matching TFS pActive)
       this.originalIsActive = this.deviceFamilyData.isActive;
       this.isEditMode = true;
       this.isViewMode = false;
@@ -342,7 +341,7 @@ export class DeviceFamilyComponent implements OnInit {
       this.deviceFamilyData = {
         deviceFamilyId: dataItem.deviceFamilyId,
         deviceFamilyName: dataItem.deviceFamilyName,
-        customerID: dataItem.customerID,
+        customerID: dataItem.customerID ?? dataItem.CustomerID ?? -1,
         isActive: dataItem.active
       };
       // Track original active state for validation (matching TFS pActive)
@@ -388,7 +387,7 @@ export class DeviceFamilyComponent implements OnInit {
     this.deviceFamilyData = {
       deviceFamilyId: -1,
       deviceFamilyName: '',
-      customerID: null,
+      customerID: -1,
       isActive: true
     };
   }
